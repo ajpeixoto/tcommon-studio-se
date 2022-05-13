@@ -58,9 +58,13 @@ public class CommonsPlugin implements BundleActivator {
     // TESB-17856: For commandline builds ESB Micorservice bundle
     private static boolean isESBMicorservice = false;
 
+    private static Boolean isJunitWorking;
+
     private static Boolean isDevMode = null;
 
     private static ServiceTracker proxyTracker;
+
+    private static Boolean isDebugP2 = null;
 
     public static boolean isWorkbenchCreated() {
         return isWorkbenchCreated;
@@ -124,6 +128,17 @@ public class CommonsPlugin implements BundleActivator {
         }
     }
 
+    public static boolean isDebugP2() {
+        try {
+            if (isDebugP2 == null) {
+                isDebugP2 = Boolean.getBoolean("talend.studio.lite.p2.debug");
+            }
+            return isDebugP2;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     public static boolean isDebugMode() {
         return Boolean.getBoolean("talendDebug") //$NON-NLS-1$
                 || ArrayUtils.contains(Platform.getApplicationArgs(), TalendDebugHandler.TALEND_DEBUG);
@@ -135,6 +150,35 @@ public class CommonsPlugin implements BundleActivator {
 
     public static boolean isTUJTest() {
         return "org.talend.rcp.branding.tuj.product".equals(Platform.getProduct().getId()); //$NON-NLS-1$
+    }
+
+    public static boolean isJunitWorking() {
+        if (isJunitWorking == null) {
+            try {
+                String[] args = Platform.getCommandLineArgs();
+                String applicationId = null;
+
+                for (int i = 0; i < args.length - 1; i++) {
+                    if (args[i].equalsIgnoreCase("-application")) { //$NON-NLS-1$
+                        applicationId = args[i + 1];
+                    }
+                }
+
+                if (applicationId != null
+                        && (applicationId.equals("org.eclipse.swtbot.eclipse.junit.headless.swtbottestapplication") //$NON-NLS-1$
+                                || applicationId.equals("org.eclipse.pde.junit.runtime.uitestapplication"))) { //$NON-NLS-1$
+                    isJunitWorking = true;
+                } else {
+                    isJunitWorking = false;
+                }
+            } catch (Throwable e) {
+                isJunitWorking = false;
+            }
+        }
+        if (isJunitWorking == null) {
+            isJunitWorking = false;
+        }
+        return isJunitWorking;
     }
 
     /**

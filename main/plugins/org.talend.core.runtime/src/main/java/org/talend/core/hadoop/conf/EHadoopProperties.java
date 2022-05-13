@@ -83,6 +83,12 @@ public enum EHadoopProperties {
     GOOGLE_REGION,
 
     GOOGLE_JARS_BUCKET,
+    
+    AUTH_MODE,
+    
+    PATH_TO_GOOGLE_CREDENTIALS,
+    
+    OAUTH_ACCESS_TOKEN,
 
     HD_WEBHCAT_HOSTNAME,
 
@@ -112,9 +118,17 @@ public enum EHadoopProperties {
     
     SYNAPSE_STORAGE_CONTAINER,
     
+    ADLSGEN2AUTH,
+    
     SYNAPSE_STORAGE_USERNAME,
     
     SYNAPSE_STORAGE_PASSWORD,
+    
+    SYNAPSE_APPLICATION_ID,
+    
+    SYNAPSE_DIRECTORY_ID,
+    
+    SYNAPSE_CLIENT_KEY,
     
     DEPLOY_FOLDER,
     

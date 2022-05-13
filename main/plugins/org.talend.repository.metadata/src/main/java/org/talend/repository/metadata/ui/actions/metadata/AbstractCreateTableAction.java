@@ -88,6 +88,7 @@ import org.talend.metadata.managment.connection.manager.HiveConnectionManager;
 import org.talend.metadata.managment.repository.ManagerConnection;
 import org.talend.metadata.managment.ui.utils.ConnectionContextHelper;
 import org.talend.metadata.managment.ui.utils.SwitchContextGroupNameImpl;
+import org.talend.metadata.managment.utils.MetadataConnectionUtils;
 import org.talend.repository.RepositoryWorkUnit;
 import org.talend.repository.metadata.i18n.Messages;
 import org.talend.repository.model.IProxyRepositoryFactory;
@@ -719,7 +720,7 @@ public abstract class AbstractCreateTableAction extends AbstractCreateAction {
 
             ISAPProviderService sapService = null;
             if (GlobalServiceRegister.getDefault().isServiceRegistered(ISAPProviderService.class)) {
-                sapService = (ISAPProviderService) GlobalServiceRegister.getDefault().getService(ISAPProviderService.class);
+                sapService = GlobalServiceRegister.getDefault().getService(ISAPProviderService.class);
                 if (sapService != null) {
                     IWizard sapWizard = sapService.newWizard(PlatformUI.getWorkbench(), creation, node, getExistingNames());
                     if (sapWizard != null) {
@@ -850,7 +851,12 @@ public abstract class AbstractCreateTableAction extends AbstractCreateAction {
                                     ConnParameterKeys.CONN_PARA_KEY_USE_KRB));
                             // TUP-596 : Update the context name in connection when the user does a context switch in DI
                             String oldContextName = connection.getContextName();
-                            IMetadataConnection metadataConnection = ConvertionHelper.convert(connection, false, null);
+                            Connection copyConnection = MetadataConnectionUtils.prepareConection(connection);
+                            if (copyConnection == null) {
+                                return;
+                            }
+                            IMetadataConnection metadataConnection = ConvertionHelper.convert(copyConnection, false,
+                                    copyConnection.getContextName());
                             String newContextName = connection.getContextName();
                             if (oldContextName != null && newContextName != null && !oldContextName.equals(newContextName)) {
                                 if (node != null && node.getObject() != null && node.getObject().getProperty() != null) {
@@ -864,7 +870,7 @@ public abstract class AbstractCreateTableAction extends AbstractCreateAction {
                             boolean isTcomDB = false;
                             IGenericDBService dbService = null;
                             if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericDBService.class)) {
-                                dbService = (IGenericDBService) GlobalServiceRegister.getDefault().getService(
+                                dbService = GlobalServiceRegister.getDefault().getService(
                                         IGenericDBService.class);
                             }
                             if(dbService != null){
@@ -982,7 +988,7 @@ public abstract class AbstractCreateTableAction extends AbstractCreateAction {
                     }
                 };
                 repositoryWorkUnit.setAvoidUnloadResources(isAvoidUnloadResources());
-                IRepositoryService repositoryService = (IRepositoryService) GlobalServiceRegister.getDefault().getService(
+                IRepositoryService repositoryService = GlobalServiceRegister.getDefault().getService(
                         IRepositoryService.class);
                 repositoryService.getProxyRepositoryFactory().executeRepositoryWorkUnit(repositoryWorkUnit);
                 monitor.done();

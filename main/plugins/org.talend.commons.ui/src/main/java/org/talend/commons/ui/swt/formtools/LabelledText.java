@@ -33,7 +33,7 @@ import org.eclipse.swt.widgets.Text;
  * $Id: LabelledText.java 7038 2007-11-15 14:05:48Z plegall $
  *
  */
-public class LabelledText {
+public class LabelledText implements LabelledWidget{
 
     private Text text;
 
@@ -297,6 +297,16 @@ public class LabelledText {
         label.setVisible(visible);
     }
 
+    public void setVisible(final boolean visible, final boolean exclude) {
+        Control[] controls = new Control[] { label, text };
+        for (Control control : controls) {
+            control.setVisible(visible);
+            if (control.getLayoutData() instanceof GridData) {
+                ((GridData) control.getLayoutData()).exclude = exclude;
+            }
+        }
+    }
+    
     public boolean isVisiable() {
         return text.isVisible() && label.isVisible();
     }
@@ -470,6 +480,11 @@ public class LabelledText {
 
         if (text.getParent() != null)
             text.getParent().layout();
+    }
+
+    @Override
+    public void set(String value) {
+        this.setText(value);
     }
 
 }

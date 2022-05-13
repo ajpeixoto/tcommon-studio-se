@@ -18,14 +18,19 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.EMap;
 import org.junit.Test;
 import org.talend.core.IRepositoryContextService;
+import org.talend.core.database.EDatabaseTypeName;
+import org.talend.core.database.ERedshiftDriver;
+import org.talend.core.database.conn.ConnParameterKeys;
 import org.talend.core.model.metadata.DiSchemaConstants;
 import org.talend.core.model.metadata.IMetadataColumn;
 import org.talend.core.model.metadata.IMetadataConnection;
@@ -37,8 +42,6 @@ import org.talend.core.model.metadata.builder.connection.ConnectionFactory;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
 import org.talend.core.model.metadata.builder.connection.FileConnection;
 import org.talend.core.model.metadata.builder.connection.SAPBWTable;
-import org.talend.core.model.repository.IRepositoryPrefConstants;
-import org.talend.core.prefs.ITalendCorePrefConstants;
 import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.utils.ReflectionUtils;
 import org.talend.cwm.helper.ConnectionHelper;
@@ -495,6 +498,33 @@ public class ConvertionHelperTest {
         assertTrue(targetTable.getListColumns().get(6).getOriginalDbColumnName().equals("TEST"));
         assertTrue(targetTable.getListColumns().get(6).getAdditionalField().get("AVRO_TECHNICAL_KEY").equals("TEST1"));
 
+    }
+
+    @Test
+    public void testConvertAdditionalParameters() {
+        DatabaseConnection connection = ConnectionFactory.eINSTANCE.createDatabaseConnection();
+        connection.setAdditionalParams("");
+        connection.setDatabaseType(EDatabaseTypeName.REDSHIFT.getDisplayName());
+        EMap<String, String> parameters = connection.getParameters();
+        parameters.put(ConnParameterKeys.CONN_PARA_KEY_REDSHIFT_DRIVER, ERedshiftDriver.DRIVER_V2.name());
+        parameters.put(ConnParameterKeys.CONN_PARA_KEY_REDSHIFT_STRINGPARA, String.valueOf(false));
+        List<Map<String, Object>> propertiesList = new ArrayList<Map<String, Object>>();
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put("KEY", "pkey");
+        properties.put("VALUE", "pvalue");
+        propertiesList.add(properties);
+        Map<String, Object> properties1 = new HashMap<String, Object>();
+        properties1.put("KEY", "pkey1");
+        properties1.put("VALUE", "pvalue1");
+        propertiesList.add(properties1);
+        String propertiesString = ConvertionHelper.getEntryPropertiesString(propertiesList);
+        parameters.put(ConnParameterKeys.CONN_PARA_KEY_REDSHIFT_PARATABLE, propertiesString);
+        String expect = "&pkey=pvalue&pkey1=pvalue1";
+        String actual = ConvertionHelper.convertAdditionalParameters(connection);
+        assertEquals(expect, actual);
+
+        connection.setDatabaseType(EDatabaseTypeName.MYSQL.getDisplayName());
+        assertTrue(StringUtils.isBlank(ConvertionHelper.convertAdditionalParameters(connection)));
     }
 
 }

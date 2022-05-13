@@ -42,7 +42,6 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
-import org.eclipse.emf.common.util.EMap;
 import org.eclipse.m2e.core.MavenPlugin;
 import org.junit.Assert;
 import org.junit.Before;
@@ -60,6 +59,7 @@ import org.talend.core.language.ECodeLanguage;
 import org.talend.core.model.components.IComponentsService;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.general.ModuleNeeded.ELibraryInstallStatus;
+import org.talend.core.model.general.ModuleStatusProvider;
 import org.talend.core.model.general.Project;
 import org.talend.core.nexus.ArtifactRepositoryBean;
 import org.talend.core.nexus.NexusServerUtils;
@@ -67,7 +67,6 @@ import org.talend.core.nexus.TalendLibsServerManager;
 import org.talend.core.prefs.ITalendCorePrefConstants;
 import org.talend.core.runtime.maven.MavenArtifact;
 import org.talend.core.runtime.maven.MavenUrlHelper;
-import org.talend.librariesmanager.emf.librariesindex.LibrariesIndex;
 import org.talend.librariesmanager.maven.MavenArtifactsHandler;
 import org.talend.librariesmanager.prefs.LibrariesManagerUtils;
 import org.talend.repository.ProjectManager;
@@ -529,6 +528,22 @@ public class LocalLibraryManagerTest {
         lm.updateLastResolveDate("a"); //$NON-NLS-1$
         // already resolved, should not allow the resolve again.
         assertFalse(lm.isResolveAllowed("a")); //$NON-NLS-1$
+    }
+
+    @Test
+    public void testResolveLocallySnapshotNoUpdate() {
+        IEclipsePreferences node = InstanceScope.INSTANCE.getNode(NexusServerUtils.ORG_TALEND_DESIGNER_CORE);
+        int bak = node.getInt(ITalendCorePrefConstants.NEXUS_REFRESH_FREQUENCY, 0);
+        String mvnUrl = "mvn:a.b.c/d/1.0/jar";
+        try {
+            ModuleStatusProvider.putDeployStatus(mvnUrl, ELibraryInstallStatus.DEPLOYED);
+            node.putInt(ITalendCorePrefConstants.NEXUS_REFRESH_FREQUENCY, -1);
+            LocalLibraryManager lm = new LocalLibraryManager();
+            assertNull(lm.resolveStatusLocally(mvnUrl));
+        } finally {
+            node.putInt(ITalendCorePrefConstants.NEXUS_REFRESH_FREQUENCY, bak);
+            ModuleStatusProvider.putDeployStatus(mvnUrl, ELibraryInstallStatus.NOT_INSTALLED);
+        }
     }
 
     @Test

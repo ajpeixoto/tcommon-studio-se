@@ -19,7 +19,17 @@
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>
-			<url>${talend.nexus.host}/nexus/content/repositories/snapshots/</url>
+			<url>${talend.nexus.host}/nexus/content/repositories/TalendOpenSourceSnapshot/</url>
+		</repository>
+		<repository>
+			<id>releases</id>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<url>${talend.nexus.host}/nexus/content/repositories/TalendOpenSourceRelease/</url>
 		</repository>
 	</repositories>
 
@@ -27,6 +37,7 @@
 		<studioIndexVersion>${project.version}</studioIndexVersion>
 		<talend.nexus.host>https://artifacts-oss.talend.com</talend.nexus.host>
         <talend.nexus.host.oss>https://artifacts-oss.talend.com</talend.nexus.host.oss>
+        <tycho.buildtimestamp.format>${timestamp}</tycho.buildtimestamp.format>
     </properties>
         
 	<build>

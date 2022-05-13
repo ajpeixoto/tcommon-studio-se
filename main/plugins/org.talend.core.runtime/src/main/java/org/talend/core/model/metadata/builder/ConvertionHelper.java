@@ -24,13 +24,13 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.emf.common.util.EMap;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.runtime.model.components.IComponentConstants;
 import org.talend.commons.utils.resource.FileExtensions;
-import org.talend.core.GlobalServiceRegister;
-import org.talend.core.ICoreService;
 import org.talend.core.IRepositoryContextService;
 import org.talend.core.database.EDatabase4DriverClassName;
 import org.talend.core.database.EDatabaseTypeName;
+import org.talend.core.database.ERedshiftDriver;
 import org.talend.core.database.conn.ConnParameterKeys;
 import org.talend.core.database.conn.template.EDatabaseConnTemplate;
 import org.talend.core.model.metadata.Dbms;
@@ -54,12 +54,17 @@ import org.talend.core.model.metadata.builder.connection.SAPBWTable;
 import org.talend.core.prefs.SSLPreferenceConstants;
 import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.utils.KeywordsValidator;
+import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.cwm.helper.ConnectionHelper;
 import org.talend.cwm.helper.SAPBWTableHelper;
 import org.talend.cwm.helper.TaggedValueHelper;
 import org.talend.cwm.relational.RelationalFactory;
 import org.talend.model.bridge.ReponsitoryContextBridge;
 import org.talend.repository.model.IProxyRepositoryFactory;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import orgomg.cwm.objectmodel.core.TaggedValue;
 
@@ -223,8 +228,9 @@ public final class ConvertionHelper {
         } else {
             result.setDbType(connection.getDatabaseType());
         }
+        String dbVersionString = getDriverVersionString(connection);
         result.setDriverJarPath(connection.getDriverJarPath());
-        result.setDbVersionString(connection.getDbVersionString());
+        result.setDbVersionString(dbVersionString);
         result.setDriverClass(connection.getDriverClass());
         result.setFileFieldName(connection.getFileFieldName());
         result.setId(connection.getId());
@@ -263,6 +269,23 @@ public final class ConvertionHelper {
 
         return result;
 
+    }
+
+    private static String getDriverVersionString(DatabaseConnection dbConn) {
+        String dbVersionString = dbConn.getDbVersionString();
+        if (EDatabaseTypeName.REDSHIFT.getDisplayName().equals(dbConn.getDatabaseType())
+                || EDatabaseTypeName.REDSHIFT_SSO.getDisplayName().equals(dbConn.getDatabaseType())) {
+            EMap<String, String> parameters = dbConn.getParameters();
+            if (parameters != null) {
+                String driverString = parameters.get(ConnParameterKeys.CONN_PARA_KEY_REDSHIFT_DRIVER);
+                if (StringUtils.isNotBlank(driverString)) {
+                    dbVersionString = driverString;
+                } else {
+                    dbVersionString = ERedshiftDriver.DRIVER_V1.name();
+                }
+            }
+        }
+        return dbVersionString;
     }
 
     /**
@@ -705,6 +728,26 @@ public final class ConvertionHelper {
                             origValueConn.getParameters().get(ConnParameterKeys.CONN_PARA_KEY_SSL_KEY_STORE_PASSWORD), false));
                 }
             }
+        } else if (EDatabaseTypeName.REDSHIFT.getDisplayName().equals(origValueConn.getDatabaseType())
+                || EDatabaseTypeName.REDSHIFT_SSO.getDisplayName().equals(origValueConn.getDatabaseType())) {
+            Properties info = new Properties();
+            EMap<String, String> parameters = origValueConn.getParameters();
+            if (parameters != null
+                    && ERedshiftDriver.DRIVER_V2.name().equals(parameters.get(ConnParameterKeys.CONN_PARA_KEY_REDSHIFT_DRIVER))
+                    && !Boolean.valueOf(parameters.get(ConnParameterKeys.CONN_PARA_KEY_REDSHIFT_STRINGPARA))) {
+                additionParamStr = "";
+                String tableValue = parameters.get(ConnParameterKeys.CONN_PARA_KEY_REDSHIFT_PARATABLE);
+                if (StringUtils.isNotBlank(tableValue)) {
+                    List<Map<String, Object>> entryProperties = getEntryProperties(tableValue);
+                    for (Map<String, Object> entryMap : entryProperties) {
+                        String key = TalendQuoteUtils.removeQuotes(String.valueOf(entryMap.get("KEY")));
+                        if (StringUtils.isNotBlank(key)) {
+                            String value = TalendQuoteUtils.removeQuotes(String.valueOf(entryMap.get("VALUE")));
+                            updateAdditionParam(sgb, info, key, value);
+                        }
+                    }
+                }
+            }
         }
         return additionParamStr + sgb.toString();
     }
@@ -713,5 +756,28 @@ public final class ConvertionHelper {
         if (!info.containsKey(key)) {
             sgb.append("&").append(key).append("=").append(value);//$NON-NLS-1$ //$NON-NLS-2$
         }
+    }
+
+    public static List<Map<String, Object>> getEntryProperties(String paramString) {
+        List<Map<String, Object>> tableProperties = new ArrayList<Map<String, Object>>();
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            tableProperties = objectMapper.readValue(paramString, new TypeReference<List<Map<String, Object>>>() {
+            });
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        }
+        return tableProperties;
+    }
+
+    public static String getEntryPropertiesString(List<Map<String, Object>> entryProperties) {
+        String entryString = "";
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            entryString = objectMapper.writeValueAsString(entryProperties);
+        } catch (JsonProcessingException e) {
+            ExceptionHandler.process(e);
+        }
+        return entryString;
     }
 }

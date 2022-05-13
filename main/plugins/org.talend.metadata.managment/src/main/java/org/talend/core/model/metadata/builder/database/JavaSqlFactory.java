@@ -17,13 +17,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import metadata.managment.i18n.Messages;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
+import org.talend.commons.utils.PasswordEncryptUtil;
 import org.talend.core.IRepositoryContextService;
 import org.talend.core.database.conn.ConnParameterKeys;
 import org.talend.core.database.conn.DatabaseConnStrUtil;
@@ -43,9 +42,12 @@ import org.talend.cwm.helper.TaggedValueHelper;
 import org.talend.metadata.managment.utils.MetadataConnectionUtils;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.model.IProxyRepositoryFactory;
+import org.talend.utils.security.StudioEncryption;
 import org.talend.utils.sql.ConnectionUtils;
 import org.talend.utils.sugars.ReturnCode;
 import org.talend.utils.sugars.TypedReturnCode;
+
+import metadata.managment.i18n.Messages;
 
 /**
  * @author scorreia
@@ -82,7 +84,14 @@ public final class JavaSqlFactory {
     public static void savePromptConVars2Cache(Connection conn, IContextParameter param) {
         if (param != null && param.isPromptNeeded()) {
             String promptConVarsMapKey = getPromptConVarsMapKey(conn, "context." + param.getName()); //$NON-NLS-1$
-            promptContextVars.put(promptConVarsMapKey, param.getValue());
+            String paramValue = param.getValue();
+            if (PasswordEncryptUtil.isPasswordType(param.getType())) {
+                if (StudioEncryption.hasEncryptionSymbol(paramValue)) {
+                    paramValue = StudioEncryption.getStudioEncryption(StudioEncryption.EncryptionKeyName.SYSTEM)
+                            .decrypt(paramValue);
+                }
+            }
+            promptContextVars.put(promptConVarsMapKey, paramValue);
         }
     }
 
@@ -97,7 +106,14 @@ public final class JavaSqlFactory {
         if (param != null && param.isPromptNeeded()) {
             String promptConVarsMapKey =
                     getPromptConVarsMapKey(groupName, param.getSource(), "context." + param.getName()); //$NON-NLS-1$
-            promptContextVars.put(promptConVarsMapKey, param.getValue());
+            String paramValue = param.getValue();
+            if (PasswordEncryptUtil.isPasswordType(param.getType())) {
+                if (StudioEncryption.hasEncryptionSymbol(paramValue)) {
+                    paramValue = StudioEncryption.getStudioEncryption(StudioEncryption.EncryptionKeyName.SYSTEM)
+                            .decrypt(paramValue);
+                }
+            }
+            promptContextVars.put(promptConVarsMapKey, paramValue);
         }
     }
 

@@ -841,12 +841,12 @@ public final class DBConnectionContextUtils {
      *
      * set the ManagerConnection parameter and return the url string connection.
      */
-    public static String setManagerConnectionValues(ManagerConnection managerConnection, ConnectionItem connectionItem,
+    public static String setManagerConnectionValues(ManagerConnection managerConnection, Connection connection,
             ContextType contextType, final String dbType) {
-        if (managerConnection == null || connectionItem == null || dbType == null || dbType.length() < 0) {
+        if (managerConnection == null || connection == null || dbType == null || dbType.length() < 0) {
             return null;
         }
-        DatabaseConnection dbConn = (DatabaseConnection) connectionItem.getConnection();
+        DatabaseConnection dbConn = (DatabaseConnection) connection;
 
         if (contextType == null) {
             contextType = ConnectionContextHelper.getContextTypeForContextMode(dbConn);
@@ -899,7 +899,7 @@ public final class DBConnectionContextUtils {
 
     public static String setManagerConnectionValues(ManagerConnection managerConnection, ConnectionItem connectionItem,
             final String dbType) {
-        return setManagerConnectionValues(managerConnection, connectionItem, null, dbType);
+        return setManagerConnectionValues(managerConnection, connectionItem.getConnection(), null, dbType);
     }
 
     /**

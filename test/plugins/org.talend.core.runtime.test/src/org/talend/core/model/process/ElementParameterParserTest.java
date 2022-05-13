@@ -12,14 +12,16 @@
 // ============================================================================
 package org.talend.core.model.process;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
-import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.utils.security.StudioEncryption;
 
 /**
@@ -34,6 +36,7 @@ public class ElementParameterParserTest {
         input = input.replace("\"", "");
         return SE.decrypt(input);
     }
+
     @Test
     public void testCanEncrypt() {
         String paramName = "__PASSWORD__";
@@ -87,30 +90,22 @@ public class ElementParameterParserTest {
         // "ab"
         String val = "\"ab\"";
         when(parameter.getValue()).thenReturn(val);
-        String targetVal = TalendQuoteUtils.removeQuotes(val);
-        targetVal = TalendQuoteUtils.checkSlashAndRemoveQuotation(targetVal);
-        assertEquals(targetVal,
+        assertEquals("ab",
                 decryptPassword(ElementParameterParser.getEncryptedValue(node, paramName)));
         // "a\"b"
         val = "\"a\\\"b\"";
-        targetVal = TalendQuoteUtils.removeQuotes(val);
-        targetVal = TalendQuoteUtils.checkSlashAndRemoveQuotation(targetVal);
         when(parameter.getValue()).thenReturn(val);
-        assertEquals(targetVal,
+        assertEquals("a\"b",
                 decryptPassword(ElementParameterParser.getEncryptedValue(node, paramName)));
         // "a\\b"
         val = "\"a\\\\b\"";
-        targetVal = TalendQuoteUtils.removeQuotes(val);
-        targetVal = TalendQuoteUtils.checkSlashAndRemoveQuotation(targetVal);
         when(parameter.getValue()).thenReturn(val);
-        assertEquals(targetVal,
+        assertEquals("a\\b",
                 decryptPassword(ElementParameterParser.getEncryptedValue(node, paramName)));
         // "a\\\\b"
         val = "\"a\\\\\\\\b\"";
-        targetVal = TalendQuoteUtils.removeQuotes(val);
-        targetVal = TalendQuoteUtils.checkSlashAndRemoveQuotation(targetVal);
         when(parameter.getValue()).thenReturn(val);
-        assertEquals(targetVal,
+        assertEquals("a\\\\b",
                 decryptPassword(ElementParameterParser.getEncryptedValue(node, paramName)));
         // "test"+context.mypassword + "a"
         val = "\"test\"+context.mypassword + \"a\"";
@@ -121,19 +116,43 @@ public class ElementParameterParserTest {
         val = "\"a\" + \"b\"";
         when(parameter.getValue()).thenReturn(val);
         assertEquals(val, ElementParameterParser.getEncryptedValue(node, paramName));
-        // \\123456/
+        // "\\123456/"
         val = "\"\\\\123456/\"";
-        targetVal = TalendQuoteUtils.removeQuotes(val);
-        targetVal = TalendQuoteUtils.checkSlashAndRemoveQuotation(targetVal);
         when(parameter.getValue()).thenReturn(val);
-        assertEquals(targetVal,
+        assertEquals("\\123456/",
                 decryptPassword(ElementParameterParser.getEncryptedValue(node, paramName)));
-        // \123456/
+        // "\123456/"
         val = "\"\\123456/\"";
-        targetVal = TalendQuoteUtils.removeQuotes(val);
-        targetVal = TalendQuoteUtils.checkSlashAndRemoveQuotation(targetVal);
+        final String exp = "\123456/";
         when(parameter.getValue()).thenReturn(val);
-        assertEquals(targetVal,
+        assertEquals(exp,
                 decryptPassword(ElementParameterParser.getEncryptedValue(node, paramName)));
     }
+
+    @Test
+    public void testGetEncryptedValue_multiLine() {
+        String paramName = "__PASSWORD__";
+        // mock parameter
+        IElementParameter parameter = mock(IElementParameter.class);
+        when(parameter.getVariableName()).thenReturn(paramName);
+        when(parameter.getName()).thenReturn("PASSWORD");
+
+        // mock the node
+        IElement node = mock(IElement.class);
+        List elementParametersWithChildrens = new ArrayList();
+        elementParametersWithChildrens.add(parameter);
+        when(node.getElementParametersWithChildrens()).thenReturn(elementParametersWithChildrens);
+
+        // {
+        // "a":"b",
+        // "c":"d"
+        // }
+
+        // "{\r\n\"a\":\"b\",\r\n\"c\":\"d\"\r\n}"
+        String val = "\"{\\r\\n\\\"a\\\":\\\"b\\\",\\r\\n\\\"c\\\":\\\"d\\\"\\r\\n}\"";
+        when(parameter.getValue()).thenReturn(val);
+        assertEquals("{\r\n\"a\":\"b\",\r\n\"c\":\"d\"\r\n}",
+                decryptPassword(ElementParameterParser.getEncryptedValue(node, paramName)));
+    }
+
 }

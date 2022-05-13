@@ -16,6 +16,7 @@ import java.text.MessageFormat;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.fieldassist.IContentProposal;
+import org.talend.commons.utils.PasswordEncryptUtil;
 import org.talend.core.language.ECodeLanguage;
 import org.talend.core.model.process.IContextParameter;
 import org.talend.core.model.utils.ContextParameterUtils;
@@ -76,11 +77,15 @@ public class ContextParameterProposal implements IContentProposal {
         } else {
             desc = Messages.getString("ContextParameterProposal.NoCommentAvaiable"); //$NON-NLS-1$
         }
+        String type = contextParameter.getType();
+        String value = contextParameter.getValue();
+        if (PasswordEncryptUtil.isPasswordType(type)) {
+            value = "******"; //$NON-NLS-1$
+        }
         // TDI-30683:fix the NPE pb and another description match pb(need move "\n" from message.propreties to code).
         MessageFormat format = new MessageFormat(getDescriptionMessagePattern());
         if (contextParameter.getContext() != null) {
-            Object[] replaceArgs = new Object[] { desc, contextParameter.getContext().getName(), contextParameter.getType(),
-                    contextParameter.getValue() };
+            Object[] replaceArgs = new Object[] { desc, contextParameter.getContext().getName(), type, value };
             return format.format(replaceArgs);
         }
         return desc;

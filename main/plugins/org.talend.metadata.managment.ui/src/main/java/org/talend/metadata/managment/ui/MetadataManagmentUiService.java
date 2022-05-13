@@ -12,12 +12,17 @@
 // ============================================================================
 package org.talend.metadata.managment.ui;
 
+import java.util.List;
+
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.talend.core.model.metadata.builder.connection.Connection;
+import org.talend.core.model.process.IContext;
+import org.talend.core.model.properties.ContextItem;
 import org.talend.core.service.IMetadataManagmentUiService;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
 import org.talend.metadata.managment.ui.dialog.OpenXSDFileDialog;
@@ -69,6 +74,21 @@ public class MetadataManagmentUiService implements IMetadataManagmentUiService {
     @Override
     public boolean isContextMode(Connection connection, String value) {
         return ConnectionContextHelper.isContextMode(connection, value);
+    }
+
+    @Override
+    public boolean promptConfirmLauch(Shell shell, Connection connection, ContextItem contextItem) {
+        return ConnectionContextHelper.promptConfirmLauch(shell, connection, contextItem);
+    }
+
+    @Override
+    public IContext promptConfirmLauch(Shell shell, List<IContext> contexts) {
+        return ConnectionContextHelper.promptConfirmLauch(shell, contexts);
+    }
+
+    @Override
+    public boolean isPromptNeeded(List<IContext> contexts) {
+        return ConnectionContextHelper.isPromptNeeded(contexts);
     }
 
 }

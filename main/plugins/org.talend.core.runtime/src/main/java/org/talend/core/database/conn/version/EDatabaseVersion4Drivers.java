@@ -13,10 +13,12 @@
 package org.talend.core.database.conn.version;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.talend.core.database.EDatabaseTypeName;
+import org.talend.core.database.ERedshiftDriver;
 import org.talend.core.database.conn.DatabaseConnConstants;
 
 /**
@@ -67,9 +69,9 @@ public enum EDatabaseVersion4Drivers {
     INFORMIX(new DbVersion4Drivers(EDatabaseTypeName.INFORMIX, "ifxjdbc.jar")), //$NON-NLS-1$
 
     SAS_9_1(new DbVersion4Drivers(EDatabaseTypeName.SAS, "SAS 9.1", "SAS_9.1", new String[] { "sas.core.jar", //$NON-NLS-1$
-            "sas.intrnet.javatools.jar", "sas.svc.connection.jar", "org.apache.log4j_1.2.15.v201012070815.jar" })), //$NON-NLS-1$ //$NON-NLS-2$
+            "sas.intrnet.javatools.jar", "sas.svc.connection.jar", "reload4j-1.2.19.jar" })), //$NON-NLS-1$ //$NON-NLS-2$
     SAS_9_2(new DbVersion4Drivers(EDatabaseTypeName.SAS,
-            "SAS 9.2", "SAS_9.2", new String[] { "sas.core.jar", "sas.security.sspi.jar", "sas.svc.connection.jar", "org.apache.log4j_1.2.15.v201012070815.jar" })), //$NON-NLS-1$ //$NON-NLS-2$
+            "SAS 9.2", "SAS_9.2", new String[] { "sas.core.jar", "sas.security.sspi.jar", "sas.svc.connection.jar", "reload4j-1.2.19.jar" })), //$NON-NLS-1$ //$NON-NLS-2$
     SAPHana(new DbVersion4Drivers(EDatabaseTypeName.SAPHana, "HDB 1.0", "HDB_1_0", "ngdbc.jar")), //$NON-NLS-1$
     // MYSQL, add for 9594
     MYSQL_8(new DbVersion4Drivers(EDatabaseTypeName.MYSQL, "MySQL 8", "MYSQL_8", "mysql-connector-java-8.0.18.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -82,8 +84,8 @@ public enum EDatabaseVersion4Drivers {
     MSSQL_PROP(new DbVersion4Drivers(EDatabaseTypeName.MSSQL,
             "Microsoft", "MSSQL_PROP", //$NON-NLS-1$ //$NON-NLS-2$
             new String[] { "mssql-jdbc.jar", "slf4j-api-1.7.29.jar", "slf4j-log4j12-1.7.29.jar", "msal4j-1.11.0.jar", //$NON-NLS-1$
-                    "oauth2-oidc-sdk-9.7.jar", "log4j-1.2.17.jar", "jackson-core-2.12.1.jar",
-                    "jackson-databind-2.12.1.jar", "jackson-annotations-2.12.1.jar", "jcip-annotations-1.0-1.jar",
+                    "oauth2-oidc-sdk-9.7.jar", "reload4j-1.2.19.jar", "jackson-core-2.13.2.jar",
+                    "jackson-databind-2.13.2.2.jar", "jackson-annotations-2.13.2.jar", "jcip-annotations-1.0-1.jar",
                     "json-smart-2.4.7.jar", "nimbus-jose-jwt-9.9.3.jar", "accessors-smart-2.4.7.jar", "asm-9.1.jar",
                     "content-type-2.1.jar", "lang-tag-1.5.jar" })),
 
@@ -153,7 +155,8 @@ public enum EDatabaseVersion4Drivers {
     REDSHIFT_SSO(new DbVersion4Drivers(EDatabaseTypeName.REDSHIFT_SSO, "redshift sso", "REDSHIFT_SSO", //$NON-NLS-1$ //$NON-NLS-2$
             new String[] { "redshift-jdbc42-no-awssdk-1.2.55.1083.jar", "antlr4-runtime-4.8-1.jar", "aws-java-sdk-1.11.848.jar", "jackson-core-2.11.4.jar", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
                     "jackson-databind-2.11.4.jar", "jackson-annotations-2.11.4.jar", "httpcore-4.4.13.jar", "httpclient-4.5.13.jar", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$//$NON-NLS-4$
-                    "joda-time-2.8.1.jar", "commons-logging-1.2.jar", "commons-codec-1.14.jar" })), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    "joda-time-2.8.1.jar", "commons-logging-1.2.jar", "commons-codec-1.14.jar", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    "aws-java-sdk-redshift-internal-1.12.x.jar" })), //$NON-NLS-1$
 
     AMAZON_AURORA(new DbVersion4Drivers(EDatabaseTypeName.AMAZON_AURORA, "mysql-connector-java-5.1.49.jar")); //$NON-NLS-1$
 
@@ -293,6 +296,9 @@ public enum EDatabaseVersion4Drivers {
                     if (version.equalsIgnoreCase(v4d.getVersionValue())) {
                         drivers.addAll(v4d.getProviderDrivers());
                     }
+                    if (drivers.isEmpty()) {
+                        drivers.addAll(getDriversByDriverVersion(v4d, version));
+                    }
                 }
             } else {
                 // only check the version value
@@ -300,6 +306,14 @@ public enum EDatabaseVersion4Drivers {
                     drivers.addAll(v4d.getProviderDrivers());
                 }
             }
+        }
+        return drivers;
+    }
+
+    private static Set<String> getDriversByDriverVersion(EDatabaseVersion4Drivers v4d, String version) {
+        Set<String> drivers = new HashSet<String>();
+        if (REDSHIFT == v4d || REDSHIFT_SSO == v4d) {
+            drivers = ERedshiftDriver.getDriversByVersion(v4d, version);
         }
         return drivers;
     }

@@ -87,7 +87,9 @@ public interface ICoreTisService extends IService {
     boolean hasNewPatchInPatchesFolder();
 
     boolean isDefaultLicenseAndProjectType();
-    
+
+    void syncProjectUpdateSettingsFromServer(IProgressMonitor monitor, Project proj) throws Exception;
+
     void refreshPatchesFolderCache();
 
     static ICoreTisService get() {

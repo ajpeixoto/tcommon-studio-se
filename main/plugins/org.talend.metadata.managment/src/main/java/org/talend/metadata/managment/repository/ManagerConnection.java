@@ -226,7 +226,7 @@ public class ManagerConnection {
     private List<String> fetchEmbeddedHiveDriverJars(IMetadataConnection metadataConn) {
         String dbType = metadataConn.getDbType();
         String dbVersion = metadataConn.getDbVersionString();
-        ILibraryManagerService librairesManagerService = (ILibraryManagerService) GlobalServiceRegister.getDefault().getService(
+        ILibraryManagerService librairesManagerService = GlobalServiceRegister.getDefault().getService(
                 ILibraryManagerService.class);
 
         List<String> jarPathList = new ArrayList<String>();
@@ -286,6 +286,7 @@ public class ManagerConnection {
             if (isSchemaFromSidOrDatabase(type)) {
                 schemaName = sidOrDatabase;
             }
+
             // test the connection
             testConnection = ExtractMetaDataFromDataBase.testConnection(dbTypeString, urlConnectionString, username, password,
                     schemaName, driverClassName, driverJarPath, dbVersionString, additionalParams, retProposedSchema,
@@ -464,6 +465,10 @@ public class ManagerConnection {
 
     public void setDbVersionString(String dbVersion) {
         this.dbVersionString = dbVersion;
+    }
+
+    public void setAdditionalParams(String additionalParams) {
+        this.additionalParams = additionalParams;
     }
 
     /**

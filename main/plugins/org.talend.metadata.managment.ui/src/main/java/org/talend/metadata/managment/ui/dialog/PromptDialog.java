@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2022 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -12,9 +12,12 @@
 // ============================================================================
 package org.talend.metadata.managment.ui.dialog;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -34,54 +37,111 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.dialogs.SelectionDialog;
 import org.talend.commons.ui.runtime.swt.tableviewer.celleditor.DateDialog;
+import org.talend.commons.ui.swt.formtools.LabelledCombo;
 import org.talend.commons.ui.utils.PathUtils;
+import org.talend.core.model.context.ContextUtils;
 import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IContextParameter;
+import org.talend.core.model.properties.ContextItem;
 import org.talend.core.ui.context.DefaultCellEditorFactory;
+import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
 import org.talend.metadata.managment.ui.i18n.Messages;
+import org.talend.metadata.managment.ui.utils.ConnectionContextHelper;
+import org.talend.utils.security.StudioEncryption;
 
 /**
- * this class copied from org.talend.designer.runprocess.ui.PromptDialog
- *
- * $Id$
  * 
+ * created by hcyi on Apr 21, 2022 Detailled comment
+ *
  */
-public class PromptDialog extends Dialog {
+public class PromptDialog extends SelectionDialog {
 
-    /**
-     *
-     */
-    private static final int Y_POSITION = 100;
+    private static final int Y_POSITION = 150;
 
-    /**
-     *
-     */
     private static final int X_POSITION = 300;
 
-    /**
-     *
-     */
     private static final int CELLPADDING = 10;
 
-    /**
-     *
-     */
     private static final int MINIMUM_WIDTH = 50;
 
-    IContext context;
+    private static final String DEFAULT_FLAG = "(default)"; //$NON-NLS-1$
 
-    /**
-     * DOC nrousseau PromptDialog constructor comment.
-     *
-     * @param parentShell
-     */
-    public PromptDialog(Shell parentShell, IContext context) {
+    private static final String TITLE = Messages.getString("ContextSetsSelectionDialog.Title"); //$NON-NLS-1$
+
+    private Object source;
+
+    private List<String> contextSetsList = new ArrayList<String>();
+
+    private String defalutContext = ConnectionContextHelper.EMPTY;
+
+    private String selectedContext = null;
+
+    private IContext currentContext = null;
+
+    private boolean canCancel = false;
+
+    private LabelledCombo contextCombo;
+
+    private Composite contextComp;
+
+    private Composite child;
+
+    public PromptDialog(Shell parentShell, ContextItem contextItem) {
         super(parentShell);
-        this.context = context;
+        initDialog(contextItem, canCancel, Messages.getString("ContextSetsSelectionDialog.Messages")); //$NON-NLS-1$
+        initSets();
+    }
+
+    public PromptDialog(Shell parentShell, List<IContext> contexts) {
+        super(parentShell);
+        initDialog(contexts, canCancel, Messages.getString("ContextSetsSelectionDialog.Messages")); //$NON-NLS-1$
+        initSets();
+    }
+
+    private void initDialog(Object object, boolean cancelFlag, String message) {
+        this.source = object;
+        this.canCancel = cancelFlag;
+        setHelpAvailable(false);
+        setTitle(TITLE);
+        setMessage(message);
+    }
+
+    private void initSets() {
+        if (source != null) {
+            if (source instanceof ContextItem) {
+                ContextItem contextItem = (ContextItem) source;
+                List<ContextType> contexts = contextItem.getContext();
+                String repositoryContextId = contextItem.getProperty().getId();
+                defalutContext = contextItem.getDefaultContext();
+                for (ContextType contextType : contexts) {
+                    String name = contextType.getName();
+                    if (name.equals(defalutContext)) {
+                        name = name + DEFAULT_FLAG;
+                        selectedContext = name;
+                        currentContext = ContextUtils.convert2IContext(contextType, repositoryContextId).clone();
+                    }
+                    contextSetsList.add(name);
+                }
+            } else if (source instanceof List) {
+                List<IContext> contexts = (List<IContext>) source;
+                defalutContext = "Default"; //$NON-NLS-1$
+                for (IContext context : contexts) {
+                    String name = context.getName();
+                    if (name.equals(defalutContext)) {
+                        name = name + DEFAULT_FLAG;
+                        selectedContext = name;
+                        currentContext = context.clone();
+                    }
+                    contextSetsList.add(name);
+                }
+            }
+        }
     }
 
     @Override
@@ -89,16 +149,84 @@ public class PromptDialog extends Dialog {
         final Composite composite = (Composite) super.createDialogArea(parent);
         composite.setLayout(new FillLayout());
 
-        final ScrolledComposite sc = new ScrolledComposite(composite, SWT.H_SCROLL | SWT.V_SCROLL);
-
-        final Composite child = new Composite(sc, SWT.NONE);
+        ScrolledComposite sc = new ScrolledComposite(composite, SWT.H_SCROLL | SWT.V_SCROLL);
+        child = new Composite(sc, SWT.NONE);
         child.setLayout(new GridLayout(1, false));
 
+        createSourceArea(child);
+        createSelectionArea(child);
+
+        contextComp = new Composite(child, SWT.NONE);
+        contextComp.setLayout(new GridLayout(1, false));
+        contextComp.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+
+        createContextArea(currentContext, contextComp);
+
+        sc.setContent(child);
+
+        // Set the minimum size
+        // sc.setMinSize(400, 400);
+
+        // Expand both horizontally and vertically
+        sc.setExpandHorizontal(true);
+        sc.setExpandVertical(true);
+        sc.addControlListener(new ControlAdapter() {
+
+            public void controlResized(ControlEvent e) {
+                Rectangle r = sc.getClientArea();
+                sc.setMinSize(child.computeSize(r.width, SWT.DEFAULT));
+            }
+        });
+        addFieldsListeners();
+        return composite;
+    }
+
+    private void createSourceArea(Composite parent) {
+        if (source != null && source instanceof ContextItem) {
+            ContextItem contextItem = (ContextItem) source;
+
+            Composite inner = new Composite(parent, SWT.NONE);
+            GridLayout gridLayout = new GridLayout(2, false);
+            gridLayout.marginHeight = 0;
+            inner.setLayout(gridLayout);
+            inner.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+
+            Label label = new Label(inner, SWT.NONE);
+            label.setText(Messages.getString("ContextSetsSelectionDialog.Source")); //$NON-NLS-1$
+
+            Label source = new Label(inner, SWT.NONE);
+            source.setText(contextItem.getProperty().getLabel() + " " + contextItem.getProperty().getVersion()); //$NON-NLS-1$
+            source.setFont(JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT));
+        }
+    }
+
+    private Control createSelectionArea(Composite parent) {
+        Composite inner = new Composite(parent, SWT.NONE);
+        GridLayout gridLayout = new GridLayout();
+        gridLayout.marginHeight = 0;
+        inner.setLayout(gridLayout);
+        GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+        gridData.minimumWidth = 220;
+        gridData.minimumHeight = 100;
+        inner.setLayoutData(gridData);
+
+        contextCombo = new LabelledCombo(inner, Messages.getString("PromptDialog.context.environments.name"), null, //$NON-NLS-1$
+                contextSetsList, true);
+        contextCombo.setText(defalutContext + DEFAULT_FLAG);
+
+        return inner;
+    }
+
+    private void createContextArea(IContext currentContext, Composite parent) {
+        Group promptGroup = new Group(parent, SWT.NONE);
+        promptGroup.setText(Messages.getString("PromptDialog.promptGroup.name")); //$NON-NLS-1$
+        promptGroup.setLayout(new GridLayout(1, false));
+        promptGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         // Prompt for context values ?
-        for (final IContextParameter parameter : context.getContextParameterList()) {
+        for (final IContextParameter parameter : currentContext.getContextParameterList()) {
             if (parameter.isPromptNeeded()) {
                 if (DefaultCellEditorFactory.isBoolean(parameter.getType())) {
-                    final Composite composite2 = new Composite(child, SWT.NONE);
+                    final Composite composite2 = new Composite(promptGroup, SWT.NONE);
                     final GridLayout gridLayout = new GridLayout(2, false);
                     gridLayout.horizontalSpacing = 5;
                     gridLayout.marginBottom = 0;
@@ -133,42 +261,22 @@ public class PromptDialog extends Dialog {
 
                     });
                 } else {
-                    Label label = new Label(child, SWT.NONE);
+                    Label label = new Label(promptGroup, SWT.NONE);
                     label.setText(parameter.getPrompt());
                     label.setAlignment(SWT.LEFT);
                     GridData data = new GridData(GridData.FILL_HORIZONTAL);
                     data.minimumWidth = MINIMUM_WIDTH;
                     label.setLayoutData(data);
-                    createParameterComposite(child, parameter, label);
+                    createParameterComposite(promptGroup, parameter, label);
                 }
             }
         }
+        if (promptGroup.getChildren().length == 0) {
+            promptGroup.dispose();
+        }
 
-        sc.setContent(child);
-
-        // Set the minimum size
-        // sc.setMinSize(400, 400);
-
-        // Expand both horizontally and vertically
-        sc.setExpandHorizontal(true);
-        sc.setExpandVertical(true);
-        sc.addControlListener(new ControlAdapter() {
-
-            public void controlResized(ControlEvent e) {
-                Rectangle r = sc.getClientArea();
-                sc.setMinSize(child.computeSize(r.width, SWT.DEFAULT));
-            }
-        });
-        return composite;
     }
 
-    /**
-     * DOC qiang.zhang Comment method "createParameterComposite".
-     *
-     * @param parent
-     * @param parameter
-     * @param label
-     */
     private void createParameterComposite(final Composite parent, final IContextParameter parameter, Label label) {
         final Composite child = new Composite(parent, SWT.NONE);
         final GridLayout layout = new GridLayout(2, false);
@@ -186,7 +294,14 @@ public class PromptDialog extends Dialog {
         }
 
         final Text text = new Text(child, SWT.SINGLE | SWT.BORDER);
-        text.setText(parameter.getValue());
+
+        String paramValue = parameter.getValue();
+        if (DefaultCellEditorFactory.isPassword(parameter.getType())) {
+            if (StudioEncryption.hasEncryptionSymbol(paramValue)) {
+                paramValue = StudioEncryption.getStudioEncryption(StudioEncryption.EncryptionKeyName.SYSTEM).decrypt(paramValue);
+            }
+        }
+        text.setText(paramValue);
 
         text.addModifyListener(new ModifyListener() {
 
@@ -287,13 +402,6 @@ public class PromptDialog extends Dialog {
         }
     }
 
-    /**
-     * DOC bqian Comment method "createListParameterArea".
-     *
-     * @param parameter
-     * @param label
-     * @param parent
-     */
     private void createListParameterArea(final IContextParameter parameter, Label label, final Composite parent) {
 
         final CCombo combo = new CCombo(parent, SWT.BORDER);
@@ -325,7 +433,24 @@ public class PromptDialog extends Dialog {
                 combo.setToolTipText(parameter.getComment());
             }
         }
+    }
 
+    protected void addFieldsListeners() {
+        contextCombo.addModifyListener(new ModifyListener() {
+
+            @Override
+            public void modifyText(final ModifyEvent e) {
+                selectedContext = contextCombo.getItem(contextCombo.getSelectionIndex());
+                contextComp.dispose();
+                contextComp = new Composite(child, SWT.NONE);
+                contextComp.setLayout(new GridLayout(1, false));
+                contextComp.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+                createContextArea(getCloneContext(), contextComp);
+                child.layout();
+                child.getParent().layout();
+                contextComp.layout();
+            }
+        });
     }
 
     @Override
@@ -352,7 +477,7 @@ public class PromptDialog extends Dialog {
         int height = t.getLineHeight() + CELLPADDING;
         t.dispose();
         int nbParams = 0;
-        for (IContextParameter parameter : context.getContextParameterList()) {
+        for (IContextParameter parameter : currentContext.getContextParameterList()) {
             if (parameter.isPromptNeeded()) {
                 nbParams++;
             }
@@ -360,7 +485,38 @@ public class PromptDialog extends Dialog {
         Point dialogSize = new Point(X_POSITION, Math.min((height * nbParams) + Y_POSITION, 400));
         setSize(newShell, dialogSize);
 
-        newShell.setText(Messages.getString("PromptDialog.title", context.getName())); //$NON-NLS-1$
-
+        newShell.setText(Messages.getString("PromptDialog.choose.title")); //$NON-NLS-1$
     }
+
+    public IContext getCloneContext() {
+        if (source != null) {
+            if (source instanceof ContextItem) {
+                ContextItem contextItem = (ContextItem) source;
+                List<ContextType> contexts = contextItem.getContext();
+                String repositoryContextId = contextItem.getProperty().getId();
+                for (ContextType contextType : contexts) {
+                    String name = contextType.getName();
+                    if (name.equals(selectedContext) || (name + DEFAULT_FLAG).equals(selectedContext)) {
+                        currentContext = ContextUtils.convert2IContext(contextType, repositoryContextId).clone();
+                        return currentContext;
+                    }
+                }
+            } else if (source instanceof List) {
+                List<IContext> contexts = (List<IContext>) source;
+                for (IContext context : contexts) {
+                    String name = context.getName();
+                    if (name.equals(selectedContext) || (name + DEFAULT_FLAG).equals(selectedContext)) {
+                        currentContext = context.clone();
+                        return currentContext;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    public IContext getCurrentContext() {
+        return currentContext;
+    }
+
 }

@@ -61,6 +61,7 @@ import org.talend.core.model.metadata.builder.connection.SAPConnection;
 import org.talend.core.model.metadata.builder.connection.SalesforceSchemaConnection;
 import org.talend.core.model.metadata.builder.connection.WSDLSchemaConnection;
 import org.talend.core.model.metadata.builder.connection.XmlFileConnection;
+import org.talend.core.model.metadata.builder.database.JavaSqlFactory;
 import org.talend.core.model.metadata.designerproperties.RepositoryToComponentProperty;
 import org.talend.core.model.metadata.types.ContextParameterJavaTypeManager;
 import org.talend.core.model.metadata.types.JavaType;
@@ -95,11 +96,11 @@ import org.talend.core.ui.context.model.table.ConectionAdaptContextVariableModel
 import org.talend.core.ui.process.IGEFProcess;
 import org.talend.core.ui.services.IDesignerCoreUIService;
 import org.talend.core.utils.TalendQuoteUtils;
-import org.talend.metadata.managment.ui.dialog.PromptDialog;
 import org.talend.designer.core.IDesignerCoreService;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
 import org.talend.designer.core.model.utils.emf.talendfile.impl.ContextTypeImpl;
+import org.talend.metadata.managment.ui.dialog.PromptDialog;
 import org.talend.metadata.managment.ui.i18n.Messages;
 import org.talend.metadata.managment.ui.model.IConnParamName;
 import org.talend.metadata.managment.ui.utils.DBConnectionContextUtils.EDBParamName;
@@ -358,7 +359,7 @@ public final class ConnectionContextHelper {
         // TODO:Maybe later has other type support context for the additional table.Now only sap
         INOSQLService service = null;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(INOSQLService.class)) {
-            service = (INOSQLService) GlobalServiceRegister.getDefault().getService(INOSQLService.class);
+            service = GlobalServiceRegister.getDefault().getService(INOSQLService.class);
         }
         if (service != null && service.isUseReplicaSet(currentConnection)) {
             String replicaSets = service.getMongoDBReplicaSets(currentConnection);
@@ -728,7 +729,7 @@ public final class ConnectionContextHelper {
                         // refresh context view
                         if (added.get()) {
                             if (GlobalServiceRegister.getDefault().isServiceRegistered(IDesignerCoreService.class)) {
-                                IDesignerCoreService service = (IDesignerCoreService) GlobalServiceRegister.getDefault()
+                                IDesignerCoreService service = GlobalServiceRegister.getDefault()
                                         .getService(IDesignerCoreService.class);
                                 PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
 
@@ -840,7 +841,7 @@ public final class ConnectionContextHelper {
                         // refresh context view
                         if (added) {
                             if (GlobalServiceRegister.getDefault().isServiceRegistered(IDesignerCoreService.class)) {
-                                IDesignerCoreService service = (IDesignerCoreService) GlobalServiceRegister.getDefault()
+                                IDesignerCoreService service = GlobalServiceRegister.getDefault()
                                         .getService(IDesignerCoreService.class);
                                 service.switchToCurContextsView();
                             }
@@ -1016,7 +1017,7 @@ public final class ConnectionContextHelper {
                     // refresh context view
                     if (added) {
                         if (GlobalServiceRegister.getDefault().isServiceRegistered(IDesignerCoreService.class)) {
-                            IDesignerCoreService service = (IDesignerCoreService) GlobalServiceRegister.getDefault().getService(
+                            IDesignerCoreService service = GlobalServiceRegister.getDefault().getService(
                                     IDesignerCoreService.class);
                             service.switchToCurContextsView();
                         }
@@ -1089,7 +1090,7 @@ public final class ConnectionContextHelper {
 
     public static boolean isGenericConnection(Connection connection){
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericWizardService.class)) {
-            IGenericWizardService wizardService = (IGenericWizardService) GlobalServiceRegister.getDefault().getService(
+            IGenericWizardService wizardService = GlobalServiceRegister.getDefault().getService(
                     IGenericWizardService.class);
             if (wizardService != null) {
                 return wizardService.isGenericConnection(connection);
@@ -1122,8 +1123,7 @@ public final class ConnectionContextHelper {
                     if (objectValue != null) {
                         if (objectValue instanceof List) {
                             List list = (List) objectValue;
-                            for (int i = 0; i < list.size(); i++) {
-                                Object object = list.get(i);
+                            for (Object object : list) {
                                 if (object instanceof HashMap) {
                                     Map map = (HashMap) object;
                                     if (!map.isEmpty()) {
@@ -2156,33 +2156,69 @@ public final class ConnectionContextHelper {
         return null;
     }
 
-    public static boolean promptConfirmLauch(Shell shell, IContext context) {
+    public static boolean isPromptNeeded(List<IContext> contexts) {
+        if (contexts != null) {
+            for (IContext context : contexts) {
+                for (IContextParameter parameter : context.getContextParameterList()) {
+                    if (parameter.isPromptNeeded()) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public static IContext promptConfirmLauch(Shell shell, List<IContext> contexts) {
+        int nbValues = 0;
+        Assert.isNotNull(contexts);
+        // Prompt for context values ?
+        for (IContext context : contexts) {
+            for (IContextParameter parameter : context.getContextParameterList()) {
+                if (parameter.isPromptNeeded()) {
+                    nbValues++;
+                    break;
+                }
+            }
+        }
+        if (nbValues > 0 || (contexts != null && contexts.size() > 1)) {
+            PromptDialog promptDialog = new PromptDialog(shell, contexts);
+            if (promptDialog.open() == PromptDialog.OK) {
+                return promptDialog.getCurrentContext();
+            }
+        }
+        return null;
+    }
+
+    public static boolean promptConfirmLauch(Shell shell, Connection connection, ContextItem contextItem) {
         boolean continueLaunch = true;
 
         int nbValues = 0;
-        Assert.isNotNull(context);
+        Assert.isNotNull(contextItem);
         // Prompt for context values ?
-        for (IContextParameter parameter : context.getContextParameterList()) {
-            if (parameter.isPromptNeeded()) {
-                nbValues++;
+        List<ContextType> contexts = contextItem.getContext();
+        for (ContextType contextType : contexts) {
+            IContext jobContext = ContextUtils.convert2IContext(contextType, contextItem.getProperty().getId());
+            for (IContextParameter parameter : jobContext.getContextParameterList()) {
+                if (parameter.isPromptNeeded()) {
+                    nbValues++;
+                    break;
+                }
             }
         }
-        if (nbValues > 0) {
-            IContext contextCopy = context.clone();
-            PromptDialog promptDialog = new PromptDialog(shell, contextCopy);
+
+        if (nbValues > 0 || (contexts != null && contexts.size() > 1)) {
+            PromptDialog promptDialog = new PromptDialog(shell, contextItem);
             if (promptDialog.open() == PromptDialog.OK) {
-                for (IContextParameter param : context.getContextParameterList()) {
-                    boolean found = false;
-                    IContextParameter paramCopy = null;
-                    for (int i = 0; i < contextCopy.getContextParameterList().size() & !found; i++) {
-                        paramCopy = contextCopy.getContextParameterList().get(i);
-                        if (param.getName().equals(paramCopy.getName())) {
-                            // param.setValueList(paramCopy.getValueList());
-                            param.setInternalValue(paramCopy.getValue());
-                            found = true;
-                        }
-                    }
+                IContext selectedContext = promptDialog.getCurrentContext();
+                connection.setContextName(selectedContext.getName());
+                // save the input prompt context values to cache
+                for (IContextParameter param : selectedContext.getContextParameterList()) {
+                    JavaSqlFactory.savePromptConVars2Cache(connection, param);
                 }
+                // set the input values to connection
+                JavaSqlFactory.setPromptContextValues(connection);
+                JavaSqlFactory.haveSetPromptContextVars = true;
             } else {
                 continueLaunch = false;
             }

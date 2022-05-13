@@ -28,6 +28,8 @@ import org.talend.commons.ui.swt.extended.table.ExtendedTableModel;
  */
 public class PropertiesFieldModel extends ExtendedTableModel<Map<String, Object>> {
 
+    private boolean fixedSize;
+
     public PropertiesFieldModel(String name) {
         super(name);
         setProperties(new ArrayList<Map<String, Object>>());
@@ -49,15 +51,26 @@ public class PropertiesFieldModel extends ExtendedTableModel<Map<String, Object>
     @Override
     public void addAll(final Integer index, List<Map<String, Object>> beans, boolean fireBefore, boolean fireAfter) {
         super.addAll(index, beans, fireBefore, fireAfter);
-        TableViewer tableViewer = getTableViewer();
-        if (tableViewer != null) {
-            Table table = tableViewer.getTable();
-            table.pack();
-            table.layout();
+        if (!fixedSize) {
+            TableViewer tableViewer = getTableViewer();
+            if (tableViewer != null) {
+                Table table = tableViewer.getTable();
+                table.pack();
+                table.layout();
+            }
         }
     }
 
     public void superAddAll(final Integer index, List<Map<String, Object>> beans, boolean fireBefore, boolean fireAfter) {
         super.addAll(index, beans, fireBefore, fireAfter);
     }
+
+    public boolean isFixedSize() {
+        return fixedSize;
+    }
+
+    public void setFixedSize(boolean fixedSize) {
+        this.fixedSize = fixedSize;
+    }
+
 }

@@ -173,6 +173,8 @@ public class ConnectionParameters {
 
     private Map<String, String> parameters;
 
+    private String selectContext = null;
+
     /**
      * Sets the connectionComment.
      *
@@ -905,6 +907,14 @@ public class ConnectionParameters {
 
     public void setFirstOpenSqlBuilder(boolean isFirstOpenSqlBuilder) {
         this.isFirstOpenSqlBuilder = isFirstOpenSqlBuilder;
+    }
+
+    public String getSelectContext() {
+        return this.selectContext;
+    }
+
+    public void setSelectContext(String selectContext) {
+        this.selectContext = selectContext;
     }
 
 }

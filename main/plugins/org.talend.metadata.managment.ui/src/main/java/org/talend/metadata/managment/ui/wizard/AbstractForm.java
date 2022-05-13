@@ -483,7 +483,7 @@ public abstract class AbstractForm extends Composite {
             } else {
                 String defaultContextName = ConnectionContextHelper.convertContextLabel(connectionItem.getProperty().getLabel());
                 Map<ContextItem, List<ConectionAdaptContextVariableModel>> variableModels = ConnectionContextHelper
-                        .exportAsContext(defaultContextName, connectionItem, getConetxtParams());
+                        .exportAsContext(defaultContextName, connectionItem, getContextParams());
                 contextManager = ConnectionContextHelper.contextManager;
 
                 if (variableModels != null) {
@@ -496,11 +496,11 @@ public abstract class AbstractForm extends Composite {
                                 Map<String, String> map = ((JobContextManager) contextManager).getNameMap();
                                 // set properties for context mode
                                 ConnectionContextHelper.setPropertiesForContextMode(defaultContextName, connectionItem,
-                                        contextItem, getConetxtParams(), map);
+                                        contextItem, getContextParams(), map);
                             }
                         } else {
                             // set properties for exist context
-                            ConnectionContextHelper.setPropertiesForExistContextMode(connectionItem, getConetxtParams(),
+                            ConnectionContextHelper.setPropertiesForExistContextMode(connectionItem, getContextParams(),
                                     variableModels);
                         }
                         // refresh current UI.
@@ -556,7 +556,7 @@ public abstract class AbstractForm extends Composite {
         contextParamSet.clear();
     }
 
-    protected Set<IConnParamName> getConetxtParams() {
+    protected Set<IConnParamName> getContextParams() {
         return contextParamSet; // for db and file connection
     }
 

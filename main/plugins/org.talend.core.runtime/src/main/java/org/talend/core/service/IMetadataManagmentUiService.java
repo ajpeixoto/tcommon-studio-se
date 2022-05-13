@@ -12,9 +12,14 @@
 // ============================================================================
 package org.talend.core.service;
 
+import java.util.List;
+
 import org.eclipse.core.runtime.Path;
+import org.eclipse.swt.widgets.Shell;
 import org.talend.core.IService;
 import org.talend.core.model.metadata.builder.connection.Connection;
+import org.talend.core.model.process.IContext;
+import org.talend.core.model.properties.ContextItem;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
 import org.talend.repository.model.RepositoryNode;
 
@@ -34,5 +39,11 @@ public interface IMetadataManagmentUiService extends IService {
     public void openRepositoryContextWizard(RepositoryNode repositoryNode);
 
     public boolean isContextMode(Connection connection, String value);
+
+    public boolean promptConfirmLauch(Shell shell, Connection connection, ContextItem contextItem);
+
+    public IContext promptConfirmLauch(Shell shell, List<IContext> contexts);
+
+    public boolean isPromptNeeded(List<IContext> contexts);
 
 }

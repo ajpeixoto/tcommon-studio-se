@@ -766,11 +766,11 @@ public class ContextUtils {
             return ContextUtils.getContextTypeByName(contextItem, contextName, true);
         } else if (item instanceof JobletProcessItem) {
             JobletProcessItem jobletProcessItem = (JobletProcessItem) item;
-            return ContextUtils.getContextTypeByName((List<ContextType>) jobletProcessItem.getJobletProcess().getContext(),
+            return ContextUtils.getContextTypeByName(jobletProcessItem.getJobletProcess().getContext(),
                     contextName, jobletProcessItem.getJobletProcess().getDefaultContext());
         } else if (item instanceof ProcessItem) {
             ProcessItem processItem = (ProcessItem) item;
-            return ContextUtils.getContextTypeByName((List<ContextType>) processItem.getProcess().getContext(), contextName,
+            return ContextUtils.getContextTypeByName(processItem.getProcess().getContext(), contextName,
                     processItem.getProcess().getDefaultContext());
         }
         return null;
@@ -1133,6 +1133,32 @@ public class ContextUtils {
             }
         }
         return list;
+    }
+
+    public static IContext convert2IContext(ContextType contextType) {
+        return convert2IContext(contextType, null);
+    }
+
+    public static IContext convert2IContext(ContextType contextType, String repositoryContextId) {
+        if (contextType == null) {
+            return null;
+        }
+        IContext jobContext = new JobContext(contextType.getName());
+        List<ContextParameterType> repoParams = contextType.getContextParameter();
+        for (ContextParameterType repoParam : repoParams) {
+            IContextParameter jobParam = new JobContextParameter();
+            jobParam.setName(repoParam.getName());
+            jobParam.setContext(jobContext);
+            jobParam.setComment(repoParam.getComment());
+            jobParam.setPrompt(repoParam.getPrompt());
+            jobParam.setPromptNeeded(repoParam.isPromptNeeded());
+            jobParam.setSource(repositoryContextId != null ? repositoryContextId : repoParam.getRepositoryContextId());
+            jobParam.setType(repoParam.getType());
+            jobParam.setValue(repoParam.getValue());
+            jobParam.setInternalId(repoParam.getInternalId());
+            jobContext.getContextParameterList().add(jobParam);
+        }
+        return jobContext;
     }
 }
 

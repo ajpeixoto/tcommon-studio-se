@@ -39,9 +39,9 @@ import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProjectReference;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.core.model.repository.GITConstant;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.repository.RepositoryManager;
-import org.talend.core.model.repository.GITConstant;
 import org.talend.core.model.utils.TalendPropertiesUtil;
 import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.runtime.util.URIHelper;
@@ -836,8 +836,7 @@ public final class ProjectManager {
 		return null;
 	}
 
-    
     public Map<String, String> getProjectLabelWithOriginVersion() {
         return projectLabelWithOriginVersion;
-    }	
+    }
 }

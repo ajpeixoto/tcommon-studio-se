@@ -123,7 +123,7 @@ public class ModulesNeededProvider {
 
     private static volatile boolean installModuleForRountine = false;
 
-    private static Set<ModuleNeeded> modulesForRountine = new HashSet<>();
+    private static Set<ModuleNeeded> missingModulesForRountine = new HashSet<>();
 
     private static List<ModuleNeeded> systemModules = null;
 
@@ -407,6 +407,7 @@ public class ModulesNeededProvider {
     /**
      * @deprecated
      */
+    @Deprecated
     public static List<ModuleNeeded> getModulesNeededForJobs() {
         IProxyRepositoryFactory repositoryFactory = repositoryService.getProxyRepositoryFactory();
         List<ModuleNeeded> importNeedsList = new ArrayList<ModuleNeeded>();
@@ -1146,30 +1147,37 @@ public class ModulesNeededProvider {
         return mvnPath;
     }
 
-    private static void checkInstallStatus(Collection<ModuleNeeded> importNeedsList) {
+    static void checkInstallStatus(Collection<ModuleNeeded> importNeedsList) {
         if (!importNeedsList.isEmpty()) {
             for (ModuleNeeded mod : importNeedsList) {
-                if (ELibraryInstallStatus.INSTALLED != mod.getStatus()) {
-                    installModuleForRountine = true;
+                if (ELibraryInstallStatus.NOT_INSTALLED == mod.getStatus()) {
+                    missingModulesForRountine.add(mod);
                 }
             }
-            modulesForRountine.addAll(importNeedsList);
         }
     }
 
     public static boolean installModuleForRoutineOrBeans() {
+        if (!installModuleForRountine) {
+            for (ModuleNeeded mod : missingModulesForRountine) {
+                if (ELibraryInstallStatus.NOT_INSTALLED != mod.getStatus()) {
+                    installModuleForRountine = true;
+                    break;
+                }
+            }
+        }
         return installModuleForRountine;
     }
 
     public static void setInstallModuleForRoutineOrBeans() {
-        boolean allSet = true;
-        for (ModuleNeeded mod : modulesForRountine) {
-            if (ELibraryInstallStatus.INSTALLED != mod.getStatus()) {
-                allSet = false;
+        installModuleForRountine = false;
+        Iterator<ModuleNeeded> iterator = missingModulesForRountine.iterator();
+        while (iterator.hasNext()) {
+            ModuleNeeded mod = iterator.next();
+            if (ELibraryInstallStatus.NOT_INSTALLED != mod.getStatus()) {
+                iterator.remove();
             }
         }
-        if (allSet) {
-            installModuleForRountine = false;
-        }
     }
+
 }

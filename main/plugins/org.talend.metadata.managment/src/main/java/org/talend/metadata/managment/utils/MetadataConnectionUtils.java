@@ -21,10 +21,13 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 import javax.xml.rpc.ServiceException;
 
@@ -32,6 +35,9 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.ui.PlatformUI;
 import org.talend.commons.exception.CommonExceptionHandler;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
@@ -41,6 +47,7 @@ import org.talend.core.IRepositoryContextService;
 import org.talend.core.database.EDatabase4DriverClassName;
 import org.talend.core.database.EDatabaseTypeName;
 import org.talend.core.database.conn.version.EDatabaseVersion4Drivers;
+import org.talend.core.model.context.ContextUtils;
 import org.talend.core.model.metadata.IMetadataConnection;
 import org.talend.core.model.metadata.MetadataToolHelper;
 import org.talend.core.model.metadata.builder.ConvertionHelper;
@@ -52,15 +59,21 @@ import org.talend.core.model.metadata.builder.connection.MetadataColumn;
 import org.talend.core.model.metadata.builder.database.DriverShim;
 import org.talend.core.model.metadata.builder.database.ExtractMetaDataUtils;
 import org.talend.core.model.metadata.builder.database.IDriverService;
+import org.talend.core.model.metadata.builder.database.JavaSqlFactory;
+import org.talend.core.model.process.IContext;
+import org.talend.core.model.process.IContextParameter;
 import org.talend.core.model.properties.ConnectionItem;
+import org.talend.core.model.properties.ContextItem;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.CoreRuntimePlugin;
+import org.talend.core.service.IMetadataManagmentUiService;
 import org.talend.cwm.helper.ConnectionHelper;
 import org.talend.cwm.helper.SwitchHelpers;
 import org.talend.cwm.relational.RelationalFactory;
 import org.talend.cwm.relational.TdColumn;
 import org.talend.cwm.relational.TdSqlDataType;
 import org.talend.cwm.xml.TdXmlElementType;
+import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
 import org.talend.metadata.managment.connection.manager.HiveConnectionManager;
 import org.talend.metadata.managment.connection.manager.ImpalaConnectionManager;
 import org.talend.metadata.managment.mdm.AbsMdmConnectionHelper;
@@ -197,12 +210,12 @@ public class MetadataConnectionUtils {
 
             Driver driver = null;
             if (!list.isEmpty()) {
-                for (int i = 0; i < list.size(); i++) {
-                    if (list.get(i) instanceof Driver) {
-                        driver = (Driver) list.get(i);
+                for (Object element : list) {
+                    if (element instanceof Driver) {
+                        driver = (Driver) element;
                     }
-                    if (list.get(i) instanceof java.sql.Connection) {
-                        sqlConn = (java.sql.Connection) list.get(i);
+                    if (element instanceof java.sql.Connection) {
+                        sqlConn = (java.sql.Connection) element;
                     }
                 }
                 ReturnCode varc = ConnectionUtils.isValid(sqlConn);
@@ -1353,7 +1366,7 @@ public class MetadataConnectionUtils {
         PreparedStatement statement = null;
         try {
             statement = connection.prepareStatement("SELECT FIRST 1 * FROM " + tableName + ";");
-            ResultSet resultSet = statement.executeQuery(); // $NON-NLS-1$ //$NON-NLS-2$
+            ResultSet resultSet = statement.executeQuery(); // $NON-NLS-1$
             ResultSetMetaData rsMetaData = resultSet.getMetaData();
             columnTypeName = rsMetaData.getColumnTypeName(colIndex);
         } catch (Exception e) {
@@ -1386,6 +1399,95 @@ public class MetadataConnectionUtils {
             }
         }
         return typeName;
+    }
+    
+    public static boolean isPromptNeeded(List<IContext> contexts) {
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(IMetadataManagmentUiService.class)) {
+            IMetadataManagmentUiService mmUIService = GlobalServiceRegister.getDefault()
+                    .getService(IMetadataManagmentUiService.class);
+            return mmUIService.isPromptNeeded(contexts);
+        }
+        return false;
+    }
+    
+    public static IContext promptConfirmLauch(List<IContext> contexts) {
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(IMetadataManagmentUiService.class)) {
+            IMetadataManagmentUiService mmUIService = GlobalServiceRegister.getDefault()
+                    .getService(IMetadataManagmentUiService.class);
+            return mmUIService.promptConfirmLauch(PlatformUI.getWorkbench().getDisplay().getActiveShell(), contexts);
+        }
+        return null;
+    }
+
+    public static Connection prepareConection(Connection connection) {
+        // TDQ-19889 msjian: check whether context confirmation needed popup,
+        // Enabling the prompt to context variables
+        if (!Platform.isRunning() || !connection.isContextMode()) {
+            return connection;
+        }
+        Connection copyConnection = deepCopy(connection);
+        JavaSqlFactory.haveSetPromptContextVars = false;
+        ContextItem contextItem = ContextUtils.getContextItemById2(connection.getContextId());
+        // only consider the connection currently used context
+        ContextType contextType = ContextUtils.getContextTypeByName(contextItem.getContext(), connection.getContextName(),
+                contextItem.getDefaultContext());
+        IContext jobContext = ContextUtils.convert2IContext(contextType, contextItem.getProperty().getId());
+        // only when have context
+        if (jobContext != null) {
+            boolean promptConfirmLauch = false;
+            if (GlobalServiceRegister.getDefault().isServiceRegistered(IMetadataManagmentUiService.class)) {
+                IMetadataManagmentUiService mmUIService = GlobalServiceRegister.getDefault()
+                        .getService(IMetadataManagmentUiService.class);
+                promptConfirmLauch = mmUIService.promptConfirmLauch(PlatformUI.getWorkbench().getDisplay().getActiveShell(),
+                        copyConnection , contextItem);
+            }
+            if (!promptConfirmLauch) {
+                return null;
+            }
+        }
+
+        JavaSqlFactory.haveSetPromptContextVars = true;
+        return copyConnection;
+    }
+
+    public static <T extends EObject> T deepCopy(T emfObject) {
+        EcoreUtil.Copier copier = new EcoreUtil.Copier(Boolean.TRUE, Boolean.FALSE);
+        preDeepCopy(emfObject, copier);
+        T copy = (T) copier.copy(emfObject);
+        copier.copyReferences();
+        return copy;
+    }
+
+    private static void preDeepCopy(EObject emfObject, EcoreUtil.Copier copier) {
+        Stack<EObject> work = new Stack<EObject>();
+        work.push(emfObject);
+        Collection<EObject> collection = new LinkedHashSet<EObject>();
+        while (!work.isEmpty()) {
+            EObject o = work.pop();
+            if (collection.contains(o)) {
+                continue;
+            }
+            collection.add(o);
+            List<EObject> list = o.eContents();
+            for (EObject eo : list) {
+                if (!collection.contains(eo)) {
+                    work.push(eo);
+                }
+            }
+            list = o.eCrossReferences();
+            for (EObject eo : list) {
+                if (!collection.contains(eo)) {
+                    work.push(eo);
+                }
+            }
+            EObject container = o.eContainer();
+            if (container != null && !collection.contains(container)) {
+                work.push(container);
+            }
+        }
+        collection = copier.copyAll(collection);
+        copier.copyReferences();
+
     }
 
 }

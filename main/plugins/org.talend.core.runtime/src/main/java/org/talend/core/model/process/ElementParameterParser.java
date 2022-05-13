@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.text.StringEscapeUtils;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -127,7 +128,7 @@ public final class ElementParameterParser {
         if (canEncryptValue(value)) {
             try {
                 String removeQuotes = TalendQuoteUtils.removeQuotes(value);
-                removeQuotes = TalendQuoteUtils.checkSlashAndRemoveQuotation(removeQuotes);
+                removeQuotes = StringEscapeUtils.unescapeJava(removeQuotes);
                 return TalendQuoteUtils.addQuotes(PasswordEncryptUtil.encryptPasswordHex(removeQuotes),
                         TalendQuoteUtils.QUOTATION_MARK);
             } catch (Exception e) {

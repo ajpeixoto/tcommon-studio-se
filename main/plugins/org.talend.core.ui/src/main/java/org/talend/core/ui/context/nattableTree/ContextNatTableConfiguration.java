@@ -172,6 +172,10 @@ public class ContextNatTableConfiguration extends AbstractRegistryConfiguration 
 
             @Override
             public boolean isEditable(int columnIndex, int rowIndex) {
+                if (columnIndex == 4) {
+                    // active the prompt when export as context
+                    return true;
+                }
                 if (modelManager != null && modelManager.isReadOnly()) {
                     return false;
                 }

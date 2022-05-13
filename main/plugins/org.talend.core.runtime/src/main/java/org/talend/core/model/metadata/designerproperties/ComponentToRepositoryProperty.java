@@ -489,6 +489,11 @@ public class ComponentToRepositoryProperty {
             }
         }
 
+        else if (EDatabaseTypeName.REDSHIFT_SSO.getDbType().equals((String) parameter.getValue())) {
+            connection.setProductId(EDatabaseTypeName.REDSHIFT_SSO.getProduct());
+            connection.setDatabaseType(EDatabaseTypeName.REDSHIFT_SSO.getDisplayName());
+        }
+
         // NeTezza
         else if (EDatabaseTypeName.NETEZZA.getProduct().equalsIgnoreCase((String) parameter.getValue())) {
             connection.setDatabaseType(EDatabaseTypeName.NETEZZA.getDisplayName());
@@ -662,6 +667,26 @@ public class ComponentToRepositoryProperty {
             String value = getParameterValue(connection, node, param);
             if (value != null) {
                 connection.setAdditionalParams(value);
+            }
+        }
+        if ("USE_STRING_PROPERTIES".equals(param.getRepositoryValue())) {
+            String value = getParameterValue(connection, node, param);
+            if (value != null) {
+                connection.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_REDSHIFT_STRINGPARA, value);
+            }
+        }
+        if ("DRIVER_VERSION".equals(param.getRepositoryValue())) {
+            String value = getParameterValue(connection, node, param);
+            if (value != null) {
+                connection.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_REDSHIFT_DRIVER, value);
+            }
+        }
+        if ("ENTRY_PROPERTIES".equals(param.getRepositoryValue())) {
+            Object value = param.getValue();
+            if (value instanceof List) {
+                List<Map<String, Object>> entryProperties = (List<Map<String, Object>>) value;
+                connection.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_REDSHIFT_PARATABLE,
+                        ConvertionHelper.getEntryPropertiesString(entryProperties));
             }
         }
         if ("FILE".equals(param.getRepositoryValue())) { //$NON-NLS-1$

@@ -71,7 +71,7 @@ public class DBConnectionContextUtilsTest {
         conn.setPort("3050");
         conn.setFileFieldName("/databases/TUJ");
         connectionItem.setConnection(conn);
-        String setManagerConnectionValues = DBConnectionContextUtils.setManagerConnectionValues(managerConnection, connectionItem,
+        String setManagerConnectionValues = DBConnectionContextUtils.setManagerConnectionValues(managerConnection, connectionItem.getConnection(),
                 null, conn.getDatabaseType());
         Assert.assertEquals(EXPECT_URL, setManagerConnectionValues);
     }

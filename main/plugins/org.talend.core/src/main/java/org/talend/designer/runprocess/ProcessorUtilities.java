@@ -89,6 +89,7 @@ import org.talend.core.model.process.JobInfo;
 import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.process.ReplaceNodesInProcessProvider;
 import org.talend.core.model.properties.Item;
+import org.talend.core.model.properties.JobletProcessItem;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.relationship.RelationshipItemBuilder;
@@ -2506,6 +2507,13 @@ public class ProcessorUtilities {
                                         ExceptionHandler.process(e);
                                     }
                                 }
+
+                                // TUP-35219 avoid resource unload
+                                if (property != null && property.getItem() != null
+                                        && property.getItem() instanceof JobletProcessItem) {
+                                    ((JobletProcessItem) property.getItem()).getJobletProcess();
+                                }
+
                                 JobInfo jobInfo = new JobInfo(property, jobletProcess.getDefaultContext());
                                 if (!jobInfos.contains(jobInfo)) {
                                     jobInfos.add(jobInfo);

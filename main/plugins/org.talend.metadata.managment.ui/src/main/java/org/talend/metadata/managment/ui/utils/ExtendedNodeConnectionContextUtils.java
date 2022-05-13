@@ -102,8 +102,12 @@ public class ExtendedNodeConnectionContextUtils {
         SynapseSparkPools,
         SynapseFsHostName,
         SynapseFsContainer,
+        SynapseAuthType,
         SynapseFsUserName,
         SynapseFsPassword,
+        SynapseClientId,
+        SynapseDirectoryId,
+        SynapseSecretKey,
         SynapseDeployBlob,
         SynapseDriverMemory,
         SynapseDriverCores,
@@ -140,7 +144,10 @@ public class ExtendedNodeConnectionContextUtils {
         GoogleClusterId,
         GoogleRegion,
         GoogleJarsBucket,
+        useGoogleCredentials,
+        GoogleAuthMode,
         PathToGoogleCredentials,
+        GoogleOauthToken,
 
         // Override hadoop configuration
         setHadoopConf,
@@ -160,7 +167,15 @@ public class ExtendedNodeConnectionContextUtils {
         KnoxUrl,
         KnoxUsername,
         KnoxPassword,
-        KnoxDirectory
+        KnoxDirectory,
+        
+        //Cde
+        CdeApiEndPoint,
+        CdeAutoGenerateToken,
+        CdeToken,
+        CdeTokenEndpoint,
+        CdeWorkloadUser,
+        CdeWorkloadPassword
     }
 
     static List<IContextParameter> getContextVariables(final String prefixName, Connection conn, Set<IConnParamName> paramSet) {

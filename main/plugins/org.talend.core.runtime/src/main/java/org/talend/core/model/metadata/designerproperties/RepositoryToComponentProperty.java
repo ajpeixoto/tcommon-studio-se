@@ -29,6 +29,7 @@ import org.talend.commons.ui.utils.PathUtils;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.database.EDatabaseTypeName;
+import org.talend.core.database.ERedshiftDriver;
 import org.talend.core.database.conn.ConnParameterKeys;
 import org.talend.core.database.conn.template.EDatabaseConnTemplate;
 import org.talend.core.database.conn.version.EDatabaseVersion4Drivers;
@@ -43,6 +44,7 @@ import org.talend.core.model.metadata.MappingType;
 import org.talend.core.model.metadata.MetadataTalendType;
 import org.talend.core.model.metadata.MetadataToolHelper;
 import org.talend.core.model.metadata.MultiSchemasUtil;
+import org.talend.core.model.metadata.builder.ConvertionHelper;
 import org.talend.core.model.metadata.builder.connection.AdditionalConnectionProperty;
 import org.talend.core.model.metadata.builder.connection.BRMSConnection;
 import org.talend.core.model.metadata.builder.connection.Concept;
@@ -1039,6 +1041,26 @@ public class RepositoryToComponentProperty {
         if (value.equals("PROPERTIES_STRING")) { //$NON-NLS-1$
             return getAppropriateValue(connection, connection.getAdditionalParams());
         }
+        if (value.equals("USE_STRING_PROPERTIES")) {
+            return Boolean.valueOf(connection.getParameters().get(ConnParameterKeys.CONN_PARA_KEY_REDSHIFT_STRINGPARA));
+        }
+        if (value.equals("ENTRY_PROPERTIES")) {
+            List<Map<String, Object>> tableProperties = new ArrayList<Map<String, Object>>();
+            String propertiesInfo = connection.getParameters().get(ConnParameterKeys.CONN_PARA_KEY_REDSHIFT_PARATABLE);
+            if (org.apache.commons.lang.StringUtils.isNotBlank(propertiesInfo)) {
+                tableProperties = ConvertionHelper
+                        .getEntryProperties(connection.getParameters().get(ConnParameterKeys.CONN_PARA_KEY_REDSHIFT_PARATABLE));
+            }
+            return tableProperties;
+        }
+        if (value.equals("DRIVER_VERSION")) {
+            String driverVersion = connection.getParameters().get(ConnParameterKeys.CONN_PARA_KEY_REDSHIFT_DRIVER);
+            if (org.apache.commons.lang.StringUtils.isBlank(driverVersion)) {
+                driverVersion = ERedshiftDriver.DRIVER_V1.name();
+            }
+            return driverVersion;
+        }
+
         if (value.equals("DRIVER")) { //$NON-NLS-1$
             String dbVersionString = connection.getDbVersionString();
             if (dbVersionString != null && EDatabaseConnTemplate.MSSQL.getDBDisplayName().equals(databaseType)) {

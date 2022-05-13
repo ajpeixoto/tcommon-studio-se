@@ -116,7 +116,7 @@ public abstract class AbstractMavenCodesTemplatePom extends AbstractMavenGeneral
                 if (module.getDeployStatus() != ELibraryInstallStatus.DEPLOYED) {
                     // try to retrieve from custom Nexus
                     if (GlobalServiceRegister.getDefault().isServiceRegistered(ILibraryManagerService.class)) {
-                        ILibraryManagerService libManagerService = (ILibraryManagerService) GlobalServiceRegister.getDefault()
+                        ILibraryManagerService libManagerService = GlobalServiceRegister.getDefault()
                                 .getService(ILibraryManagerService.class);
                         isDeployed = libManagerService.retrieve(module, null, false);
                     }
@@ -137,7 +137,11 @@ public abstract class AbstractMavenCodesTemplatePom extends AbstractMavenGeneral
                         Exclusion exclusion = new Exclusion();
                         exclusion.setGroupId("commons-codec"); //$NON-NLS-1$
                         exclusion.setArtifactId("commons-codec"); //$NON-NLS-1$
+                        Exclusion jacksonExclusion = new Exclusion();
+                        jacksonExclusion.setGroupId("com.fasterxml.jackson.core"); //$NON-NLS-1$
+                        jacksonExclusion.setArtifactId("jackson-databind "); //$NON-NLS-1$
                         dependency.addExclusion(exclusion);
+                        dependency.addExclusion(jacksonExclusion);
                     }
                     existedDependencies.add(dependency);
                 }

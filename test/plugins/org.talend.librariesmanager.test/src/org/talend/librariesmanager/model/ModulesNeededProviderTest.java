@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.librariesmanager.model;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -19,6 +20,8 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.Test;
 import org.talend.core.model.general.ModuleNeeded;
+import org.talend.core.model.general.ModuleNeeded.ELibraryInstallStatus;
+import org.talend.core.model.general.ModuleStatusProvider;
 import org.talend.core.model.properties.PropertiesFactory;
 import org.talend.core.model.properties.RoutineItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
@@ -93,4 +96,26 @@ public class ModulesNeededProviderTest {
         Assert.assertEquals(module1.get(0).getContext(), "Global Routines " + routineItem.getProperty().getLabel());
         Assert.assertEquals(module2.get(0).getContext(), "Global Routines " + routineItem.getProperty().getLabel());
     }
+
+    @Test
+    public void testInstallModuleForRoutineOrBeans() throws Exception {
+        ModuleNeeded module1 = new ModuleNeeded("", "ModulesNeededProviderTest", "description", false, null, null,
+                "mvn:org.talend.librariesmanager.model/ModulesNeededProviderTest/8.0.1");
+        try {
+            ModuleStatusProvider.putStatus(module1.getMavenUri(), ELibraryInstallStatus.NOT_INSTALLED);
+            ModulesNeededProvider.getModulesNeeded().add(module1);
+            ModulesNeededProvider.checkInstallStatus(Arrays.asList(module1));
+            Assert.assertTrue("Don't need to rebuild the codes project here",
+                    ModulesNeededProvider.installModuleForRoutineOrBeans() == false);
+            ModuleStatusProvider.putStatus(module1.getMavenUri(), ELibraryInstallStatus.INSTALLED);
+            Assert.assertTrue("Need to rebuild the codes project here",
+                    ModulesNeededProvider.installModuleForRoutineOrBeans() == true);
+            ModulesNeededProvider.setInstallModuleForRoutineOrBeans();
+            Assert.assertTrue("Don't need to rebuild the codes project here",
+                    ModulesNeededProvider.installModuleForRoutineOrBeans() == false);
+        } finally {
+            ModulesNeededProvider.getModulesNeeded().remove(module1);
+        }
+    }
+
 }
