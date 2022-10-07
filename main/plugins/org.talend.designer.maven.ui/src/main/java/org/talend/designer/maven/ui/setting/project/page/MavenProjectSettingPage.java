@@ -34,6 +34,7 @@ import org.talend.core.runtime.projectsetting.AbstractProjectSettingPage;
 import org.talend.core.runtime.services.IFilterService;
 import org.talend.designer.maven.DesignerMavenPlugin;
 import org.talend.designer.maven.tools.AggregatorPomsHelper;
+import org.talend.designer.maven.tools.BuildTypeManager;
 import org.talend.designer.maven.ui.i18n.Messages;
 
 /**
@@ -169,7 +170,25 @@ public class MavenProjectSettingPage extends AbstractProjectSettingPage {
 
 		});
 
-	}
+        if (isSyncBuildTypeAllowed()) {
+            Button syncBuildTypes = new Button(parent, SWT.NONE);
+            syncBuildTypes.setText(Messages.getString("ProjectPomProjectSettingPage.syncBuildTypesButtonText")); //$NON-NLS-1$
+
+            syncBuildTypes.addSelectionListener(new SelectionAdapter() {
+
+                @Override
+                public void widgetSelected(SelectionEvent event) {
+                    try {
+                        new BuildTypeManager().syncBuildTypes(getCurrentPage());
+                    } catch (Exception e) {
+                        ExceptionHandler.process(e);
+                    }
+                }
+
+            });
+        }
+
+    }
 
     private void addSyncWarning() {
         setMessage(Messages.getString("MavenProjectSettingPage.syncAllPomsWarning"), IMessage.WARNING); //$NON-NLS-1$
@@ -202,5 +221,13 @@ public class MavenProjectSettingPage extends AbstractProjectSettingPage {
         }
         return displayVersion;
     }
+
+	private static boolean isSyncBuildTypeAllowed() {
+		return Boolean.getBoolean("talend.builtype.syncallowed");
+	}
+	
+	private MavenProjectSettingPage getCurrentPage() {
+		return this;
+	}
 
 }
