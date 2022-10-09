@@ -12,8 +12,16 @@
 // ============================================================================
 package org.talend.signon.util;
 
-public class TMCRepositoryUtil {
 
+import org.apache.log4j.Logger;
+import org.eclipse.core.runtime.preferences.ConfigurationScope;
+import org.osgi.service.prefs.BackingStoreException;
+import org.osgi.service.prefs.Preferences;
+
+
+public class TMCRepositoryUtil {
+    private static Logger LOGGER = Logger.getLogger(TMCRepositoryUtil.class);
+    
     public static final String REPOSITORY_CLOUD_US_ID = "cloud_us"; //$NON-NLS-1$
 
     public static final String REPOSITORY_CLOUD_EU_ID = "cloud_eu"; //$NON-NLS-1$
@@ -45,6 +53,10 @@ public class TMCRepositoryUtil {
     public static final String SUCCESS_REDIRECT_URL = "https://iam.%s.cloud.talend.com/idp/login-sso-success"; //$NON-NLS-1$
     
     public static final String ONLINE_HELP_URL = "https://document-link.us.cloud.talend.com/ts_ug_launch-studio?version=%s&lang=%s&env=prd";
+    
+    public static final String ORG_TALEND_WORKSPACE_PREF_NODE = "org.eclipse.ui.ide"; //$NON-NLS-1$
+    
+    public static final String ORG_TALEND_RECENT_DATA_CENTERR = "org.talend.recent.datacenter";
 
     public static String getBaseLoginURL(String dataCenter) {
         if (dataCenter == null) {
@@ -55,10 +67,28 @@ public class TMCRepositoryUtil {
 
     public static String getDefaultDataCenter() {
         String defaultDataCenter = "us";
+        if (getRecentDataCenter() != null) {
+            defaultDataCenter = getRecentDataCenter();
+        }
         if (System.getProperty(SSOClientUtil.DATA_CENTER_KEY) != null) {
             defaultDataCenter = System.getProperty(SSOClientUtil.DATA_CENTER_KEY);
         }
         return defaultDataCenter;
+    }
+    
+    public static void saveRecentDataCenter(String dataCenter) {
+        Preferences node = new ConfigurationScope().getNode(ORG_TALEND_WORKSPACE_PREF_NODE);
+        node.put(ORG_TALEND_RECENT_DATA_CENTERR, dataCenter);
+        try {
+            node.flush();
+        } catch (BackingStoreException e) {
+            LOGGER.error("failed to store workspace location in preferences :", e); //$NON-NLS-1$
+        }
+    }
+
+    public static String getRecentDataCenter() {
+        Preferences node = new ConfigurationScope().getNode(ORG_TALEND_WORKSPACE_PREF_NODE);
+        return node.get(ORG_TALEND_RECENT_DATA_CENTERR, null);
     }
 
     public static String getCloudAdminURL(String dataCenter) {
