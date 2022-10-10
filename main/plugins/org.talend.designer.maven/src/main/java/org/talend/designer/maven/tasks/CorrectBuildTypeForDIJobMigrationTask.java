@@ -132,6 +132,7 @@ public class CorrectBuildTypeForDIJobMigrationTask extends AbstractDataServiceJo
 		/*
 		 * If Job does not contain any of the following components: "tRouteInput",
 		 * "tRESTClient", "tESBConsumer" then BUILD_TYPE must be STANDALONE
+		 * Manage child jobs for jobs ( parent, target BUILD_TYPE = STANDALONE )
 		 */
 
 		if (null == originalBuildType || !BUILD_TYPE_STANDALONE.equalsIgnoreCase(originalBuildType.toString())) {
@@ -143,6 +144,7 @@ public class CorrectBuildTypeForDIJobMigrationTask extends AbstractDataServiceJo
 				generateReportRecord(new MigrationReportRecorder(this,
 						MigrationReportRecorder.MigrationOperationType.MODIFY, item, null, "Build Type",
 						(null == originalBuildType) ? null : originalBuildType.toString(), BUILD_TYPE_STANDALONE));
+				updateBuildTypeForSubJobs(item, BUILD_TYPE_STANDALONE);
 			} catch (PersistenceException e) {
 				ExceptionHandler.process(e);
 				return ExecutionResult.FAILURE;
@@ -154,6 +156,18 @@ public class CorrectBuildTypeForDIJobMigrationTask extends AbstractDataServiceJo
 
 			if (modified) {
 				return ExecutionResult.SUCCESS_NO_ALERT;
+			}
+		}
+		
+		/*
+		 * If Job does not contain any of the following components: "tRouteInput",
+		 * "tRESTClient", "tESBConsumer" and BUILD_TYPE is STANDALONE
+		 * Manage child jobs for jobs ( parent, target BUILD_TYPE = STANDALONE )
+		 */
+		if (BUILD_TYPE_STANDALONE.equalsIgnoreCase(originalBuildType.toString())) {
+			updateBuildTypeForSubJobs(item, BUILD_TYPE_STANDALONE);
+			if (failure) {
+				return ExecutionResult.FAILURE;
 			}
 		}
 
@@ -185,10 +199,24 @@ public class CorrectBuildTypeForDIJobMigrationTask extends AbstractDataServiceJo
 						tRunJobComponent) == null ? null
 								: findElementParameterByName("SELECTED_JOB_NAME:PROCESS_TYPE_PROCESS", tRunJobComponent)
 										.getValue();
+				if (processID == null) {
+					processID = findElementParameterByName("PROCESS:PROCESS_TYPE_PROCESS",
+							tRunJobComponent) == null ? null
+									: findElementParameterByName("PROCESS:PROCESS_TYPE_PROCESS", tRunJobComponent)
+											.getValue();
+				}
+				
 				String processVersion = findElementParameterByName("SELECTED_JOB_NAME:PROCESS_TYPE_VERSION",
 						tRunJobComponent) == null ? null
 								: findElementParameterByName("SELECTED_JOB_NAME:PROCESS_TYPE_VERSION", tRunJobComponent)
 										.getValue();
+				
+				if (processVersion == null) {
+					processVersion = findElementParameterByName("PROCESS:PROCESS_TYPE_VERSION",
+							tRunJobComponent) == null ? null
+									: findElementParameterByName("PROCESS:PROCESS_TYPE_VERSION", tRunJobComponent)
+											.getValue();
+				}
 
 				if (processID != null && processVersion != null) {
 					ProcessItem childItem = ItemCacheManager.getProcessItem(processID, processVersion);
