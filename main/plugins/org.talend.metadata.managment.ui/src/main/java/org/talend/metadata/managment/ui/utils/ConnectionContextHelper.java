@@ -399,7 +399,7 @@ public final class ConnectionContextHelper {
                     varList.add((String) propertyMap.get("PROPERTY"));
                 }
             }
-		} else {
+        } else {
             Set<String> additionPropertyList = ExtendedNodeConnectionContextUtils
                     .getAdditionalPropertiesVariablesForExistContext(currentConnection);
             Iterator<String> it = additionPropertyList.iterator();
@@ -443,7 +443,7 @@ public final class ConnectionContextHelper {
         } else if (conn instanceof MDMConnection) {
             OtherConnectionContextUtils.setMDMConnectionPropertiesForContextMode(defaultContextName, (MDMConnection) conn,
                     paramSet);
-		} else {
+        } else {
             ExtendedNodeConnectionContextUtils.setConnectionPropertiesForContextMode(defaultContextName, conn, paramSet);
         }
         // set connection for context mode
@@ -639,11 +639,11 @@ public final class ConnectionContextHelper {
         }
         IProcess process = node.getProcess();
         if (process instanceof IProcess2) {
-			Map<Object, Object> contextMap = new HashMap<Object, Object>();
-			contextMap.put("NODE", (INode) node);
-			addContextForElementParameters((IProcess2) process, connItem, node.getElementParameters(), null,
-					ignoreContextMode, contextMap);
-		}
+            Map<Object, Object> contextMap = new HashMap<Object, Object>();
+            contextMap.put("NODE", (INode) node);
+            addContextForElementParameters((IProcess2) process, connItem, node.getElementParameters(), null,
+                    ignoreContextMode, contextMap);
+        }
     }
 
     /**
@@ -660,8 +660,8 @@ public final class ConnectionContextHelper {
         if (process == null || connItem == null) {
             return;
         }
-		addContextForElementParameters(process, connItem, process.getElementParameters(), category, ignoreContextMode,
-				new HashMap<Object, Object>());
+        addContextForElementParameters(process, connItem, process.getElementParameters(), category, ignoreContextMode,
+                new HashMap<Object, Object>());
     }
 
     /**
@@ -676,7 +676,7 @@ public final class ConnectionContextHelper {
      */
     private static void addContextForElementParameters(final IProcess2 process, final ConnectionItem connItem,
             List<? extends IElementParameter> elementParameters, final EComponentCategory category,
-			final boolean ignoreContextMode, Map<Object, Object> contextData) {
+            final boolean ignoreContextMode, Map<Object, Object> contextData) {
         if (connItem == null || elementParameters == null || process == null) {
             return;
         }
@@ -689,7 +689,7 @@ public final class ConnectionContextHelper {
         Connection connection = connItem.getConnection();
         if (connection != null && connection.isContextMode()) {
             // get the context variables from the node parameters.
-			Set<String> neededVars = retrieveContextVar(elementParameters, connection, category, contextData);
+            Set<String> neededVars = retrieveContextVar(elementParameters, connection, category, contextData);
             boolean isGeneric = isGenericConnection(connection);
             Map<String, String> renamedMap = ContextUtils.getContextParamterRenamedMap(process.getProperty().getItem());
             if (neededVars != null && !neededVars.isEmpty() || isGeneric) {
@@ -1121,15 +1121,15 @@ public final class ConnectionContextHelper {
             if (category == null || category == param.getCategory()) {
                 String repositoryValue = param.getRepositoryValue();
                 if (repositoryValue != null) {
-					String componentName = null;
-					if (contextData != null) {
-						Object node = contextData.get("NODE");
-						if (node instanceof INode) {
-							componentName = ((INode) node).getComponent().getName();
-						}
-					}
-					Object objectValue = RepositoryToComponentProperty.getValue(connection, repositoryValue, null,
-							componentName, contextData);
+                    String componentName = null;
+                    if (contextData != null) {
+                        Object node = contextData.get("NODE");
+                        if (node instanceof INode) {
+                            componentName = ((INode) node).getComponent().getName();
+                        }
+                    }
+                    Object objectValue = RepositoryToComponentProperty.getValue(connection, repositoryValue, null,
+                            componentName, contextData);
 
                     if (objectValue != null) {
                         if (objectValue instanceof List) {
@@ -2074,7 +2074,7 @@ public final class ConnectionContextHelper {
             OtherConnectionContextUtils.revertMDMConnectionPropertiesForContextMode((MDMConnection) conn, contextType);
         } else if (conn instanceof GenericSchemaConnection) {
             //
-		} else {
+        } else {
             ExtendedNodeConnectionContextUtils.revertPropertiesForContextMode(conn, contextType);
         }
         // set connection for context mode
