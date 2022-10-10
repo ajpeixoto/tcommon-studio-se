@@ -16,7 +16,10 @@ public class SparkBatchMetadataTalendTypeFilter extends SparkMetadataTalendTypeF
             "tFileInputParquet",
             "tFileOutputParquet",
             "tJDBCInput",
-            "tJDBCOutput", "tLogRow", "tSqlRow"
+            "tJDBCOutput",
+            "tLogRow",
+            "tSqlRow",
+            "tFileInputDelimited"
             );
 
     public SparkBatchMetadataTalendTypeFilter(INode node) {
