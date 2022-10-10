@@ -115,9 +115,9 @@ public abstract class AbstractRepositoryContextHandler implements IRepositoryCon
         return varList;
     }
     
-	public Set<IConnParamName> collectConParameters(Connection conn) {
-		return null;
-	}
+    public Set<IConnParamName> collectConParameters(Connection conn) {
+        return null;
+    }
 
     protected abstract void matchContextForAttribues(Connection conn, IConnParamName param, String contextVariableName);
 

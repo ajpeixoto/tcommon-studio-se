@@ -41,6 +41,6 @@ public interface IRepositoryContextHandler {
     public void revertPropertiesForContextMode(Connection connection, ContextType contextType);
 
     public Set<String> getConAdditionPropertiesForContextMode(Connection conn);
-    
-	public Set<IConnParamName> collectConParameters(Connection conn);
+
+    public Set<IConnParamName> collectConParameters(Connection conn);
 }
