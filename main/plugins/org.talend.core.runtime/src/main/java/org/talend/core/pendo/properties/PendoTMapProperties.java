@@ -91,13 +91,13 @@ public class PendoTMapProperties implements IPendoDataProperties {
      * Number of input columns which are mapped to multiple output columns, either mapped directly or mapped through the
      * Var column
      */
-    @JsonProperty("1-to-n mapping")
+    @JsonProperty("mapping_1_to_n")
     private int oneToNMappings;
 
     /**
      * Number of output columns which have multiple source columns, either input columns or var columns
      */
-    @JsonProperty("n-to-1 mapping")
+    @JsonProperty("mapping_n_to_1")
     private int nToOneMappings;
 
     /**
