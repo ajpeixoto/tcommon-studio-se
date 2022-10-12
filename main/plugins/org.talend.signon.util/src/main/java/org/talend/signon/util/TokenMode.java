@@ -128,12 +128,16 @@ public class TokenMode {
         TokenMode token = new TokenMode();
         token.setAccessToken(jsonObj.getString(TokenMode.ACCESS_TOKEN_KEY));
         token.setExpiresIn(jsonObj.getLong(TokenMode.EXPIRES_IN_KEY));
+        token.setRefreshToken(jsonObj.getString(TokenMode.REFRESH_TOKEN_KEY));  
         if (jsonObj.has(TokenMode.ID_TOKEN_KEY)) {
             token.setIdToken(jsonObj.getString(TokenMode.ID_TOKEN_KEY));
+        } 
+        if (jsonObj.has(TokenMode.SCOPE_KEY)) {
+            token.setScope(jsonObj.getString(TokenMode.SCOPE_KEY));
         }
-        token.setRefreshToken(jsonObj.getString(TokenMode.REFRESH_TOKEN_KEY));
-        token.setScope(jsonObj.getString(TokenMode.SCOPE_KEY));
-        token.setTokenType(jsonObj.getString(TokenMode.TOKEN_TYPE_KEY));
+        if (jsonObj.has(TokenMode.TOKEN_TYPE_KEY)) {
+            token.setTokenType(jsonObj.getString(TokenMode.TOKEN_TYPE_KEY));
+        } 
         if (jsonObj.has(TokenMode.LAST_REFRESH_TIME_KEY)) {
             token.setLastRefreshTime(jsonObj.getLong(TokenMode.LAST_REFRESH_TIME_KEY));
         }
