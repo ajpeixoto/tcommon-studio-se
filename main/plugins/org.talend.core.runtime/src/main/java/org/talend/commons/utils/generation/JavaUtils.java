@@ -58,6 +58,8 @@ public final class JavaUtils {
 
     public static final List<String> AVAILABLE_VERSIONS = Arrays.asList(JavaCore.VERSION_1_8 );
 
+    public static final String ALLOW_JAVA_INTERNAL_ACCESS = "allow.java.internal.access"; //$NON-NLS-1$
+
     public static final String PROCESSOR_TYPE = "javaProcessor"; //$NON-NLS-1$
 
     public static final String PATH_SEPARATOR = "/"; //$NON-NLS-1$
