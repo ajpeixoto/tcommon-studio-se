@@ -48,6 +48,8 @@ public class PendoSignImportProperties implements IPendoDataProperties {
     @JsonProperty("valid_migration_token")
     private String validMigrationToken;
 
+    @JsonProperty("import_product")
+    private List<String> importProduct;
 
     /**
      * Getter for sourceVersion.
@@ -207,5 +209,24 @@ public class PendoSignImportProperties implements IPendoDataProperties {
     public void setValidMigrationToken(String validMigrationToken) {
         this.validMigrationToken = validMigrationToken;
     }
+
+
+    /**
+     * Getter for importProduct.
+     * @return the importProduct
+     */
+    public List<String> getImportProduct() {
+        return importProduct;
+    }
+
+
+    /**
+     * Sets the importProduct.
+     * @param importProduct the importProduct to set
+     */
+    public void setImportProduct(List<String> importProduct) {
+        this.importProduct = importProduct;
+    }
+
 
 }
