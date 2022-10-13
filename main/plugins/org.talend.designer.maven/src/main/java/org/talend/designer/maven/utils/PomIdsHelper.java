@@ -45,8 +45,6 @@ public class PomIdsHelper {
 
     private static Map<String, ProjectPreferenceManager> preferenceManagers = new HashMap<>();
 
-    private static final String ARTIFACT_ID = "artifactId";
-
     /**
      * get current project groupId.
      */
@@ -163,27 +161,6 @@ public class PomIdsHelper {
         return getCodesVersion(projectTechName);
     }
 
-    public static String getGroupId(Property property) {
-        if (null == getOldId(property)) {
-            final String path = property.getItem().getState().getPath();
-            if (null != path) {
-                return path.replace('/', '.');
-            }
-        }
-        return null;
-    }
-
-    private static String getOldId(Property property) {
-        final String oldId = (String) property.getAdditionalProperties().get(ARTIFACT_ID);
-        if (null != oldId) {
-            final String name = property.getLabel();
-            if (oldId.startsWith(name + '_')) {
-                return oldId;
-            }
-        }
-        return null;
-    }
-    
     @Deprecated
     public static String getJobGroupId(String name) {
         if (name != null && !name.trim().isEmpty()) {
@@ -306,36 +283,6 @@ public class PomIdsHelper {
         return version;
     }
 
-
-    /**
-     * @return "<jobVersion>-<projectName>".
-     */
-    public static String getJobFeatureVersion(Property property, String bundleVersion) {
-        String version = null;
-        if (property != null) {
-            boolean useSnapshot = false; 
-            if (property.getAdditionalProperties() != null) {
-                version = (String) property.getAdditionalProperties().get(MavenConstants.NAME_USER_VERSION);
-//                APPINT-34581 - try to take cloud version if custom does not persist
-
-                useSnapshot = property.getAdditionalProperties().containsKey(MavenConstants.NAME_PUBLISH_AS_SNAPSHOT);
-            }
-            if(version == null) {
-                version = (String) property.getAdditionalProperties().get(MavenConstants.CLOUD_VERSION);
-            }
-            if(version == null) {
-                version = bundleVersion;
-            }
-            if (version == null) {
-                version = VersionUtils.getPublishVersion(property.getVersion());
-            }
-            if (useSnapshot) {
-                version += MavenConstants.SNAPSHOT;
-            }
-        }
-        return version;
-    }
-    
     public static String getJobVersion(JobInfo jobInfo) {
         if (jobInfo != null) {
             return jobInfo.getJobVersion();
@@ -361,6 +308,54 @@ public class PomIdsHelper {
         String projectTechName = ProjectManager.getInstance().getCurrentProject().getTechnicalLabel();
         ProjectPreferenceManager manager = getPreferenceManager(projectTechName);
         return manager.getBoolean(MavenConstants.USE_PROFILE_MODULE);
+    }
+
+    /**
+     * @return "<bundleVersion>".
+     */
+    public static String getBundleVersion(Property property, String bundleVersion) {
+        String version = null;
+        if (property != null) {
+            boolean useSnapshot = false;
+            if (property.getAdditionalProperties() != null) {
+                version = (String) property.getAdditionalProperties().get(MavenConstants.NAME_USER_VERSION);
+                useSnapshot = property.getAdditionalProperties().containsKey(MavenConstants.NAME_PUBLISH_AS_SNAPSHOT);
+            }
+            if(version == null) {
+                version = bundleVersion;
+            }
+            if (version == null) {
+                version = VersionUtils.getPublishVersion(property.getVersion());
+            }
+            if (useSnapshot) {
+                version += MavenConstants.SNAPSHOT;
+            }
+        }
+        return version;
+    }
+
+    /**
+     * @return "<featureVersion>".
+     */
+    public static String getFeatureVersion(Property property, String featureVersion) {
+        String version = null;
+        if (property != null) {
+            boolean useSnapshot = false;
+            if (property.getAdditionalProperties() != null) {
+                version = (String) property.getAdditionalProperties().get(MavenConstants.NAME_USER_VERSION);
+                useSnapshot = property.getAdditionalProperties().containsKey(MavenConstants.NAME_PUBLISH_AS_SNAPSHOT);
+            }
+            if(version == null) {
+                version = featureVersion;
+            }
+            if (version == null) {
+                version = VersionUtils.getPublishVersion(property.getVersion());
+            }
+            if (useSnapshot) {
+                version += MavenConstants.SNAPSHOT;
+            }
+        }
+        return version;
     }
 
     public static boolean getIfExcludeDeletedItems() {
