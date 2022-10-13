@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.talend.core.model.components.IComponent;
@@ -132,11 +133,13 @@ public class MetadataTalendTypeFilterTest {
                 );
         IComponent component = mock(IComponent.class);
         when(node.getComponent()).thenReturn(component);
-        List<String> compatibleComponents = components.stream().filter(componentName -> {
-            when(component.getName()).thenReturn(componentName);
-            return Arrays.asList(new SparkBatchMetadataTalendTypeFilter(node).filter(types)).contains(DYNAMIC);
+        List<String> compatibleComponents = components.stream()
+                .filter(componentName -> {
+                    when(component.getName()).thenReturn(componentName);
+                    return Arrays.asList(new SparkBatchMetadataTalendTypeFilter(node).filter(types)).contains(DYNAMIC);
         }).collect(Collectors.toList());
-        assertEquals(SparkBatchMetadataTalendTypeFilter.dynamicTypeCompatibleComponents, compatibleComponents);
+        Assertions.assertThat(SparkBatchMetadataTalendTypeFilter.dynamicTypeCompatibleComponents)
+                .containsExactlyInAnyOrder(compatibleComponents.toArray(new String[] {}));
     }
 
 }
