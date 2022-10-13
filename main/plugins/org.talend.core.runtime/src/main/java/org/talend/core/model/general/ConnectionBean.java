@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.Platform;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.pendo.PendoTrackSender;
 import org.talend.core.runtime.i18n.Messages;
+import org.talend.core.service.ICloudSignOnService;
 import org.talend.repository.model.RepositoryConstants;
 import org.talend.signon.util.TMCRepositoryUtil;
 import org.talend.signon.util.TokenMode;
@@ -217,9 +218,13 @@ public class ConnectionBean implements Cloneable {
             }  else if (conDetails.has(CLOUD_TOKEN_ID)){ 
                 String object = conDetails.getString(CLOUD_TOKEN_ID);
                 TokenMode token = TokenMode.parseFromJson(object, null);
+                if (ICloudSignOnService.get() != null) {
+                    token = ICloudSignOnService.get().getLatestToken();
+                    this.setConnectionToken(token);
+                }
                 return token.getAccessToken();
             }
-        } catch (JSONException e) {
+        } catch (Exception e) {
             ExceptionHandler.process(e);
         }
         return "";
