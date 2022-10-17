@@ -13,8 +13,11 @@
 package org.talend.metadata.managment.ui.convert;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.util.EList;
+import org.talend.core.database.EDatabaseTypeName;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
+import org.talend.core.model.metadata.builder.database.jdbc.ExtractorFactory;
 import org.talend.cwm.helper.CatalogHelper;
 import org.talend.cwm.helper.TaggedValueHelper;
 
@@ -41,14 +44,22 @@ public class CatalogAdapter {
         DataManager dataManager = dataManagerList.get(0);
         if (dataManager instanceof DatabaseConnection) {
             DatabaseConnection parentConnection = (DatabaseConnection) dataManager;
-            DbConnectionAdapter dbConnectionAdapter =
-                    new DbConnectionAdapter(parentConnection);
-            if (dbConnectionAdapter.isSwitchWithTaggedValueMode()) {
-                String originalSID = TaggedValueHelper.getValueString(TaggedValueHelper.ORIGINAL_SID, parentConnection);
-                String targetSID = TaggedValueHelper.getValueString(TaggedValueHelper.TARGET_SID, parentConnection);
-                if (catalogName.equals(originalSID)) {
-                    return targetSID;
+            String originalSID =
+                    TaggedValueHelper.getValueString(TaggedValueHelper.ORIGINAL_SID, parentConnection);
+            String targetSID = TaggedValueHelper.getValueString(TaggedValueHelper.TARGET_SID, parentConnection);
+            if (Platform.isRunning()) {
+                DbConnectionAdapter dbConnectionAdapter =
+                        new DbConnectionAdapter(parentConnection);
+                if (dbConnectionAdapter.isSwitchWithTaggedValueMode()) {
+                    if (catalogName.equals(originalSID)) {
+                        return targetSID;
+                    }
                 }
+            } else if (EDatabaseTypeName.GENERAL_JDBC.getXMLType().equals(parentConnection.getDatabaseType())) {
+                String tempCatalogName = ExtractorFactory.getCatalogFromJobContext(parentConnection);
+                catalogName =
+                        StringUtils.isBlank(tempCatalogName) ? catalogName.equals(originalSID) ? targetSID : catalogName
+                                : tempCatalogName;
             }
         }
         return catalogName;
@@ -65,13 +76,25 @@ public class CatalogAdapter {
         DataManager dataManager = originalCat.getDataManager().get(0);
         if (dataManager instanceof DatabaseConnection) {
             DatabaseConnection parentConnection = (DatabaseConnection) dataManager;
-            DbConnectionAdapter dbConnectionAdapter =
-                    new DbConnectionAdapter(parentConnection);
-            if (dbConnectionAdapter.isSwitchWithTaggedValueMode()) {
-                String originalSID = TaggedValueHelper.getValueString(TaggedValueHelper.ORIGINAL_SID, parentConnection);
-                String targetSID = TaggedValueHelper.getValueString(TaggedValueHelper.TARGET_SID, parentConnection);
-                if (catalogName.equals(originalSID)) {
-                    return CatalogHelper.getCatalog(parentConnection, targetSID);
+            String originalSID =
+                    TaggedValueHelper.getValueString(TaggedValueHelper.ORIGINAL_SID, parentConnection);
+            String targetSID = TaggedValueHelper.getValueString(TaggedValueHelper.TARGET_SID, parentConnection);
+            if (Platform.isRunning()) {
+                DbConnectionAdapter dbConnectionAdapter =
+                        new DbConnectionAdapter(parentConnection);
+                if (dbConnectionAdapter.isSwitchWithTaggedValueMode()) {
+                    if (catalogName.equals(originalSID)) {
+                        return CatalogHelper.getCatalog(parentConnection, targetSID);
+                    }
+                }
+            } else if (EDatabaseTypeName.GENERAL_JDBC.getXMLType().equals(parentConnection.getDatabaseType())) {
+                String tempCatalogName = ExtractorFactory.getCatalogFromJobContext(parentConnection);
+                if (StringUtils.isBlank(tempCatalogName)) {
+                    if (catalogName.equals(originalSID)) {
+                        return CatalogHelper.getCatalog(parentConnection, targetSID);
+                    }
+                } else {
+                    return CatalogHelper.getCatalog(parentConnection, tempCatalogName);
                 }
             }
         }
