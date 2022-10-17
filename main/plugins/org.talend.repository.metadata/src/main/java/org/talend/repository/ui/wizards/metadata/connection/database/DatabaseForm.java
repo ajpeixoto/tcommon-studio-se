@@ -65,6 +65,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
@@ -1083,12 +1084,24 @@ public class DatabaseForm extends AbstractForm {
     }
 
     private void createOracleUIForNLS(Composite parent) {
-        isOracleSupportNLS = new Button(parent, SWT.CHECK);
+        supportNLSContainer = new Composite(parent, SWT.NONE);
+        GridData containerLayoutData = new GridData();
+        containerLayoutData.exclude = true;
+        supportNLSContainer.setLayoutData(containerLayoutData);
+        supportNLSContainer.setVisible(false);
+        
+        GridLayout containerLayout = new GridLayout();
+        containerLayout.numColumns = 2;
+        containerLayout.marginWidth = 0;
+        containerLayout.marginHeight = 0;
+        containerLayout.horizontalSpacing = 0;
+        containerLayout.makeColumnsEqualWidth = false;
+        supportNLSContainer.setLayout(containerLayout);
+        
+        isOracleSupportNLS = new Button(supportNLSContainer, SWT.CHECK);
         isOracleSupportNLS.setText(Messages.getString("DatabaseForm.supportnls"));//$NON-NLS-1$
         GridData oracleSupportNLSLayoutData = new GridData();
-        oracleSupportNLSLayoutData.exclude = true;
         isOracleSupportNLS.setLayoutData(oracleSupportNLSLayoutData);
-        isOracleSupportNLS.setVisible(false);
         isOracleSupportNLS.addSelectionListener(new SelectionAdapter() {
 
             @Override
@@ -1096,6 +1109,10 @@ public class DatabaseForm extends AbstractForm {
                 getConnection().setSupportNLS(isOracleSupportNLS.getSelection());
             }
         });
+        imageLabel = new Label(supportNLSContainer, SWT.NONE);
+        imageLabel.setImage(ImageProvider.getImage(EImage.WARNING_ICON));
+        imageLabel.setLayoutData(new GridData());
+        imageLabel.setToolTipText(Messages.getString("DatabaseForm.supportnls.warntip"));
     }
     
     private void createHiveDataprocField(Composite parent) {
@@ -6788,6 +6805,10 @@ public class DatabaseForm extends AbstractForm {
 
     private static String DEFAULT_HIVE_METASTORE_PORT = "9083";
 
+    private Label imageLabel;
+
+    private Composite supportNLSContainer;
+
     /**
      * SetEditable fields.
      *
@@ -7265,15 +7286,16 @@ public class DatabaseForm extends AbstractForm {
     }
 
     private void showOracleSupportNLS(boolean show) {
-        GridData layoutData = (GridData) isOracleSupportNLS.getLayoutData();
+        GridData layoutData = (GridData) supportNLSContainer.getLayoutData();
         layoutData.exclude = !show;
-        isOracleSupportNLS.setLayoutData(layoutData);
-        isOracleSupportNLS.setVisible(show);
+        supportNLSContainer.setLayoutData(layoutData);
+        supportNLSContainer.setVisible(show);
+        imageLabel.setVisible(show);
         if(!show) {
             isOracleSupportNLS.setSelection(false);
             getConnection().setSupportNLS(false);
         }
-        isOracleSupportNLS.getParent().layout();
+        supportNLSContainer.getParent().layout();
     }
     
     private boolean isSupportNLSOracleVersion(String dbVersionString) {
