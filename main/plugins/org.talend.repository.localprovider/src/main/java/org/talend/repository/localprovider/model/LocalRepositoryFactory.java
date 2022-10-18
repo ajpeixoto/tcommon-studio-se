@@ -220,8 +220,6 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
     
     private Set<String> LoadedIDTypes = new HashSet<String>();
     
-    protected Set<IFolder> phisicalFolderVisited = new HashSet<IFolder>();
-    
     private static final boolean IS_CIMode = Boolean.getBoolean("ci.mode");
     
     protected void addLoadedIDTypes(String id, ERepositoryObjectType type) {
@@ -672,14 +670,7 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
                     currentFolderItem.getChildren().removeAll(toRemoveFromFolder);
                 }
             }
-            // check the items from physical folder, in case any item has been added (or deleted) manually (or from copy
-            // to branch)
-            if (IS_CIMode) {
-                if (phisicalFolderVisited.contains(physicalFolder)) {
-                    return toReturn;
-                }
-                phisicalFolderVisited.add(physicalFolder);
-            }
+
             if (physicalFolder.exists()) {
                 Set<String> physicalPropertyFounds = new HashSet<String>();
                 Set<String> physicalDirectoryFounds = new HashSet<String>();
