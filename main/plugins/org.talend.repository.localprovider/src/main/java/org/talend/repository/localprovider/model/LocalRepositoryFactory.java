@@ -220,6 +220,8 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
     
     private Set<String> LoadedIDTypes = new HashSet<String>();
     
+    protected Set<IFolder> phisicalFolderVisited = new HashSet<IFolder>();
+    
     private static final boolean IS_CIMode = Boolean.getBoolean("ci.mode");
     
     protected void addLoadedIDTypes(String id, ERepositoryObjectType type) {
@@ -615,9 +617,9 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
     protected synchronized List<IRepositoryViewObject> getSerializableFromFolder(Project project, Object folder, String id,
             ERepositoryObjectType type, boolean allVersion, boolean searchInChildren, boolean withDeleted,
             boolean avoidSaveProject, boolean... recursiveCall) throws PersistenceException {
+       
         List<IRepositoryViewObject> toReturn = new VersionList(allVersion);
         FolderHelper folderHelper = getFolderHelper(project.getEmfProject());
-        addLoadedIDTypes(id, type);
         if (folder != null) {
             IFolder physicalFolder;
             FolderItem currentFolderItem = null;
@@ -646,8 +648,7 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
                     if (property != null) {
                         if (curItem instanceof FolderItem && searchInChildren) {
                             folderNamesFounds.add(curItem.getProperty().getLabel());
-                            toReturn.addAll(getSerializableFromFolder(project, curItem, id, type, allVersion, true, withDeleted,
-                                    avoidSaveProject, true));
+                            toReturn.addAll(getSerializableFromFolder(project, curItem, id, type, allVersion, true, withDeleted, avoidSaveProject, recursiveCall));
                         } else if (!(curItem instanceof FolderItem)) {
                             if (property.eResource() != null && property.eResource().getResourceSet() != null) {
                                 propertyFounds.add(property.eResource().getURI().lastSegment());
@@ -657,6 +658,7 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
                                     }
                                 }
                                 property.getItem().setParent(currentFolderItem);
+                                addLoadedIDTypes(property.getId(), type);
                                 addToHistory(id, type, property.getItem().getState().getPath());
                             } else {
                                 toRemoveFromFolder.add(curItem);
@@ -672,6 +674,12 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
             }
             // check the items from physical folder, in case any item has been added (or deleted) manually (or from copy
             // to branch)
+            if (IS_CIMode) {
+                if (phisicalFolderVisited.contains(physicalFolder)) {
+                    return toReturn;
+                }
+                phisicalFolderVisited.add(physicalFolder);
+            }
             if (physicalFolder.exists()) {
                 Set<String> physicalPropertyFounds = new HashSet<String>();
                 Set<String> physicalDirectoryFounds = new HashSet<String>();
@@ -735,8 +743,7 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
                                     parentFolder = folderHelper.createFolder(current.getProjectRelativePath().toString());
                                 }
                                 parentFolder.setParent(currentFolderItem);
-                                toReturn.addAll(getSerializableFromFolder(project, (IFolder) current, id, type, allVersion, true,
-                                        withDeleted, avoidSaveProject, true));
+                                toReturn.addAll(getSerializableFromFolder(project, (IFolder) current, id, type, allVersion, true, withDeleted, avoidSaveProject, recursiveCall));
                             }
                             if (((IFolder) current).getName().equals(BIN)) {
 
@@ -795,6 +802,7 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
                     currentFolderItem.getChildren().removeAll(itemsDeleted);
                 }
             }
+            
         }
         return toReturn;
     }
