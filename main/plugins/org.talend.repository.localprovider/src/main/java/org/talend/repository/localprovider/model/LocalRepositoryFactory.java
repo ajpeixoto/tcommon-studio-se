@@ -217,6 +217,24 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
     private boolean copyScreenshotFlag = false;
 
     private Set<String> invalidFiles = new HashSet<String>();
+    
+    private Set<String> LoadedIDTypes = new HashSet<String>();
+    
+    private static final boolean IS_CIMode = Boolean.getBoolean("ci.mode");
+    
+    protected void addLoadedIDTypes(String id, ERepositoryObjectType type) {
+        if (!IS_CIMode || StringUtils.isEmpty(id)) {
+            return;
+        }
+        LoadedIDTypes.add(id + "," + type.getKey());
+    }
+
+    protected boolean containsLoadedIDType(String id, ERepositoryObjectType type) {
+        if (!IS_CIMode || StringUtils.isEmpty(id)) {
+            return false;
+        }
+        return LoadedIDTypes.contains(id + "," + type.getKey());
+    }
 
     public LocalRepositoryFactory() {
         super();
@@ -599,7 +617,7 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
             boolean avoidSaveProject, boolean... recursiveCall) throws PersistenceException {
         List<IRepositoryViewObject> toReturn = new VersionList(allVersion);
         FolderHelper folderHelper = getFolderHelper(project.getEmfProject());
-
+        addLoadedIDTypes(id, type);
         if (folder != null) {
             IFolder physicalFolder;
             FolderItem currentFolderItem = null;
@@ -684,6 +702,7 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
                                         }
                                         continue;
                                     }
+                                    addLoadedIDTypes(property.getId(), type);
                                     addToHistory(property.getId(), type, property.getItem().getState().getPath());
                                     if (id == null || property.getId().equals(id)) {
                                         if (withDeleted || !property.getItem().getState().isDeleted()) {
