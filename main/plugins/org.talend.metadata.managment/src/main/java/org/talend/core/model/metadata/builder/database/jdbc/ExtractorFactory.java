@@ -15,6 +15,7 @@ package org.talend.core.model.metadata.builder.database.jdbc;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 
+import org.apache.commons.lang.StringUtils;
 import org.talend.core.database.EDatabaseTypeName;
 import org.talend.core.model.metadata.IMetadataConnection;
 import org.talend.core.model.metadata.builder.ConvertionHelper;
@@ -24,6 +25,57 @@ import org.talend.core.model.properties.DatabaseConnectionItem;
 import org.talend.cwm.helper.TaggedValueHelper;
 
 public class ExtractorFactory {
+
+    /*
+     * when run the tDqReportRun, save the job's context information(selected in the job's Run tab)
+     */
+    private static java.util.Properties STANDALONE_JOB_CONTEXT_PROPERTIES = new java.util.Properties();
+
+    public static java.util.Properties getSTANDALONE_JOB_CONTEXT_PROPERTIES() {
+        return STANDALONE_JOB_CONTEXT_PROPERTIES;
+    }
+
+    public static void setSTANDALONE_JOB_CONTEXT_PROPERTIES(java.util.Properties sTANDALONE_JOB_CONTEXT_PROPERTIES) {
+        STANDALONE_JOB_CONTEXT_PROPERTIES = sTANDALONE_JOB_CONTEXT_PROPERTIES;
+    }
+
+    public static String getJdbcUrl(java.util.Properties props) {
+        if (props != null) {
+            for (Object key : props.keySet()) {
+                if (key != null && String.valueOf(key).toLowerCase().endsWith("_jdbcurl")) { //$NON-NLS-1$
+                    return String.valueOf(props.get(key));
+                }
+            }
+        }
+        return null;
+    }
+
+    public static final String DEFAULT = "Default"; //$NON-NLS-1$
+
+    public static String getCatalogFromJobContext(DatabaseConnection dbConn) {
+        return getCatalogSchemaFromJobContext(dbConn, 0);
+    }
+
+    public static String getSchemaFromJobContext(DatabaseConnection dbConn) {
+        return getCatalogSchemaFromJobContext(dbConn, 1);
+    }
+
+    /**
+     * @param index: 0-catalog, 1-schema
+     */
+    private static String getCatalogSchemaFromJobContext(DatabaseConnection dbConn, int index) {
+        IUrlDbNameExtractor extractorInstance =
+                getExtractorInstance(dbConn, DEFAULT, DEFAULT);
+        if (extractorInstance != null) {
+            String jdbcUrl = ExtractorFactory.getJdbcUrl(getSTANDALONE_JOB_CONTEXT_PROPERTIES());
+            if (!StringUtils.isBlank(jdbcUrl)) {
+                extractorInstance.setUrl(jdbcUrl);
+            }
+            extractorInstance.initUiSchemaOrSID();
+            return extractorInstance.getExtractResult().get(index);
+        }
+        return null;
+    }
 
     public static IUrlDbNameExtractor getExtractorInstance(DatabaseMetaData dbMetadata,
             IMetadataConnection metadataConnection) {

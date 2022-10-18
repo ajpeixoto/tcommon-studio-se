@@ -387,6 +387,8 @@ public class ConnParameterKeys {
     
     public static final String CONN_PARA_KEY_KNOX_DIRECTORY="CONN_PARA_KEY_KNOX_DIRECTORY";
 
+    public static final String CONN_PARA_KEY_KNOX_TIMEOUT="CONN_PARA_KEY_KNOX_TIMEOUT";
+
     // CDE
     public static final String CONN_PARA_KEY_CDE_API_ENDPOINT="CONN_PARA_KEY_CDE_API_ENDPOINT";
     public static final String CONN_PARA_KEY_CDE_TOKEN="CONN_PARA_KEY_CDE_TOKEN";

@@ -13,16 +13,19 @@
 package org.talend.signon.util;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.Platform;
 import org.talend.signon.util.listener.LoginEventListener;
+import org.talend.utils.io.FilesUtils;
 
 public class SSOClientUtil {
 
@@ -42,6 +45,30 @@ public class SSOClientUtil {
 
     private static final String CLIENT_FILE_NAME_ON_MAC_AARCH64 = "Talend_Sign_On_Tool_aarch64.app";
 
+    private static final String STUDIO_INI_FILE_NAME_ON_WINDOWS = "Talend-Studio-win-x86_64.ini";
+
+    private static final String STUDIO_INI_FILE_NAME_ON_LINUX_X86 = "Talend-Studio-linux-gtk-x86_64.ini";
+
+    private static final String STUDIO_INI_FILE_NAME_ON_LINUX_AARCH64 = "Talend-Studio-linux-gtk-aarch64.ini";
+
+    private static final String STUDIO_INI_FILE_NAME_ON_MAC_X86 = "Talend-Studio-macosx-cocoa.ini";
+
+    private static final String STUDIO_INI_FILE_NAME_ON_MAC_AARCH64 = "Talend-Studio-macosx-cocoa.ini";
+
+    private static final String CLIENT_INI_FILE_NAME_ON_WINDOWS = "Talend_Sign_On_Tool_win-x86_64.ini";
+
+    private static final String CLIENT_INI_FILE_NAME_ON_LINUX_X86 = "Talend_Sign_On_Tool_linux_gtk_x86_64.ini";
+
+    private static final String CLIENT_INI_FILE_NAME_ON_LINUX_AARCH64 = "Talend_Sign_On_Tool_linux_gtk_aarch64.ini";
+
+    private static final String CLIENT_INI_FILE_NAME_ON_MAC_X86 = "Talend_Sign_On_Tool.ini";
+    
+    private static final String CLIENT_INI_FILE_NAME_ON_MAC_AARCH64 = "Talend_Sign_On_Tool_aarch64.ini";
+
+    private static final String DEBUG_PARAMETER_NAME = "-Xdebug";
+
+    static final String KEEP_STUDIO_DEBUG_PARAM = "talend.keep.debug.parameter";
+
     private static final String CLIENT_FOLDER_NAME = "studio_sso_client";
 
     static final String DATA_CENTER_KEY = "talend.tmc.datacenter";
@@ -51,6 +78,8 @@ public class SSOClientUtil {
     public static final String TALEND_DEBUG = "--talendDebug"; //$NON-NLS-1$
 
     private static final SSOClientUtil instance = new SSOClientUtil();
+
+    private boolean needSetupJVMParam = true;
 
     private SSOClientExec signOnClientExec;
 
@@ -68,7 +97,7 @@ public class SSOClientUtil {
         return STUDIO_CLIENT_ID;
     }
 
-    public File getSSOClientAppFile() throws Exception {
+    private File getSSOClientAppFile() throws Exception {
         if (System.getProperty(CLIENT_FILE_PATH_PROPERTY) != null) {
             return new File(System.getProperty(CLIENT_FILE_PATH_PROPERTY));
         }
@@ -102,6 +131,10 @@ public class SSOClientUtil {
     }
 
     private synchronized void startSignOnClient(LoginEventListener listener) throws Exception {
+        if (needSetupJVMParam) {
+            setupJVMParams();
+            needSetupJVMParam = false;
+        }
         if (signOnClientExec != null) {
             signOnClientExec.stop();
         }
@@ -109,19 +142,19 @@ public class SSOClientUtil {
         File execFile = getSSOClientAppFile();
         String codeChallenge = listener.getCodeChallenge();
         if (isDebugMode()) {
-            LOGGER.info("Prepare to start login cloud client monitor");
+            LOGGER.info("Prepare to start log in cloud client monitor");
         }
         SSOClientMonitor signOnClientListener = SSOClientMonitor.getInscance();
         signOnClientListener.addLoginEventListener(listener);
         new Thread(signOnClientListener).start();
         if (isDebugMode()) {
-            LOGGER.info("Login cloud client monitor started.");
+            LOGGER.info("Log in cloud client monitor started.");
         }
         while (!SSOClientMonitor.isRunning()) {
             TimeUnit.MILLISECONDS.sleep(100);
         }
         if (signOnClientListener.getListenPort() < 0) {
-            throw new Exception("Login cloud client monitor start failed.");
+            throw new Exception("Log in cloud client monitor start failed.");
         }
         if (isDebugMode()) {
             LOGGER.info("Prepare to start cloud client on " + signOnClientListener.getListenPort());
@@ -131,6 +164,93 @@ public class SSOClientUtil {
         if (isDebugMode()) {
             LOGGER.info("Login cloud client started.");
         }
+    }
+
+    private void setupJVMParams() throws Exception {
+        File studioIniFile = getStudioIniFile();
+        if (studioIniFile != null && studioIniFile.exists()) {
+            List<String> fileContentList = FilesUtils.getContentLines(studioIniFile.getPath());
+            int debugIndex = -1;
+            for (int i = 0; i < fileContentList.size(); i++) {
+                String str = fileContentList.get(i);
+                if (DEBUG_PARAMETER_NAME.equals(str.trim())) {
+                    debugIndex = i;
+                }
+            }
+            if (!keepDebugParam() && debugIndex >= 0 && fileContentList.size() > debugIndex + 1) {
+                fileContentList.remove(debugIndex + 1);
+                fileContentList.remove(debugIndex);
+            }
+            saveIniFile(fileContentList);
+        } else {
+            LOGGER.error("Can't find Studio's ini file.");
+        }
+    }
+
+    private boolean keepDebugParam() {
+        return Boolean.valueOf(System.getProperty(KEEP_STUDIO_DEBUG_PARAM));
+    }
+
+    private void saveIniFile(List<String> list) throws Exception {
+        File clientIniFile = getClientIniFile();
+        if (!clientIniFile.exists()) {
+            clientIniFile.createNewFile();
+        }
+        FileWriter writer = null;
+        try {
+            writer = new FileWriter(clientIniFile);
+            for (String str : list) {
+                writer.write(str + System.lineSeparator());
+            }
+        } catch (Exception ex) {
+            LOGGER.error(ex);
+        } finally {
+            writer.close();
+        }
+    }
+
+    private File getClientIniFile() throws Exception {
+        String fileName = null;
+        if (EnvironmentUtils.isWindowsSystem()) {
+            fileName = CLIENT_INI_FILE_NAME_ON_WINDOWS;
+        } else if (EnvironmentUtils.isLinuxUnixSystem()) {
+            if (EnvironmentUtils.isX86_64()) {
+                fileName = CLIENT_INI_FILE_NAME_ON_LINUX_X86;
+            } else if (EnvironmentUtils.isAarch64()) {
+                fileName = CLIENT_INI_FILE_NAME_ON_LINUX_AARCH64;
+            }
+        } else if (EnvironmentUtils.isMacOsSytem()) {
+            if (EnvironmentUtils.isX86_64()) {
+                fileName = CLIENT_INI_FILE_NAME_ON_MAC_X86;
+            } else if (EnvironmentUtils.isAarch64()) {
+                fileName = CLIENT_INI_FILE_NAME_ON_MAC_AARCH64;
+            }
+        } else {
+            throw new Exception("Unsupported OS");
+        }
+        return new File(getSSOClientFolder(), fileName);
+    }
+
+    private File getStudioIniFile() throws Exception {
+        String fileName = null;
+        if (EnvironmentUtils.isWindowsSystem()) {
+            fileName = STUDIO_INI_FILE_NAME_ON_WINDOWS;
+        } else if (EnvironmentUtils.isLinuxUnixSystem()) {
+            if (EnvironmentUtils.isX86_64()) {
+                fileName = STUDIO_INI_FILE_NAME_ON_LINUX_X86;
+            } else if (EnvironmentUtils.isAarch64()) {
+                fileName = STUDIO_INI_FILE_NAME_ON_LINUX_AARCH64;
+            }
+        } else if (EnvironmentUtils.isMacOsSytem()) {
+            if (EnvironmentUtils.isX86_64()) {
+                fileName = STUDIO_INI_FILE_NAME_ON_MAC_X86;
+            } else if (EnvironmentUtils.isAarch64()) {
+                fileName = STUDIO_INI_FILE_NAME_ON_MAC_AARCH64;
+            }
+        } else {
+            throw new Exception("Unsupported OS");
+        }
+        return new File(Platform.getInstallLocation().getDataArea(fileName).getPath());
     }
 
     public static SSOClientUtil getInstance() {
@@ -152,9 +272,9 @@ public class SSOClientUtil {
         urlSB.append("scope=").append(URLEncoder.encode("openid refreshToken", StandardCharsets.UTF_8.name())).append("&");
         urlSB.append("response_type=").append(URLEncoder.encode("code", StandardCharsets.UTF_8.name())).append("&");
         urlSB.append("code_challenge_method=").append(URLEncoder.encode("S256", StandardCharsets.UTF_8.name())).append("&");
-        urlSB.append("code_challenge=").append(URLEncoder.encode(codeChallenge, StandardCharsets.UTF_8.name())).append("&");        
+        urlSB.append("code_challenge=").append(URLEncoder.encode(codeChallenge, StandardCharsets.UTF_8.name())).append("&");
         String state = String.valueOf(callbackPort) + SSOUtil.STATE_PARAM_SEPARATOR + TMCRepositoryUtil.getDefaultDataCenter();
-        urlSB.append("state=").append(URLEncoder.encode(state, StandardCharsets.UTF_8.name()));        
+        urlSB.append("state=").append(URLEncoder.encode(state, StandardCharsets.UTF_8.name()));
         return urlSB.toString();
     }
 

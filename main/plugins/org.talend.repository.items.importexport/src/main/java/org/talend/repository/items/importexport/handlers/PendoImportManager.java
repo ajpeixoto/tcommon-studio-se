@@ -67,7 +67,11 @@ public class PendoImportManager {
 
     private PendoSignImportProperties importProperties = new PendoSignImportProperties();
 
+    // sourceVersion based on item. the project version item created/modified
     private Set<String> projectVersionSet = new HashSet<String>();
+
+    // productVersion based on talend.project. possible list multiple projects on import wizard.
+    private Set<String> importProductVersion = new HashSet<String>();
 
     private Map<String, Integer> tosUnsignItemMap = new HashMap<String, Integer>();
 
@@ -130,6 +134,9 @@ public class PendoImportManager {
             if (StringUtils.isNotBlank(itemProductVersion)) {
                 projectVersionSet.add(itemProductVersion);
             }
+            if (itemRecord.getItemProject() != null && StringUtils.isNotBlank(itemRecord.getItemProject().getProductVersion())) {
+                importProductVersion.add(itemRecord.getItemProject().getProductVersion());
+            }
         } catch (Exception e) {
             ExceptionHandler.process(e, Level.WARN);
         }
@@ -144,6 +151,10 @@ public class PendoImportManager {
         List<String> sourceVersion = new ArrayList<String>(projectVersionSet);
         Collections.sort(sourceVersion);
         importProperties.setSourceVersion(sourceVersion);
+        List<String> productVersion = new ArrayList<String>(importProductVersion);
+        Collections.sort(productVersion);
+        importProperties.setImportProduct(productVersion);
+
         importProperties.setStudioVersion(PendoItemSignatureUtil.getStudioVersion());
         ICoreTisService tisService = ICoreTisService.get();
         if (tisService != null) {

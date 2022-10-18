@@ -17,6 +17,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.core.runtime.Platform;
 import org.talend.core.database.EDatabaseTypeName;
 import org.talend.core.model.context.ContextUtils;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
@@ -41,16 +42,26 @@ public class DbConnectionAdapter {
         if (originalDB == null) {
             return null;
         }
-        return extractedTargetValue(TaggedValueHelper.ORIGINAL_SID, TaggedValueHelper.TARGET_SID,
+        String sid = extractedTargetValue(TaggedValueHelper.ORIGINAL_SID, TaggedValueHelper.TARGET_SID,
                 defaultCatalog);
+        if (!Platform.isRunning()) {
+            String tempSid = ExtractorFactory.getCatalogFromJobContext(originalDB);
+            sid = StringUtils.isBlank(tempSid) ? sid : tempSid;
+        }
+        return sid;
     }
 
     public String getUISchema(String defaultSchema) {
         if (originalDB == null) {
             return null;
         }
-        return extractedTargetValue(TaggedValueHelper.ORIGINAL_UISCHEMA, TaggedValueHelper.TARGET_UISCHEMA,
+        String uiSchema = extractedTargetValue(TaggedValueHelper.ORIGINAL_UISCHEMA, TaggedValueHelper.TARGET_UISCHEMA,
                 defaultSchema);
+        if (!Platform.isRunning()) {
+            String tempUiSchema = ExtractorFactory.getSchemaFromJobContext(originalDB);
+            uiSchema = StringUtils.isBlank(tempUiSchema) ? uiSchema : tempUiSchema;
+        }
+        return uiSchema;
     }
 
 
