@@ -17,6 +17,9 @@ import org.talend.commons.exception.PersistenceException;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.IService;
 import org.talend.core.nexus.ArtifactRepositoryBean;
+import org.talend.core.pendo.AbstractPendoTrackManager;
+import org.talend.core.pendo.TrackEvent;
+import org.talend.core.pendo.properties.IPendoDataProperties;
 import org.talend.utils.json.JSONException;
 import org.talend.utils.json.JSONObject;
 
@@ -35,11 +38,17 @@ public interface IRemoteService extends IService {
             LoginException, JSONException;
 
     boolean isAuthorized(String value);
-
-    boolean isTokenUsed(String adminUrl) throws Exception;
-
-    String getPendoKeyFromLicense() throws Exception;
     
+    boolean isPendoTrackAvailable() throws Exception;
+
+    void sendPendoTrackData(TrackEvent event, IPendoDataProperties properties) throws Exception;
+
+    AbstractPendoTrackManager getPendoProjectLoginManager();
+
+    AbstractPendoTrackManager getPendoGenericManager(TrackEvent event, IPendoDataProperties peoperties);
+
+    String getTmcUser(String url, String token);
+
     public boolean isCloudConnection();
     
     public static IRemoteService get() {

@@ -20,7 +20,7 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.talend.commons.exception.ExceptionHandler;
-import org.talend.core.pendo.PendoTrackSender;
+import org.talend.core.pendo.PendoDataTrackFactory;
 import org.talend.core.runtime.i18n.Messages;
 import org.talend.core.service.ICloudSignOnService;
 import org.talend.repository.model.RepositoryConstants;
@@ -254,7 +254,7 @@ public class ConnectionBean implements Cloneable {
                 String user = conDetails.getString(USER);
                 if (isToken()) {
                     String url = getDynamicFields().get(RepositoryConstants.REPOSITORY_URL);
-                    user = PendoTrackSender.getInstance().getTmcUser(url, getPassword());
+                    user = PendoDataTrackFactory.getInstance().getTmcUser(url, getPassword());
                     if (StringUtils.isNotBlank(user)) {
                         setUser(user);
                     }
