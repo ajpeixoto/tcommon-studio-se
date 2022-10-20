@@ -32,6 +32,10 @@ public interface IGitUIProviderService extends IService {
     boolean openSwitchGitModeDialog();
     
     boolean canSwitchGitMode();
+    
+    boolean canShowSwitchGitModePopup();
+    
+    void showSwithGitModePopup();
 
     public static IGitUIProviderService get() {
         GlobalServiceRegister register = GlobalServiceRegister.getDefault();
