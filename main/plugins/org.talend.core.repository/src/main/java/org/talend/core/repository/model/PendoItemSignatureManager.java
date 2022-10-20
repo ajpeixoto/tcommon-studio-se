@@ -52,8 +52,6 @@ import org.talend.utils.migration.MigrationTokenUtil;
  */
 public class PendoItemSignatureManager extends AbstractPendoTrackManager {
 
-    // private PendoSignLogonProperties itemSignProperties = new PendoSignLogonProperties();
-
     private static PendoItemSignatureManager manager;
 
     private static boolean isTrackAvailable;
