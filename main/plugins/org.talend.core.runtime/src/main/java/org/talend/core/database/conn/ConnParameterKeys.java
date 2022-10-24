@@ -380,5 +380,6 @@ public class ConnParameterKeys {
     
     public static final String CONN_PARA_KEY_KNOX_DIRECTORY="CONN_PARA_KEY_KNOX_DIRECTORY";
 
+    public static final String CONN_PARA_KEY_KNOX_TIMEOUT="CONN_PARA_KEY_KNOX_TIMEOUT";
 
 }

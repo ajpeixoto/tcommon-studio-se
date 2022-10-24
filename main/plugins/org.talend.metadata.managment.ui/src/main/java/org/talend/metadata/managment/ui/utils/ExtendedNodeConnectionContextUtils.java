@@ -166,7 +166,8 @@ public class ExtendedNodeConnectionContextUtils {
         KnoxUrl,
         KnoxUsername,
         KnoxPassword,
-        KnoxDirectory
+        KnoxDirectory,
+        KnoxTimeout
     }
 
     static List<IContextParameter> getContextVariables(final String prefixName, Connection conn, Set<IConnParamName> paramSet) {
