@@ -75,6 +75,9 @@ public class ModuleAccessHelper {
     }
 
     private static boolean allowJavaInternalAcess(Property property) {
+        if (CommonsPlugin.isTUJTest()) {
+            return true;
+        }
         boolean isJava17 = false;
         String javaVersion = System.getProperty("java.version"); //$NON-NLS-1$
         String[] arr = javaVersion.split("\\.");
@@ -88,9 +91,6 @@ public class ModuleAccessHelper {
             String allow = System.getProperty(JavaUtils.ALLOW_JAVA_INTERNAL_ACCESS);
             if (allow != null) {
                 return Boolean.valueOf(allow);
-            }
-            if (CommonsPlugin.isTUJTest()) {
-                return true;
             }
             Project project;
             if (property != null) {
