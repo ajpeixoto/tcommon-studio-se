@@ -38,7 +38,10 @@ public class HadoopClassLoaderFactory2 {
     public static ClassLoader getHDFSClassLoader(String relatedClusterId, String distribution, String version, boolean useKrb) {
         return getClassLoader(relatedClusterId, EHadoopCategory.HDFS, distribution, version, useKrb);
     }
-
+    public static ClassLoader getHDFSKnoxClassLoader(String relatedClusterId, String distribution, String version, boolean useKrb) {
+        return HadoopClassLoaderFactory2.getClassLoader(relatedClusterId, EHadoopCategory.HDFS, distribution, version, useKrb,
+                IHadoopArgs.HDFS_ARG_KNOX);
+    }
     public static ClassLoader getMRClassLoader(String relatedClusterId, String distribution, String version, boolean useKrb) {
         return getClassLoader(relatedClusterId, EHadoopCategory.MAP_REDUCE, distribution, version, useKrb);
     }

@@ -22,4 +22,6 @@ public interface IHadoopArgs {
 
     public static final String HIVE_ARG_STANDALONE = "STANDALONE"; //$NON-NLS-1$
 
+    public static final String HDFS_ARG_KNOX = "USE_KNOX"; //$NON-NLS-1$
+
 }
