@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -51,6 +52,8 @@ import org.eclipse.emf.ecore.impl.EObjectImpl;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.emf.ecore.xmi.XMLResource;
+import org.eclipse.emf.ecore.xmi.impl.XMLParserPoolImpl;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.runtime.model.repository.ERepositoryStatus;
@@ -1121,6 +1124,13 @@ public class ImportBasicHandler extends AbstractImportExecutableHandler {
             }
             stream = manager.getStream(itemPath, importItem);
             Resource resource = createResource(importItem, itemPath, byteArray);
+            //TUP-36820:Add options for improving performance for deserialization (loading) of large XML resource
+            Map optionMap = new HashMap();
+            optionMap.put(XMLResource.OPTION_DEFER_ATTACHMENT, Boolean.TRUE);
+            optionMap.put(XMLResource.OPTION_DEFER_IDREF_RESOLUTION, Boolean.TRUE);
+            optionMap.put(XMLResource.OPTION_USE_PARSER_POOL, new XMLParserPoolImpl());
+            optionMap.put(XMLResource.OPTION_USE_XML_NAME_TO_FEATURE_MAP, new HashMap());
+            optionMap.put(XMLResource.OPTION_USE_DEPRECATED_METHODS, Boolean.FALSE);
 
             if (byteArray) {
                 // TDI-24612
@@ -1133,16 +1143,16 @@ public class ImportBasicHandler extends AbstractImportExecutableHandler {
                     baos.write(buf, 0, i);
                 }
                 ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-                resource.load(bais, null);
+                resource.load(bais, optionMap);
             } else {
-                resource.load(stream, null);
+                resource.load(stream, optionMap);
             }
 
             for (ReferenceFileItem rfItem : (List<ReferenceFileItem>) item.getReferenceResources()) {
                 itemPath = getReferenceItemPath(importItem.getPath(), rfItem);
                 stream = manager.getStream(itemPath, importItem);
                 Resource rfResource = createResource(importItem, itemPath, true);
-                rfResource.load(stream, null);
+                rfResource.load(stream, optionMap);
             }
 
             Iterator<EObject> itRef = item.eCrossReferences().iterator();
