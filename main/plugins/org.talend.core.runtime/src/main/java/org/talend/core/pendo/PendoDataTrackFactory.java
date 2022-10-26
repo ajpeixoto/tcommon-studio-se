@@ -65,7 +65,7 @@ public class PendoDataTrackFactory {
 
     public String getTmcUser(String url, String token) {
         if (remoteService != null) {
-            remoteService.getTmcUser(url, token);
+            return remoteService.getTmcUser(url, token);
         }
         return "";
     }
