@@ -34,7 +34,7 @@ public class SSOClientInstaller {
 
     private final String INSTALL_FILE_NAME = "TalendSignTool.zip";
 
-    private final String version = "8.0.1.202206081050";
+    private final String version = "8.0.1.202210131253";
 
     private static final SSOClientInstaller instance = new SSOClientInstaller();
 
