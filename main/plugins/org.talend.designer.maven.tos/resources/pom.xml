@@ -20,7 +20,7 @@
         <module>zip/pom.xml</module>
     </modules>
     <properties>
-        <m2.fasterxml.jackson.version>2.13.2</m2.fasterxml.jackson.version>
+        <m2.fasterxml.jackson.version>2.13.4</m2.fasterxml.jackson.version>
         <jackson-codehaus.version>1.9.16-TALEND</jackson-codehaus.version>
     </properties>
 </project>
