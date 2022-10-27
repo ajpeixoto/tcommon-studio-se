@@ -520,9 +520,13 @@ public class ResumeUtil {
 
         private String lineSeparator = System.getProperty("line.separator");
         
-        private int capibility = 2 << 22; //8M
+        private final int capibility = 2 << 22; //8M
         
-        private int FLUSH_FACTOR = 6 *1024 *1024; //6M
+        private final int FLUSH_FACTOR = 6 *1024 *1024; //6M
+        
+        private final int SUBSTRING_SIZE = 2 << 20; //2M
+        
+        
         
 
         public SimpleCsvWriter(FileChannel channel) {
@@ -551,6 +555,16 @@ public class ResumeUtil {
                 content = replace(content, "" + TextQualifier, "" + BACKSLASH + TextQualifier);
             } else {// support double mode
                 content = replace(content, "" + TextQualifier, "" + TextQualifier + TextQualifier);
+            }
+            
+            if (content.length() > SUBSTRING_SIZE) { //2M
+                int index = 0;
+                for (; content.length() - index > SUBSTRING_SIZE; index += SUBSTRING_SIZE) {
+                    flush(true);
+                    final String substring = content.substring(index, index + SUBSTRING_SIZE);
+                    buf.put(substring.getBytes());
+                }
+                content = content.substring(index);
             }
             
             byte[] contentByte = content.getBytes();
