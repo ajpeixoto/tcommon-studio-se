@@ -14,15 +14,16 @@ package org.talend.designer.maven.tools;
 
 import static org.talend.designer.maven.model.TalendJavaProjectConstants.*;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -64,8 +65,10 @@ import org.talend.core.model.general.ILibrariesService;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.general.ModuleNeeded.ELibraryInstallStatus;
 import org.talend.core.model.general.Project;
+import org.talend.core.model.process.JobInfo;
 import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.Item;
+import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.ProjectReference;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.relationship.Relation;
@@ -525,7 +528,7 @@ public class AggregatorPomsHelper {
                     @Override
                     public void run(final IProgressMonitor monitor) throws CoreException {
                         try {
-                            syncAllPomsWithoutProgress(monitor, PomIdsHelper.getPomFilter());
+                            syncAllPomsWithoutProgress(monitor, PomIdsHelper.getPomFilter(), false);
                         } catch (Exception e) {
                             ExceptionHandler.process(e);
                         }
@@ -620,10 +623,11 @@ public class AggregatorPomsHelper {
     }
 
     public void syncAllPomsWithoutProgress(IProgressMonitor monitor) throws Exception {
-        syncAllPomsWithoutProgress(monitor, PomIdsHelper.getPomFilter());
+        syncAllPomsWithoutProgress(monitor, PomIdsHelper.getPomFilter(), false);
     }
 
-    public void syncAllPomsWithoutProgress(IProgressMonitor monitor, String pomFilter) throws Exception {
+    public void syncAllPomsWithoutProgress(IProgressMonitor monitor, String pomFilter, boolean withDependencies)
+            throws Exception {
         LOGGER.info("syncAllPomsWithoutProgress, pomFilter: " + pomFilter);
         IRunProcessService runProcessService = IRunProcessService.get();
         if (runProcessService == null) {
@@ -634,11 +638,43 @@ public class AggregatorPomsHelper {
         Boolean isCIMode = IRunProcessService.get().isCIMode();
 
         List<IRepositoryViewObject> objects = new ArrayList<>();
+        List<ERepositoryObjectType> allJobletTypes = ERepositoryObjectType.getAllTypesOfJoblet();
         for (ERepositoryObjectType type : ERepositoryObjectType.getAllTypesOfProcess2()) {
+            if (isCIMode && withDependencies && allJobletTypes.contains(type)) {
+                continue;
+            }
             objects.addAll(ProxyRepositoryFactory.getInstance().getAll(type, true, true));
         }
+        Iterator<IRepositoryViewObject> iterator = objects.iterator();
+        while (iterator.hasNext()) {
+            IRepositoryViewObject object = iterator.next();
+            if (object.getProperty() == null || object.getProperty().getItem() == null) {
+                iterator.remove();
+                continue;
+            }
+            if (isCIMode && !allJobletTypes.contains(object.getRepositoryObjectType()) && IFilterService.get() != null
+                    && !IFilterService.get().isFilterAccepted(object.getProperty().getItem(), pomFilter)) {
+                iterator.remove();
+                continue;
+            }
+            if (isCIMode && object.isDeleted() && PomIdsHelper.getIfExcludeDeletedItems()) {
+                iterator.remove();
+            }
+        }
+        Set<Item> allItems;
+        if (withDependencies) {
+            allItems = objects.stream().flatMap(object -> {
+                ProcessItem item = (ProcessItem) object.getProperty().getItem();
+                Set<JobInfo> allJobInfos = ProcessorUtilities.getChildrenJobInfo(item, false, true);
+                allJobInfos.add(new JobInfo(item, item.getProcess().getDefaultContext()));
+                return allJobInfos.stream();
+            }).map(info -> info.getJobletProperty() != null ? info.getJobletProperty().getItem() : info.getProcessItem())
+                    .collect(Collectors.toSet());
+        } else {
+            allItems = objects.stream().map(object -> object.getProperty().getItem()).collect(Collectors.toSet());
+        }
 
-        int size = 3 + objects.size();
+        int size = 3 + allItems.size();
         monitor.setTaskName("Synchronize all poms"); //$NON-NLS-1$
         monitor.beginTask("", size); //$NON-NLS-1$
         // project pom
@@ -674,41 +710,17 @@ public class AggregatorPomsHelper {
         }
         // all jobs pom
         List<String> modules = new ArrayList<>();
-        IFilterService filterService = null;
-        if (GlobalServiceRegister.getDefault().isServiceRegistered(IFilterService.class)) {
-            filterService = (IFilterService) GlobalServiceRegister.getDefault().getService(IFilterService.class);
-        }
-
         List<Property> serviceRefJobs = getAllServiceReferencedJobs();
-        List<ERepositoryObjectType> allJobletTypes = ERepositoryObjectType.getAllTypesOfJoblet();
-        for (IRepositoryViewObject object : objects) {
-            if (filterService != null) {
-                if (isCIMode && !allJobletTypes.contains(object.getRepositoryObjectType())
-                        && !filterService.isFilterAccepted(object.getProperty().getItem(), pomFilter)) {
-                    continue;
-                }
-            }
-            if (object.getProperty() != null && object.getProperty().getItem() != null) {
-                if (isCIMode && object.isDeleted() && PomIdsHelper.getIfExcludeDeletedItems()) {
-                    continue;
-                }
-                Item item = object.getProperty().getItem();
-                if (ProjectManager.getInstance().isInCurrentMainProject(item)) {
-                    monitor.subTask("Synchronize job pom: " + item.getProperty().getLabel() //$NON-NLS-1$
-                            + "_" + item.getProperty().getVersion()); //$NON-NLS-1$
-                    if (runProcessService != null) {
-                        // already filtered
-                        runProcessService.generatePom(item, TalendProcessOptionConstants.GENERATE_POM_NO_FILTER);
-                    } else {
-                        ExceptionHandler.log("Cannot generate pom for " + object.getLabel()
-                                + " - Reason: RunProcessService is null.");
-                    }
-                    IFile pomFile = getItemPomFolder(item.getProperty()).getFile(TalendMavenConstants.POM_FILE_NAME);
-                    // TODO if not work, use serviceRefJobs.contains(object.getProperty()) to judge
-                    // filter esb data service node
-                    if (isCIMode && !isSOAPServiceProvider(object.getProperty()) && pomFile.exists()) {
-                        modules.add(getModulePath(pomFile));
-                    }
+        for (Item item : allItems) {
+            if (ProjectManager.getInstance().isInCurrentMainProject(item)) {
+                monitor.subTask("Synchronize job pom: " + item.getProperty().getLabel() //$NON-NLS-1$
+                        + "_" + item.getProperty().getVersion()); //$NON-NLS-1$
+                runProcessService.generatePom(item, TalendProcessOptionConstants.GENERATE_POM_NO_FILTER);
+                IFile pomFile = getItemPomFolder(item.getProperty()).getFile(TalendMavenConstants.POM_FILE_NAME);
+                // filter esb data service node
+                // FIXME use serviceRefJobs.contains(item.getProperty()) if isSOAPServiceProvider() doesn't work.
+                if (isCIMode && !isSOAPServiceProvider(item.getProperty()) && pomFile.exists()) {
+                    modules.add(getModulePath(pomFile));
                 }
             }
             monitor.worked(1);
