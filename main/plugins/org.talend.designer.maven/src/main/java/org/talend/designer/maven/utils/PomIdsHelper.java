@@ -312,14 +312,12 @@ public class PomIdsHelper {
     
 	private static String getPublishCloudVersion(String latestVersion) {
 		if (null == latestVersion) {
-			return null;
-		} else if (latestVersion.contains(MavenConstants.SNAPSHOT)) {
-			return latestVersion;
+			return "0.1.0";
 		} else {
-			latestVersion = VersionUtils.getPublishVersion(latestVersion);
 			int i = latestVersion.lastIndexOf('.') + 1;
 			return latestVersion.substring(0, i) + (Long.parseLong(latestVersion.substring(i)) + 1);
-	 }
+	  }
+	}
 	
     /**
      * @return "<bundleVersion>".
@@ -333,12 +331,12 @@ public class PomIdsHelper {
                 useSnapshot = property.getAdditionalProperties().containsKey(MavenConstants.NAME_PUBLISH_AS_SNAPSHOT);
             }
             if(version == null) {
-            	VersionUtils.getPublishVersion(bundleVersion);
+                version = bundleVersion;
             }
             if (version == null) {
                 version = VersionUtils.getPublishVersion(property.getVersion());
             }
-            if (useSnapshot && version != null && !version.contains(MavenConstants.SNAPSHOT)) {
+            if (useSnapshot) {
                 version += MavenConstants.SNAPSHOT;
             }
         }
@@ -357,12 +355,12 @@ public class PomIdsHelper {
                 useSnapshot = property.getAdditionalProperties().containsKey(MavenConstants.NAME_PUBLISH_AS_SNAPSHOT);
             }
             if(version == null) {
-            	version = VersionUtils.getPublishVersion(featureVersion);
+                version = featureVersion;
             }
             if (version == null) {
                 version = VersionUtils.getPublishVersion(property.getVersion());
             }
-            if (useSnapshot && version != null && !version.contains(MavenConstants.SNAPSHOT)) {
+            if (useSnapshot) {
                 version += MavenConstants.SNAPSHOT;
             }
         }
@@ -386,7 +384,7 @@ public class PomIdsHelper {
             if (version == null) {
                 version = VersionUtils.getPublishVersion(property.getVersion());
             }
-            if (useSnapshot && version != null && !version.contains(MavenConstants.SNAPSHOT)) {
+            if (useSnapshot) {
                 version += MavenConstants.SNAPSHOT;
             }
         }
@@ -410,7 +408,7 @@ public class PomIdsHelper {
             if (version == null) {
                 version = VersionUtils.getPublishVersion(property.getVersion());
             }
-            if (useSnapshot && version != null && !version.contains(MavenConstants.SNAPSHOT)) {
+            if (useSnapshot) {
                 version += MavenConstants.SNAPSHOT;
             }
         }
