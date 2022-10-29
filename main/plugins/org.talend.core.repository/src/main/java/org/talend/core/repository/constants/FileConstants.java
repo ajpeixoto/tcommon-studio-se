@@ -19,6 +19,8 @@ import org.talend.repository.model.RepositoryConstants;
  */
 public interface FileConstants {
 
+    String DOT = ".";
+
     String OLD_TALEND_PROJECT_FILENAME = "talendProject"; //$NON-NLS-1$
 
     String LOCAL_PROJECT_FILENAME = "talend.project"; //$NON-NLS-1$
@@ -112,5 +114,4 @@ public interface FileConstants {
     String TALEND_FOLDER_NAME = "TALEND-INF"; //$NON-NLS-1$
     
     String MAVEN_FOLDER_NAME = "MAVEN-INF";
-
 }

@@ -160,6 +160,8 @@ public interface IRunProcessService extends IService {
 
     public void checkLastGenerationHasCompilationError(boolean updateProblemsView) throws ProcessorException;
 
+    public void checkLastGenerationHasCompilationError(boolean updateProblemsView, boolean isJob) throws ProcessorException;
+
     /**
      * DOC ycbai Comment method "getResourceFilePath".
      *

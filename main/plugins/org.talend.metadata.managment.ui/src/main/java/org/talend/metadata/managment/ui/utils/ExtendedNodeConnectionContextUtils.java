@@ -174,6 +174,7 @@ public class ExtendedNodeConnectionContextUtils {
         KnoxUsername,
         KnoxPassword,
         KnoxDirectory,
+        KnoxTimeout,
         
         //Cde
         CdeApiEndPoint,
