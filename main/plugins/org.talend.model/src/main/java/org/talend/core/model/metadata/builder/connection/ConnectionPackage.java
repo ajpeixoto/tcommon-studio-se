@@ -5239,13 +5239,22 @@ public interface ConnectionPackage extends EPackage {
     int DATABASE_CONNECTION__PARAMETERS = CONNECTION_FEATURE_COUNT + 25;
 
     /**
+     * The feature id for the '<em><b>Support NLS</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int DATABASE_CONNECTION__SUPPORT_NLS = CONNECTION_FEATURE_COUNT + 26;
+
+    /**
      * The number of structural features of the '<em>Database Connection</em>' class.
      * <!-- begin-user-doc --> <!--
      * end-user-doc -->
      * @generated
      * @ordered
      */
-    int DATABASE_CONNECTION_FEATURE_COUNT = CONNECTION_FEATURE_COUNT + 26;
+    int DATABASE_CONNECTION_FEATURE_COUNT = CONNECTION_FEATURE_COUNT + 27;
 
     /**
      * The meta object id for the '{@link org.talend.core.model.metadata.builder.connection.impl.SAPConnectionImpl <em>SAP Connection</em>}' class.
@@ -21888,6 +21897,17 @@ public interface ConnectionPackage extends EPackage {
     EReference getDatabaseConnection_Parameters();
 
     /**
+     * Returns the meta object for the attribute '{@link org.talend.core.model.metadata.builder.connection.DatabaseConnection#isSupportNLS <em>Support NLS</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the attribute '<em>Support NLS</em>'.
+     * @see org.talend.core.model.metadata.builder.connection.DatabaseConnection#isSupportNLS()
+     * @see #getDatabaseConnection()
+     * @generated
+     */
+    EAttribute getDatabaseConnection_SupportNLS();
+
+    /**
      * Returns the meta object for class '{@link org.talend.core.model.metadata.builder.connection.SAPConnection <em>SAP Connection</em>}'.
      * <!-- begin-user-doc --> <!-- end-user-doc -->
      * @return the meta object for class '<em>SAP Connection</em>'.
@@ -26438,6 +26458,14 @@ public interface ConnectionPackage extends EPackage {
          * @generated
          */
         EReference DATABASE_CONNECTION__PARAMETERS = eINSTANCE.getDatabaseConnection_Parameters();
+
+        /**
+         * The meta object literal for the '<em><b>Support NLS</b></em>' attribute feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EAttribute DATABASE_CONNECTION__SUPPORT_NLS = eINSTANCE.getDatabaseConnection_SupportNLS();
 
         /**
          * The meta object literal for the '{@link org.talend.core.model.metadata.builder.connection.impl.SAPConnectionImpl <em>SAP Connection</em>}' class.

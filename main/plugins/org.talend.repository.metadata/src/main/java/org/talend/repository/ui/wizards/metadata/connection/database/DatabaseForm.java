@@ -66,6 +66,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
@@ -567,6 +568,8 @@ public class DatabaseForm extends AbstractForm {
 
     private LabelledFileField dataprocPathToCredentialsForHiveTxt;
 
+    private Button isOracleSupportNLS;
+
     /**
      * Constructor to use by a Wizard to create a new database connection.
      *
@@ -684,6 +687,8 @@ public class DatabaseForm extends AbstractForm {
         if (getConnection().getDbVersionString() != null) {
             dbVersionCombo.setText(getConnection().getDbVersionString());
         }
+        
+        isOracleSupportNLS.setSelection(getConnection().isSupportNLS());
 
         fileField.setText(getConnection().getFileFieldName());
         directoryField.setText(getConnection().getDBRootPath());
@@ -859,6 +864,7 @@ public class DatabaseForm extends AbstractForm {
         dbVersionCombo.setReadOnly(isReadOnly());
         datasourceText.setReadOnly(isReadOnly());
         additionParamText.setReadOnly(isReadOnly());
+        isOracleSupportNLS.setEnabled(!isReadOnly());
         fileField.setReadOnly(isReadOnly());
         mappingFileText.setReadOnly(isReadOnly());
         mappingSelectButton.setEnabled(isReadOnly());
@@ -1035,6 +1041,7 @@ public class DatabaseForm extends AbstractForm {
         additionParamText = new LabelledText(typeDbCompositeParent, Messages.getString("DatabaseForm.AddParams"), 2); //$NON-NLS-1$
         additionalJDBCSettingsText = new LabelledText(typeDbCompositeParent,
                 Messages.getString("DatabaseForm.hive.additionalJDBCSettings"), 2); //$NON-NLS-1$
+        createOracleUIForNLS(typeDbCompositeParent);
 
         String[] extensions = { "*.*" }; //$NON-NLS-1$
         fileField = new LabelledFileField(typeDbCompositeParent, Messages.getString("DatabaseForm.mdbFile"), extensions); //$NON-NLS-1$
@@ -1062,6 +1069,38 @@ public class DatabaseForm extends AbstractForm {
         createHivePropertiesFields(typeDbCompositeParent);
     }
 
+    private void createOracleUIForNLS(Composite parent) {
+        supportNLSContainer = new Composite(parent, SWT.NONE);
+        GridData containerLayoutData = new GridData();
+        containerLayoutData.exclude = true;
+        supportNLSContainer.setLayoutData(containerLayoutData);
+        supportNLSContainer.setVisible(false);
+        
+        GridLayout containerLayout = new GridLayout();
+        containerLayout.numColumns = 2;
+        containerLayout.marginWidth = 0;
+        containerLayout.marginHeight = 0;
+        containerLayout.horizontalSpacing = 0;
+        containerLayout.makeColumnsEqualWidth = false;
+        supportNLSContainer.setLayout(containerLayout);
+        
+        isOracleSupportNLS = new Button(supportNLSContainer, SWT.CHECK);
+        isOracleSupportNLS.setText(Messages.getString("DatabaseForm.supportnls"));//$NON-NLS-1$
+        GridData oracleSupportNLSLayoutData = new GridData();
+        isOracleSupportNLS.setLayoutData(oracleSupportNLSLayoutData);
+        isOracleSupportNLS.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                getConnection().setSupportNLS(isOracleSupportNLS.getSelection());
+            }
+        });
+        imageLabel = new Label(supportNLSContainer, SWT.NONE);
+        imageLabel.setImage(ImageProvider.getImage(EImage.WARNING_ICON));
+        imageLabel.setLayoutData(new GridData());
+        imageLabel.setToolTipText(Messages.getString("DatabaseForm.supportnls.warntip"));
+    }
+    
     private void createHiveDataprocField(Composite parent) {
         dataprocProjectIdForHiveTxt = new LabelledText(parent, Messages.getString("DatabaseForm.dataproc.projectId"), 2);//$NON-NLS-1$
         dataprocClusterIdForHiveTxt = new LabelledText(parent, Messages.getString("DatabaseForm.dataproc.clusterId"), 2); //$NON-NLS-1$
@@ -4464,6 +4503,7 @@ public class DatabaseForm extends AbstractForm {
                     enableDbVersion() ? versionStr : null, metadataconnection.getOtherParameters());
 
             managerConnection.setDbRootPath(directoryField.getText());
+            managerConnection.setSupportNLS(isOracleSupportNLS.getSelection());
 
         }
         IPreferenceStore store = CoreUIPlugin.getDefault().getPreferenceStore();
@@ -5071,6 +5111,8 @@ public class DatabaseForm extends AbstractForm {
 
                         getConnection().setDbVersionString(version.getVersionValue());
 
+                        showOracleSupportNLS(isSupportNLSOracleVersion(dbVersionCombo.getText()));
+                        
                     }
                     urlConnectionStringText.setText(getStringConnection());
                     checkFieldsValue();
@@ -6508,6 +6550,10 @@ public class DatabaseForm extends AbstractForm {
 
     private static String DEFAULT_HIVE_METASTORE_PORT = "9083";
 
+    private Label imageLabel;
+
+    private Composite supportNLSContainer;
+
     /**
      * SetEditable fields.
      *
@@ -6665,6 +6711,7 @@ public class DatabaseForm extends AbstractForm {
             showIfHiveMetastore();
             showIfSupportEncryption();
             showIfAuthentication();
+            showOracleSupportNLS(isOracle && isSupportNLSOracleVersion(dbVersionCombo.getText()));
             hideHiveExecutionFields(!doSupportTez());
 
             urlConnectionStringText.setEditable(!visible);
@@ -6967,6 +7014,32 @@ public class DatabaseForm extends AbstractForm {
         typeDbCompositeParent.layout();
         newParent.layout();
         compositeGroupDbSettings.layout();
+    }
+
+    private void showOracleSupportNLS(boolean show) {
+        GridData layoutData = (GridData) supportNLSContainer.getLayoutData();
+        layoutData.exclude = !show;
+        supportNLSContainer.setLayoutData(layoutData);
+        supportNLSContainer.setVisible(show);
+        imageLabel.setVisible(show);
+        if(!show) {
+            isOracleSupportNLS.setSelection(false);
+            getConnection().setSupportNLS(false);
+        }
+        supportNLSContainer.getParent().layout();
+    }
+    
+    private boolean isSupportNLSOracleVersion(String dbVersionString) {
+        if (!EDatabaseVersion4Drivers.ORACLE_8.getVersionDisplay().equals(dbVersionString) 
+                && !EDatabaseVersion4Drivers.ORACLE_9.getVersionDisplay().equals(dbVersionString) 
+                && !EDatabaseVersion4Drivers.ORACLE_10.getVersionDisplay().equals(dbVersionString)
+                && !EDatabaseVersion4Drivers.ORACLE_11.getVersionDisplay().equals(dbVersionString)
+                && !EDatabaseVersion4Drivers.ORACLE_12.getVersionDisplay().equals(dbVersionString)
+                ) {
+            return true;
+        }
+        
+        return false;
     }
 
     private void collectContextParams() {
@@ -7365,6 +7438,7 @@ public class DatabaseForm extends AbstractForm {
 
         jDBCschemaText.setEditable(!isContextMode());
 
+        isOracleSupportNLS.setEnabled(!isContextMode());
         generalMappingFileText.setEditable(!isContextMode());
         mappingFileText.setEditable(!isContextMode());
         if (isContextMode()) {

@@ -470,7 +470,7 @@ public class ExtractManager {
                         metadataConnection.getUsername(), metadataConnection.getPassword(), metadataConnection.getDatabase(),
                         metadataConnection.getSchema(), metadataConnection.getDriverClass(),
                         metadataConnection.getDriverJarPath(), metadataConnection.getDbVersionString(),
-                        metadataConnection.getAdditionalParams());
+                        metadataConnection.getAdditionalParams(), metadataConnection.isSupportNLS());
                 if (list != null && list.size() > 0) {
                     for (int i = 0; i < list.size(); i++) {
                         if (list.get(i) instanceof Driver) {
@@ -574,7 +574,7 @@ public class ExtractManager {
                         metadataConnection.getUsername(), metadataConnection.getPassword(), metadataConnection.getDatabase(),
                         metadataConnection.getSchema(), metadataConnection.getDriverClass(),
                         metadataConnection.getDriverJarPath(), metadataConnection.getDbVersionString(),
-                        metadataConnection.getAdditionalParams());
+                        metadataConnection.getAdditionalParams(), metadataConnection.isSupportNLS());
                 if (list != null && list.size() > 0) {
                     for (int i = 0; i < list.size(); i++) {
                         if (list.get(i) instanceof DriverShim) {
@@ -1064,7 +1064,7 @@ public class ExtractManager {
         List connList = extractMeta.getConnection(metadataConnection.getDbType(), metadataConnection.getUrl(),
                 metadataConnection.getUsername(), metadataConnection.getPassword(), metadataConnection.getDatabase(),
                 metadataConnection.getSchema(), metadataConnection.getDriverClass(), metadataConnection.getDriverJarPath(),
-                metadataConnection.getDbVersionString(), metadataConnection.getAdditionalParams());
+                metadataConnection.getDbVersionString(), metadataConnection.getAdditionalParams(), metadataConnection.isSupportNLS());
         try {
             if (!tableInfoParameters.isUsedName()) {
                 if (tableInfoParameters.getSqlFiter() != null && !"".equals(tableInfoParameters.getSqlFiter())) { //$NON-NLS-1$

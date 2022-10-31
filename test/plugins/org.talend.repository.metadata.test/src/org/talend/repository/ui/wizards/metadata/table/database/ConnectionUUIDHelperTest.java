@@ -21,8 +21,10 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Set;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
@@ -42,6 +44,7 @@ import org.talend.cwm.helper.ConnectionHelper;
 import org.talend.cwm.helper.PackageHelper;
 import org.talend.model.emf.CwmResource;
 import org.talend.utils.io.FilesUtils;
+
 import orgomg.cwm.objectmodel.core.Package;
 
 /**
@@ -170,7 +173,7 @@ public class ConnectionUUIDHelperTest {
 
         File testDataFile = getTestDataFile(TEST_DB_MYSQL_ITEM);
         assertNotNull(testDataFile);
-        assertEquals(FilesUtils.getChecksumAlder32(testDataFile), FilesUtils.getChecksumAlder32(copiedFile));
+        FileUtils.contentEqualsIgnoreEOL(testDataFile, copiedFile, StandardCharsets.UTF_8.toString());
     }
 
     @Test
@@ -196,7 +199,7 @@ public class ConnectionUUIDHelperTest {
 
         File testRemovedTableFile = getTestDataFile(TEST_DB_MYSQL_REMOVE_TABLE_ITEM);
         assertNotNull(testRemovedTableFile);
-        assertEquals(FilesUtils.getChecksumAlder32(testRemovedTableFile), FilesUtils.getChecksumAlder32(removedFile));
+        FileUtils.contentEqualsIgnoreEOL(testRemovedTableFile, removedFile, StandardCharsets.UTF_8.toString());
     }
 
     @Test
@@ -219,7 +222,7 @@ public class ConnectionUUIDHelperTest {
         originalItemResourse.save(changedFos, null);
 
         File testDataFile = getTestDataFile(TEST_DB_MYSQL_DIFF_LABEL_ITEM);
-        assertEquals(FilesUtils.getChecksumAlder32(testDataFile), FilesUtils.getChecksumAlder32(changedFile));
+        FileUtils.contentEqualsIgnoreEOL(testDataFile, changedFile, StandardCharsets.UTF_8.toString());
     }
 
 }

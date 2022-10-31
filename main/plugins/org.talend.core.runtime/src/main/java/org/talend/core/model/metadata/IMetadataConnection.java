@@ -194,6 +194,10 @@ public interface IMetadataConnection extends IMetadata {
     public String getContextName();
 
     public void setContextName(String contextName);
+    
+    public boolean isSupportNLS();
+    
+    public void setSupportNLS(boolean newSupportNLS);
 
     /**
      * Returns the value that you stored in the data collection by the key. Normally, it is like this key-value. For

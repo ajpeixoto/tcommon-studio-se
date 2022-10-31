@@ -187,6 +187,7 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute metadata.ecore#//DatabaseConnection/SQLMode"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute metadata.ecore#//DatabaseConnection/UiSchema"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference metadata.ecore#//DatabaseConnection/parameters"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute metadata.ecore#//DatabaseConnection/supportNLS"/>
     </genClasses>
     <genClasses ecoreClass="metadata.ecore#//SAPConnection">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute metadata.ecore#//SAPConnection/Host"/>
