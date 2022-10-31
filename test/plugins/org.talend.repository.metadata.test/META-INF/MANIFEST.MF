@@ -5,3 +5,4 @@ Bundle-SymbolicName: org.talend.repository.metadata.test
 Bundle-Version: 7.3.1.qualifier
 Fragment-Host: org.talend.repository.metadata
 Require-Bundle: org.talend.testutils
+Import-Package: org.apache.commons.io

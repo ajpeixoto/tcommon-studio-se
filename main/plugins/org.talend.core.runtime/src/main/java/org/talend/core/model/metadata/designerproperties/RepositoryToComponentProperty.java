@@ -1225,6 +1225,11 @@ public class RepositoryToComponentProperty {
             return value2;
 
         }
+        
+        if(value.equals("SUPPORT_NLS")) {
+            return connection.isSupportNLS();
+        }
+        
         if (value.equals("CDC_TYPE_MODE")) { //$NON-NLS-1$
             return new Boolean(CDCTypeMode.LOG_MODE.getName().equals(connection.getCdcTypeMode()));
         }

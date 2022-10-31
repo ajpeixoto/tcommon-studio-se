@@ -755,4 +755,54 @@ public interface DatabaseConnection extends Connection {
      */
     EMap<String, String> getParameters();
 
+    /**
+     * Returns the value of the '<em><b>Support NLS</b></em>' attribute.
+     * The default value is <code>"false"</code>.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the value of the '<em>Support NLS</em>' attribute.
+     * @see #isSetSupportNLS()
+     * @see #unsetSupportNLS()
+     * @see #setSupportNLS(boolean)
+     * @see org.talend.core.model.metadata.builder.connection.ConnectionPackage#getDatabaseConnection_SupportNLS()
+     * @model default="false" unsettable="true"
+     * @generated
+     */
+    boolean isSupportNLS();
+
+    /**
+     * Sets the value of the '{@link org.talend.core.model.metadata.builder.connection.DatabaseConnection#isSupportNLS <em>Support NLS</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @param value the new value of the '<em>Support NLS</em>' attribute.
+     * @see #isSetSupportNLS()
+     * @see #unsetSupportNLS()
+     * @see #isSupportNLS()
+     * @generated
+     */
+    void setSupportNLS(boolean value);
+
+    /**
+     * Unsets the value of the '{@link org.talend.core.model.metadata.builder.connection.DatabaseConnection#isSupportNLS <em>Support NLS</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #isSetSupportNLS()
+     * @see #isSupportNLS()
+     * @see #setSupportNLS(boolean)
+     * @generated
+     */
+    void unsetSupportNLS();
+
+    /**
+     * Returns whether the value of the '{@link org.talend.core.model.metadata.builder.connection.DatabaseConnection#isSupportNLS <em>Support NLS</em>}' attribute is set.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return whether the value of the '<em>Support NLS</em>' attribute is set.
+     * @see #unsetSupportNLS()
+     * @see #isSupportNLS()
+     * @see #setSupportNLS(boolean)
+     * @generated
+     */
+    boolean isSetSupportNLS();
+
 } // DatabaseConnection

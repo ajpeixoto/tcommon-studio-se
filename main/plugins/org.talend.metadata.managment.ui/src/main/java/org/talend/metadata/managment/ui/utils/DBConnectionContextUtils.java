@@ -893,6 +893,7 @@ public final class DBConnectionContextUtils {
         managerConnection.setValue(0, dbType, urlConnection, server, username, password, sidOrDatabase, port, filePath,
                 datasource, schemaOracle, additionParam, driverClassName, driverJarPath, dbVersionString);
         managerConnection.setDbRootPath(dbRootPath);
+        managerConnection.setSupportNLS(dbConn.isSupportNLS());
 
         return urlConnection;
     }
@@ -1058,6 +1059,12 @@ public final class DBConnectionContextUtils {
             cloneConn.setSQLMode(true);
         }
 
+        if(dbConn.isSetSupportNLS()) {
+            cloneConn.setSupportNLS(dbConn.isSupportNLS());
+        } else {
+            cloneConn.setSupportNLS(false);
+        }
+        
         // cloneConn.setProperties(dbConn.getProperties());
         // cloneConn.setCdcConns(dbConn.getCdcConns());
         // cloneConn.setQueries(dbConn.getQueries());

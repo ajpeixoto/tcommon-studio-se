@@ -90,6 +90,8 @@ public class ManagerConnection {
     Integer id = null;
 
     String additionalParams;
+    
+    private boolean supportNLS;
 
     private String schemaOracle;
 
@@ -288,7 +290,7 @@ public class ManagerConnection {
             }
             // test the connection
             testConnection = ExtractMetaDataFromDataBase.testConnection(dbTypeString, urlConnectionString, username, password,
-                    schemaName, driverClassName, driverJarPath, dbVersionString, additionalParams, retProposedSchema,
+                    schemaName, driverClassName, driverJarPath, dbVersionString, additionalParams, supportNLS, retProposedSchema,
                     sidOrDatabase);
             isValide = testConnection.getResult();
             messageException = testConnection.getMessageException();
@@ -388,7 +390,7 @@ public class ManagerConnection {
                         metadataConnection.getUrl(), metadataConnection.getUsername(), metadataConnection.getPassword(),
                         metadataConnection.getSchema(), metadataConnection.getDriverClass(),
                         metadataConnection.getDriverJarPath(), metadataConnection.getDbVersionString(),
-                        metadataConnection.getAdditionalParams(), retProposedSchema, metadataConnection.getDatabase());
+                        metadataConnection.getAdditionalParams(), metadataConnection.isSupportNLS(), retProposedSchema, metadataConnection.getDatabase());
             }
             // qli
             // record this metadataConnection as old connection.
@@ -473,6 +475,15 @@ public class ManagerConnection {
      */
     public void setValide(boolean isValide) {
         this.isValide = isValide;
+    }
+
+    
+    /**
+     * Sets the supportNLS.
+     * @param supportNLS the supportNLS to set
+     */
+    public void setSupportNLS(boolean supportNLS) {
+        this.supportNLS = supportNLS;
     }
 
 }
