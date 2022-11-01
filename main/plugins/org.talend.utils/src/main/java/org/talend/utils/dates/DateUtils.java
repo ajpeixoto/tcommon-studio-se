@@ -110,7 +110,6 @@ public final class DateUtils {
         dateFormat.setTimeZone(TimeZone.getTimeZone(UTC));
         String dateStr = dateFormat.format(localDate);
         try {
-            dateFormat.setTimeZone(TimeZone.getDefault());
             result = dateFormat.parse(dateStr);
         } catch (ParseException e) {
             log.error(e);
