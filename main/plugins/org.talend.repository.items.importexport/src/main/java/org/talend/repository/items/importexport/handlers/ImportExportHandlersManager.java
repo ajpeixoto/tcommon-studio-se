@@ -102,6 +102,8 @@ public class ImportExportHandlersManager {
 
     private ChangeIdManager changeIdManager = new ChangeIdManager();
 
+    private PendoImportManager pendoImportManager = new PendoImportManager();
+
     public ImportExportHandlersManager() {
         registryReader = ImportExportHandlersRegistryReader.getInstance();
     }
@@ -796,7 +798,7 @@ public class ImportExportHandlersManager {
                                         if (monitor.isCanceled()) {
                                             return;
                                         }
-
+                                        pendoImportManager.countItem(itemRecord);
                                         // will import
                                         importHandler.doImport(monitor, manager, itemRecord, overwriting, destinationPath);
 
@@ -1169,4 +1171,9 @@ public class ImportExportHandlersManager {
         importItem.setProperty(null);
         importItem.clear();
     }
+
+    public PendoImportManager getPendoImportManager() {
+        return pendoImportManager;
+    }
+
 }

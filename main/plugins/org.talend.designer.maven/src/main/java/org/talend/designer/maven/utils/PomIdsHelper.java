@@ -300,6 +300,111 @@ public class PomIdsHelper {
         return filter;
     }
 
+	private static String getPublishCloudVersion(String latestVersion) {
+		if (null == latestVersion) {
+			return "0.1.0";
+		} else {
+			int i = latestVersion.lastIndexOf('.') + 1;
+			return latestVersion.substring(0, i) + (Long.parseLong(latestVersion.substring(i)) + 1);
+	  }
+	}
+
+    /**
+     * @return "<bundleVersion>".
+     */
+    public static String getNotIteratedBundleVersion(Property property, String bundleVersion) {
+        String version = null;
+        if (property != null) {
+            boolean useSnapshot = false;
+            if (property.getAdditionalProperties() != null) {
+                version = (String) property.getAdditionalProperties().get(MavenConstants.NAME_USER_VERSION);
+                useSnapshot = property.getAdditionalProperties().containsKey(MavenConstants.NAME_PUBLISH_AS_SNAPSHOT);
+            }
+            if(version == null) {
+                version = bundleVersion;
+            }
+            if (version == null) {
+                version = VersionUtils.getPublishVersion(property.getVersion());
+            }
+            if (useSnapshot) {
+                version += MavenConstants.SNAPSHOT;
+            }
+        }
+        return version;
+    }
+
+    /**
+     * @return "<featureVersion>".
+     */
+    public static String getNotIteratedFeatureVersion(Property property, String featureVersion) {
+        String version = null;
+        if (property != null) {
+            boolean useSnapshot = false;
+            if (property.getAdditionalProperties() != null) {
+                version = (String) property.getAdditionalProperties().get(MavenConstants.NAME_USER_VERSION);
+                useSnapshot = property.getAdditionalProperties().containsKey(MavenConstants.NAME_PUBLISH_AS_SNAPSHOT);
+            }
+            if(version == null) {
+                version = featureVersion;
+            }
+            if (version == null) {
+                version = VersionUtils.getPublishVersion(property.getVersion());
+            }
+            if (useSnapshot) {
+                version += MavenConstants.SNAPSHOT;
+            }
+        }
+        return version;
+    }
+
+    /**
+     * @return "<bundleVersion>".
+     */
+    public static String getBundleVersion(Property property, String bundleVersion) {
+        String version = null;
+        if (property != null) {
+            boolean useSnapshot = false;
+            if (property.getAdditionalProperties() != null) {
+                version = (String) property.getAdditionalProperties().get(MavenConstants.NAME_USER_VERSION);
+                useSnapshot = property.getAdditionalProperties().containsKey(MavenConstants.NAME_PUBLISH_AS_SNAPSHOT);
+            }
+            if(version == null) {
+                version = getPublishCloudVersion(bundleVersion);
+            }
+            if (version == null) {
+                version = VersionUtils.getPublishVersion(property.getVersion());
+            }
+            if (useSnapshot) {
+                version += MavenConstants.SNAPSHOT;
+            }
+        }
+        return version;
+    }
+
+    /**
+     * @return "<featureVersion>".
+     */
+    public static String getFeatureVersion(Property property, String featureVersion) {
+        String version = null;
+        if (property != null) {
+            boolean useSnapshot = false;
+            if (property.getAdditionalProperties() != null) {
+                version = (String) property.getAdditionalProperties().get(MavenConstants.NAME_USER_VERSION);
+                useSnapshot = property.getAdditionalProperties().containsKey(MavenConstants.NAME_PUBLISH_AS_SNAPSHOT);
+            }
+            if(version == null) {
+                version = getPublishCloudVersion(featureVersion);
+            }
+            if (version == null) {
+                version = VersionUtils.getPublishVersion(property.getVersion());
+            }
+            if (useSnapshot) {
+                version += MavenConstants.SNAPSHOT;
+            }
+        }
+        return version;
+    }
+
     public static boolean useProfileModule() {
         String useProfileModule = System.getProperty("talend.profile.module");
         if (useProfileModule != null) {

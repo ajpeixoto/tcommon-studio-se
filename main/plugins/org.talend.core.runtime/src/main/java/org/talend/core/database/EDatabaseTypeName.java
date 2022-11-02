@@ -147,8 +147,15 @@ public enum EDatabaseTypeName {
 
     MAPRDB(
             "MapRDB", "MapRDB", Boolean.FALSE, "MAPRDB", EDatabaseSchemaOrCatalogMapping.Sid, EDatabaseSchemaOrCatalogMapping.Column_Family, true),//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
     SNOWFLAKE(
-            "SNOWFLAKE","SNOWFLAKE",Boolean.TRUE,"SNOWFLAKE",EDatabaseSchemaOrCatalogMapping.None, EDatabaseSchemaOrCatalogMapping.None);
+            "SNOWFLAKE",
+            "SNOWFLAKE",
+            Boolean.TRUE,
+            "SNOWFLAKE",
+            EDatabaseSchemaOrCatalogMapping.None,
+            EDatabaseSchemaOrCatalogMapping.None,
+            true);
 
     // displayName is used in Java code.
     private String displayName;

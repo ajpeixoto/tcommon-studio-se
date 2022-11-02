@@ -260,6 +260,7 @@ public final class ConvertionHelper {
         result.setContentModel(connection.isContextMode());
         result.setContextId(sourceConnection.getContextId());
         result.setContextName(sourceConnection.getContextName());
+        result.setSupportNLS(sourceConnection.isSupportNLS());
         // handle oracle database connnection of general_jdbc.
         result.setSchema(getMeataConnectionSchema(result));
         convertOtherParameters(result, connection);

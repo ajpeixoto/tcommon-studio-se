@@ -202,6 +202,8 @@ public interface IDesignerCoreService extends IService {
 
     public String[] getNeedRemoveModulesForLog4j();
 
+    public void openComponentOnlineHelp(String componentName);
+
     public IProcess getJobletProcessByItem(Item item);
 
 }

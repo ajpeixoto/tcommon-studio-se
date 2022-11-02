@@ -32,6 +32,16 @@ public interface ISwitchContext {
     public boolean updateContextGroup(ConnectionItem connItem, String selectedContext);
 
     /**
+     * update Context Group for one Connection Item.
+     *
+     * @param connItem
+     * @param selectedContext
+     * @return
+     */
+    public boolean updateContextGroup(ConnectionItem connItem, String selectedContext, String originalContext,
+            boolean... isMigrationTask);
+
+    /**
      * update Context For all Connection Items.
      *
      * @param contextGroupRanamedMap

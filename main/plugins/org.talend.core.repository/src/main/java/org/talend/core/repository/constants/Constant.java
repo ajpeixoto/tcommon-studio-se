@@ -39,6 +39,19 @@ public final class Constant {
      */
     public static final String ITEM_EVENT_PROPERTY_KEY = "item"; //$NON-NLS-1$
 
+
+    /**
+     * key used to get/set the property of an event related to an item (REPOSITORY_ITEM_EVENT_PREFIX). The value is the
+     * cloudVersion string.
+     */
+    public static final String VERSION_EVENT_CLOUD_KEY = "cloudVersion"; //$NON-NLS-1$
+
+    /**
+     * key used to get/set the property of an event related to an item (REPOSITORY_ITEM_EVENT_PREFIX). The value is the
+     * cloudName string.
+     */
+    public static final String VERSION_EVENT_CLOUD_NAME = "cloudName"; //$NON-NLS-1$
+    
     /**
      * key used to get/set the property of an event related to a list of files modified in the repository
      * (REPOSITORY_ITEM_EVENT_PREFIX). The value is the Collection of String (list of all files modified).
@@ -55,6 +68,11 @@ public final class Constant {
      * suffix used when issuing an event on the OSGI event bus when the main project is reloaded.
      */
     public static final String PROJECT_RELOAD_EVENT_SUFFIX = "project"; //$NON-NLS-1$
+
+    /**
+     * suffix used when issuing an event on the OSGI event bus when published to cloud.
+     */
+    public static final String CLOUD_PUBLISH_EVENT_SUFFIX = "cloud"; //$NON-NLS-1$
 
 
     /**

@@ -24,7 +24,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.views.properties.tabbed.ITabItem;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetWidgetFactory;
@@ -127,6 +126,14 @@ public class HorizontalTabFactory {
 
     public void setTitleImage(Image image) {
         title.setTitleImage(image);
+    }
+
+    public void setHelpComponentName(String componentName) {
+        title.setComponentName(componentName);
+    }
+
+    public TalendTabbedPropertyTitle getTabbedPropertyTitle() {
+        return title;
     }
 
     /**

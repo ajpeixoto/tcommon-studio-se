@@ -113,6 +113,7 @@ public class MetadataConnection implements IMetadataConnection {
 
     private String contextName;
 
+    private boolean supportNLS = false;
     // ~
 
     private String comment;
@@ -728,6 +729,14 @@ public class MetadataConnection implements IMetadataConnection {
 
     public void setContextName(String contextName) {
         this.contextName = contextName;
+    }
+    
+    public boolean isSupportNLS() {
+        return supportNLS;
+    }
+    
+    public void setSupportNLS(boolean supportNLS) {
+        this.supportNLS = supportNLS;
     }
 
     /*

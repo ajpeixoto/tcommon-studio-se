@@ -121,6 +121,8 @@ public class ExtractMetaDataUtils {
 
     private String[] ORACLE_SSL_JARS = new String[] { "oraclepki-12.2.0.1.jar", "osdt_cert-12.2.0.1.jar", //$NON-NLS-1$//$NON-NLS-2$
             "osdt_core-12.2.0.1.jar" }; //$NON-NLS-1$
+    
+    private String ORACLE_NLS_JARS = "orai18n-19.3.0.0.jar";
 
     public static final String SNOWFLAKE = "Snowflake"; //$NON-NLS-1$
 
@@ -829,6 +831,11 @@ public class ExtractMetaDataUtils {
      */
     public List getConnection(String dbType, String url, String username, String pwd, String dataBase, String schemaBase,
             final String driverClassName, final String driverJarPath, String dbVersion, String additionalParams) {
+        return getConnection(dbType, url, username, pwd, dataBase, schemaBase, driverClassName, driverJarPath, dbVersion, additionalParams, false);
+    }
+    
+    public List getConnection(String dbType, String url, String username, String pwd, String dataBase, String schemaBase,
+            final String driverClassName, final String driverJarPath, String dbVersion, String additionalParams, boolean supportNLS) {
         boolean isColsed = false;
         List conList = new ArrayList();
         try {
@@ -846,7 +853,7 @@ public class ExtractMetaDataUtils {
                 closeConnection(true); // colse before connection.
                 checkDBConnectionTimeout();
 
-                list = connect(dbType, url, username, pwd, driverClassName, driverJarPath, dbVersion, additionalParams);
+                list = connect(dbType, url, username, pwd, driverClassName, driverJarPath, dbVersion, additionalParams, supportNLS);
                 if (list != null && list.size() > 0) {
                     for (int i = 0; i < list.size(); i++) {
                         if (list.get(i) instanceof Connection) {
@@ -938,7 +945,7 @@ public class ExtractMetaDataUtils {
      * @throws Exception
      */
     public List connect(String dbType, String url, String username, String pwd, final String driverClassNameArg,
-            final String driverJarPathArg, String dbVersion, String additionalParams) throws Exception {
+            final String driverJarPathArg, String dbVersion, String additionalParams, boolean supportNLS) throws Exception {
         Connection connection = null;
         DriverShim wapperDriver = null;
         List conList = new ArrayList();
@@ -953,11 +960,18 @@ public class ExtractMetaDataUtils {
             if ((driverJarPathArg == null || driverJarPathArg.equals(""))) { //$NON-NLS-1$
                 List<String> driverNames = EDatabaseVersion4Drivers.getDrivers(dbType, dbVersion);
                 if (driverNames != null) {
+                    if(EDatabaseTypeName.ORACLEFORSID.getProduct().equals(EDatabaseTypeName.getTypeFromDbType(dbType).getProduct())) {
+                        if(supportNLS){
+                            driverNames.add(ORACLE_NLS_JARS);
+                        }
+                    }
+                    
                     if (EDatabaseTypeName.ORACLE_CUSTOM.getDisplayName().equals(dbType)
                             && StringUtils.isNotEmpty(additionalParams)) {
                         if (additionalParams.contains(SSLPreferenceConstants.TRUSTSTORE_TYPE)) {
                              driverNames.addAll(Arrays.asList(ORACLE_SSL_JARS));
                         }
+                        
                     } else if (SNOWFLAKE.equals(dbType)) { // $NON-NLS-1$
                         // TDQ-17294 msjian Support of Snowflake for DQ Datamart
                         driverNames.add(SNOWFLAKE_DRIVER_JAR);
@@ -1071,8 +1085,10 @@ public class ExtractMetaDataUtils {
                             }
                         }
                     } else {
-                        if (driverJarPathArg.startsWith(MavenUrlHelper.MVN_PROTOCOL)) {
-                            setDriverPath(librairesManagerService, jarPathList, driverJarPathArg);
+                        if (TalendQuoteUtils.removeQuotesIfExist(driverJarPathArg)
+                                .startsWith(MavenUrlHelper.MVN_PROTOCOL)) {
+                            setDriverPath(librairesManagerService, jarPathList,
+                                    TalendQuoteUtils.removeQuotesIfExist(driverJarPathArg));
                         } else {
                             String jarName = librairesManagerService.getJarNameFromMavenuri(driverJarPathArg);
                             if (jarName == null) {
@@ -1279,7 +1295,7 @@ public class ExtractMetaDataUtils {
         List list = getConnection(metadataConnection.getDbType(), metadataConnection.getUrl(), metadataConnection.getUsername(),
                 metadataConnection.getPassword(), metadataConnection.getDatabase(), metadataConnection.getSchema(),
                 metadataConnection.getDriverClass(), metadataConnection.getDriverJarPath(),
-                metadataConnection.getDbVersionString(), metadataConnection.getAdditionalParams());
+                metadataConnection.getDbVersionString(), metadataConnection.getAdditionalParams(), metadataConnection.isSupportNLS());
         return list;
     }
 

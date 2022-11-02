@@ -77,6 +77,7 @@ import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.runtime.model.emf.provider.EmfResourcesFactoryReader;
 import org.talend.commons.runtime.model.emf.provider.ResourceOption;
 import org.talend.commons.runtime.model.repository.ERepositoryStatus;
+import org.talend.commons.runtime.service.ITaCoKitService;
 import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.core.GlobalServiceRegister;
@@ -99,6 +100,8 @@ import org.talend.designer.maven.tools.AggregatorPomsHelper;
 import org.talend.designer.maven.tools.MavenPomSynchronizer;
 import org.talend.migration.MigrationReportHelper;
 import org.talend.repository.items.importexport.handlers.ImportExportHandlersManager;
+import org.talend.repository.items.importexport.handlers.imports.IImportItemsHandler;
+import org.talend.repository.items.importexport.handlers.imports.ImportBasicHandler;
 import org.talend.repository.items.importexport.handlers.imports.ImportCacheHelper;
 import org.talend.repository.items.importexport.handlers.imports.ImportDependencyRelationsHelper;
 import org.talend.repository.items.importexport.handlers.model.EmptyFolderImportItem;
@@ -342,7 +345,7 @@ public class ImportItemsWizardPage extends WizardPage {
                     if (GlobalServiceRegister.getDefault().isServiceRegistered(IExchangeService.class)) {
                         archivePathField.setEditable(false);
 
-                        IExchangeService service = (IExchangeService) GlobalServiceRegister.getDefault().getService(
+                        IExchangeService service = GlobalServiceRegister.getDefault().getService(
                                 IExchangeService.class);
 
                         String selectedArchive = service.openExchangeDialog();
@@ -807,9 +810,50 @@ public class ImportItemsWizardPage extends WizardPage {
             // already checked all
             return;
         }
-
+        List<ItemImportNode> allImportItemNode = nodesBuilder.getAllImportItemNode();
         ImportDependencyRelationsHelper.getInstance().checkImportRelationDependency(checkedNodeList, toSelectSet,
-                nodesBuilder.getAllImportItemNode());
+                allImportItemNode);
+
+        ITaCoKitService coKitService = ITaCoKitService.getInstance();
+
+        Set<ItemImportNode> parentNodetoSelectSet = new HashSet<ItemImportNode>();
+
+        if (coKitService != null) {
+            for (ItemImportNode itemImportNode : toSelectSet) {
+
+                ImportItem itemRecord = itemImportNode.getItemRecord();
+
+                if (itemRecord != null) {
+                    ERepositoryObjectType repositoryType = itemRecord.getRepositoryType();
+
+                    boolean isTaCoKitType = coKitService.isTaCoKitType(repositoryType);
+
+                    if (isTaCoKitType) {
+                        IImportItemsHandler importHandler = itemRecord.getImportHandler();
+                        if (importHandler instanceof ImportBasicHandler) {
+                            ((ImportBasicHandler) importHandler).resolveItem(resManager, itemRecord);
+                            Item item = itemRecord.getProperty().getItem();
+                            String parentItemId = coKitService.getParentItemIdFromItem(item);
+                            if (StringUtils.isNotBlank(parentItemId)) {
+                                for (ItemImportNode importNode : allImportItemNode) {
+                                    ImportItem importItem = importNode.getItemRecord();
+                                    if (importItem != null && importItem.getProperty() != null
+                                            && StringUtils.equals(parentItemId, importItem.getProperty().getId())) {
+                                        parentNodetoSelectSet.add(importNode);
+                                        break;
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (parentNodetoSelectSet.size() > 0) {
+
+            toSelectSet.addAll(parentNodetoSelectSet);
+        }
         filteredCheckboxTree.getViewer().setCheckedElements(toSelectSet.toArray());
     }
 
@@ -1163,6 +1207,7 @@ public class ImportItemsWizardPage extends WizardPage {
     public boolean performFinish() {
         final List<ImportItem> checkedItemRecords = getCheckedElements();
         final IProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
+        importManager.getPendoImportManager().cacheItemProperty(checkedItemRecords);
         
         /*
          * ?? prepare to do import, unlock the existed one, and make sure the overwrite to work well.
@@ -1216,11 +1261,12 @@ public class ImportItemsWizardPage extends WizardPage {
                     final ResourceOption importOption = ResourceOption.ITEM_IMPORTATION;
                     try {
                         EmfResourcesFactoryReader.INSTANCE.addOption(importOption, false);
-
+                        importManager.getPendoImportManager().setStudioImport(true);
                         importManager.importItemRecords(monitor, resManager, checkedItemRecords, overwrite,
                                 nodesBuilder.getAllImportItemRecords(), destinationPath, alwaysRegenId);
                     } finally {
                         EmfResourcesFactoryReader.INSTANCE.removOption(importOption, false);
+                        importManager.getPendoImportManager().sendTrackToPendo();
                     }
                     Display.getDefault().syncExec(new Runnable() {
 

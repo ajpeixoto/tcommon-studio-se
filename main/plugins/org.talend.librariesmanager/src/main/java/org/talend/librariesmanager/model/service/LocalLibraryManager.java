@@ -377,6 +377,10 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
                     .process(new Exception(getClass().getSimpleName() + " resolve " + module.getModuleName() + " failed !"));
         }
         try {
+            // try maven uri first
+            if (jarFile == null) {
+                jarFile = getJarFile(module.getMavenUri());
+            }
             // try the jar name if can't get jar with uri.
             if (jarFile == null) {
                 jarFile = getJarFile(jarNeeded);
@@ -388,7 +392,10 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
                         ILibraryManagerUIService libUiService = GlobalServiceRegister.getDefault()
                                 .getService(ILibraryManagerUIService.class);
 
-                        libUiService.installModules(new String[] { jarNeeded });
+                        // libUiService.installModules(new String[] { jarNeeded });
+                        List<ModuleNeeded> moduleList = new ArrayList<ModuleNeeded>();
+                        moduleList.add(module);
+                        libUiService.installModules(moduleList);
                     }
                     jarFile = retrieveJarFromLocal(module);
                     if (jarFile == null) {
@@ -832,12 +839,19 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
     }
 
     @Override
-    public void clearCache() {
+    public void clearCache(boolean cleanIndex) {
         if (isInitialized()) {
-            LibrariesIndexManager.getInstance().clearAll();
+            if (cleanIndex) {
+                LibrariesIndexManager.getInstance().clearAll();
+            }
             ModuleStatusProvider.reset();
         }
         jarList.clear();
+    }
+    
+    @Override
+    public void clearCache() {
+        clearCache(true);
     }
 
     @Override
@@ -1337,6 +1351,21 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
             deployLibsFromCustomComponents(service, platformURLMap);
         }
         return mavenURIMap;
+    }
+    
+    public void deployLibsFromCustomComponents() {
+        IComponentsService service = null;
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(IComponentsService.class)) {
+            service = GlobalServiceRegister.getDefault().getService(IComponentsService.class);
+        }
+        if (service != null) {
+            Map<String, String> platformURLMap = new HashMap<>();
+            platformURLMap = LibrariesIndexManager.getInstance().getAllStudioLibsFromIndex();
+            // Need to read components first, otherwise FiltUtils.getFilesFromFolderByName() returns empty for custom
+            // component folder.
+            service.getComponentsFactory().readComponents();
+            deployLibsFromCustomComponents(service, platformURLMap);
+        }
     }
 
     /**

@@ -137,8 +137,11 @@ public class InternalNodeComponentHandler extends AbstractComponentHandler {
                 }
                 componentElement.addAttribute("job", HTMLDocUtils.checkString(node.getLabel()));
                 // ../b/b_0.1.html
-                String href = "../" + node.getLabel() + "/" + node.getLabel() + "_" + version + ".html";
-                componentElement.addAttribute("href", HTMLDocUtils.checkString(href));
+                if (processElement != null && processElement.getValue() != null) {
+                    String processName = processElement.getValue().toString();
+                    String href = "../" + processName + "/" + processName + "_" + version + ".html";
+                    componentElement.addAttribute("href", HTMLDocUtils.checkString(href));
+                }
 
             }
             generateComponentElemParamters(node, componentElement);

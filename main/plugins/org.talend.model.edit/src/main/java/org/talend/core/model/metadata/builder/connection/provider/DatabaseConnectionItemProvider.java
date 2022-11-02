@@ -80,6 +80,7 @@ public class DatabaseConnectionItemProvider extends ConnectionItemProvider imple
             addCdcTypeModePropertyDescriptor(object);
             addSQLModePropertyDescriptor(object);
             addUiSchemaPropertyDescriptor(object);
+            addSupportNLSPropertyDescriptor(object);
         }
         return itemPropertyDescriptors;
     }
@@ -469,6 +470,22 @@ public class DatabaseConnectionItemProvider extends ConnectionItemProvider imple
     }
 
     /**
+     * This adds a property descriptor for the Support NLS feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    protected void addSupportNLSPropertyDescriptor(Object object) {
+        itemPropertyDescriptors
+                .add(createItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
+                        getResourceLocator(), getString("_UI_DatabaseConnection_supportNLS_feature"),
+                        getString("_UI_PropertyDescriptor_description", "_UI_DatabaseConnection_supportNLS_feature",
+                                "_UI_DatabaseConnection_type"),
+                        ConnectionPackage.Literals.DATABASE_CONNECTION__SUPPORT_NLS, true, false, false,
+                        ItemPropertyDescriptor.BOOLEAN_VALUE_IMAGE, null, null));
+    }
+
+    /**
      * This specifies how to implement {@link #getChildren} and is used to deduce an appropriate feature for an
      * {@link org.eclipse.emf.edit.command.AddCommand}, {@link org.eclipse.emf.edit.command.RemoveCommand} or
      * {@link org.eclipse.emf.edit.command.MoveCommand} in {@link #createCommand}.
@@ -558,6 +575,7 @@ public class DatabaseConnectionItemProvider extends ConnectionItemProvider imple
         case ConnectionPackage.DATABASE_CONNECTION__CDC_TYPE_MODE:
         case ConnectionPackage.DATABASE_CONNECTION__SQL_MODE:
         case ConnectionPackage.DATABASE_CONNECTION__UI_SCHEMA:
+        case ConnectionPackage.DATABASE_CONNECTION__SUPPORT_NLS:
             fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
             return;
         case ConnectionPackage.DATABASE_CONNECTION__CDC_CONNS:

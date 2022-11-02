@@ -55,6 +55,11 @@ public class NetworkUtil {
     private static final int DEFAULT_NEXUS_TIMEOUT = 20000;// same as preference value
 
     public static final String ORG_TALEND_DESIGNER_CORE = "org.talend.designer.core"; //$NON-NLS-1$
+    
+    /*
+     * see ITalendCorePrefConstants.PERFORMANCE_TAC_READ_TIMEOUT
+     */
+    private static final String PERFORMANCE_TAC_READ_TIMEOUT = "PERFORMANCE_TAC_READ_TIMEOUT"; //$NON-NLS-1$
 
     private static final String PROP_DISABLEDSCHEMES_USE_DEFAULT = "talend.studio.jdk.http.auth.tunneling.disabledSchemes.useDefault";
 
@@ -149,10 +154,10 @@ public class NetworkUtil {
     }
 
     public static int getNexusTimeout() {
-        int timeout = DEFAULT_NEXUS_TIMEOUT;
+        int timeout = Integer.getInteger("nexus.timeout.min", DEFAULT_NEXUS_TIMEOUT);
         try {
             IEclipsePreferences node = InstanceScope.INSTANCE.getNode(ORG_TALEND_DESIGNER_CORE);
-            timeout = node.getInt(ITalendNexusPrefConstants.NEXUS_TIMEOUT, DEFAULT_NEXUS_TIMEOUT);
+            timeout = Math.max(timeout, node.getInt(PERFORMANCE_TAC_READ_TIMEOUT, 0) * 1000);
         } catch (Throwable e) {
             ExceptionHandler.process(e);
         }

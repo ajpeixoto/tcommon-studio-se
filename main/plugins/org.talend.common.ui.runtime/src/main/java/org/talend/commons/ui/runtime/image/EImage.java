@@ -41,6 +41,8 @@ public enum EImage implements IImage {
 
     QUESTION_ICON("/icons/question.gif"), //$NON-NLS-1$
 
+    HELP_ICON("/icons/help.png"), //$NON-NLS-1$
+
     CREATE_CONNECTION_ICON("/icons/connection.gif"), //$NON-NLS-1$
 
     RESET_DBTYPES_ICON("/icons/reset_dbtypes.jpg"), //$NON-NLS-1$

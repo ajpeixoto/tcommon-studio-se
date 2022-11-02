@@ -111,6 +111,26 @@ public class ElementValueTypeImpl extends EObjectImpl implements ElementValueTyp
     protected boolean hexValue = HEX_VALUE_EDEFAULT;
 
     /**
+     * The default value of the '{@link #getLabel() <em>Label</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #getLabel()
+     * @generated
+     * @ordered
+     */
+    protected static final String LABEL_EDEFAULT = null;
+
+    /**
+     * The cached value of the '{@link #getLabel() <em>Label</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #getLabel()
+     * @generated
+     * @ordered
+     */
+    protected String label = LABEL_EDEFAULT;
+
+    /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
      * @generated
      */
@@ -226,6 +246,27 @@ public class ElementValueTypeImpl extends EObjectImpl implements ElementValueTyp
     }
 
     /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public String getLabel() {
+        return label;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public void setLabel(String newLabel) {
+        String oldLabel = label;
+        label = newLabel;
+        if (eNotificationRequired())
+            eNotify(new ENotificationImpl(this, Notification.SET, TalendFilePackage.ELEMENT_VALUE_TYPE__LABEL, oldLabel, label));
+    }
+
+    /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
      * @generated
      */
@@ -239,6 +280,8 @@ public class ElementValueTypeImpl extends EObjectImpl implements ElementValueTyp
                 return getType();
             case TalendFilePackage.ELEMENT_VALUE_TYPE__HEX_VALUE:
                 return isHexValue() ? Boolean.TRUE : Boolean.FALSE;
+            case TalendFilePackage.ELEMENT_VALUE_TYPE__LABEL:
+                return getLabel();
         }
         return super.eGet(featureID, resolve, coreType);
     }
@@ -260,6 +303,9 @@ public class ElementValueTypeImpl extends EObjectImpl implements ElementValueTyp
                 return;
             case TalendFilePackage.ELEMENT_VALUE_TYPE__HEX_VALUE:
                 setHexValue(((Boolean)newValue).booleanValue());
+                return;
+            case TalendFilePackage.ELEMENT_VALUE_TYPE__LABEL:
+                setLabel((String)newValue);
                 return;
         }
         super.eSet(featureID, newValue);
@@ -283,6 +329,9 @@ public class ElementValueTypeImpl extends EObjectImpl implements ElementValueTyp
             case TalendFilePackage.ELEMENT_VALUE_TYPE__HEX_VALUE:
                 setHexValue(HEX_VALUE_EDEFAULT);
                 return;
+            case TalendFilePackage.ELEMENT_VALUE_TYPE__LABEL:
+                setLabel(LABEL_EDEFAULT);
+                return;
         }
         super.eUnset(featureID);
     }
@@ -301,6 +350,8 @@ public class ElementValueTypeImpl extends EObjectImpl implements ElementValueTyp
                 return TYPE_EDEFAULT == null ? type != null : !TYPE_EDEFAULT.equals(type);
             case TalendFilePackage.ELEMENT_VALUE_TYPE__HEX_VALUE:
                 return hexValue != HEX_VALUE_EDEFAULT;
+            case TalendFilePackage.ELEMENT_VALUE_TYPE__LABEL:
+                return LABEL_EDEFAULT == null ? label != null : !LABEL_EDEFAULT.equals(label);
         }
         return super.eIsSet(featureID);
     }
@@ -321,6 +372,8 @@ public class ElementValueTypeImpl extends EObjectImpl implements ElementValueTyp
         result.append(type);
         result.append(", hexValue: ");
         result.append(hexValue);
+        result.append(", label: ");
+        result.append(label);
         result.append(')');
         return result.toString();
     }

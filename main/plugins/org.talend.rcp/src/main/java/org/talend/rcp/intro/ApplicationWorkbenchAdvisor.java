@@ -26,12 +26,14 @@ import org.eclipse.ui.application.IWorkbenchConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
 import org.eclipse.ui.internal.ide.application.IDEWorkbenchAdvisor;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.LoginException;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.utils.system.EclipseCommandLine;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.utils.LoginTaskRegistryReader;
+import org.talend.core.service.ICloudSignOnService;
 import org.talend.core.ui.branding.IBrandingConfiguration;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.core.ui.services.IGitUIProviderService;
@@ -135,20 +137,33 @@ public class ApplicationWorkbenchAdvisor extends IDEWorkbenchAdvisor {
     @Override
     public void postStartup() {
         super.postStartup();
-
+        try {
+            if (ICloudSignOnService.get() != null && ICloudSignOnService.get().isSignViaCloud()) {
+                ICloudSignOnService.get().startHeartBeat();
+            }
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        }
         if (!ArrayUtils.contains(Platform.getApplicationArgs(), EclipseCommandLine.TALEND_DISABLE_LOGINDIALOG_COMMAND)) {
             RegisterManagement.getInstance().validateRegistration();
         }
-
         // PerspectiveReviewUtil.checkPerspectiveDisplayItems();
     }
 
     @Override
     public boolean preShutdown() {
-        if (IGitUIProviderService.get() != null && IGitUIProviderService.get().checkPendingChanges()) {
-            return false;
+        boolean preShutwond = super.preShutdown();
+        boolean commitChanges = true;
+        if (ICloudSignOnService.get() != null && ICloudSignOnService.get().isReloginDialogRunning()) {
+            commitChanges = false;
         }
-        return super.preShutdown();
+        if (commitChanges && IGitUIProviderService.get() != null && IGitUIProviderService.get().checkPendingChanges()) {
+            preShutwond = false;
+        }
+        if (preShutwond && ICloudSignOnService.get() != null) {
+            ICloudSignOnService.get().stopHeartBeat();
+        }
+        return preShutwond;
     }
 
 }

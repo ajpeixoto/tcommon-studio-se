@@ -31,6 +31,7 @@ import org.talend.core.model.metadata.ColumnNameChanged;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.builder.connection.MetadataTable;
 import org.talend.core.model.properties.Item;
+import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
@@ -116,6 +117,7 @@ public interface ICoreService extends IService {
 
     public String validateValueForDBType(String columnName);
 
+    @Deprecated
     public void synchronizeMapptingXML(ITalendProcessJavaProject talendJavaProject);
 
     public IPreferenceStore getPreferenceStore();
@@ -124,6 +126,7 @@ public interface ICoreService extends IService {
 
     public IMetadataTable convert(MetadataTable originalTable);
 
+    @Deprecated
     public void syncMappingsFileFromSystemToProject();
     
     /**
@@ -131,5 +134,18 @@ public interface ICoreService extends IService {
      * @param monitor
      */
     void installComponents(IProgressMonitor monitor);
+
+    Integer getSignatureVerifyResult(Property property, IPath resourcePath, boolean considerGP) throws Exception;
+
+    String getLicenseCustomer();
+
+    boolean isInValidGP();
+
+    public static ICoreService get() {
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(ICoreService.class)) {
+            return GlobalServiceRegister.getDefault().getService(ICoreService.class);
+        }
+        return null;
+    }
 
 }

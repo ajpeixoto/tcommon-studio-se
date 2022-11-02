@@ -12,21 +12,10 @@
 // ============================================================================
 package org.talend.core;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.apache.log4j.Logger;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -41,21 +30,19 @@ import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.LoginException;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.exception.SystemException;
-import org.talend.commons.runtime.xml.XmlUtil;
 import org.talend.commons.ui.runtime.image.OverlayImageProvider;
-import org.talend.commons.utils.generation.JavaUtils;
 import org.talend.commons.utils.workbench.resources.ResourceUtils;
 import org.talend.core.model.general.LibraryInfo;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.metadata.ColumnNameChanged;
 import org.talend.core.model.metadata.IMetadataTable;
-import org.talend.core.model.metadata.MetadataTalendType;
 import org.talend.core.model.metadata.MetadataToolHelper;
 import org.talend.core.model.metadata.QueryUtil;
 import org.talend.core.model.metadata.builder.ConvertionHelper;
 import org.talend.core.model.metadata.builder.connection.MetadataTable;
 import org.talend.core.model.process.ElementParameterParser;
 import org.talend.core.model.properties.Item;
+import org.talend.core.model.properties.Property;
 import org.talend.core.model.relationship.RelationshipItemBuilder;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.repository.RepositoryManager;
@@ -70,6 +57,7 @@ import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.prefs.PreferenceManipulator;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
+import org.talend.core.services.ICoreTisService;
 import org.talend.core.services.IJobCheckService;
 import org.talend.core.utils.KeywordsValidator;
 import org.talend.designer.codegen.ICodeGeneratorService;
@@ -77,16 +65,9 @@ import org.talend.designer.codegen.ITalendSynchronizer;
 import org.talend.designer.core.IDesignerCoreService;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.runprocess.IRunProcessService;
-import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.RepositoryWorkUnit;
 import org.talend.repository.model.RepositoryConstants;
-import org.talend.utils.xml.XmlUtils;
-import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 /**
  * DOC Administrator class global comment. Detailled comment
@@ -350,120 +331,15 @@ public class CoreService implements ICoreService {
     }
 
     @Override
+    @Deprecated
     public void synchronizeMapptingXML(ITalendProcessJavaProject talendJavaProject) {
-        try {
-            if (talendJavaProject == null) {
-                return;
-            }
-            URL url = MetadataTalendType.getProjectForderURLOfMappingsFile();
-            if (url != null) {
-                // set the project mappings url
-                System.setProperty(ProcessorUtilities.PROP_MAPPINGS_URL, url.toString()); // $NON-NLS-1$
-                IFolder xmlMappingFolder = talendJavaProject.getResourceSubFolder(null, JavaUtils.JAVA_XML_MAPPING);
-
-                File mappingSource = new File(url.getPath());
-                FilenameFilter filter = new FilenameFilter() {
-
-                    @Override
-                    public boolean accept(File dir, String name) {
-                        if (XmlUtil.isXMLFile(name)) {
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-
-                for (File file : mappingSource.listFiles(filter)) {
-                    String targetName = getTargetName(file);
-                    IFile targetFile = xmlMappingFolder.getFile(targetName);
-                    copyFile(file, targetFile);
-                }
-            }
-        } catch (CoreException e) {
-            ExceptionHandler.process(e);
-        } catch (IOException e) {
-            ExceptionHandler.process(e);
-        } catch (SystemException e) {
-            ExceptionHandler.process(e);
-        }
+        //
     }
 
     @Override
+    @Deprecated
     public void syncMappingsFileFromSystemToProject() {
-        RepositoryWorkUnit workUnit = new RepositoryWorkUnit("Sync mapping files from system to project") { //$NON-NLS-1$
-
-            @Override
-            protected void run() throws LoginException, PersistenceException {
-                try {
-                    File sysMappingfolder = new File(MetadataTalendType.getSystemForderURLOfMappingsFile().getPath());
-                    IFolder projectMappingFolder = ResourceUtils.getProject(ProjectManager.getInstance().getCurrentProject()).getFolder(MetadataTalendType.PROJECT_MAPPING_FOLDER);
-                    if (!projectMappingFolder.exists()) {
-                        projectMappingFolder.create(true, true, null);
-                    }
-                    for (File in : sysMappingfolder.listFiles()) {
-                        IFile out = projectMappingFolder.getFile(in.getName());
-                        copyFile(in, out);
-                    }
-                } catch (SystemException | CoreException | IOException e) {
-                    ExceptionHandler.process(e);
-                }
-            }
-        };
-        workUnit.setAvoidUnloadResources(true);
-        ProxyRepositoryFactory.getInstance().executeRepositoryWorkUnit(workUnit);
-    }
-
-    public String getTargetName(File file) {
-        String targetName = file.getName();
-        try {
-            DocumentBuilderFactory documentBuilderFactory = XmlUtils.getSecureDocumentBuilderFactory();
-            DocumentBuilder analyser = documentBuilderFactory.newDocumentBuilder();
-            Document document = analyser.parse(file);
-            NodeList dbmsNodes = document.getElementsByTagName("dbms"); //$NON-NLS-1$
-            String dbmsIdValue = "";
-            for (int iDbms = 0; iDbms < dbmsNodes.getLength(); iDbms++) {
-                Node dbmsNode = dbmsNodes.item(iDbms);
-                NamedNodeMap dbmsAttributes = dbmsNode.getAttributes();
-                dbmsIdValue = dbmsAttributes.getNamedItem("id").getNodeValue(); //$NON-NLS-1$
-
-            }
-            if (dbmsIdValue != null && !"".equals(dbmsIdValue)) {
-                final String[] fileNameSplit = targetName.split("_");
-                String idA = "_id";
-                String idB = "id_";
-                final int indexA = dbmsIdValue.indexOf(idA);
-                final int indexB = dbmsIdValue.indexOf(idB);
-                String secondeName = "";
-                if (indexA > 0) {
-                    secondeName = dbmsIdValue.substring(0, dbmsIdValue.length() - idA.length());
-                } else if (indexB == 0) {
-                    secondeName = dbmsIdValue.substring(idB.length(), dbmsIdValue.length());
-                } else if (indexA == -1 && indexB == -1) {
-                    secondeName = dbmsIdValue;
-                }
-                if (secondeName != null && !"".equals(secondeName)) {
-                    targetName = fileNameSplit[0] + "_" + secondeName.toLowerCase() + XmlUtil.FILE_XML_SUFFIX;
-                }
-
-            }
-        } catch (ParserConfigurationException e) {
-            ExceptionHandler.process(e);
-        } catch (SAXException e) {
-            ExceptionHandler.process(e);
-        } catch (IOException e) {
-            ExceptionHandler.process(e);
-        }
-        return targetName;
-    }
-
-    public void copyFile(File in, IFile out) throws CoreException, IOException {
-        FileInputStream fis = new FileInputStream(in);
-        if (out.exists()) {
-            out.setContents(fis, true, false, null);
-        } else {
-            out.create(fis, true, null);
-        }
-        fis.close();
+        //
     }
 
     @Override
@@ -525,5 +401,32 @@ public class CoreService implements ICoreService {
                 ExceptionHandler.process(e);
             }
         });
+    }
+
+    @Override
+    public Integer getSignatureVerifyResult(Property property, IPath resourcePath, boolean considerGP) throws Exception {
+        ICoreTisService coreTisService = ICoreTisService.get();
+        if (coreTisService != null) {
+            return coreTisService.getSignatureVerifyResult(property, resourcePath, considerGP);
+        }
+        return null;
+    }
+
+    @Override
+    public String getLicenseCustomer() {
+        ICoreTisService coreTisService = ICoreTisService.get();
+        if (coreTisService != null) {
+            return coreTisService.getLicenseCustomer();
+        }
+        return null;
+    }
+
+    @Override
+    public boolean isInValidGP() {
+        ICoreTisService coreTisService = ICoreTisService.get();
+        if (coreTisService != null) {
+            return coreTisService.isInValidGP();
+        }
+        return false;
     }
 }

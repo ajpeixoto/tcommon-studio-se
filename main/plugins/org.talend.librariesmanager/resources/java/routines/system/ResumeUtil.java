@@ -105,7 +105,7 @@ public class ResumeUtil {
                         csvWriter.write("stackTrace");// stackTrace
                         csvWriter.write("dynamicData");// dynamicData
                         csvWriter.endRecord();
-                        csvWriter.flush();
+                        csvWriter.flush(true);
                     }
                     // shared
                     sharedWriterMap.put(this.root_pid, this.csvWriter);
@@ -171,7 +171,7 @@ public class ResumeUtil {
                 csvWriter.write(item.stackTrace);// stackTrace
                 csvWriter.write(item.dynamicData);// dynamicData--->it is the 17th field. @see:feature:11296
                 csvWriter.endRecord();
-                csvWriter.flush();
+                csvWriter.flush(false);
                 fileLock.release();
             }
             // for test the order
@@ -191,6 +191,16 @@ public class ResumeUtil {
                     e.printStackTrace();
                 }
             }
+        }
+    }
+
+    public void flush() {
+        if (csvWriter == null) {
+            return;
+        }
+
+        synchronized (csvWriter) {
+            csvWriter.flush(true);
         }
     }
 
@@ -353,13 +363,12 @@ public class ResumeUtil {
         String str = out.toString();
         return str;
     }
-
-    // to support encrypt the password in the resume
-    public static String convertToJsonText(Object context, List<String> parametersToEncrypt) {
+    
+    public static String convertToJsonText(Object context, Class<?> expectedClass, List<String> parametersToEncrypt) {
         String jsonText = "";
         try {
             JSONObject firstNode = new JSONObject();
-            JSONObject secondNode = new JSONObject(context);
+            JSONObject secondNode = new JSONObject(context, expectedClass);
             if (parametersToEncrypt != null) {
                 for (String parameterToEncrypt : parametersToEncrypt) {
                     if (secondNode.isNull(parameterToEncrypt)) {
@@ -379,9 +388,15 @@ public class ResumeUtil {
         return jsonText;
     }
 
+    // to support encrypt the password in the resume
+    @Deprecated
+    public static String convertToJsonText(Object context, List<String> parametersToEncrypt) {
+        return convertToJsonText(context, context == null ? null : context.getClass(), parametersToEncrypt);
+    }
+
     // Util: convert the context variable to json style text.
     // feature:11296
-    // @Deprecated
+    @Deprecated
     public static String convertToJsonText(Object context) {
         return convertToJsonText(context, null);
     }
@@ -459,6 +474,8 @@ public class ResumeUtil {
         USER_DEF_LOG,
         JOB_ENDED;
     }
+    
+
 
     /**
      * this class is reference with CsvWriter.
@@ -503,7 +520,10 @@ public class ResumeUtil {
 
         private String lineSeparator = System.getProperty("line.separator");
         
-        private int capibility = 2<<14; //32k
+        private int capibility = 2 << 22; //8M
+        
+        private int FLUSH_FACTOR = 6 *1024 *1024; //6M
+        
 
         public SimpleCsvWriter(FileChannel channel) {
             this.channel = channel;
@@ -534,10 +554,8 @@ public class ResumeUtil {
             }
             
             byte[] contentByte = content.getBytes();
-            if(contentByte.length > capibility - 1024) {
-            	flush();
-            	capibility = contentByte.length * 2;
-            	buf = ByteBuffer.allocate(capibility);
+            if(contentByte.length > capibility - buf.position()) {
+            	flush(true);
             }
 
             buf.put(contentByte);
@@ -562,18 +580,20 @@ public class ResumeUtil {
         /**
          * flush
          */
-        public void flush() {
-            try {
-                ((Buffer) buf).flip();
-                channel.position(channel.size());
-                while(buf.hasRemaining()) {
-                    channel.write(buf);
+        public void flush(boolean force) {
+        	if(force || buf.position() > FLUSH_FACTOR) {
+                try {
+                    ((Buffer) buf).flip();
+                    channel.position(channel.size());
+                    while(buf.hasRemaining()) {
+                        channel.write(buf);
+                    }
+                    channel.force(true);
+                    ((Buffer) buf).clear();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-                channel.force(true);
-                ((Buffer) buf).clear();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        	}
         }
 
         /**

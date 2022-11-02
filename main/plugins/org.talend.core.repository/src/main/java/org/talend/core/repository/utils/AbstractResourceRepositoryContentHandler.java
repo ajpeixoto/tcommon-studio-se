@@ -25,6 +25,7 @@ import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.RoutinesJarItem;
 import org.talend.core.model.repository.AbstractRepositoryContentHandler;
 import org.talend.core.model.repository.ERepositoryObjectType;
+import java.io.IOException;
 
 public abstract class AbstractResourceRepositoryContentHandler extends AbstractRepositoryContentHandler {
 
@@ -82,6 +83,10 @@ public abstract class AbstractResourceRepositoryContentHandler extends AbstractR
             itemResource.getContents().addAll(EcoreUtil.copyAll(screenshots));
         }
         return itemResource;
+    }
+    
+    protected void copyScreenshotFile(Item originalItem, Item newItem) throws IOException {
+    	getXmiResourceManager().copyScreenshotFile(originalItem, newItem);
     }
 
     protected XmiResourceManager getXmiResourceManager() {

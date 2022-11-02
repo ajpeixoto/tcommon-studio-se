@@ -154,6 +154,10 @@ public interface ILibraryManagerService extends IService {
     public boolean contains(String jarName);
 
     public void clearCache();
+    
+    public void clearCache(boolean cleanIndex);
+    
+    public void deployLibsFromCustomComponents();
 
     @Deprecated
     public Set<String> list(boolean withComponent, IProgressMonitor... monitorWrap);

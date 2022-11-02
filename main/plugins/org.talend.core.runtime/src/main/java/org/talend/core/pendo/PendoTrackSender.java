@@ -55,6 +55,10 @@ import org.talend.utils.json.JSONObject;
  */
 public class PendoTrackSender {
     
+    public static final String PROP_PENDO_LOCAL_CHECK = "talend.pendo.localDebug";
+
+    public static final String PROP_PENDO_LOG_DATA = "talend.pendo.logRuntimeData";
+
     private static final String PREFIX_API = "api";
 
     private static final String PENDO_INFO = "/monitoring/pendo/info";
@@ -75,10 +79,18 @@ public class PendoTrackSender {
 
     private static String pendoInfo;
 
-    public static PendoTrackSender getInstance() {
-        if (instance == null) {
-            instance = new PendoTrackSender();
+    private PendoTrackSender() {
+    }
+
+    static {
+        instance = new PendoTrackSender();
+        RepositoryContext repositoryContext = getRepositoryContext();
+        if (repositoryContext != null) {
+            adminUrl = repositoryContext.getFields().get(RepositoryConstants.REPOSITORY_URL);
         }
+    }
+
+    public static PendoTrackSender getInstance() {
         if (StringUtils.isBlank(adminUrl)) {
             RepositoryContext repositoryContext = getRepositoryContext();
             if (repositoryContext != null) {
@@ -94,7 +106,9 @@ public class PendoTrackSender {
             @Override
             protected IStatus run(IProgressMonitor monitor) {
                 try {
-                    sendTrackData(event, properties);
+                    if (isTrackSendAvailable()) {
+                        sendTrackData(event, properties);
+                    }
                 } catch (Exception e) {
                     // warning only
                     ExceptionHandler.process(e, Level.WARN);
@@ -108,10 +122,10 @@ public class PendoTrackSender {
     }
 
     public void sendTrackData(TrackEvent event, IPendoDataProperties properties) throws Exception {
-        if (!checkTokenUsed(adminUrl) || !NetworkUtil.isNetworkValid()) {
+        if (isPendoLocalDebug()) {
+            ExceptionHandler.log(event.getEvent() + ":" + PendoTrackDataUtil.convertEntityJsonString(properties));
             return;
         }
-
         DefaultHttpClient client = null;
         CloseableHttpResponse response = null;
         IProxySelectorProvider proxySelectorProvider = null;
@@ -141,6 +155,9 @@ public class PendoTrackSender {
             response = client.execute(httpPost, HttpClientContext.create());
             StatusLine statusLine = response.getStatusLine();
             String responseStr = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
+            if (isLogPendoData()) {
+                ExceptionHandler.log(trackData);
+            }
             if (HttpURLConnection.HTTP_OK != statusLine.getStatusCode()) {
                 throw new Exception(statusLine.toString() + ", server message: [" + responseStr + "]");
             }
@@ -162,6 +179,21 @@ public class PendoTrackSender {
                 }
             }
         }
+    }
+
+    public boolean isTrackSendAvailable() throws Exception {
+        if (isPendoLocalDebug() || checkTokenUsed(adminUrl) && NetworkUtil.isNetworkValid()) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isPendoLocalDebug() {
+        return Boolean.TRUE.toString().equals(System.getProperty(PROP_PENDO_LOCAL_CHECK));
+    }
+
+    public boolean isLogPendoData() {
+        return Boolean.TRUE.toString().equals(System.getProperty(PROP_PENDO_LOG_DATA));
     }
 
     private String getPendoInfo() throws Exception {

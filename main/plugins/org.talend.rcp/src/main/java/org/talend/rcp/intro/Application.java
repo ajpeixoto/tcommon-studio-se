@@ -112,7 +112,6 @@ public class Application implements IApplication {
                     Boolean.TRUE.toString(), false);
             return IApplication.EXIT_RELAUNCH;
         }
-
         try {
             String vmArgs = System.getProperty(EclipseCommandLine.PROP_VMARGS);
             if (StringUtils.isNotBlank(vmArgs)) {
@@ -129,6 +128,8 @@ public class Application implements IApplication {
         System.setProperty(TalendPropertiesUtil.PROD_APP, this.getClass().getName());
 
         StudioKeysFileCheck.check(ConfigurationScope.INSTANCE.getLocation().toFile());
+        
+        deleteM2();
         
         Display display = PlatformUI.createDisplay();
         
@@ -340,6 +341,21 @@ public class Application implements IApplication {
 
     }
 
+    private void deleteM2() {
+        try {
+            String v = EclipseCommandLine.getEclipseArgument(EclipseCommandLine.TALEND_CLEAN_M2);
+            if (v == null) {
+                return;
+            }
+            if (Boolean.parseBoolean(v) && IStudioLiteP2Service.get() != null) {
+                IStudioLiteP2Service.get().cleanM2(null);
+                EclipseCommandLine.updateOrCreateExitDataPropertyWithCommand(EclipseCommandLine.TALEND_CLEAN_M2, Boolean.TRUE.toString(), true);
+            }
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        }
+    }
+    
     private void cleanupNonExistingProjects() {
         IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
         for (IProject project : projects) {

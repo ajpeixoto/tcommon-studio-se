@@ -61,6 +61,7 @@ import org.eclipse.osgi.util.NLS;
 import org.talend.commons.CommonsPlugin;
 import org.talend.core.prefs.SecurityPreferenceConstants;
 import org.talend.core.runtime.CoreRuntimePlugin;
+import org.talend.core.service.IRemoteService;
 import org.talend.utils.security.StudioEncryption;
 
 /**
@@ -121,7 +122,7 @@ public class TalendMavenLaunchDelegate extends JavaLaunchDelegate implements Mav
             this.extensionsSupport = MavenLaunchExtensionsSupport.create(configuration, launch);
 
             log.info("" + getWorkingDirectory(configuration)); //$NON-NLS-1$
-            log.info(" mvn" + getProgramArguments(configuration, true)); //$NON-NLS-1$
+            log.info(" mvn" + getProgramArguments(configuration, IRemoteService.get() == null ? false: IRemoteService.get().isCloudConnection())); //$NON-NLS-1$
             this.programArguments = null;
 
             extensionsSupport.configureSourceLookup(configuration, launch, monitor);

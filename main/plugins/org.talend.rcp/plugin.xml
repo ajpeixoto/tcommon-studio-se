@@ -220,6 +220,10 @@
                   id="org.talend.rcp.branding.activity.hideImportMenus"
                   name="hideImportMenus">
             </activity>
+             <activity
+                  id="org.talend.rcp.branding.activity.hideDebugModules"
+                  name="hideDebugModules">
+            </activity>
             <activity
                   id="org.talend.rcp.branding.activity.hideMenuForTOS"
                   name="hideMenuForTOS">
@@ -342,6 +346,11 @@
                   activityId="org.talend.rcp.branding.activity.hideImportMenus"
                   pattern="org.eclipse.ui.ide/org.eclipse.ui.wizards.import.ZipFile">
             </activityPatternBinding>
+            <activityPatternBinding
+                  activityId="org.talend.rcp.branding.activity.hideDebugModules"
+                  pattern="org.eclipse.debug.ui/org.eclipse.debug.ui.ModuleView">
+            </activityPatternBinding>
+            
      </extension>
 <extension
       point="org.eclipse.core.expressions.propertyTesters">

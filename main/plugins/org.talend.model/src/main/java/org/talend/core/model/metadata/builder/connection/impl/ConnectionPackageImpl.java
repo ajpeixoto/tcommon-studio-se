@@ -1563,6 +1563,15 @@ public class ConnectionPackageImpl extends EPackageImpl implements ConnectionPac
     }
 
     /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EAttribute getDatabaseConnection_SupportNLS() {
+        return (EAttribute) databaseConnectionEClass.getEStructuralFeatures().get(26);
+    }
+
+    /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
      * @generated
      */
@@ -4525,6 +4534,7 @@ public class ConnectionPackageImpl extends EPackageImpl implements ConnectionPac
         createEAttribute(databaseConnectionEClass, DATABASE_CONNECTION__SQL_MODE);
         createEAttribute(databaseConnectionEClass, DATABASE_CONNECTION__UI_SCHEMA);
         createEReference(databaseConnectionEClass, DATABASE_CONNECTION__PARAMETERS);
+        createEAttribute(databaseConnectionEClass, DATABASE_CONNECTION__SUPPORT_NLS);
 
         sapConnectionEClass = createEClass(SAP_CONNECTION);
         createEAttribute(sapConnectionEClass, SAP_CONNECTION__HOST);
@@ -5304,6 +5314,9 @@ public class ConnectionPackageImpl extends EPackageImpl implements ConnectionPac
         initEReference(getDatabaseConnection_Parameters(), this.getAdditionalProperties(), null, "parameters", null, 0, -1,
                 DatabaseConnection.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, IS_RESOLVE_PROXIES,
                 !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEAttribute(getDatabaseConnection_SupportNLS(), ecorePackage.getEBoolean(), "supportNLS", "false", 0, 1,
+                DatabaseConnection.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+                !IS_DERIVED, IS_ORDERED);
 
         initEClass(sapConnectionEClass, SAPConnection.class, "SAPConnection", !IS_ABSTRACT, !IS_INTERFACE,
                 IS_GENERATED_INSTANCE_CLASS);

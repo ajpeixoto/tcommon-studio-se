@@ -36,6 +36,7 @@ import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.designer.maven.utils.PomUtil;
 import org.talend.designer.runprocess.IProcessor;
+import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.utils.io.FilesUtils;
 
 /**
@@ -123,6 +124,7 @@ public class MavenPomSynchronizer {
         if (!jProject.isOpen()) {
             jProject.open(monitor);
         }
+
         // empty the src/main/java...
         IFolder srcFolder = codeProject.getSrcFolder();
         codeProject.cleanFolder(monitor, srcFolder);
@@ -131,10 +133,12 @@ public class MavenPomSynchronizer {
         IFolder resourcesFolder = codeProject.getExternalResourcesFolder();
         codeProject.cleanFolder(monitor, resourcesFolder);
 
-        // empty the outputs, target
-        IFolder targetFolder = codeProject.getTargetFolder();
-        codeProject.cleanFolder(monitor, targetFolder);
-
+        // CI mode, need to depend on maven to clean target folder or not.
+        if (!ProcessorUtilities.isCIMode()) {
+            // empty the outputs, target
+            IFolder targetFolder = codeProject.getTargetFolder();
+            codeProject.cleanFolder(monitor, targetFolder);
+        }
         // empty the src/test/java
         IFolder testSrcFolder = codeProject.getTestSrcFolder();
         codeProject.cleanFolder(monitor, testSrcFolder);

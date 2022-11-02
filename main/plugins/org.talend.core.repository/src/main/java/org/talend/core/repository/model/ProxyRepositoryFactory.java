@@ -16,7 +16,6 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Dictionary;
@@ -94,12 +93,12 @@ import org.talend.core.context.CommandLineContext;
 import org.talend.core.context.Context;
 import org.talend.core.context.RepositoryContext;
 import org.talend.core.exception.TalendInternalPersistenceException;
+import org.talend.core.hadoop.BigDataBasicUtil;
 import org.talend.core.hadoop.IHadoopDistributionService;
 import org.talend.core.model.components.IComponentsService;
 import org.talend.core.model.general.ILibrariesService;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.general.Project;
-import org.talend.core.model.metadata.MetadataTalendType;
 import org.talend.core.model.metadata.builder.connection.AbstractMetadataObject;
 import org.talend.core.model.metadata.builder.connection.MetadataTable;
 import org.talend.core.model.migration.IMigrationToolService;
@@ -2211,6 +2210,9 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
                     ExceptionHandler.process(e);
                 }
                 
+                // init dynamic distirbution after `beforeLogon`, before loading libraries.
+                initDynamicDistribution(monitor);
+                
                 // need to set m2
                 LoginTaskRegistryReader loginTaskRegistryReader = new LoginTaskRegistryReader();
                 ILoginTask[] allLoginTasks = loginTaskRegistryReader.getAllCommandlineTaskListInstance();
@@ -2278,14 +2280,6 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
                     
                 }
 
-                try {
-                    // for new added mapping file, sync to project mapping folder
-                    MetadataTalendType.syncNewMappingFileToProject();
-                } catch (SystemException e) {
-                    // ignore
-                    ExceptionHandler.process(e);
-                }
-
                 currentMonitor = subMonitor.newChild(1, SubMonitor.SUPPRESS_NONE);
                 currentMonitor.beginTask("Execute before logon migrations tasks", 1); //$NON-NLS-1$
                 ProjectManager.getInstance().getMigrationRecords().clear();
@@ -2325,6 +2319,7 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
                 if (monitor != null && monitor.isCanceled()) {
                     throw new OperationCanceledException(""); //$NON-NLS-1$
                 }
+                PendoItemSignatureManager.getInstance().sendTrackToPendo();
 
                 boolean isCommandLineLocalRefProject = false;
                 CommandLineContext commandLineContext = (CommandLineContext) CoreRuntimePlugin.getInstance().getContext()
@@ -2361,17 +2356,6 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
                 if (coreUiService != null && coreService != null) {
                     coreService.syncLog4jSettings(null);
                     TimeMeasurePerformance.step("logOnProject", "sync log4j"); //$NON-NLS-1$ //$NON-NLS-2$
-                }
-
-                try {
-                    URL url = MetadataTalendType.getProjectForderURLOfMappingsFile();
-                    if (url != null) {
-                        // set the project mappings url
-                        System.setProperty("talend.mappings.url", url.toString()); // $NON-NLS-1$
-                    }
-                } catch (SystemException e) {
-                    // ignore
-                    ExceptionHandler.process(e);
                 }
 
                 if (GlobalServiceRegister.getDefault().isServiceRegistered(ITDQRepositoryService.class)) {
@@ -2423,6 +2407,18 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
                 ExceptionHandler.process(e1);
             }
             throw e;
+        }
+    }
+    
+    private void initDynamicDistribution(IProgressMonitor monitor) {
+        try {
+            if (BigDataBasicUtil.isDynamicDistributionLoaded(monitor)) {
+                BigDataBasicUtil.reloadAllDynamicDistributions(monitor);
+            } else {
+                BigDataBasicUtil.loadDynamicDistribution(monitor);
+            }
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
         }
     }
 

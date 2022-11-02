@@ -59,7 +59,6 @@ import org.talend.commons.utils.generation.JavaUtils;
 import org.talend.commons.utils.time.TimeMeasure;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
-import org.talend.core.ICoreService;
 import org.talend.core.ITDQItemService;
 import org.talend.core.PluginChecker;
 import org.talend.core.context.Context;
@@ -102,13 +101,11 @@ import org.talend.core.model.routines.CodesJarInfo;
 import org.talend.core.model.routines.RoutinesUtil;
 import org.talend.core.model.utils.JavaResourcesHelper;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
-import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.runtime.maven.MavenConstants;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.process.LastGenerationInfo;
 import org.talend.core.runtime.process.TalendProcessArgumentConstant;
 import org.talend.core.runtime.process.TalendProcessOptionConstants;
-import org.talend.core.runtime.projectsetting.ProjectPreferenceManager;
 import org.talend.core.runtime.repository.build.BuildExportManager;
 import org.talend.core.runtime.services.IDesignerMavenService;
 import org.talend.core.service.IResourcesDependenciesService;
@@ -138,8 +135,6 @@ import org.talend.utils.io.FilesUtils;
 public class ProcessorUtilities {
 
     private static Logger log = Logger.getLogger(ProcessorUtilities.class);
-
-    public static final String PROP_MAPPINGS_URL = "talend.mappings.url"; //$NON-NLS-1$
 
     /**
      * For generating code in CI without param -pl
@@ -281,6 +276,19 @@ public class ProcessorUtilities {
         exportTimeStamp = null;
         exportJobAsMicroService = false;
         needExportItemsForDQ = false;
+    }
+
+    public static void resetExportConfig(boolean noResetDq) {
+        interpreter = null;
+        codeLocation = null;
+        libraryPath = null;
+        exportConfig = false;
+        exportAsOSGI = false;
+        exportTimeStamp = null;
+        exportJobAsMicroService = false;
+        if (!noResetDq) {
+            needExportItemsForDQ = false;
+        }
     }
 
     public static String getInterpreter() {
@@ -694,6 +702,8 @@ public class ProcessorUtilities {
 
         processor.setArguments(argumentsMap);
 
+        handelDQComponents(selectedProcessItem, currentProcess);
+
         // generate the code of the father after the childrens
         // so the code won't have any error during the check, and it will help to check
         // if the generation is really needed.
@@ -709,7 +719,7 @@ public class ProcessorUtilities {
          */
         generateBuildInfo(jobInfo, progressMonitor, isMainJob, currentProcess, currentJobName, processor, option);
 
-        handelDQComponents(selectedProcessItem, currentProcess);
+        checkNeedExportItemsForDQ(currentProcess);
 
         copyDependenciedResources(currentProcess);
 
@@ -732,30 +742,10 @@ public class ProcessorUtilities {
         boolean hasDynamicMetadata = hasMetadataDynamic(currentProcess, jobInfo);
         LastGenerationInfo.getInstance().setUseDynamic(jobInfo.getJobId(), jobInfo.getJobVersion(), hasDynamicMetadata);
         if (hasDynamicMetadata) {
-            try {
-                URL url = MetadataTalendType.getProjectForderURLOfMappingsFile();
-                if (url != null) {
-                    // set the project mappings url
-                    System.setProperty(ProcessorUtilities.PROP_MAPPINGS_URL, url.toString()); // $NON-NLS-1$
-
-                    IFolder xmlMappingFolder = jobInfo.getProcessor().getTalendJavaProject().getResourceSubFolder(null,
-                            JavaUtils.JAVA_XML_MAPPING);
-                    ProjectPreferenceManager manager = CoreRuntimePlugin.getInstance().getProjectPreferenceManager();
-                    boolean updated = manager.getBoolean(MetadataTalendType.UPDATED_MAPPING_FILES);
-                    if ((xmlMappingFolder.members().length == 0 || updated)
-                            && GlobalServiceRegister.getDefault().isServiceRegistered(ICoreService.class)) {
-                        ICoreService coreService =
-                                GlobalServiceRegister.getDefault().getService(ICoreService.class);
-                        coreService.synchronizeMapptingXML(jobInfo.getProcessor().getTalendJavaProject());
-                        // reset
-                        if (updated) {
-                            manager.setValue(MetadataTalendType.UPDATED_MAPPING_FILES, false);
-                            manager.save();
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                ExceptionHandler.process(e);
+            ITalendProcessJavaProject talendJavaProject = jobInfo.getProcessor().getTalendJavaProject();
+            if (talendJavaProject != null) {
+                IFolder xmlMappingFolder = talendJavaProject.getResourceSubFolder(null, JavaUtils.JAVA_XML_MAPPING);
+                MetadataTalendType.syncMappingFiles(xmlMappingFolder.getLocation().toFile(), true);
             }
         }
     }
@@ -829,7 +819,8 @@ public class ProcessorUtilities {
             // TDI-36930, just after compile, need check the compile errors first.
             // only check current build
             if (isMainJob) {
-                CorePlugin.getDefault().getRunProcessService().checkLastGenerationHasCompilationError(true);
+                CorePlugin.getDefault().getRunProcessService().checkLastGenerationHasCompilationError(true,
+                        !ComponentCategory.CATEGORY_4_CAMEL.getName().equals(currentProcess.getComponentsType()));
             }
         }
 
@@ -1239,6 +1230,8 @@ public class ProcessorUtilities {
 
             processor.setArguments(argumentsMap);
 
+            handelDQComponents(selectedProcessItem, currentProcess);
+
             generateContextInfo(jobInfo, selectedContextName, statistics, trace, needContext, progressMonitor,
                     currentProcess, currentJobName, processor, isMainJob, codeGenerationNeeded);
 
@@ -1254,7 +1247,7 @@ public class ProcessorUtilities {
             generateBuildInfo(jobInfo, progressMonitor, isMainJob, currentProcess, currentJobName, processor, option);
             TimeMeasure.step(idTimer, "generateBuildInfo");
 
-            handelDQComponents(selectedProcessItem, currentProcess);
+            checkNeedExportItemsForDQ(currentProcess);
 
             copyDependenciedResources(currentProcess);
 
@@ -1356,10 +1349,33 @@ public class ProcessorUtilities {
     }
 
     /**
+     * if the job includes tdqReportRun, set 'needExportItemsForDQ'to true so as the item folder can be exported
+     * 
+     * @param processItem
+     * @param currentProcess
+     */
+    private static void checkNeedExportItemsForDQ(IProcess currentProcess) {
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(ITDQItemService.class)) {
+            ITDQItemService tdqItemService =
+                    GlobalServiceRegister.getDefault().getService(ITDQItemService.class);
+            // TDQ-19637 if it includes 'tDqReportRun',must export item folder
+            if (tdqItemService != null && !needExportItemsForDQ) {
+                for (INode node : currentProcess.getGeneratingNodes()) {
+                    String componentName = node.getComponent().getName();
+                    if ("tDqReportRun".equals(componentName)) {
+                        needExportItemsForDQ = true;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      *
      * Specail operation for DQ components:
-     * - For tdqReportRun, set 'needExportItemsForDQ'to true so as the item folder can be exported
-     * - For tRuleSurvivorship, copy the current item's drools file from 'workspace/metadata/survivorship' to '.Java/src/resources'
+     * - For tRuleSurvivorship, copy the current item's drools file from 'workspace/metadata/survivorship' to
+     * '.Java/src/resources'
      *
      * @param processItem
      */
@@ -1371,16 +1387,6 @@ public class ProcessorUtilities {
                 return;
             }
             try {
-            	// TDQ-19637 if it includes 'tDqReportRun',must export item folder
-                if (!needExportItemsForDQ) {
-                    for (INode node : currentProcess.getGeneratingNodes()) {
-                        String componentName = node.getComponent().getName();
-                        if ("tDqReportRun".equals(componentName)) {
-                            needExportItemsForDQ = true;
-                            break;
-                        }
-                    }
-                }
             	/* 1.TDQ-12474 copy the "metadata/survivorship/rulePackage" to ".Java/src/main/resources/". so that it will be
                      used by maven command 'include-survivorship-rules' to export.
                    2.TDQ-14308 current drools file in 'src/resourcesmetadata/survivorship/' should be included to job jar.
@@ -1936,12 +1942,6 @@ public class ProcessorUtilities {
     
     private static void updateCodeSources() throws ProcessorException {
         if (isRemoteProject()) {
-        	// TESB-29071
-        	try {
-                ProxyRepositoryFactory.getInstance().initialize();
-            } catch (PersistenceException e) {
-                ExceptionHandler.process(e);
-            }
             RepositoryManager.syncRoutineAndJoblet(ERepositoryObjectType.ROUTINES);
             RepositoryManager.syncRoutineAndJoblet(ERepositoryObjectType.BEANS);
         }  	

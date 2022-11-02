@@ -19,6 +19,8 @@ package org.talend.core.runtime.projectsetting;
 public interface IProjectSettingTemplateConstants {
 
     final static String PATH_RESOURCES = "resources";
+    
+    final static String PATH_APPLICATION_PROPERTIES = PATH_RESOURCES + '/' + "application.properties";
 
     final static String PATH_RESOURCES_TEMPLATES = PATH_RESOURCES + '/' + "templates";
 

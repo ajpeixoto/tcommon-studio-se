@@ -143,4 +143,26 @@ public interface ElementValueType extends EObject {
      */
     void setHexValue(boolean value);
 
+    /**
+     * Returns the value of the '<em><b>Label</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the value of the '<em>Label</em>' attribute.
+     * @see #setLabel(String)
+     * @see org.talend.designer.core.model.utils.emf.talendfile.TalendFilePackage#getElementValueType_Label()
+     * @model dataType="org.eclipse.emf.ecore.xml.type.String"
+     * @generated
+     */
+    String getLabel();
+
+    /**
+     * Sets the value of the '{@link org.talend.designer.core.model.utils.emf.talendfile.ElementValueType#getLabel <em>Label</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @param value the new value of the '<em>Label</em>' attribute.
+     * @see #getLabel()
+     * @generated
+     */
+    void setLabel(String value);
+
 } // ElementValueType

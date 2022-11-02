@@ -222,6 +222,32 @@ public class ContextUtils {
         }
         return parameterType;
     }
+    
+    // TUP-36519:For possible duplicate internalid scenario(TUP-36667) after several times' renaming in joblet. Loop all and find the nearest
+    // one.
+    public static ContextParameterType getContextParameterTypeById(ContextType contextType, final String uuId,
+            boolean isFromContextItem, String paraName) {
+        if (contextType == null || uuId == null) {
+            return null;
+        }
+
+        ContextParameterType parameterType = null;
+        for (ContextParameterType param : (List<ContextParameterType>) contextType.getContextParameter()) {
+            String paramId = null;
+            if (isFromContextItem) {
+                paramId = ResourceHelper.getUUID(param);
+            } else {
+                paramId = param.getInternalId();
+            }
+            if (uuId.equals(paramId)) {
+                parameterType = param;
+                if (paraName != null && StringUtils.equals(paraName, param.getName())) {
+                    break;
+                }
+            }
+        }
+        return parameterType;
+    }
 
     public static ContextParameterType getContextParameterTypeById(ContextType contextType, final String uuId,
             boolean isFromContextItem) {
@@ -846,7 +872,7 @@ public class ContextUtils {
                         if (item != null) {
                             final ContextType repoContextType = ContextUtils.getContextTypeByName(item, contextType.getName());
                             ContextParameterType repoContextParam = ContextUtils.getContextParameterTypeById(repoContextType,
-                                    paramLink.getId(), item instanceof ContextItem);
+                                    paramLink.getId(), item instanceof ContextItem, contextParameterType.getName());
                             if (repoContextParam != null
                                     && !StringUtils.equals(repoContextParam.getName(), contextParameterType.getName())) {
                                 renamedMap.put(repoContextParam.getName(), contextParameterType.getName());
@@ -915,7 +941,7 @@ public class ContextUtils {
                                 if (item != null) {
                                     ContextType contextType = ContextUtils.getContextTypeByName(item, context.getName());
                                     ContextParameterType repoParameterType = ContextUtils.getContextParameterTypeById(contextType,
-                                            parameterLink.getId(), item instanceof ContextItem);
+                                            parameterLink.getId(), item instanceof ContextItem, parameterType.getName());
                                     if (repoParameterType != null
                                             && !StringUtils.equals(repoParameterType.getName(), parameterType.getName())) {
                                         renamedMap.put(repoParameterType.getName(), parameterType.getName());
@@ -975,7 +1001,7 @@ public class ContextUtils {
         ContextParameterType contextParameterType = null;
         if (paramLink != null && paramLink.getId() != null && contextType != null) {
             contextParameterType = getContextParameterTypeById(contextType, paramLink.getId(),
-                    contextItem instanceof ContextItem);
+                    contextItem instanceof ContextItem, paramName);
         }
         if (contextParameterType != null) {// Compare use UUID
             if (!StringUtils.equals(contextParameterType.getName(), paramName)) {

@@ -2169,7 +2169,7 @@ public final class ConnectionContextHelper {
         return false;
     }
 
-    public static IContext promptConfirmLauch(Shell shell, List<IContext> contexts) {
+    public static IContext promptConfirmLauch(Shell shell, List<IContext> contexts, IContext defaultContext) {
         int nbValues = 0;
         Assert.isNotNull(contexts);
         // Prompt for context values ?
@@ -2182,7 +2182,7 @@ public final class ConnectionContextHelper {
             }
         }
         if (nbValues > 0 || (contexts != null && contexts.size() > 1)) {
-            PromptDialog promptDialog = new PromptDialog(shell, contexts);
+            PromptDialog promptDialog = new PromptDialog(shell, contexts, defaultContext);
             if (promptDialog.open() == PromptDialog.OK) {
                 return promptDialog.getCurrentContext();
             }

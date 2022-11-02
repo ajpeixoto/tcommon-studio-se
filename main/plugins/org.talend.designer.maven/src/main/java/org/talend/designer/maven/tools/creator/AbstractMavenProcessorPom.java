@@ -128,7 +128,7 @@ public abstract class AbstractMavenProcessorPom extends CreateMavenBundleTemplat
 
         if (ProcessUtils.isTestContainer(process)) {
             if (GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerProviderService.class)) {
-                ITestContainerProviderService testService = (ITestContainerProviderService) GlobalServiceRegister.getDefault()
+                ITestContainerProviderService testService = GlobalServiceRegister.getDefault()
                         .getService(ITestContainerProviderService.class);
                 try {
                     property = testService.getParentJobItem(property.getItem()).getProperty();
@@ -231,7 +231,7 @@ public abstract class AbstractMavenProcessorPom extends CreateMavenBundleTemplat
                 Dependency mavenCoreDep = new Dependency();
                 mavenCoreDep.setGroupId("org.apache.maven");
                 mavenCoreDep.setArtifactId("maven-core");
-                mavenCoreDep.setVersion("3.8.3");
+                mavenCoreDep.setVersion("3.8.6");
                 
                 shade.getDependencies().add(guavaDep);
                 shade.getDependencies().add(codecDep);
@@ -454,6 +454,7 @@ public abstract class AbstractMavenProcessorPom extends CreateMavenBundleTemplat
      *
      * @param hasLoopDependency the hasLoopDependency to set
      */
+    @Override
     public void setHasLoopDependency(boolean hasLoopDependency) {
         this.hasLoopDependency = hasLoopDependency;
     }

@@ -140,8 +140,14 @@ public abstract class AbstractMavenCodesTemplatePom extends AbstractMavenGeneral
                         Exclusion jacksonExclusion = new Exclusion();
                         jacksonExclusion.setGroupId("com.fasterxml.jackson.core"); //$NON-NLS-1$
                         jacksonExclusion.setArtifactId("jackson-databind "); //$NON-NLS-1$
+
+                        Exclusion configuration2Exclusion = new Exclusion();
+                        configuration2Exclusion.setGroupId("org.apache.commons"); //$NON-NLS-1$
+                        configuration2Exclusion.setArtifactId("commons-configuration2"); //$NON-NLS-1$
+
                         dependency.addExclusion(exclusion);
                         dependency.addExclusion(jacksonExclusion);
+                        dependency.addExclusion(configuration2Exclusion);
                     }
                     existedDependencies.add(dependency);
                 }

@@ -359,7 +359,9 @@ public abstract class RepositoryUpdateManager {
             List<UpdateResult> checkedResults = null;
 
             if (parameter == null) { // update all job
-                checkedResults = filterSpecialCheckedResult(results);
+                // TUP-36519: comment out the filter for only opening job
+                // checkedResults = filterSpecialCheckedResult(results);
+                checkedResults = results;
             } else { // filter
                 checkedResults = filterCheckedResult(results);
             }
