@@ -380,24 +380,27 @@ public final class ProjectManager {
         return null;
     }
 
+    /**
+     * @deprecated unable to get project when resource is unloaded, use {@link #getProject(EObject)} instead
+     */
     public org.talend.core.model.properties.Project getProject(Project project, EObject object) {
-        if (object != null) {
-            if (object instanceof org.talend.core.model.properties.Project) {
-                return (org.talend.core.model.properties.Project) object;
-            }
-            if (object instanceof Property) {
-                return getProject(project, ((Property) object).getItem());
-            }
-            if (object instanceof Item) {
-                return getProject(project, ((Item) object).getParent());
-            }
-        }
-
-        // default
-        if (project != null) {
-            return project.getEmfProject();
-        }
-        return null;
+        // if (object != null) {
+        // if (object instanceof org.talend.core.model.properties.Project) {
+        // return (org.talend.core.model.properties.Project) object;
+        // }
+        // if (object instanceof Property) {
+        // return getProject(project, ((Property) object).getItem());
+        // }
+        // if (object instanceof Item) {
+        // return getProject(project, ((Item) object).getParent());
+        // }
+        // }
+        //
+        // // default
+        // if (project != null) {
+        // return project.getEmfProject();
+        // }
+        return getProject(object);
     }
 
     public IProject getResourceProject(org.talend.core.model.properties.Project project) {
@@ -443,7 +446,7 @@ public final class ProjectManager {
 
     public boolean isInMainProject(Project mainProject, EObject object) {
         if (object != null) {
-            org.talend.core.model.properties.Project project = getProject(mainProject, object);
+            org.talend.core.model.properties.Project project = getProject(object);
             if (project != null && mainProject != null) {
                 return project.getTechnicalLabel().equals(mainProject.getEmfProject().getTechnicalLabel());
             }
