@@ -1159,6 +1159,31 @@ public final class ConnectionContextHelper {
                             if (var != null) {
                                 addedVars.add(var);
                             }
+                            List<Map<String, Object>> tableValue = toTable((String) objectValue);
+                            if (tableValue instanceof List) {
+                                List list = (List) tableValue;
+                                for (Object object : list) {
+                                    if (object instanceof HashMap) {
+                                        Map map = (HashMap) object;
+                                        if (!map.isEmpty()) {
+                                            Set keySet = map.keySet();
+                                            Iterator iterator = keySet.iterator();
+                                            while (iterator.hasNext()) {
+                                                String key = (String) iterator.next();
+                                                Object object2 = map.get(key);
+                                                if (object2 instanceof String) {
+                                                    var = ContextParameterUtils.getVariableFromCode((String) object2);
+                                                    if (var != null) {
+
+                                                        addedVars.add(var);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
                         }
                     }
                 } else if ("ELT_SCHEMA_NAME".equals(param.getName()) && connection.isContextMode()
@@ -1173,6 +1198,52 @@ public final class ConnectionContextHelper {
         }
 
         return addedVars;
+    }
+
+    public static List<Map<String, Object>> toTable(final String str) {
+        if (isListEmpty(str)) {
+            return new ArrayList<>();
+        }
+        ArrayList<Map<String, Object>> table = new ArrayList<>();
+        String trimmed = trimBrackets(str);
+        String[] records = trimmed.split("\\},\\s?\\{");
+        for (String record : records) {
+            record = trimCurlyBrackets(record);
+            String[] entries = record.split(",\\s?");
+            Map<String, Object> element = new HashMap<String, Object>();
+            for (String entry : entries) {
+                String[] keyValue = new String[] {};
+                if (entry.contains("=")) {
+                    keyValue = entry.split("=");
+                } else {
+                    keyValue = entry.split(":");
+                }
+                if (keyValue.length < 2) {
+                    continue;
+                }
+                String key = keyValue[0];
+                String value = keyValue[1];
+                element.put(key, value);
+            }
+            table.add(element);
+        }
+        return table;
+    }
+
+    private static boolean isListEmpty(final String list) {
+        return list == null || list.isEmpty() || "[]".equals(list) || "[{}]".equals(list);
+    }
+
+    private static final Pattern BRACKETS_PATTERN = Pattern.compile("^\\[|\\]$");
+
+    private static String trimBrackets(final String str) {
+        return BRACKETS_PATTERN.matcher(str).replaceAll("");
+    }
+
+    private static final Pattern CURLY_BRACKETS_PATTERN = Pattern.compile("^\\{|\\}$");
+
+    private static String trimCurlyBrackets(final String str) {
+        return CURLY_BRACKETS_PATTERN.matcher(str).replaceAll("");
     }
 
     /**
