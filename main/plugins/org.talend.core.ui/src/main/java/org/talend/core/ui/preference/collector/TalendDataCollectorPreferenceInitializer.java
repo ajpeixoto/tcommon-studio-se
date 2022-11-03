@@ -15,8 +15,8 @@ package org.talend.core.ui.preference.collector;
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.talend.core.prefs.ITalendCorePrefConstants;
+import org.talend.core.service.IRemoteService;
 import org.talend.core.ui.CoreUIPlugin;
-import org.talend.core.ui.branding.IBrandingService;
 
 /**
  * ggu class global comment. Detailled comment
@@ -33,7 +33,7 @@ public class TalendDataCollectorPreferenceInitializer extends AbstractPreference
         IPreferenceStore preferenceStore = CoreUIPlugin.getDefault().getPreferenceStore();
         preferenceStore.setDefault(ITalendCorePrefConstants.DATA_COLLECTOR_ENABLED, true);
         preferenceStore.setDefault(ITalendCorePrefConstants.DATA_COLLECTOR_UPLOAD_PERIOD, 5);
-        if(IBrandingService.get().isCloudLicense()) {
+        if(IRemoteService.get() != null && IRemoteService.get().isCloudConnection()) {
             preferenceStore.setValue(ITalendCorePrefConstants.DATA_COLLECTOR_ENABLED, true);
         }
     }

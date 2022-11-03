@@ -1,0 +1,20 @@
+Manifest-Version: 1.0
+Automatic-Module-Name: org.talend.signon.util
+Bundle-ManifestVersion: 2
+Bundle-Name: Cloud sign on util
+Bundle-SymbolicName: org.talend.signon.util;singleton:=true
+Bundle-Version: 8.0.1.qualifier
+Eclipse-LazyStart: true
+Bundle-ClassPath: .,
+ lib/commons-exec.jar
+Bundle-Vendor: .Talend SA.
+Import-Package: org.osgi.framework;version="1.10.0",
+ org.talend.utils.json
+Export-Package: org.talend.signon.util,
+ org.talend.signon.util.i18n,
+ org.talend.signon.util.listener
+Require-Bundle: org.talend.utils,
+ org.apache.log4j,
+ org.eclipse.osgi,
+ org.eclipse.equinox.common,
+ org.eclipse.core.runtime

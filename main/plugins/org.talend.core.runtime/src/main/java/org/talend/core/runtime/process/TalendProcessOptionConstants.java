@@ -49,6 +49,10 @@ public interface TalendProcessOptionConstants {
     public static final int GENERATE_POM_NOT_CLEAR_CACHE = 1 << 11;
 
     /**
+     * for DQ clean item
+     */
+    public static final int GENERATE_NO_RESET_DQ = 1 << 12;
+    /**
      * clean options
      */
     public static final int CLEAN_JAVA_CODES = 1;

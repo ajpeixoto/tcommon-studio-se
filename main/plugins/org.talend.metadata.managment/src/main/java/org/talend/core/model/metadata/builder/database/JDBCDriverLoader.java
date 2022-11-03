@@ -17,6 +17,7 @@ import java.nio.charset.Charset;
 import java.security.Provider;
 import java.sql.Connection;
 import java.sql.Driver;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -208,10 +209,20 @@ public class JDBCDriverLoader {
                 }
                 connection = wapperDriver.connect(url, info);
             }
+            
+            try {
+                ResultSet schemas = connection.getMetaData().getSchemas();
+                if(schemas.next()) {
+                    schemas.getString(1);
+                }
+            } catch (Exception e) {
+            }
+            
             // }
             // DriverManager.deregisterDriver(wapperDriver);
             // bug 9162
             list.add(connection);
+            
             list.add(wapperDriver);
             return list;
         } catch (Throwable e) {

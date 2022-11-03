@@ -50,6 +50,10 @@ public interface IBrandingService extends IService {
 
     public boolean isPoweredOnlyCamel();
 
+    /**
+     * TP_All license also has the flag 'isCloud'
+     * @return
+     */
     public default boolean isCloudLicense() {
         return false;
     }

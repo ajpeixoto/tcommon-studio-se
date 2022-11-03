@@ -27,6 +27,7 @@ import org.talend.core.runtime.projectsetting.ProjectPreferenceManager;
 import org.talend.core.service.IRemoteService;
 import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.model.RepositoryConstants;
+import org.talend.utils.security.StudioEncryption;
 
 /**
  * created by wchen on 2015年6月16日 Detailled comment
@@ -255,7 +256,7 @@ public class TalendLibsServerManager {
             if (enableProxyFlag) {
                 serverBean.setServer(prefManager.getValue(TalendLibsServerManager.NEXUS_PROXY_URL));
                 serverBean.setUserName(prefManager.getValue(TalendLibsServerManager.NEXUS_PROXY_USERNAME));
-                serverBean.setPassword(prefManager.getValue(TalendLibsServerManager.NEXUS_PROXY_PASSWORD));
+                serverBean.setPassword(StudioEncryption.getStudioEncryption(StudioEncryption.EncryptionKeyName.SYSTEM).decrypt(prefManager.getValue(TalendLibsServerManager.NEXUS_PROXY_PASSWORD)));
                 serverBean.setRepositoryId(prefManager.getValue(TalendLibsServerManager.NEXUS_PROXY_REPOSITORY_ID));
                 serverBean.setType(prefManager.getValue(TalendLibsServerManager.NEXUS_PROXY_TYPE));
             }

@@ -59,7 +59,6 @@ import org.talend.commons.utils.generation.JavaUtils;
 import org.talend.commons.utils.time.TimeMeasure;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
-import org.talend.core.ICoreService;
 import org.talend.core.ITDQItemService;
 import org.talend.core.PluginChecker;
 import org.talend.core.context.Context;
@@ -102,13 +101,11 @@ import org.talend.core.model.routines.CodesJarInfo;
 import org.talend.core.model.routines.RoutinesUtil;
 import org.talend.core.model.utils.JavaResourcesHelper;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
-import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.runtime.maven.MavenConstants;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.process.LastGenerationInfo;
 import org.talend.core.runtime.process.TalendProcessArgumentConstant;
 import org.talend.core.runtime.process.TalendProcessOptionConstants;
-import org.talend.core.runtime.projectsetting.ProjectPreferenceManager;
 import org.talend.core.runtime.repository.build.BuildExportManager;
 import org.talend.core.runtime.services.IDesignerMavenService;
 import org.talend.core.service.IResourcesDependenciesService;
@@ -138,8 +135,6 @@ import org.talend.utils.io.FilesUtils;
 public class ProcessorUtilities {
 
     private static Logger log = Logger.getLogger(ProcessorUtilities.class);
-
-    public static final String PROP_MAPPINGS_URL = "talend.mappings.url"; //$NON-NLS-1$
 
     /**
      * For generating code in CI without param -pl
@@ -281,6 +276,19 @@ public class ProcessorUtilities {
         exportTimeStamp = null;
         exportJobAsMicroService = false;
         needExportItemsForDQ = false;
+    }
+
+    public static void resetExportConfig(boolean noResetDq) {
+        interpreter = null;
+        codeLocation = null;
+        libraryPath = null;
+        exportConfig = false;
+        exportAsOSGI = false;
+        exportTimeStamp = null;
+        exportJobAsMicroService = false;
+        if (!noResetDq) {
+            needExportItemsForDQ = false;
+        }
     }
 
     public static String getInterpreter() {
@@ -734,30 +742,10 @@ public class ProcessorUtilities {
         boolean hasDynamicMetadata = hasMetadataDynamic(currentProcess, jobInfo);
         LastGenerationInfo.getInstance().setUseDynamic(jobInfo.getJobId(), jobInfo.getJobVersion(), hasDynamicMetadata);
         if (hasDynamicMetadata) {
-            try {
-                URL url = MetadataTalendType.getProjectForderURLOfMappingsFile();
-                if (url != null) {
-                    // set the project mappings url
-                    System.setProperty(ProcessorUtilities.PROP_MAPPINGS_URL, url.toString()); // $NON-NLS-1$
-
-                    IFolder xmlMappingFolder = jobInfo.getProcessor().getTalendJavaProject().getResourceSubFolder(null,
-                            JavaUtils.JAVA_XML_MAPPING);
-                    ProjectPreferenceManager manager = CoreRuntimePlugin.getInstance().getProjectPreferenceManager();
-                    boolean updated = manager.getBoolean(MetadataTalendType.UPDATED_MAPPING_FILES);
-                    if ((xmlMappingFolder.members().length == 0 || updated)
-                            && GlobalServiceRegister.getDefault().isServiceRegistered(ICoreService.class)) {
-                        ICoreService coreService =
-                                GlobalServiceRegister.getDefault().getService(ICoreService.class);
-                        coreService.synchronizeMapptingXML(jobInfo.getProcessor().getTalendJavaProject());
-                        // reset
-                        if (updated) {
-                            manager.setValue(MetadataTalendType.UPDATED_MAPPING_FILES, false);
-                            manager.save();
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                ExceptionHandler.process(e);
+            ITalendProcessJavaProject talendJavaProject = jobInfo.getProcessor().getTalendJavaProject();
+            if (talendJavaProject != null) {
+                IFolder xmlMappingFolder = talendJavaProject.getResourceSubFolder(null, JavaUtils.JAVA_XML_MAPPING);
+                MetadataTalendType.syncMappingFiles(xmlMappingFolder.getLocation().toFile(), true);
             }
         }
     }
@@ -831,7 +819,8 @@ public class ProcessorUtilities {
             // TDI-36930, just after compile, need check the compile errors first.
             // only check current build
             if (isMainJob) {
-                CorePlugin.getDefault().getRunProcessService().checkLastGenerationHasCompilationError(true);
+                CorePlugin.getDefault().getRunProcessService().checkLastGenerationHasCompilationError(true,
+                        !ComponentCategory.CATEGORY_4_CAMEL.getName().equals(currentProcess.getComponentsType()));
             }
         }
 
@@ -1953,12 +1942,6 @@ public class ProcessorUtilities {
     
     private static void updateCodeSources() throws ProcessorException {
         if (isRemoteProject()) {
-        	// TESB-29071
-        	try {
-                ProxyRepositoryFactory.getInstance().initialize();
-            } catch (PersistenceException e) {
-                ExceptionHandler.process(e);
-            }
             RepositoryManager.syncRoutineAndJoblet(ERepositoryObjectType.ROUTINES);
             RepositoryManager.syncRoutineAndJoblet(ERepositoryObjectType.BEANS);
         }  	

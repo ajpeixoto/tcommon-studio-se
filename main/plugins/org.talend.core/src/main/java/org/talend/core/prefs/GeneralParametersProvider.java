@@ -13,9 +13,12 @@
 package org.talend.core.prefs;
 
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.ResourceBundle;
 
+import org.apache.commons.lang3.StringUtils;
 import org.talend.commons.i18n.MessagesCore;
+import org.talend.core.CorePlugin;
 
 /**
  * Use to retrieve general application parameters.<br/>
@@ -57,6 +60,20 @@ public class GeneralParametersProvider extends MessagesCore {
         String[] toReturn = value.split(","); //$NON-NLS-1$
         Arrays.sort(toReturn);
         return toReturn;
+    }
+    
+    public static String getOnLineHelpLanguageSetting() {
+        String language = CorePlugin.getDefault().getPluginPreferences().getString(ITalendCorePrefConstants.LANGUAGE_SELECTOR);
+        if (StringUtils.isBlank(language)) {
+            language = Locale.getDefault().getLanguage();
+        }
+        if (Locale.FRENCH.getLanguage().equals(language)) {
+            return "fr";
+        }
+        if (Locale.JAPAN.getLanguage().equals(language)) {
+            return "ja";
+        }
+        return "en"; //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     /**

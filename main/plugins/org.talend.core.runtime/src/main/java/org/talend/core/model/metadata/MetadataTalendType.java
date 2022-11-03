@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -24,18 +25,20 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.CoreException;
@@ -46,9 +49,9 @@ import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Bundle;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.SystemException;
+import org.talend.commons.runtime.xml.XmlUtil;
+import org.talend.commons.utils.io.FilesUtils;
 import org.talend.commons.utils.workbench.resources.ResourceUtils;
-import org.talend.core.GlobalServiceRegister;
-import org.talend.core.ICoreService;
 import org.talend.core.database.EDatabaseTypeName;
 import org.talend.core.language.ECodeLanguage;
 import org.talend.core.language.LanguageManager;
@@ -59,6 +62,8 @@ import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.runtime.i18n.Messages;
 import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.repository.ProjectManager;
+import org.talend.repository.model.RepositoryConstants;
+import org.talend.utils.json.JSONObject;
 import org.talend.utils.xml.XmlUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -75,14 +80,13 @@ import org.xml.sax.SAXException;
  */
 public final class MetadataTalendType {
 
-    /**
-     *
-     */
     public static final String INTERNAL_MAPPINGS_FOLDER = "mappings"; //$NON-NLS-1$
 
     public static final String PROJECT_MAPPING_FOLDER = ".settings/mappings"; //$NON-NLS-1$
 
-    public static final String UPDATED_MAPPING_FILES = "updated.mapping.files"; //$NON-NLS-1$
+    public static final String FILE_MAPPING_REVISION = "mapping_revision.json"; //$NON-NLS-1$
+
+    public static final String MAPPING_FILE_PATTERN = "^mapping_.*\\.xml$"; //$NON-NLS-1$
 
     private static ECodeLanguage codeLanguage;
 
@@ -459,13 +463,14 @@ public final class MetadataTalendType {
         return list;
     }
 
-    public static URL getSystemForderURLOfMappingsFile() throws SystemException {
+    public static URL getSystemFolderURLOfMappingsFile() throws SystemException {
         String dirPath = "/" + INTERNAL_MAPPINGS_FOLDER; //$NON-NLS-1$
         URL url = null;
         Path filePath = new Path(dirPath);
         Bundle b = Platform.getBundle(CoreRuntimePlugin.PLUGIN_ID);
         if (b != null) {
             try {
+                // Enumeration<URL> entries = b.findEntries(dirPath, "mapping_*.xml", false);
                 url = FileLocator.toFileURL(FileLocator.find(b, filePath, null));
             } catch (IOException e) {
                 throw new SystemException(e);
@@ -474,46 +479,169 @@ public final class MetadataTalendType {
         return url;
     }
 
-    public static URL getProjectForderURLOfMappingsFile() throws SystemException {
+    public static URL getProjectFolderURLOfMappingsFile() throws SystemException {
         try {
             String dirPath = "/" + INTERNAL_MAPPINGS_FOLDER; //$NON-NLS-1$
             IProject project = ResourceUtils.getProject(ProjectManager.getInstance().getCurrentProject());
             IPath settingPath = new ProjectScope(project).getLocation();
-            IPath mappingPath = settingPath.append(dirPath);
-            File mappingFolder = mappingPath.toFile();
-            if (!mappingFolder.exists() || mappingFolder.listFiles().length < 1) {
-                ICoreService service = null;
-                if (GlobalServiceRegister.getDefault().isServiceRegistered(ICoreService.class)) {
-                    service = GlobalServiceRegister.getDefault().getService(ICoreService.class);
-                    service.syncMappingsFileFromSystemToProject();
-                }
-            }
-            return mappingFolder.toURL();
+            File mappingFolder = settingPath.append(dirPath).toFile();
+            return mappingFolder.toURI().toURL();
         } catch (Exception e) {
             throw new SystemException(e);
         }
     }
 
-    private static String getSha1OfFile(File file) {
-        String sha1 = null;
-        FileInputStream fileInputStream = null;
+    public static URL getProjectTempMappingFolder() {
         try {
-            fileInputStream = new FileInputStream(file);
-            sha1 = DigestUtils.shaHex(fileInputStream);
+            IProject project = ResourceUtils.getProject(ProjectManager.getInstance().getCurrentProject());
+            File folder = ResourceUtils
+                    .getFolder(project, RepositoryConstants.TEMP_DIRECTORY + "/" + INTERNAL_MAPPINGS_FOLDER, false).getLocation()
+                    .toFile();
+            syncMappingFiles(folder, false);
+            return folder.toURI().toURL();
         } catch (Exception e) {
             ExceptionHandler.process(e);
-        } finally {
-            if (fileInputStream != null) {
-                try {
-                    fileInputStream.close();
-                } catch (IOException e) {
-                    e.printStackTrace(); // Just print the exception for debug.
+            return null;
+        }
+    }
+
+    public static void syncMappingFiles(File target, boolean rename) {
+        if (!target.exists()) {
+            target.mkdir();
+        }
+        File[] arr = target.listFiles(f -> f.getName().matches(MAPPING_FILE_PATTERN));
+        if (arr == null) {
+            arr = new File[0];
+        }
+        try {
+            Map<String, File> targetFileMap = Stream.of(arr).collect(Collectors.toMap(File::getName, Function.identity()));
+            Map<String, File> workingFileMap = getWorkingMappingFiles().stream()
+                    .collect(Collectors.toMap(f -> getTargetName(f, rename), Function.identity(), (f1, f2) -> f1));
+
+            targetFileMap.entrySet().stream().filter(entry -> !workingFileMap.containsKey(entry.getKey()))
+                    .forEach(entry -> entry.getValue().delete());
+
+            for (Entry<String, File> entry : workingFileMap.entrySet()) {
+                String targetName = entry.getKey();
+                File workingMappingFile = entry.getValue();
+                boolean needUpdate = false;
+                File targetMappingFile = targetFileMap.get(targetName);
+                if (targetMappingFile == null) {
+                    targetMappingFile = new File(target, targetName);
+                    needUpdate = true;
+                } else if (!getSha1OfFile(workingMappingFile).equals(getSha1OfFile(targetMappingFile))) {
+                    needUpdate = true;
+                }
+                if (needUpdate) {
+                    if (targetMappingFile.exists()) {
+                        targetMappingFile.delete();
+                    }
+                    FilesUtils.copyFile(workingMappingFile, targetMappingFile);
                 }
             }
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
         }
-        return sha1;
+    }
+
+    public static String getTargetName(File file, boolean rename) {
+        String targetName = file.getName();
+        if (!rename) {
+            return targetName;
+        }
+        try {
+            DocumentBuilderFactory documentBuilderFactory = XmlUtils.getSecureDocumentBuilderFactory();
+            DocumentBuilder analyser = documentBuilderFactory.newDocumentBuilder();
+            Document document = analyser.parse(file);
+            NodeList dbmsNodes = document.getElementsByTagName("dbms"); //$NON-NLS-1$
+            String dbmsIdValue = "";
+            for (int iDbms = 0; iDbms < dbmsNodes.getLength(); iDbms++) {
+                Node dbmsNode = dbmsNodes.item(iDbms);
+                NamedNodeMap dbmsAttributes = dbmsNode.getAttributes();
+                dbmsIdValue = dbmsAttributes.getNamedItem("id").getNodeValue(); //$NON-NLS-1$
+
+            }
+            if (dbmsIdValue != null && !"".equals(dbmsIdValue)) {
+                final String[] fileNameSplit = targetName.split("_");
+                String idA = "_id";
+                String idB = "id_";
+                final int indexA = dbmsIdValue.indexOf(idA);
+                final int indexB = dbmsIdValue.indexOf(idB);
+                String secondeName = "";
+                if (indexA > 0) {
+                    secondeName = dbmsIdValue.substring(0, dbmsIdValue.length() - idA.length());
+                } else if (indexB == 0) {
+                    secondeName = dbmsIdValue.substring(idB.length(), dbmsIdValue.length());
+                } else if (indexA == -1 && indexB == -1) {
+                    secondeName = dbmsIdValue;
+                }
+                if (secondeName != null && !"".equals(secondeName)) {
+                    targetName = fileNameSplit[0] + "_" + secondeName.toLowerCase() + XmlUtil.FILE_XML_SUFFIX;
+                }
+
+            }
+        } catch (ParserConfigurationException e) {
+            ExceptionHandler.process(e);
+        } catch (SAXException e) {
+            ExceptionHandler.process(e);
+        } catch (IOException e) {
+            ExceptionHandler.process(e);
+        }
+        return targetName;
+    }
+
+    public static JSONObject getRevisionObject() {
+        try {
+            File revisonFile = new File(MetadataTalendType.getSystemFolderURLOfMappingsFile().getFile(),
+                    MetadataTalendType.FILE_MAPPING_REVISION);
+            String jsonStr = new String(Files.readAllBytes(revisonFile.toPath()));
+            return new JSONObject(jsonStr);
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        }
+        return new JSONObject();
+    }
+
+    public static boolean restoreMappingFiles() throws Exception {
+        List<File> toDelete = new ArrayList<>();
+        JSONObject revision = getRevisionObject();
+        File projectMappingFolder = new File(getProjectFolderURLOfMappingsFile().getFile());
+        if (projectMappingFolder.exists()) {
+            File[] projectMappingFiles = projectMappingFolder.listFiles(f -> f.getName().matches(MAPPING_FILE_PATTERN));
+            if (projectMappingFiles != null) {
+                for (File file : projectMappingFiles) {
+                    if (revision.has(file.getName())) {
+                        String sha1 = MetadataTalendType.getSha1OfFile(file);
+                        if (revision.getJSONObject(file.getName()).has(sha1)) {
+                            toDelete.add(file);
+                        }
+                    }
+                }
+            }
+            File xsd = new File(projectMappingFolder, "mapping_validate.xsd"); //$NON-NLS-1$
+            if (xsd.exists()) {
+                xsd.delete();
+            }
+        }
+        toDelete.forEach(File::delete);
+        return !toDelete.isEmpty();
+    }
+
+    public static String getSha1OfFile(File file) {
+        try {
+            String text = new String(Files.readAllBytes(file.toPath()));
+            return getSha1OfText(text);
+        } catch (IOException e) {
+            ExceptionHandler.process(e);
+        }
+        return null;
     }
     
+    public static String getSha1OfText(String text) {
+        text = text.replace("\r\n", "\n"); //$NON-NLS-1$ //$NON-NLS-2$
+        return DigestUtils.sha1Hex(text);
+    }
+
     public static void copyFile(File in, IFile out) throws CoreException, IOException {
         FileInputStream fis = new FileInputStream(in);
         if (out.exists()) {
@@ -524,49 +652,6 @@ public final class MetadataTalendType {
         fis.close();
     }
 
-    public static void syncNewMappingFileToProject() throws SystemException {
-        try {
-            File sysMappingFiles = new File(MetadataTalendType.getSystemForderURLOfMappingsFile().getPath());
-            IFolder projectMappingFolder = ResourceUtils.getProject(ProjectManager.getInstance().getCurrentProject())
-                    .getFolder(MetadataTalendType.PROJECT_MAPPING_FOLDER);
-            File projectMappingFiles = new File(projectMappingFolder.getLocationURI());
-            if (!sysMappingFiles.exists() || !projectMappingFiles.exists()) {
-                return;
-            }
-            for (File sysMapping : sysMappingFiles.listFiles()) {
-                IFile projectMapping = projectMappingFolder.getFile(sysMapping.getName());
-                if (projectMapping.exists() && StringUtils.equals(sysMapping.getName(), "mapping_Greenplum.xml")) {
-
-                    String sha1OfFile = DigestUtils.shaHex(projectMapping.getContents());
-                    String shalOfOldSystem = "8431f19215dacb3caa126778ae695954552cce2a";
-                    if (StringUtils.equals(sha1OfFile, shalOfOldSystem)) {
-                        copyFile(sysMapping, projectMapping);
-                    }
-                }
-                if (!projectMapping.exists()) {
-                    FileInputStream fis = null;
-                    try {
-                        fis = new FileInputStream(sysMapping);
-                        projectMapping.create(fis, true, null);
-                    } catch (CoreException coreExc) {
-                        throw new SystemException(coreExc);
-                    } finally {
-                        if (fis != null) {
-                            try {
-                                fis.close();
-                            } catch (IOException ioExc) {
-                                throw new SystemException(ioExc);
-                            }
-                        }
-                    }
-                }
-            }
-
-        } catch (Exception e) {
-            throw new SystemException(e);
-        }
-    }
-
     /**
      *
      * Load db types and mapping with the current activated language (Java, Perl, ...).
@@ -574,20 +659,38 @@ public final class MetadataTalendType {
      * @throws SystemException
      */
     public static void loadCommonMappings() throws SystemException {
-        URL url = getProjectForderURLOfMappingsFile();
-        File dir = new File(url.getPath());
         metadataMappingFiles = new ArrayList<File>();
         dbmsSet.clear();
-        if (dir.isDirectory()) {
-            File[] files = dir.listFiles();
-            for (File file : files) {
-                if (file.getName().matches("^mapping_.*\\.xml$")) { //$NON-NLS-1$
-                    loadMapping(file);
-                    metadataMappingFiles.add(file);
-                }
-            }
+        for (File file : getWorkingMappingFiles()) {
+            loadMapping(file);
+            metadataMappingFiles.add(file);
         }
+    }
 
+    public static List<File> getWorkingMappingFiles() throws SystemException {
+        File projectMappingFolder = new File(getProjectFolderURLOfMappingsFile().getFile());
+        File[] projectMappingFiles = projectMappingFolder.listFiles(f -> f.getName().matches(MAPPING_FILE_PATTERN));
+        File systemMappingFolder = new File(getSystemFolderURLOfMappingsFile().getFile());
+        File[] systemMappingFiles = systemMappingFolder.listFiles(f -> f.getName().matches(MAPPING_FILE_PATTERN));
+        if (projectMappingFiles == null || projectMappingFiles.length == 0) {
+            return Arrays.asList(systemMappingFiles);
+        }
+        List<File> workingMappingFiles = new ArrayList<>();
+        Map<String, File> projectMappingFilesMap = Stream.of(projectMappingFiles)
+                .collect(Collectors.toMap(File::getName, Function.identity()));
+        workingMappingFiles.addAll(projectMappingFilesMap.values());
+        Stream.of(systemMappingFiles).filter(f -> !projectMappingFilesMap.containsKey(f.getName()))
+                .forEach(f -> workingMappingFiles.add(f));
+        return workingMappingFiles;
+    }
+
+    public static String getSha1OfSystemMappingFile(String fileName) {
+        try {
+            return getSha1OfFile(new File(getSystemFolderURLOfMappingsFile().getFile(), fileName));
+        } catch (SystemException e) {
+            ExceptionHandler.process(e);
+            return null;
+        }
     }
 
     private static void loadMapping(File file) throws SystemException {

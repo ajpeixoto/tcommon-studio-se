@@ -15,8 +15,10 @@ package org.talend.core.context;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.properties.User;
+import org.talend.core.service.ICloudSignOnService;
 
 /**
  * DOC smallet class global comment. Detailled comment <br/>
@@ -139,6 +141,14 @@ public class RepositoryContext {
      * @return the clearPassword
      */
     public String getClearPassword() {
+        try {
+            if (ICloudSignOnService.get() != null && ICloudSignOnService.get().isSignViaCloud()) {
+                return ICloudSignOnService.get().getLatestToken().getAccessToken();
+            }
+        }catch (Exception ex) {
+            ExceptionHandler.process(ex);
+        }
+
         return clearPassword;
     }
 

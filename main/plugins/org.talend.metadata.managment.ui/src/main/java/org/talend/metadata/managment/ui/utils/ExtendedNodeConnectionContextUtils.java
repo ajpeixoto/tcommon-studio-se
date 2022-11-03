@@ -108,6 +108,8 @@ public class ExtendedNodeConnectionContextUtils {
         SynapseClientId,
         SynapseDirectoryId,
         SynapseSecretKey,
+        UseSynapseCertificate,
+        SynapseClientCertificate,
         SynapseDeployBlob,
         SynapseDriverMemory,
         SynapseDriverCores,
@@ -160,6 +162,10 @@ public class ExtendedNodeConnectionContextUtils {
         DataBricksClusterId,
         DataBricksToken,
         DataBricksDBFSDepFolder,
+        DataBricksClusterType,
+        DataBricksRuntimeVersion,
+        DataBricksDriverNodeType,
+        DataBricksNodeType,
         
         //Knox
         SparkMode,
@@ -168,6 +174,7 @@ public class ExtendedNodeConnectionContextUtils {
         KnoxUsername,
         KnoxPassword,
         KnoxDirectory,
+        KnoxTimeout,
         
         //Cde
         CdeApiEndPoint,

@@ -19,6 +19,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.swt.events.SelectionListener;
+import org.talend.commons.CommonsPlugin;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.utils.workbench.extensions.ExtensionImplementationProvider;
 import org.talend.commons.utils.workbench.extensions.ExtensionPointLimiterImpl;
@@ -43,7 +44,7 @@ public class RepositoryFactoryProvider {
             "org.talend.core.repository.repository_provider", //$NON-NLS-1$
             "RepositoryFactory", 1, -1); //$NON-NLS-1$
 
-    public static List<IRepositoryFactory> getAvailableRepositories() {
+    public static synchronized List<IRepositoryFactory> getAvailableRepositories() {
         if (list == null) {
             list = new ArrayList<IRepositoryFactory>();
             List<IConfigurationElement> extension = ExtensionImplementationProvider.getInstanceV2(REPOSITORY_PROVIDER);
@@ -120,6 +121,7 @@ public class RepositoryFactoryProvider {
                 return current;
             }
         }
+        ExceptionHandler.log("Can't find repository factory for: " + id);
         return null;
     }
 }

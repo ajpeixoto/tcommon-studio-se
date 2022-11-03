@@ -130,6 +130,10 @@ public enum EHadoopProperties {
     
     SYNAPSE_CLIENT_KEY,
     
+    SYNAPSE_USE_CERTIFICATE,
+    
+    SYNAPSE_CLIENT_CERTIFICATE,
+    
     DEPLOY_FOLDER,
     
     SPARK_DRIVER_MEM,
@@ -149,6 +153,14 @@ public enum EHadoopProperties {
     DATABRICKS_TOKEN,
     
     DATABRICKS_DBFS_DEP_FOLDER,
+    
+    DATABRICKS_NODE_TYPE,
+    
+    DATABRICKS_DRIVER_NODE_TYPE,
+    
+    DATABRICKS_RUNTIME_VERSION,
+    
+    DATABRICKS_CLUSTER_TYPE,
     
     UNIV_STANDALONE_MASTER,
     

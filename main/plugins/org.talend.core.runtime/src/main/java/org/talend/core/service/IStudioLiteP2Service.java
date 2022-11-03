@@ -128,6 +128,12 @@ public interface IStudioLiteP2Service extends IService {
 
     void setupTmcUpdate(IProgressMonitor monitor, IStudioUpdateConfig updateConfig) throws Exception;
 
+    boolean removeM2() throws Exception;
+    
+    void saveRemoveM2(boolean remove) throws Exception;
+    
+    void cleanM2(IProgressMonitor monitor);
+    
     public static IStudioLiteP2Service get() {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IStudioLiteP2Service.class)) {
             return GlobalServiceRegister.getDefault().getService(IStudioLiteP2Service.class);

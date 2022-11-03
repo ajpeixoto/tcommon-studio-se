@@ -1207,6 +1207,7 @@ public class ImportItemsWizardPage extends WizardPage {
     public boolean performFinish() {
         final List<ImportItem> checkedItemRecords = getCheckedElements();
         final IProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
+        importManager.getPendoImportManager().cacheItemProperty(checkedItemRecords);
         
         /*
          * ?? prepare to do import, unlock the existed one, and make sure the overwrite to work well.
@@ -1260,11 +1261,12 @@ public class ImportItemsWizardPage extends WizardPage {
                     final ResourceOption importOption = ResourceOption.ITEM_IMPORTATION;
                     try {
                         EmfResourcesFactoryReader.INSTANCE.addOption(importOption, false);
-
+                        importManager.getPendoImportManager().setStudioImport(true);
                         importManager.importItemRecords(monitor, resManager, checkedItemRecords, overwrite,
                                 nodesBuilder.getAllImportItemRecords(), destinationPath, alwaysRegenId);
                     } finally {
                         EmfResourcesFactoryReader.INSTANCE.removOption(importOption, false);
+                        importManager.getPendoImportManager().sendTrackToPendo();
                     }
                     Display.getDefault().syncExec(new Runnable() {
 

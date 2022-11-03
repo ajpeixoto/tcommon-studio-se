@@ -144,7 +144,7 @@ public class ContextTreeTable {
 
     private IContextModelManager manager;
 
-    private final static int fixedCheckBoxWidth = 30;
+    private final static int fixedCheckBoxWidth = 90;
 
     private final static int fixedTypeWidth = 90;
 
@@ -594,7 +594,7 @@ public class ContextTreeTable {
         // the columns after "type" will caculated by the contexts
         // 0=Name,1=Type,2=Comment.
         int j = 3;
-        for (int i = 0; i < contexts.size(); i++) {
+        for (IContext context : contexts) {
             columnLabelAccumulator.registerColumnOverrides(j++, new String[] { ContextTableConstants.COLUMN_CONTEXT_VALUE });
             columnLabelAccumulator.registerColumnOverrides(j++, new String[] { ContextTableConstants.COLUMN_CHECK_PROPERTY });
             columnLabelAccumulator.registerColumnOverrides(j++, new String[] { ContextTableConstants.COLUMN_PROMPT_PROPERTY });

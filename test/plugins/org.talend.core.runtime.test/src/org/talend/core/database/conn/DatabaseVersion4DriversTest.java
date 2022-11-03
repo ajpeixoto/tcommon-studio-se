@@ -40,16 +40,16 @@ public class DatabaseVersion4DriversTest {
         assertTrue(drivers.containsAll(Arrays.asList(redshiftDrivers)));
 
         String[] redshiftSSODrivers = new String[] { "redshift-jdbc42-no-awssdk-1.2.55.1083.jar", "antlr4-runtime-4.8-1.jar",
-                "aws-java-sdk-1.11.848.jar", "jackson-core-2.11.4.jar", "jackson-databind-2.11.4.jar",
-                "jackson-annotations-2.11.4.jar", "httpcore-4.4.13.jar", "httpclient-4.5.13.jar", "joda-time-2.8.1.jar",
+                "aws-java-sdk-1.11.848.jar", "jackson-core-2.13.4.jar", "jackson-databind-2.13.4.2.jar",
+                "jackson-annotations-2.13.4.jar", "httpcore-4.4.13.jar", "httpclient-4.5.13.jar", "joda-time-2.8.1.jar",
                 "commons-logging-1.2.jar", "commons-codec-1.14.jar", "aws-java-sdk-redshift-internal-1.12.x.jar" };
         drivers = EDatabaseVersion4Drivers.getDrivers(EDatabaseTypeName.REDSHIFT_SSO.getDisplayName(),
                 ERedshiftDriver.DRIVER_V1.name());
         assertTrue(drivers.containsAll(Arrays.asList(redshiftSSODrivers)));
 
         redshiftSSODrivers = new String[] { "redshift-jdbc42-2.1.0.3.jar", "antlr4-runtime-4.8-1.jar",
-                "aws-java-sdk-1.11.848.jar", "jackson-core-2.11.4.jar", "jackson-databind-2.11.4.jar",
-                "jackson-annotations-2.11.4.jar", "httpcore-4.4.13.jar", "httpclient-4.5.13.jar", "joda-time-2.8.1.jar",
+                "aws-java-sdk-1.11.848.jar", "jackson-core-2.13.4.jar", "jackson-databind-2.13.4.2.jar",
+                "jackson-annotations-2.13.4.jar", "httpcore-4.4.13.jar", "httpclient-4.5.13.jar", "joda-time-2.8.1.jar",
                 "commons-logging-1.2.jar", "commons-codec-1.14.jar", "aws-java-sdk-redshift-internal-1.12.x.jar" };
         drivers = EDatabaseVersion4Drivers.getDrivers(EDatabaseTypeName.REDSHIFT_SSO.getDisplayName(),
                 ERedshiftDriver.DRIVER_V2.name());

@@ -37,7 +37,7 @@ public abstract class AbstractJobParameterInRepositoryRelationshipHandler extend
         Set<Relation> relationSet = new HashSet<Relation>();
 
         for (ElementParameterType paramType : parametersMap.values()) {
-            if (paramType.getName().endsWith(":" + getRepositoryTypeName())) { //$NON-NLS-1$
+            if (paramType.getName() != null && paramType.getName().endsWith(":" + getRepositoryTypeName())) { //$NON-NLS-1$
                 String name = paramType.getName().split(":")[0]; //$NON-NLS-1$
                 ElementParameterType repositoryTypeParam = parametersMap.get(name + ":" //$NON-NLS-1$
                         + getRepositoryTypeName());

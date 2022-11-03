@@ -229,7 +229,7 @@ public class PromptDialog extends SelectionDialog {
 
     private void createContextArea(IContext currentContext, Composite parent) {
         Group promptGroup = new Group(parent, SWT.NONE);
-        promptGroup.setText(Messages.getString("PromptDialog.promptGroup.name")); //$NON-NLS-1$
+        promptGroup.setText(Messages.getString("PromptDialog.variablePrompts.name")); //$NON-NLS-1$
         promptGroup.setLayout(new GridLayout(1, false));
         promptGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         // Prompt for context values ?

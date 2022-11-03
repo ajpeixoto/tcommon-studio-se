@@ -12,12 +12,12 @@
 // ============================================================================
 package org.talend.core;
 
-import org.talend.core.model.process.AbstractExternalNode;
+import org.talend.core.model.process.IExternalNode;
 import org.talend.core.model.process.INode;
 
 public interface ITDQComponentService extends IService {
 
     public boolean isTDQExternalComponent(String componentName);
 
-    public AbstractExternalNode createExternalComponent(INode node);
+    public IExternalNode createExternalComponent(INode node);
 }

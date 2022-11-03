@@ -36,6 +36,12 @@ public class PendoLoginProperties implements IPendoDataProperties {
     @JsonProperty("referenced_projects")
     private List<String> refProjectList;
 
+    @JsonProperty("one_click_login")
+    private String isOneClickLogin;
+
+    @JsonProperty("managed_update")
+    private String managedUpdate;
+
     /**
      * Getter for studio_version.
      * 
@@ -124,6 +130,42 @@ public class PendoLoginProperties implements IPendoDataProperties {
      */
     public void setRefProjectList(List<String> refProjectList) {
         this.refProjectList = refProjectList;
+    }
+
+    /**
+     * Getter for isOneClickLogin.
+     * 
+     * @return the isOneClickLogin
+     */
+    public String getIsOneClickLogin() {
+        return isOneClickLogin;
+    }
+
+    /**
+     * Sets the isOneClickLogin.
+     * 
+     * @param isOneClickLogin the isOneClickLogin to set
+     */
+    public void setIsOneClickLogin(String isOneClickLogin) {
+        this.isOneClickLogin = isOneClickLogin;
+    }
+
+    /**
+     * Getter for managedUpdate.
+     * 
+     * @return the managedUpdate
+     */
+    public String getManagedUpdate() {
+        return managedUpdate;
+    }
+
+    /**
+     * Sets the managedUpdate.
+     * 
+     * @param managedUpdate the managedUpdate to set
+     */
+    public void setManagedUpdate(String managedUpdate) {
+        this.managedUpdate = managedUpdate;
     }
 
 }

@@ -24,8 +24,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.talend.core.prefs.ITalendCorePrefConstants;
+import org.talend.core.service.IRemoteService;
 import org.talend.core.ui.CoreUIPlugin;
-import org.talend.core.ui.branding.IBrandingService;
 import org.talend.core.ui.i18n.Messages;
 import org.talend.core.ui.token.TokenCollectorFactory;
 
@@ -47,7 +47,7 @@ public class TalendDataCollectorPreferencePage extends FieldEditorPreferencePage
 
     @Override
     protected void createFieldEditors() {
-        if(!IBrandingService.get().isCloudLicense()) {
+        if(!(IRemoteService.get() != null && IRemoteService.get().isCloudConnection())) {
             addField(new BooleanFieldEditor(ITalendCorePrefConstants.DATA_COLLECTOR_ENABLED,
                     Messages.getString("TalendDataCollectorPreferencePage_EnableCapture"), getFieldEditorParent())); //$NON-NLS-1$
         }

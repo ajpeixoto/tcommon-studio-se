@@ -16,8 +16,14 @@ import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
@@ -158,8 +164,35 @@ public class ImageUtils {
         return imageDes;
     }
 
-    private static Map<byte[], ImageDataProvider> imageFromDataCachedImages = new HashMap<byte[], ImageDataProvider>();
+    private static Map<byte[], ImageDataProvider> imageFromDataCachedImages = Collections.synchronizedMap(new HashMap<byte[], ImageDataProvider>());
+    private static Map<Long, byte[]> cachedImagesTimeKeeping = Collections.synchronizedMap(new HashMap<Long, byte[]>());
+    
+    private static Thread clearImageFromDataCachedImages = new Thread() {
+        @SuppressWarnings("static-access")
+        public void run() {
+            long timeout = 5 * 60 * 1000;
+            while(true) {//remove older than 5 mins
+                Set<Entry<Long, byte[]>> collect = cachedImagesTimeKeeping.entrySet().stream()
+                        .filter(entry -> (System.currentTimeMillis() - entry.getKey()) > timeout).collect(Collectors.toSet());
+                for(Entry<Long, byte[]> entry: collect) {
+                    Long key = entry.getKey();
+                    cachedImagesTimeKeeping.remove(key);
+                    imageFromDataCachedImages.remove(entry.getValue());
+                }
+                
+                try {
+                    sleep(timeout);
+                } catch (InterruptedException e) {//
+                }
+            }
+        };
+    };
 
+    static {
+        clearImageFromDataCachedImages.setDaemon(true);
+        clearImageFromDataCachedImages.start();
+    }
+    
     /**
      * By default, keep in memory the .
      *
@@ -169,12 +202,17 @@ public class ImageUtils {
      */
     public static ImageDescriptor createImageFromData(byte[] data, boolean... keepInMemory) {
         if (data != null) {
-            ImageDataProvider imageProvider = imageFromDataCachedImages.get(data);
+            ImageDataProvider imageProvider = null;
+            Optional<byte[]> findKey = imageFromDataCachedImages.keySet().stream().filter(key->Arrays.equals(key, data)).findAny();
+            if(findKey.isPresent()) {
+                imageProvider = imageFromDataCachedImages.get(findKey.get());
+            }
             if (imageProvider == null) {
                 ByteArrayInputStream bais = new ByteArrayInputStream(data);
                 ImageData img = new ImageData(bais);
                 imageProvider = new TalendImageProvider(img);
                 imageFromDataCachedImages.put(data, imageProvider);
+                cachedImagesTimeKeeping.put(System.currentTimeMillis(), data);
             }
             return ImageDescriptor.createFromImageDataProvider(imageProvider);
         }
@@ -183,8 +221,9 @@ public class ImageUtils {
 
     public static void disposeImages(byte[] data) {
         if (data != null) {
-            if (imageFromDataCachedImages.get(data) != null) {
-                imageFromDataCachedImages.remove(data);
+            Optional<byte[]> findKey = imageFromDataCachedImages.keySet().stream().filter(key->Arrays.equals(key, data)).findAny();
+            if(findKey.isPresent()) {
+                imageFromDataCachedImages.remove(findKey.get());
             }
         }
     }

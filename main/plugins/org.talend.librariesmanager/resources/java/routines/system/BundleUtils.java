@@ -46,6 +46,23 @@ public final class BundleUtils {
         BUNDLE = bundle;
     }
 
+    public static  <T> T getService(Class<T> svcClass, String filter) {
+        if (BUNDLE == null) {
+            return null;
+        }
+        try {
+            Method getBundleContext = BUNDLE.getClass().getMethod("getBundleContext");
+            Object context = getBundleContext.invoke(BUNDLE);
+            Class<?> ctxClass = context.getClass();
+            Method getServiceReference = ctxClass.getMethod("getServiceReferences", Class.class, String.class);
+            Object serviceReference = getServiceReference.invoke(context, svcClass, filter);
+            Method getService = ctxClass.getMethod("getService", SERVICE_REFERENCE_CLASS);
+            return svcClass.cast(getService.invoke(context, ((java.util.Collection)serviceReference).iterator().next()));
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     public static  <T> T getService(Class<T> svcClass) {
         if (BUNDLE == null) {
             return null;

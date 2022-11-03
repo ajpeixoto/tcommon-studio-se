@@ -9,13 +9,13 @@
     </parent>
     <artifactId>studio-tcompv1-dependencies</artifactId>
     <packaging>pom</packaging>
-    
+
     <properties>
-        <tcomp.version>1.45.2</tcomp.version>
-        <slf4j.version>1.7.32</slf4j.version>
+        <tcomp.version>1.49.1</tcomp.version>
+        <slf4j.version>1.7.34</slf4j.version>
         <reload4j.version>1.2.19</reload4j.version>
     </properties>
-    
+
     <repositories>
         <repository>
             <id>talend_open</id>
@@ -58,7 +58,7 @@
             <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
         </repository>
     </repositories>
-    
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -70,7 +70,7 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-    
+
     <dependencies>
         <dependency>
             <groupId>org.talend.sdk.component</groupId>
@@ -119,7 +119,7 @@
             <version>${slf4j.version}</version>
         </dependency>
     </dependencies>
-    
+
     <build>
         <plugins>
             <plugin>

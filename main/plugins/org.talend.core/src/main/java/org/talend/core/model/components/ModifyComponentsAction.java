@@ -21,6 +21,7 @@ import org.talend.commons.exception.PersistenceException;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.components.conversions.IComponentConversion;
 import org.talend.core.model.components.conversions.RenameComponentConversion;
+import org.talend.core.model.components.conversions.DefaultRenameComponentConversion;
 import org.talend.core.model.components.filters.IComponentFilter;
 import org.talend.core.model.components.filters.NameComponentFilter;
 import org.talend.core.model.properties.Item;
@@ -55,6 +56,20 @@ public class ModifyComponentsAction {
     public static void searchAndModify(ProcessItem item, IComponentFilter filter, List<IComponentConversion> conversions)
             throws PersistenceException {
         searchAndModify(item, item.getProcess(), filter, conversions);
+    }
+    
+    /**
+     * Rename component name
+     * @param item job item
+     * @param processType Process type
+     * @param oldName old base name, for tck component, name does not include prefix "t", while for non tck components, name includes prefix "t".
+     * @param newName new base name, for tck component, name does not include prefix "t", while for non tck components, name includes prefix "t".
+     * @return
+     * @throws PersistenceException
+     */
+    public static boolean searchAndRenameComponent(Item item, ProcessType processType, String oldName, String newName) throws PersistenceException {
+        return searchAndModify(item, processType, new NameComponentFilter(oldName), Arrays.<IComponentConversion> asList(new DefaultRenameComponentConversion(oldName, newName)));
+
     }
 
     public static boolean searchAndModify(Item item, ProcessType processType, IComponentFilter filter,
