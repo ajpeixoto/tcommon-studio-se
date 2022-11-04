@@ -10,7 +10,7 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.core.pendo.mapper;
+package org.talend.core.pendo;
 
 import org.apache.log4j.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -18,16 +18,24 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.talend.commons.exception.ExceptionHandler;
-import org.talend.core.pendo.PendoTrackDataUtil.TrackEvent;
-import org.talend.core.pendo.PendoTrackSender;
-import org.talend.core.pendo.properties.PendoTMapProperties;
+import org.talend.core.pendo.properties.IPendoDataProperties;
 
 /**
  * DOC jding  class global comment. Detailled comment
  */
-public abstract class AbstractPendoTMapManager {
+public abstract class AbstractPendoTrackManager {
 
-    protected abstract PendoTMapProperties calculateProperties();
+    public abstract TrackEvent getTrackEvent();
+
+    public abstract IPendoDataProperties collectProperties();
+
+    public boolean isTrackSendAvailable() throws Exception {
+        return PendoDataTrackFactory.getInstance().isTrackSendAvailable();
+    }
+
+    public void sendTrackData(TrackEvent event, IPendoDataProperties properties) throws Exception {
+        PendoDataTrackFactory.getInstance().sendTrackData(event, properties);
+    }
 
     public void sendTrackToPendo() {
         Job job = new Job("send pendo track") {
@@ -35,9 +43,9 @@ public abstract class AbstractPendoTMapManager {
             @Override
             protected IStatus run(IProgressMonitor monitor) {
                 try {
-                    if (PendoTrackSender.getInstance().isTrackSendAvailable()) {
-                        PendoTMapProperties properties = calculateProperties();
-                        PendoTrackSender.getInstance().sendTrackData(TrackEvent.TMAP, properties);
+                    if (isTrackSendAvailable()) {
+                        IPendoDataProperties properties = collectProperties();
+                        sendTrackData(getTrackEvent(), properties);
                     }
                 } catch (Exception e) {
                     // warning only
