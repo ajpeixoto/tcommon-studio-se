@@ -390,6 +390,10 @@ public class XmiResourceManager {
     }
 
     public Resource getItemResource(ResourceSet resourceSet, Item item, boolean forceLoad) {
+        return getItemResource(getResourceSet(), item, forceLoad, false);
+    }
+
+    public Resource getItemResource(ResourceSet resourceSet, Item item, boolean forceLoad, boolean showLog) {
         if (item == null) {
             return null;
         }
@@ -402,13 +406,23 @@ public class XmiResourceManager {
         } else {
             itemResourceURI = getItemResourceURI(getItemURI(item));
         }
-        Resource itemResource = resourceSet.getResource(itemResourceURI, false);
-        if (forceLoad && itemResource == null) {
-            if (item instanceof FileItem) {
-                itemResource = new ByteArrayResource(itemResourceURI);
-                resourceSet.getResources().add(itemResource);
+        Resource itemResource = null;
+        try {
+            if (resourceSet instanceof TalendResourceSet) {
+                ((TalendResourceSet) resourceSet).setShowLog(showLog);
             }
-            itemResource = resourceSet.getResource(itemResourceURI, true);
+            itemResource = resourceSet.getResource(itemResourceURI, false);
+            if (forceLoad && itemResource == null) {
+                if (item instanceof FileItem) {
+                    itemResource = new ByteArrayResource(itemResourceURI);
+                    resourceSet.getResources().add(itemResource);
+                }
+                itemResource = resourceSet.getResource(itemResourceURI, true);
+            }
+        } catch (Exception e) {
+            if (showLog) {
+                throw new RuntimeException(e);
+            }
         }
         return itemResource;
     }
@@ -628,7 +642,7 @@ public class XmiResourceManager {
 
             boolean isTestContainer = false;
             if (GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerProviderService.class)) {
-                ITestContainerProviderService testContainerService = (ITestContainerProviderService) GlobalServiceRegister
+                ITestContainerProviderService testContainerService = GlobalServiceRegister
                         .getDefault().getService(ITestContainerProviderService.class);
                 if (testContainerService != null) {
                     isTestContainer = testContainerService.isTestContainerItem(property.getItem());

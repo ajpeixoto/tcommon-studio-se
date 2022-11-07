@@ -33,6 +33,13 @@ public class AnalysisReportRecorder extends ItemReportRecorder {
         this.detailMessage = detailMessage;
     }
 
+    public AnalysisReportRecorder(IItemAnalysisTask task, SeverityOption severity, String detailMessage) {
+        super();
+        this.task = task;
+        this.severity = severity;
+        this.detailMessage = detailMessage;
+    }
+
     public String getTaskName() {
         return task.getName();
     }
