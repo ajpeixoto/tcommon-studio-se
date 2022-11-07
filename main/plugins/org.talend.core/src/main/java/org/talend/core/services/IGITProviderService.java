@@ -75,6 +75,10 @@ public interface IGITProviderService extends IService {
      * @return
      */
     String getCleanGitRepositoryUrl(org.talend.core.model.properties.Project project);
+    
+    boolean canShowSwitchGitModePopup();
+    
+    void showSwithGitModePopup();
 
     public static IGITProviderService get() {
         GlobalServiceRegister register = GlobalServiceRegister.getDefault();
