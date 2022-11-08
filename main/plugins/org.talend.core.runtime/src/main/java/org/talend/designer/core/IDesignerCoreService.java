@@ -26,6 +26,8 @@ import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.part.MultiPageEditorPart;
+import org.talend.analysistask.AnalysisReportRecorder;
+import org.talend.commons.exception.PersistenceException;
 import org.talend.core.IService;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.general.ModuleNeeded;
@@ -205,5 +207,7 @@ public interface IDesignerCoreService extends IService {
     public void openComponentOnlineHelp(String componentName);
 
     public IProcess getJobletProcessByItem(Item item);
+
+    public List<AnalysisReportRecorder> analysis(Project project) throws PersistenceException;
 
 }

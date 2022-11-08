@@ -10,10 +10,12 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.commons.report;
+package org.talend.designer.maven.migration.common;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.talend.analysistask.ItemAnalysisReportManager;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.core.GlobalServiceRegister;
@@ -31,15 +33,8 @@ public class ItemReportRecorder {
 
     protected String detailMessage;
 
-    protected String currentItemPath;
-
-    protected String currentItemType;
-
     public String getItemType() {
         String type = "";
-        if (item == null) {
-            return currentItemType;
-        }
         ERepositoryObjectType itemType = ERepositoryObjectType.getItemType(item);
         if (itemType != null) {
             if (ERepositoryObjectType.getAllTypesOfTestContainer().contains(itemType)) {
@@ -47,7 +42,7 @@ public class ItemReportRecorder {
                 if (parentJobItem != null) {
                     ERepositoryObjectType parentJobType = ERepositoryObjectType.getItemType(parentJobItem);
                     if (parentJobType != null) {
-                        String parentTypePath = ItemAnalysisReportManager.getInstance().getCompleteObjectTypePath(parentJobType);
+                        String parentTypePath = getCompleteObjectTypePath(parentJobType);
                         if (StringUtils.isNotBlank(parentTypePath)) {
                             type = parentTypePath + "/";
                         }
@@ -55,7 +50,7 @@ public class ItemReportRecorder {
                 }
                 type += itemType;
             } else {
-                type = ItemAnalysisReportManager.getInstance().getCompleteObjectTypePath(itemType);
+                type = getCompleteObjectTypePath(itemType);
             }
         }
         return type;
@@ -63,9 +58,6 @@ public class ItemReportRecorder {
 
     public String getItemPath() {
         String path = "";
-        if (this.currentItemPath != null) {
-            return this.currentItemPath;
-        }
         StringBuffer buffer = new StringBuffer();
         ERepositoryObjectType itemType = ERepositoryObjectType.getItemType(item);
 
@@ -111,28 +103,39 @@ public class ItemReportRecorder {
         return parentJobItem;
     }
 
+    private String getCompleteObjectTypePath(ERepositoryObjectType itemType) {
+        ERepositoryObjectType rootItemType = itemType;
+        if (ERepositoryObjectType.JDBC != null && ERepositoryObjectType.JDBC.equals(rootItemType)) {
+            rootItemType = ERepositoryObjectType.METADATA_CONNECTIONS;
+        }
+        List<String> typeLabels = new ArrayList<String>();
+        findOutCompleteTypePath(rootItemType, typeLabels);
+        StringBuffer buffer = new StringBuffer();
+        if (!typeLabels.isEmpty()) {
+            for (int i = 0; i < typeLabels.size(); i++) {
+                if (i != 0) {
+                    buffer.append("/");
+                }
+                buffer.append(typeLabels.get(i));
+            }
+        }
+        return buffer.toString();
+    }
+
+    private void findOutCompleteTypePath(ERepositoryObjectType type, List<String> typeLabels) {
+        ERepositoryObjectType parentType = ERepositoryObjectType.findParentType(type);
+        if (parentType != null) {
+            findOutCompleteTypePath(parentType, typeLabels);
+        }
+        typeLabels.add(type.getLabel());
+    }
+
     public Item getItem() {
         return item;
     }
 
     public void setItem(Item item) {
         this.item = item;
-    }
-
-    public String getCurrentItemPath() {
-        return this.currentItemPath;
-    }
-
-    public void setCurrentPath(String currentItemPath) {
-        this.currentItemPath = currentItemPath;
-    }
-
-    public String getCurrentItemType() {
-        return this.currentItemType;
-    }
-
-    public void setCurrentItemType(String currentItemType) {
-        this.currentItemType = currentItemType;
     }
 
     public String getDetailMessage() {

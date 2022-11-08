@@ -32,6 +32,10 @@ public class ItemAnalysisTaskRegistryReader extends RegistryReader {
 
     private static final ItemAnalysisTaskRegistryReader INSTANCE = new ItemAnalysisTaskRegistryReader();
 
+    private Map<String, String> allItemURIsMap = new HashMap<String, String>();
+
+    private Map<String, List<String>> duplicatedItemURIsMap = new HashMap<String, List<String>>();
+
     public static ItemAnalysisTaskRegistryReader getInstance() {
         return INSTANCE;
     }
@@ -79,6 +83,19 @@ public class ItemAnalysisTaskRegistryReader extends RegistryReader {
 
     public synchronized void clearCache() {
         idItemAnalysisTaskMap.clear();
+    }
+
+    /**
+     * Getter for allItemURIsMap.
+     * 
+     * @return the allItemURIsMap
+     */
+    public Map<String, String> getAllItemURIsMap() {
+        return this.allItemURIsMap;
+    }
+
+    public Map<String, List<String>> getDuplicatedItemURIsMap() {
+        return this.duplicatedItemURIsMap;
     }
 
 }

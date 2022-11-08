@@ -109,6 +109,7 @@
                                 <patternset>
                                         <exclude name="repository/org/apache/maven/maven-artifact-manager/2.0.9/"/>
                                         <exclude name="repository/org/apache/maven/maven-artifact-manager/2.0.6/"/>
+                                        <exclude name="repository/ch/qos/reload4j/reload4j/1.2.19/"/>
                                     </patternset>
                                 </unzip>
                             </tasks>
