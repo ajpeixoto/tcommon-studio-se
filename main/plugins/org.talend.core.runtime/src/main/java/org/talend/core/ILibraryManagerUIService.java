@@ -53,5 +53,5 @@ public interface ILibraryManagerUIService extends IService {
 
     public boolean confirmDialog(String originalJarFileName);
 
-    public IConfigModuleDialog getConfigModuleDialog(Shell parentShell, String initValue);
+    public IConfigModuleDialog getConfigModuleDialog(Shell parentShell, String initValue, boolean allowDetectDependencies);
 }

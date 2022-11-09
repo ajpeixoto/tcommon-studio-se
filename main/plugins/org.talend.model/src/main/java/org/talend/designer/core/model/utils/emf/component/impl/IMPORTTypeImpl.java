@@ -2,23 +2,21 @@
  */
 package org.talend.designer.core.model.utils.emf.component.impl;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
-
 import org.eclipse.emf.common.util.EList;
-
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
-
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
-
 import org.eclipse.emf.ecore.util.EDataTypeEList;
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.InternalEList;
-
 import org.talend.designer.core.model.utils.emf.component.ComponentPackage;
 import org.talend.designer.core.model.utils.emf.component.IMPORTType;
 import org.talend.designer.core.model.utils.emf.component.INSTALLType;
@@ -888,6 +886,83 @@ public class IMPORTTypeImpl extends EObjectImpl implements IMPORTType {
         result.append(mvn);
         result.append(')');
         return result.toString();
+    }
+    
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((this.bundleID == null) ? 0 : this.bundleID.hashCode());
+        result = prime * result + ((this.mESSAGE == null) ? 0 : this.mESSAGE.hashCode());
+        result = prime * result + ((this.mODULE == null) ? 0 : this.mODULE.hashCode());
+        result = prime * result + ((this.mODULEGROUP == null) ? 0 : this.mODULEGROUP.hashCode());
+        result = prime * result + ((this.nAME == null) ? 0 : this.nAME.hashCode());
+        result = prime * result + ((this.rEQUIREDIF == null) ? 0 : this.rEQUIREDIF.hashCode());
+        result = prime * result + ((this.urlPath == null) ? 0 : this.urlPath.hashCode());
+        result = prime * result + ((this.mvn == null) ? 0 : this.mvn.hashCode());
+        result = prime * result + (this.mRREQUIREDESet ? 1231 : 1237);  //boolean
+        result = prime * result + (this.rEQUIREDESet ? 1231 : 1237);
+        result = prime * result + (this.sHOWESet ? 1231 : 1237);
+        result = prime * result + ((this.uRL == null) ? 0 : this.uRL.hashCode());
+        return result;
+    }
+    
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        IMPORTTypeImpl other = (IMPORTTypeImpl) obj;
+        if(eIsProxy() != other.eIsProxy() ) {
+            return false;
+        }
+        
+        if (!StringUtils.equals(this.getBundleID(), other.getBundleID())) {
+            return false;
+        }
+        if (!StringUtils.equals(this.getMESSAGE(), other.getMESSAGE())) {
+            return false;
+        }
+        if (!StringUtils.equals(this.getMODULE(), other.getMODULE())) {
+            return false;
+        }
+        if (!StringUtils.equals(this.getMODULEGROUP(), other.getMODULEGROUP())) {
+            return false;
+        }
+        if (!StringUtils.equals(this.getNAME(), other.getNAME())) {
+            return false;
+        }
+        if (!StringUtils.equals(this.getREQUIREDIF(), other.getREQUIREDIF())) {
+            return false;
+        }
+        if (!StringUtils.equals(this.getUrlPath(), other.getUrlPath())) {
+            return false;
+        }
+        if (!StringUtils.equals(this.getMVN(), other.getMVN())) {
+            return false;
+        }
+        if(this.mRREQUIREDESet != other.mRREQUIREDESet) {
+            return false;
+        }
+        if(this.rEQUIREDESet != other.rEQUIREDESet) {
+            return false;
+        }
+        if(this.sHOWESet != other.sHOWESet) {
+            return false;
+        }
+        
+        if((uRL !=null && other.uRL == null) || ((uRL ==null && other.uRL != null))) {
+            return false;
+        } else if(uRL != null && other.uRL != null){
+            Collections.sort(uRL);
+            Collections.sort(other.uRL);
+            if(!Arrays.equals(uRL.toArray(), other.uRL.toArray())) {
+                return false;
+            }
+        }
+        
+        return true;
     }
 
 } //IMPORTTypeImpl

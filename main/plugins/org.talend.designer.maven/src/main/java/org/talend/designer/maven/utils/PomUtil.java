@@ -19,9 +19,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -1097,4 +1099,16 @@ public class PomUtil {
         }
     }
 
+    public static boolean isValidPomFile(String pomfile) {
+        if (pomfile != null) {
+            MavenModelManager modelManager = MavenPlugin.getMavenModelManager();
+            try (InputStream inputStream = new FileInputStream(new File(pomfile))) {
+                modelManager.readMavenModel(inputStream);
+                return true;
+            } catch (IOException | CoreException e) {
+                return false;
+            }
+        }
+        return false;
+    }
 }

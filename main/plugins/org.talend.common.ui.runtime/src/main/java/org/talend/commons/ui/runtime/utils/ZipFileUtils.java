@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
 
 import org.apache.tools.zip.ZipEntry;
@@ -169,8 +170,52 @@ public class ZipFileUtils {
             inputStream.close();
         }
     }
+    
+    public static void unZipFileEntry(File destFile, java.util.zip.ZipFile zipFile, java.util.zip.ZipEntry entry) throws IOException {
+        InputStream inputStream;
+        FileOutputStream fileOut;
+        if (entry.isDirectory()) {
+            destFile.mkdirs();
+        } else {
+            File parent = destFile.getParentFile();
+            if (parent != null && !parent.exists()) {
+                parent.mkdirs();
+            }
+
+            inputStream = zipFile.getInputStream(entry);
+
+            fileOut = new FileOutputStream(destFile);
+            byte[] buf = new byte[bufSize];
+            int readedBytes;
+            while ((readedBytes = inputStream.read(buf)) > 0) {
+                fileOut.write(buf, 0, readedBytes);
+            }
+            fileOut.close();
+
+            inputStream.close();
+        }
+    }
 
     public void setBufSize(int bufSize) {
         ZipFileUtils.bufSize = bufSize;
     }
+    
+    public static boolean isValidJarFile(String moduleFilePath) {
+        if (moduleFilePath == null) {
+            return false;
+        }
+
+        if (!new File(moduleFilePath).exists()) {
+            return false;
+        }
+
+        try (JarFile zip = new JarFile(moduleFilePath)) {
+            zip.getManifest();
+        } catch (IOException e) {
+            return false;
+        }
+
+        return true;
+    }
+
 }
