@@ -69,9 +69,9 @@ public enum EDatabaseVersion4Drivers {
     INFORMIX(new DbVersion4Drivers(EDatabaseTypeName.INFORMIX, "ifxjdbc.jar")), //$NON-NLS-1$
 
     SAS_9_1(new DbVersion4Drivers(EDatabaseTypeName.SAS, "SAS 9.1", "SAS_9.1", new String[] { "sas.core.jar", //$NON-NLS-1$
-            "sas.intrnet.javatools.jar", "sas.svc.connection.jar", "reload4j-1.2.19.jar" })), //$NON-NLS-1$ //$NON-NLS-2$
+            "sas.intrnet.javatools.jar", "sas.svc.connection.jar", "reload4j-1.2.22.jar" })), //$NON-NLS-1$ //$NON-NLS-2$
     SAS_9_2(new DbVersion4Drivers(EDatabaseTypeName.SAS,
-            "SAS 9.2", "SAS_9.2", new String[] { "sas.core.jar", "sas.security.sspi.jar", "sas.svc.connection.jar", "reload4j-1.2.19.jar" })), //$NON-NLS-1$ //$NON-NLS-2$
+            "SAS 9.2", "SAS_9.2", new String[] { "sas.core.jar", "sas.security.sspi.jar", "sas.svc.connection.jar", "reload4j-1.2.22.jar" })), //$NON-NLS-1$ //$NON-NLS-2$
     SAPHana(new DbVersion4Drivers(EDatabaseTypeName.SAPHana, "HDB 1.0", "HDB_1_0", "ngdbc.jar")), //$NON-NLS-1$
     // MYSQL, add for 9594
     MYSQL_8(new DbVersion4Drivers(EDatabaseTypeName.MYSQL, "MySQL 8", "MYSQL_8", "mysql-connector-java-8.0.18.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -83,8 +83,8 @@ public enum EDatabaseVersion4Drivers {
             "Microsoft SQL Server 2012", "Microsoft SQL Server 2012", "jtds-1.3.1-patch-20190523.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     MSSQL_PROP(new DbVersion4Drivers(EDatabaseTypeName.MSSQL,
             "Microsoft", "MSSQL_PROP", //$NON-NLS-1$ //$NON-NLS-2$
-            new String[] { "mssql-jdbc-actual.jar", "slf4j-api-1.7.29.jar", "slf4j-log4j12-1.7.29.jar", "msal4j-1.11.0.jar",//$NON-NLS-1$
-                    "oauth2-oidc-sdk-9.7.jar", "reload4j-1.2.19.jar", "jackson-core-2.13.4.jar",
+            new String[] { "mssql-jdbc-actual.jar", "slf4j-api-1.7.29.jar", "slf4j-log4j12-1.7.29.jar", "msal4j-1.11.0.jar", //$NON-NLS-1$
+                    "oauth2-oidc-sdk-9.7.jar", "reload4j-1.2.22.jar", "jackson-core-2.13.4.jar",
                     "jackson-databind-2.13.4.2.jar", "jackson-annotations-2.13.4.jar", "jcip-annotations-1.0-1.jar",
                     "json-smart-2.4.7.jar", "nimbus-jose-jwt-9.22.jar", "accessors-smart-2.4.7.jar", "asm-9.1.jar",
                     "content-type-2.1.jar", "lang-tag-1.5.jar" })),
