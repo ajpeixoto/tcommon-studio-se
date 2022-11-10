@@ -19,12 +19,14 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.jface.dialogs.TrayDialog;
+import org.eclipse.jface.preference.PreferenceManager;
 import org.eclipse.ui.IPerspectiveDescriptor;
 import org.eclipse.ui.IWorkbenchPreferenceConstants;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.application.IWorkbenchConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
+import org.eclipse.ui.internal.WorkbenchPlugin;
 import org.eclipse.ui.internal.ide.application.IDEWorkbenchAdvisor;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.LoginException;
@@ -34,6 +36,7 @@ import org.talend.core.GlobalServiceRegister;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.utils.LoginTaskRegistryReader;
 import org.talend.core.service.ICloudSignOnService;
+import org.talend.core.services.IGITProviderService;
 import org.talend.core.ui.branding.IBrandingConfiguration;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.core.ui.services.IGitUIProviderService;
@@ -147,7 +150,12 @@ public class ApplicationWorkbenchAdvisor extends IDEWorkbenchAdvisor {
         if (!ArrayUtils.contains(Platform.getApplicationArgs(), EclipseCommandLine.TALEND_DISABLE_LOGINDIALOG_COMMAND)) {
             RegisterManagement.getInstance().validateRegistration();
         }
-        // PerspectiveReviewUtil.checkPerspectiveDisplayItems();
+
+        // not git project, do not show git settings preference page
+        if (IGITProviderService.get() == null || !IGITProviderService.get().isProjectInGitMode()) {
+            PreferenceManager pm = PlatformUI.getWorkbench().getPreferenceManager();
+            pm.remove("org.talend.core.prefs" + WorkbenchPlugin.PREFERENCE_PAGE_CATEGORY_SEPARATOR + "org.talend.repository.gitprovider.settings.GitPreferencePage");
+        }
     }
 
     @Override
