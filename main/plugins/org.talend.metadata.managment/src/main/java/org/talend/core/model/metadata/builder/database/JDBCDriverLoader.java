@@ -175,6 +175,11 @@ public class JDBCDriverLoader {
                     info.put("charSet", systemCharset.displayName()); //$NON-NLS-1$
                 }
             }
+            
+            //TUP-37016:Upgrade hsqldb to 2.7.1
+            if (dbType.equals(EDatabaseTypeName.ACCESS.getXmlName()) || ConnectionUtils.isHsql(url)) {
+                System.setProperty("hsqldb.method_class_names", "net.ucanaccess.converters.*");
+            }
 
             if (additionalParams != null && !"".equals(additionalParams)
                     && (dbType.toUpperCase().contains("ORACLE") || EDatabaseTypeName.REDSHIFT.getDisplayName().equals(dbType)
