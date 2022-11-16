@@ -85,7 +85,7 @@ public class TalendLibsServerManager {
 
     public static final String TALEND_LIB_PASSWORD = "";//$NON-NLS-1$
 
-    public static final String TALEND_LIB_REPOSITORY = "libraries";//$NON-NLS-1$
+    public static final String TALEND_LIB_REPOSITORY = "studio-libraries";//$NON-NLS-1$
 
     private static TalendLibsServerManager manager = null;
 
