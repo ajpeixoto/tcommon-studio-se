@@ -27,7 +27,7 @@ import org.talend.core.database.conn.DatabaseConnConstants;
 public enum EDatabaseVersion4Drivers {
     // access
     ACCESS_JDBC(new DbVersion4Drivers(EDatabaseTypeName.ACCESS, new String[] {
-            "jackcess-2.1.12.jar", "ucanaccess-2.0.9.5.jar", "commons-lang-2.6.jar", "commons-logging-1.1.3.jar", "hsqldb.jar", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            "jackcess-2.1.12.jar", "ucanaccess-2.0.9.5.jar", "commons-lang-2.6.jar", "commons-logging-1.1.3.jar", "hsqldb-2.7.1.jar", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             "jackcess-encrypt-2.1.4.jar", "bcprov-jdk15on-1.70.jar", "talend-ucanaccess-utils-1.0.0.jar" })),
     ACCESS_2003(new DbVersion4Drivers(EDatabaseTypeName.ACCESS, "Access 2003", "Access_2003")), //$NON-NLS-1$ //$NON-NLS-2$
     ACCESS_2007(new DbVersion4Drivers(EDatabaseTypeName.ACCESS, "Access 2007", "Access_2007")), //$NON-NLS-1$ //$NON-NLS-2$
@@ -51,10 +51,10 @@ public enum EDatabaseVersion4Drivers {
     AS400_V6R1_V7R2(new DbVersion4Drivers(EDatabaseTypeName.AS400, "V6R1 to V7R2", "AS400_V6R1_V7R2", "jt400_V6R1.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
     //
-    HSQLDB(new DbVersion4Drivers(EDatabaseTypeName.HSQLDB, "hsqldb.jar")), //$NON-NLS-1$
-    HSQLDB_IN_PROGRESS(new DbVersion4Drivers(EDatabaseTypeName.HSQLDB_IN_PROGRESS, "hsqldb.jar")), //$NON-NLS-1$
-    HSQLDB_SERVER(new DbVersion4Drivers(EDatabaseTypeName.HSQLDB_SERVER, "hsqldb.jar")), //$NON-NLS-1$
-    HSQLDB_WEBSERVER(new DbVersion4Drivers(EDatabaseTypeName.HSQLDB_WEBSERVER, "hsqldb.jar")), //$NON-NLS-1$
+    HSQLDB(new DbVersion4Drivers(EDatabaseTypeName.HSQLDB, "hsqldb-2.7.1.jar")), //$NON-NLS-1$
+    HSQLDB_IN_PROGRESS(new DbVersion4Drivers(EDatabaseTypeName.HSQLDB_IN_PROGRESS, "hsqldb-2.7.1.jar")), //$NON-NLS-1$
+    HSQLDB_SERVER(new DbVersion4Drivers(EDatabaseTypeName.HSQLDB_SERVER, "hsqldb-2.7.1.jar")), //$NON-NLS-1$
+    HSQLDB_WEBSERVER(new DbVersion4Drivers(EDatabaseTypeName.HSQLDB_WEBSERVER, "hsqldb-2.7.1.jar")), //$NON-NLS-1$
 
     H2(new DbVersion4Drivers(EDatabaseTypeName.H2, "h2-2.1.214.jar")), //$NON-NLS-1$
 
