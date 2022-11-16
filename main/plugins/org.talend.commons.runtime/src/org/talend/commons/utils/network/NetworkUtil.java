@@ -120,7 +120,7 @@ public class NetworkUtil {
         if (StringUtils.isNotBlank(customUrl)) {
             return customUrl;
         } else {
-            return "https://talend-update.talend.com/nexus/content/repositories/libraries/";
+            return "https://talend-update.talend.com/nexus/content/repositories/studio-libraries/";
         }
     }
 
