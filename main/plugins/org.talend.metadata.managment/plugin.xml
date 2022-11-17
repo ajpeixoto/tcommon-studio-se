@@ -212,6 +212,14 @@
             required="true"
             uripath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-lang-2.4.jar">
       </libraryNeeded>
+      <libraryNeeded
+            context="plugin:org.talend.metadata.managment"
+            language="java"
+            message="Needed for plugin org.talend.metadata.managment"
+            name="hsqldb.jar" mvn_uri="mvn:org.hsqldb/hsqldb/2.7.1" 
+            required="true"
+            uripath="platform:/plugin/org.talend.libraries.jdbc.hsql/lib/hsqldb.jar">
+      </libraryNeeded>
    </extension>
    <extension
          point="org.talend.core.migrationTask">
