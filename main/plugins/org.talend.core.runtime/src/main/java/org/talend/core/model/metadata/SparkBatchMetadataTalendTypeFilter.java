@@ -10,19 +10,20 @@ public class SparkBatchMetadataTalendTypeFilter
 
   private INode node;
 
-  public static List<String> dynamicTypeCompatibleComponents = Arrays.asList(
-    "tDeltaLakeInput",
-    "tDeltaLakeOutput",
-    "tFileInputDelimited",
-    "tFileInputParquet",
-    "tFileOutputParquet",
-    "tJDBCInput",
-    "tJDBCOutput",
-    "tLogRow",
-    "tMongoDBInput",
-    "tMongoDBOutput",
-    "tSqlRow"
-  );
+    public static List<String> dynamicTypeCompatibleComponents = Arrays.asList(
+            "tDeltaLakeInput",
+            "tDeltaLakeOutput",
+            "tFileInputDelimited",
+            "tFileInputParquet",
+            "tFileOutputParquet",
+            "tJDBCInput",
+            "tJDBCOutput",
+            "tLogRow",
+            "tSqlRow",
+            "tAvroInput",
+            "tMongoDBInput",
+            "tMongoDBOutput"
+            );
 
   public SparkBatchMetadataTalendTypeFilter(INode node) {
     super(node.getComponent().getName());
