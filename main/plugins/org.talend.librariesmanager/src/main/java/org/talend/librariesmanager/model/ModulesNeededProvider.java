@@ -30,7 +30,6 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.emf.common.util.EList;
-import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.CommonExceptionHandler;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
@@ -331,17 +330,16 @@ public class ModulesNeededProvider {
                 .collect(Collectors.toList());
     }
 
-    public static void collectModuleNeeded(String context, IMPORTType importType, List<ModuleNeeded> importNeedsList,
-            boolean isExtComponentProvider) {
-        collectModuleNeeded(context, importType, importNeedsList, null, isExtComponentProvider);
+    public static void collectModuleNeeded(String context, IMPORTType importType, List<ModuleNeeded> importNeedsList) {
+        collectModuleNeeded(context, importType, importNeedsList, null);
     }
     
     public static void collectModuleNeeded(String context, IMPORTType importType, List<ModuleNeeded> importNeedsList,
-            String distribution, boolean isExtComponentProvider) {
+            String distribution) {
         List<ModuleNeeded> importModuleFromExtension = ExtensionModuleManager.getInstance().getModuleNeededForComponent(context, importType);
         boolean foundModule = importModuleFromExtension.size() > 0;
         if (!foundModule) { // If cannot find the jar from extension point then do it like before.
-            createModuleNeededForComponent(context, importType, importNeedsList, distribution, isExtComponentProvider);
+            createModuleNeededForComponent(context, importType, importNeedsList, distribution);
         } else {
             if (!StringUtils.isEmpty(distribution)) {
                 importModuleFromExtension.forEach(m -> m.setDynamicDistributionVersion(distribution));
@@ -352,28 +350,19 @@ public class ModulesNeededProvider {
 
 
     public static void createModuleNeededForComponent(String context, IMPORTType importType,
-            List<ModuleNeeded> importNeedsList, boolean isExtComponentProvider) {
-        createModuleNeededForComponent(context, importType, importNeedsList, null, isExtComponentProvider);
+            List<ModuleNeeded> importNeedsList) {
+        createModuleNeededForComponent(context, importType, importNeedsList, null);
     }
     
     public static void createModuleNeededForComponent(String context, IMPORTType importType,
-            List<ModuleNeeded> importNeedsList, String distribution, boolean isExtComponentProvider) {
+            List<ModuleNeeded> importNeedsList, String distribution) {
         if (importType.getMODULE() == null) {
             if (importType.getMODULEGROUP() != null) {
                 CommonExceptionHandler.warn("Missing module group definition: " + importType.getMODULEGROUP());
             }
             return;
         }
-        if (StringUtils.isBlank(importType.getMVN())) {
-            if (importType.getMODULE() != null) {
-                if (isExtComponentProvider) {
 
-                    CommonExceptionHandler.warn("Missing module MVN_URI definition: " + importType.getMODULE());
-                } else {
-                    CommonExceptionHandler.error("Missing module MVN_URI definition: " + importType.getMODULE());
-                }
-            }
-        }
         String msg = importType.getMESSAGE();
         if (msg == null) {
             msg = Messages.getString("modules.required"); //$NON-NLS-1$
@@ -781,7 +770,7 @@ public class ModulesNeededProvider {
         importType.setMODULEGROUP("esb-java-11-group");
         importType.setREQUIRED(true);
 
-        collectModuleNeeded("tRESTClient", importType, importNeedsListForRoutes, false);
+        collectModuleNeeded("tRESTClient", importType, importNeedsListForRoutes);
     }
 
     /**
@@ -884,17 +873,6 @@ public class ModulesNeededProvider {
             module.setMavenUri(mvn_rui);
         }
 
-        if (CommonsPlugin.isDebugMode() && StringUtils.isBlank(mvn_rui)) {
-
-            if (StringUtils.isNotBlank(module.getModuleName())) {
-                if (StringUtils.isNotBlank(context)) {
-
-                    CommonExceptionHandler
-                            .error("Missing module MVN_URI definition: " + context + ": " + module.getModuleName());
-                }
-
-            }
-        }
         module.setMavenUri(mvn_rui);
         String excludeDependencies = current.getAttribute(ExtensionModuleManager.EXCLUDE_DEPENDENCIES_ATTR);
         module.setExcludeDependencies(Boolean.valueOf(excludeDependencies));

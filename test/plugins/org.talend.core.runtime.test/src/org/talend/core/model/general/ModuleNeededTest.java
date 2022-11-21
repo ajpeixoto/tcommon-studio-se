@@ -166,19 +166,4 @@ public class ModuleNeededTest {
         Assert.assertEquals("mysql-connector-java-5.1.30-bin.jar", moduleNeeded.getModuleName());
     }
 
-    @Test
-    public void testSetMavenUri() {
-        String moduleValue = "sajdbc4-17.0.0.jar";
-        String mavenURI = "mvn:sap.jdbc4.sqlanywhere/sajdbc4/17.0.0";
-        ModuleNeeded moduleNeeded = new ModuleNeeded(null, null, true, mavenURI);
-        moduleNeeded.setMavenUri(mavenURI);
-        Assert.assertEquals(moduleValue, moduleNeeded.getModuleName());
-
-        moduleValue = "talend-codegen-utils.jar";
-        mavenURI = "mvn:org.talend.libraries/talend-codegen-utils/0.31.0";
-        moduleNeeded = new ModuleNeeded(null, null, true, mavenURI);
-        moduleNeeded.setMavenUri(mavenURI);
-        Assert.assertEquals(moduleValue, moduleNeeded.getModuleName());
-    }
-
 }

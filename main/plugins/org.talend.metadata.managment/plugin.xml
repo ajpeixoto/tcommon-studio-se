@@ -125,14 +125,6 @@
             required="true">
       </libraryNeeded>
       <libraryNeeded
-            context="Microsoft wizard"
-            language="java"
-            message="Needed for create Microsoft connection"
-            mvn_uri="mvn:com.microsoft.sqlserver/mssql-jdbc/actual"
-            name="mssql-jdbc-actual.jar"
-            required="true">
-      </libraryNeeded>
-      <libraryNeeded
             context="plugin:org.talend.metadata.managment"
             language="java"
             message="Needed for create snowflake connection"
