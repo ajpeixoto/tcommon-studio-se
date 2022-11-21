@@ -21,7 +21,6 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.Path;
 import org.osgi.framework.Version;
-import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.CommonExceptionHandler;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.GlobalServiceRegister;
@@ -718,12 +717,9 @@ public class ModuleNeeded {
         if (StringUtils.isNotBlank(generateModuleName)) {
 
             if (!StringUtils.equals(getModuleName(), generateModuleName)) {
-
-                if (CommonsPlugin.isDebugMode() && StringUtils.isNotBlank(this.context)) {
-
-                    CommonExceptionHandler
-                            .warn("module name definition should be " + generateModuleName + ", not " + getModuleName()
-                                    + " :" + this.context);
+                if (StringUtils.isNotBlank(this.context)) {
+                    CommonExceptionHandler.warn("module name definition should be " + generateModuleName + ", not "
+                            + getModuleName() + " :" + this.context);
                 }
 
                 setModuleName(generateModuleName);
