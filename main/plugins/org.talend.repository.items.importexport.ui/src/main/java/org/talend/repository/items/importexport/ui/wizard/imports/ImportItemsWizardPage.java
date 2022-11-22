@@ -721,6 +721,10 @@ public class ImportItemsWizardPage extends WizardPage {
 
         ImportDependencyRelationsHelper.getInstance().checkImportRelationDependency(checkedNodeList, toSelectSet,
                 nodesBuilder.getAllImportItemNode());
+
+
+        // to make doCheckStateChanged execute from ContainerCheckedTreeViewer.setCheckedElements(Object[])
+        filteredCheckboxTree.getViewer().setCheckedElements(new Object[0]);
         filteredCheckboxTree.getViewer().setCheckedElements(toSelectSet.toArray());
     }
 
