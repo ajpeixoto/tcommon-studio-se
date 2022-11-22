@@ -34,7 +34,7 @@ public class SSOClientInstaller {
 
     private final String INSTALL_FILE_NAME = "TalendSignTool.zip";
 
-    private final String version = "8.0.1.202210131253";
+    private final String version = "8.0.1.202211131253";
 
     private static final SSOClientInstaller instance = new SSOClientInstaller();
 
@@ -57,11 +57,11 @@ public class SSOClientInstaller {
     }
 
     public void install() throws Exception {
-        File sourceFile = getInstallFile();
+        File sourceFile = getInstallationFile();
         if (!sourceFile.exists()) {
-            LOGGER.error("Can't find install file:" + sourceFile.getAbsolutePath());
+            LOGGER.error("Can't find installation file:" + sourceFile.getAbsolutePath());
         }
-        File targetFolder = getInstallDir();
+        File targetFolder = getInstallationDir();
         if (targetFolder.exists()) {
             FilesUtils.deleteFolder(targetFolder, true);
             LOGGER.info("Deleted target folder:" + targetFolder.getAbsolutePath());
@@ -102,15 +102,15 @@ public class SSOClientInstaller {
     }
 
     private File getEclipseProductFile() throws URISyntaxException {
-        File eclipseproductFile = new File(getInstallDir(), ".eclipseproduct");//$NON-NLS-1$
+        File eclipseproductFile = new File(getInstallationDir(), ".eclipseproduct");//$NON-NLS-1$
         return eclipseproductFile;
     }
 
-    protected File getInstallDir() {
+    protected File getInstallationDir() {
         return SSOClientUtil.getSSOClientFolder();
     }
 
-    protected File getInstallFile() throws IOException {
+    protected File getInstallationFile() throws IOException {
         BundleContext context = EquinoxUtils.getCurrentBundleContext();
         Bundle[] bundles = context.getBundles();
         Bundle bundle = null;
