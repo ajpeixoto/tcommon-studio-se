@@ -132,11 +132,12 @@ public class ImportDependencyRelationsHelper {
                     id = split[1];
                 }
             }
+            boolean isGlobalRoutine = RelationshipItemBuilder.ROUTINE_RELATION.equals(relation.getType());
             if (RelationshipItemBuilder.LATEST_VERSION.equals(relation.getVersion())) {
-                relatedNode = getLatestVersionItemImportNode(id, projectLabel, allImportItemNodesList);
+                relatedNode = getLatestVersionItemImportNode(id, projectLabel, allImportItemNodesList, isGlobalRoutine);
             } else {
-                relatedNode = getItemImportNodeByIdVersion(id, projectLabel, relation.getVersion(),
-                        allImportItemNodesList);
+                relatedNode = getItemImportNodeByIdVersion(id, relation.getVersion(), projectLabel,
+                        allImportItemNodesList, isGlobalRoutine);
             }
             if (relatedNode != null && !toSelectSet.contains(relatedNode)) {
                 // avoid loop
@@ -148,13 +149,14 @@ public class ImportDependencyRelationsHelper {
     }
 
     public ItemImportNode getLatestVersionItemImportNode(String id, String projectTecLabel,
-            List<ItemImportNode> allImportItemNodesList) {
+            List<ItemImportNode> allImportItemNodesList, boolean isGlobalRoutine) {
         List<ItemImportNode> allItemImportNodesById = getItemImportNode(allImportItemNodesList, node -> {
+            Property property = node.getItemRecord().getProperty();
             boolean projectFlag = true;
             if (StringUtils.isNotBlank(projectTecLabel)) {
                 projectFlag = node.getProjectNode().getProject().getTechnicalLabel().equals(projectTecLabel);
             }
-            return node.getItemRecord().getProperty().getId().equals(id) && projectFlag;
+            return (isGlobalRoutine ? property.getLabel().equals(id) : property.getId().equals(id)) && projectFlag;
         });
         Optional<ItemImportNode> optional = allItemImportNodesById.stream().max((node1, node2) -> VersionUtils
                 .compareTo(node1.getItemRecord().getProperty().getVersion(), node2.getItemRecord().getProperty().getVersion()));
@@ -162,14 +164,15 @@ public class ImportDependencyRelationsHelper {
     }
 
     public ItemImportNode getItemImportNodeByIdVersion(String id, String version, String projectTecLabel,
-            List<ItemImportNode> allImportItemNodesList) {
+            List<ItemImportNode> allImportItemNodesList, boolean isGlobalRoutine) {
         List<ItemImportNode> importNodeList = getItemImportNode(allImportItemNodesList, node -> {
             boolean projectFlag = true;
             if (StringUtils.isNotBlank(projectTecLabel)) {
                 projectFlag = node.getProjectNode().getProject().getTechnicalLabel().equals(projectTecLabel);
             }
             Property property = node.getItemRecord().getProperty();
-            return property.getId().equals(id) && property.getVersion().equals(version) && projectFlag;
+            return (isGlobalRoutine ? property.getLabel().equals(id) : property.getId().equals(id))
+                    && property.getVersion().equals(version) && projectFlag;
         });
         return importNodeList == null || importNodeList.isEmpty() ? null : importNodeList.get(0);
     }
