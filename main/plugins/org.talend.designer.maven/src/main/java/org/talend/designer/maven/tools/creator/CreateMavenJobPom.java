@@ -202,28 +202,31 @@ public class CreateMavenJobPom extends AbstractMavenProcessorPom {
         final IContext context = jProcessor.getContext();
         Property property = jProcessor.getProperty();
 
-        Set<String> testVMArgs = null;
         if (ITestContainerProviderService.get() != null) {
             ITestContainerProviderService testService = ITestContainerProviderService.get();
             if (testService.isTestContainerProcess(process)) {
-                testVMArgs = ModuleAccessHelper.getModuleAccessVMArgsForProcessor(jProcessor);
                 try {
                     property = testService.getParentJobItem(property.getItem()).getProperty();
                     process = testService.getParentJobProcess(process);
                 } catch (PersistenceException e) {
                     ExceptionHandler.process(e);
                 }
-            } else if (property.getItem() instanceof ProcessItem) {
-                List<ProcessItem> testcaseItems = testService.getAllTestContainers((ProcessItem) property.getItem(), true, true);
-                testVMArgs = testcaseItems.stream().flatMap(item -> ModuleAccessHelper
-                        .getModuleAccessVMArgs(item.getProperty(), ProcessorUtilities.getChildrenJobInfo(item, false, true))
-                        .stream()).collect(Collectors.toSet());
             }
-        }
-        if (testVMArgs != null && !testVMArgs.isEmpty()) {
-            StringBuilder vmArgsLine = new StringBuilder();
-            testVMArgs.forEach(arg -> vmArgsLine.append(arg + " "));
-            properties.setProperty("argLine", vmArgsLine.toString().trim());
+            List<ProcessItem> testcaseItems = testService.getAllTestContainers((ProcessItem) property.getItem(), true, true);
+            testcaseItems.add((ProcessItem) property.getItem());
+            if (!testcaseItems.isEmpty()) {
+                Set<String> testVMArgs = testcaseItems.stream().flatMap(item -> {
+                    Set<JobInfo> allInfos = new HashSet<>();
+                    allInfos.add(new JobInfo(item, item.getProcess().getDefaultContext()));
+                    allInfos.addAll(ProcessorUtilities.getChildrenJobInfo(item, false, true));
+                    return ModuleAccessHelper.getModuleAccessVMArgs(item.getProperty(), allInfos).stream();
+                }).collect(Collectors.toSet());
+                if (testVMArgs != null && !testVMArgs.isEmpty()) {
+                    StringBuilder vmArgsLine = new StringBuilder();
+                    testVMArgs.forEach(arg -> vmArgsLine.append(arg + " "));
+                    properties.setProperty("argLine", vmArgsLine.toString().trim());
+                }
+            }
         }
 
         Project project = ProjectManager.getInstance().getProject(property);

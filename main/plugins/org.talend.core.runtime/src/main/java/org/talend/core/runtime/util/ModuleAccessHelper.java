@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.util.EList;
@@ -78,37 +79,33 @@ public class ModuleAccessHelper {
         if (CommonsPlugin.isTUJTest()) {
             return true;
         }
-        boolean isJava17 = false;
-        String javaVersion = System.getProperty("java.version"); //$NON-NLS-1$
-        String[] arr = javaVersion.split("\\.");
-        try {
-            isJava17 = Integer.parseInt(arr[0]) >= 17;
-        } catch (NumberFormatException e) {
-            LOGGER.error("Failed to parse java.version: " + javaVersion); //$NON-NLS-1$
-            isJava17 = false;
+        String allow = System.getProperty(JavaUtils.ALLOW_JAVA_INTERNAL_ACCESS);
+        if (allow != null) {
+            return Boolean.valueOf(allow);
         }
-        if (isJava17) {
-            String allow = System.getProperty(JavaUtils.ALLOW_JAVA_INTERNAL_ACCESS);
-            if (allow != null) {
-                return Boolean.valueOf(allow);
-            }
-            Project project;
-            if (property != null) {
-                project = ProjectManager.getInstance()
-                        .getProjectFromProjectTechLabel(ProjectManager.getInstance().getProject(property).getTechnicalLabel());
-            } else {
-                project = ProjectManager.getInstance().getCurrentProject();
-            }
-            ProjectPreferenceManager preferenceManager = new ProjectPreferenceManager(project, CoreRuntimePlugin.PLUGIN_ID,
-                    false);
-            return preferenceManager.getBoolean(JavaUtils.ALLOW_JAVA_INTERNAL_ACCESS);
+        Project project;
+        if (property != null) {
+            project = ProjectManager.getInstance()
+                    .getProjectFromProjectTechLabel(ProjectManager.getInstance().getProject(property).getTechnicalLabel());
+        } else {
+            project = ProjectManager.getInstance().getCurrentProject();
         }
-        return false;
+        ProjectPreferenceManager preferenceManager = new ProjectPreferenceManager(project, CoreRuntimePlugin.PLUGIN_ID, false);
+        return preferenceManager.getBoolean(JavaUtils.ALLOW_JAVA_INTERNAL_ACCESS);
     }
 
     public static Set<String> getModuleAccessVMArgsForProcessor(IProcessor processor) {
         Property property = processor.getProperty();
-        if (property == null || property.getItem() == null || !allowJavaInternalAcess(property)) {
+        if (property == null) {
+            return Collections.emptySet();
+        }
+        if ("Mock_job_for_Guess_schema".equals(property.getLabel())) {
+            // add all for preview process
+            return PROPS.entrySet().stream().filter(en -> StringUtils.isNotBlank((String) en.getValue()))
+                    .flatMap(en -> getModules((String) en.getKey()).stream()).collect(Collectors.toSet());
+
+        }
+        if (!allowJavaInternalAcess(property)) {
             return Collections.emptySet();
         }
         ProcessItem mainJobItem = (ProcessItem) property.getItem();
