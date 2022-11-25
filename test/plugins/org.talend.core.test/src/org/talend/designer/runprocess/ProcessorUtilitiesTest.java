@@ -162,7 +162,7 @@ public class ProcessorUtilitiesTest {
 
     private void initChildrenJobModules(final JobInfo childJobInfo) {
         Set<ModuleNeeded> subjobModules = new HashSet<ModuleNeeded>();
-        subjobModules.add(new ModuleNeeded("ABC", "", true, "mvn:org.talend.libraries/slf4j-log4j12-1.7.2/6.0.0"));
+        subjobModules.add(new ModuleNeeded("ABC", "", true, "mvn:org.talend.libraries/slf4j-log4j12-1.7.34/6.0.0"));
         generationInfo.setModulesNeededWithSubjobPerJob(childJobInfo.getJobId(), childJobInfo.getJobVersion(), subjobModules);
         generationInfo.setRoutinesNeededWithSubjobPerJob(childJobInfo.getJobId(), childJobInfo.getJobVersion(),
                 new HashSet<String>(Arrays.asList(new String[] { "core-1.0.jar", "abc_2.1.jar" })));
@@ -174,8 +174,8 @@ public class ProcessorUtilitiesTest {
         assertEquals(1, modules.size());
         final ModuleNeeded module1 = modules.iterator().next();
         assertEquals("ABC", module1.getContext());
-        assertEquals("slf4j-log4j12-1.7.2.jar", module1.getModuleName());
-        assertEquals("mvn:org.talend.libraries/slf4j-log4j12-1.7.2/6.0.0/jar", module1.getMavenUri());
+        assertEquals("slf4j-log4j12-1.7.34.jar", module1.getModuleName());
+        assertEquals("mvn:org.talend.libraries/slf4j-log4j12-1.7.34/6.0.0/jar", module1.getMavenUri());
         assertTrue(module1.isRequired());
 
         final Set<String> routineModules = generationInfo.getRoutinesNeededWithSubjobPerJob(jobInfo.getJobId(),

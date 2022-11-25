@@ -83,7 +83,7 @@ public enum EDatabaseVersion4Drivers {
             "Microsoft SQL Server 2012", "Microsoft SQL Server 2012", "jtds-1.3.1-patch-20190523.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     MSSQL_PROP(new DbVersion4Drivers(EDatabaseTypeName.MSSQL,
             "Microsoft", "MSSQL_PROP", //$NON-NLS-1$ //$NON-NLS-2$
-            new String[] { "mssql-jdbc.jar", "slf4j-api-1.7.29.jar", "slf4j-log4j12-1.7.29.jar", "msal4j-1.11.0.jar", //$NON-NLS-1$
+            new String[] { "mssql-jdbc.jar", "slf4j-api-1.7.34.jar", "slf4j-reload4j-1.7.34.jar", "msal4j-1.11.0.jar", //$NON-NLS-1$
                     "oauth2-oidc-sdk-9.7.jar", "reload4j-1.2.22.jar", "jackson-core-2.13.4.jar",
                     "jackson-databind-2.13.4.2.jar", "jackson-annotations-2.13.4.jar", "jcip-annotations-1.0-1.jar",
                     "json-smart-2.4.7.jar", "nimbus-jose-jwt-9.22.jar", "accessors-smart-2.4.7.jar", "asm-9.1.jar",
