@@ -46,6 +46,8 @@ import org.talend.designer.maven.aether.util.TalendAetherProxySelector;
  */
 public class RepositorySystemFactory {
 
+    private static Boolean ignoreArtifactDescriptorRepositories;
+
     private static Map<LocalRepository, DefaultRepositorySystemSession> sessions = new HashMap<LocalRepository, DefaultRepositorySystemSession>();
 
     private static DefaultRepositorySystemSession newRepositorySystemSession(String localRepositoryPath)
@@ -61,6 +63,8 @@ public class RepositorySystemFactory {
             repositorySystemSession.setTransferListener(new ChainedTransferListener());
             repositorySystemSession.setRepositoryListener(new ChainedRepositoryListener());
             repositorySystemSession.setProxySelector(new TalendAetherProxySelector());
+            repositorySystemSession.setIgnoreArtifactDescriptorRepositories(
+                    RepositorySystemFactory.isIgnoreArtifactDescriptorRepositories());
             sessions.put(localRepo, repositorySystemSession);
         }
 
@@ -157,4 +161,13 @@ public class RepositorySystemFactory {
         doDeploy(content, pomFile, localRepository, repositoryId, repositoryUrl, userName, password, groupId, artifactId,
                 classifier, extension, version);
     }
+
+    public static boolean isIgnoreArtifactDescriptorRepositories() {
+        if (ignoreArtifactDescriptorRepositories == null) {
+            ignoreArtifactDescriptorRepositories = Boolean.valueOf(
+                    System.getProperty("talend.studio.aether.ignoreArtifactDescriptorRepositories", Boolean.TRUE.toString()));
+        }
+        return ignoreArtifactDescriptorRepositories;
+    }
+
 }
