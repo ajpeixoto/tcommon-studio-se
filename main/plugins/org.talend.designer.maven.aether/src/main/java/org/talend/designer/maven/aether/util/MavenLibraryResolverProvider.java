@@ -34,7 +34,6 @@ import org.codehaus.plexus.PlexusContainerException;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
-import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.connector.basic.BasicRepositoryConnectorFactory;
 import org.eclipse.aether.impl.DefaultServiceLocator;
@@ -57,6 +56,7 @@ import org.talend.core.nexus.ArtifactRepositoryBean;
 import org.talend.core.nexus.NexusConstants;
 import org.talend.core.nexus.TalendLibsServerManager;
 import org.talend.core.runtime.maven.MavenArtifact;
+import org.talend.designer.maven.aether.RepositorySystemFactory;
 
 public class MavenLibraryResolverProvider {
 
@@ -283,8 +283,9 @@ public class MavenLibraryResolverProvider {
         LocalRepository localRepo = new LocalRepository( /* "target/local-repo" */target);
         session.setLocalRepositoryManager(system.newLocalRepositoryManager(session, localRepo));
         session.setProxySelector(new TalendAetherProxySelector());
+        session.setIgnoreArtifactDescriptorRepositories(RepositorySystemFactory.isIgnoreArtifactDescriptorRepositories());
 
-        return session;
+        return session; 
     }
 
     private String getLocalMVNRepository() {
