@@ -19,7 +19,6 @@ public class SparkBatchMetadataTalendTypeFilter extends SparkMetadataTalendTypeF
             "tJDBCInput",
             "tJDBCOutput",
             "tLogRow",
-            "tSqlRow",
             "tAvroInput",
             "tMongoDBInput",
             "tMongoDBOutput",
