@@ -56,6 +56,29 @@ public interface IGITProviderService extends IService {
     void createOrUpdateGitIgnoreFile(IProject eclipseProject) throws CoreException;
 
     String getDefaultBranch(Project project);
+    
+    /**
+     * Whether git mode is standard mode
+     * @return
+     */
+    boolean isStandardMode();
+    
+    /**
+     * Set git mode
+     * @param standardMode
+     */
+    void setStandardMode(boolean standardMode);
+    
+    /**
+     * Get clean git repository url
+     * @param project project
+     * @return
+     */
+    String getCleanGitRepositoryUrl(org.talend.core.model.properties.Project project);
+    
+    boolean canShowSwitchGitModePopup();
+    
+    void showSwithGitModePopup();
 
     public static IGITProviderService get() {
         GlobalServiceRegister register = GlobalServiceRegister.getDefault();

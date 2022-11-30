@@ -11,6 +11,11 @@
 	<packaging>pom</packaging>
 	<dependencies>
 		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-jdk14</artifactId>
+			<version>1.7.34</version>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.karaf.tooling</groupId>
 			<artifactId>karaf-maven-plugin</artifactId>
 			<version>4.2.10</version>
@@ -52,7 +57,7 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>jcl-over-slf4j</artifactId>
-			<version>1.7.29</version>
+			<version>1.7.34</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.maven.shared</groupId>

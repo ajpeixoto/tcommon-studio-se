@@ -231,6 +231,9 @@ public class ProjectPreferenceManager {
         if (isCurrentProject) {
             try {
                 Project currentProject = ProjectManager.getInstance().getCurrentProject();
+                if (qualifier == null) {
+                    qualifier = "org.talend.designer.maven";
+                }
                 init(ResourceUtils.getProject(currentProject), qualifier);
             } catch (PersistenceException e) {
                 ExceptionHandler.process(e);

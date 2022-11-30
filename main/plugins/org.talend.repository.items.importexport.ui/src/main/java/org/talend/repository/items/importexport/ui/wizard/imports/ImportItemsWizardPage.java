@@ -854,6 +854,8 @@ public class ImportItemsWizardPage extends WizardPage {
 
             toSelectSet.addAll(parentNodetoSelectSet);
         }
+        // to make doCheckStateChanged execute from ContainerCheckedTreeViewer.setCheckedElements(Object[])
+        filteredCheckboxTree.getViewer().setCheckedElements(new Object[0]);
         filteredCheckboxTree.getViewer().setCheckedElements(toSelectSet.toArray());
     }
 
