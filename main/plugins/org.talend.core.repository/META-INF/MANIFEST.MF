@@ -15,7 +15,6 @@ Require-Bundle: org.eclipse.ui,
  org.talend.libraries.apache,
  org.eclipse.osgi.services,
  org.eclipse.ui.navigator,
- org.eclipse.e4.ui.css.swt.theme,
  org.talend.libraries.jackson
 Export-Package: org.talend.core.repository,
  org.talend.core.repository.constants,

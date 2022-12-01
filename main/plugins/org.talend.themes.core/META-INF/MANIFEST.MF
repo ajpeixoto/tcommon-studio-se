@@ -18,7 +18,10 @@ Require-Bundle: org.eclipse.ui,
  org.talend.commons.runtime,
  org.eclipse.e4.ui.model.workbench,
  org.eclipse.e4.ui.css.swt.theme,
- org.eclipse.osgi.services
+ org.eclipse.osgi.services,
+ org.apache.batik.css,
+ org.talend.common.ui.runtime
+Service-Component: OSGI-INF/core.xml
 Bundle-ActivationPolicy: lazy
 Export-Package: org.talend.themes.core.elements.constants,
  org.talend.themes.core.elements.interfaces,
@@ -26,3 +29,4 @@ Export-Package: org.talend.themes.core.elements.constants,
  org.talend.themes.core.elements.stylesettings,
  org.talend.themes.core.elements.utils,
  org.talend.themes.core.elements.widgets
+Import-Package: org.w3c.css.sac

@@ -13,12 +13,12 @@
  *     Lars Vogel - initial API and implementation
  *******************************************************************************/
 
-@import url("common/e4_globalstyle.css");
-@import url("common/e4-dark_ide_colorextensions.css");
-@import url("common/e4-dark_globalstyle.css"); /* Remove this to have ONLY the main IDE shell dark */
-@import url("common/e4-dark_partstyle.css");
-@import url("common/e4-dark_tabstyle.css");
-@import url("common/e4-dark-drag-styling.css");
+@import url("platform:/plugin/org.talend.themes.css.talend/themes/dark/common/e4_globalstyle.css");
+@import url("platform:/plugin/org.talend.themes.css.talend/themes/dark/dark/e4-dark_ide_colorextensions.css");
+@import url("platform:/plugin/org.talend.themes.css.talend/themes/dark/dark/e4-dark_globalstyle.css"); /* Remove this to have ONLY the main IDE shell dark */
+@import url("platform:/plugin/org.talend.themes.css.talend/themes/dark/dark/e4-dark_partstyle.css");
+@import url("platform:/plugin/org.talend.themes.css.talend/themes/dark/dark/e4-dark_tabstyle.css");
+@import url("platform:/plugin/org.talend.themes.css.talend/themes/dark/dark/e4-dark-drag-styling.css");
 
 CTabFolder Canvas {
     background-color: #2F2F2F;

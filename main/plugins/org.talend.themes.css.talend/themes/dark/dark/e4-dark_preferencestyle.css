@@ -17,7 +17,7 @@
 /* ############################## Eclipse UI properties ############################## */
 
 
-IEclipsePreferences#org-eclipse-ui-editors:org-eclipse-ui-themes { /* pseudo attribute added to allow contributions without replacing this node, see Bug 466075 */
+IEclipsePreferences#org-eclipse-ui-editors:org-talend-themes-css-talend { /* pseudo attribute added to allow contributions without replacing this node, see Bug 466075 */
 	preferences:
 		'AbstractTextEditor.Color.Background.SystemDefault=false'
 		'AbstractTextEditor.Color.SelectionForeground.SystemDefault=false'
@@ -52,7 +52,7 @@ IEclipsePreferences#org-eclipse-ui-editors:org-eclipse-ui-themes { /* pseudo att
 		'writeOccurrenceIndicationColor=27,98,145'
 }
 
-IEclipsePreferences#org-eclipse-ui-workbench:org-eclipse-ui-themes { /* pseudo attribute added to allow contributions without replacing this node, see Bug 466075 */
+IEclipsePreferences#org-eclipse-ui-workbench:org-talend-themes-css-talend { /* pseudo attribute added to allow contributions without replacing this node, see Bug 466075 */
 	preferences:
 		'ACTIVE_HYPERLINK_COLOR=138,201,242'
 		'CONFLICTING_COLOR=240,15,66'
@@ -72,5 +72,23 @@ IEclipsePreferences#org-eclipse-ui-workbench:org-eclipse-ui-themes { /* pseudo a
 		'org.eclipse.ui.editors.rangeIndicatorColor=27,118,153'
 		'org.eclipse.jface.REVISION_NEWEST_COLOR=75,44,3'
 		'org.eclipse.jface.REVISION_OLDEST_COLOR=154,113,61'
+		'org.talend.designer.core.lightColor=212,212,212'
+		'org.talend.designer.core.darkColor=150,150,150'
+		'org.talend.designer.core.alpha=95'
+		'org.talend.commons.ui.BgColorForEmptyArea=#org-eclipse-ui-workbench-DARK_BACKGROUND'
+		'org.talend.core.repository.REPO_STABLE_SECONDARY_ENTRY_COLOR=175,175,175'
+		'org.talend.core.repository.REPO_STABLE_PRIMARY_ENTRY_COLOR=255,255,255'
+		'org.talend.core.repository.REPO_INACTIVE_ENTRY_COLOR=138,138,138'
+		'org.talend.core.repository.REPO_LOCKED_ENTRY=107,0,0'
+		'org.talend.core.repository.REPO_MERGED_REFERENCED_ITEMS_COLOR=175,175,175'
+		'org.talend.core.repository.TAB_START_COLOR=27,60,79'
+		'org.talend.core.repository.TAB_END_COLOR=86,86,86'
+}
+
+IEclipsePreferences#org-talend-designer-core:org-talend-themes-css-talend { /* pseudo attribute added to allow contributions without replacing this node, see Bug 466075 */
+	preferences:
+		'jobDesignerBackgroundColor=122,122,122'
+		'subjobColor=0,0,0'
+		'subjobTitleColor=128,255,0'
 }
 

@@ -20,12 +20,14 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
+import org.talend.commons.ui.runtime.ITalendThemeService;
 import org.talend.commons.ui.runtime.swt.tableviewer.TableViewerCreatorNotModifiable.LAYOUT_MODE;
 import org.talend.commons.ui.runtime.swt.tableviewer.selection.ILineSelectionListener;
 import org.talend.commons.ui.runtime.swt.tableviewer.selection.LineSelectionEvent;
@@ -156,6 +158,7 @@ public abstract class AbstractExtendedTableViewer<B> extends AbstractExtendedCon
         final Table table = getTableViewerCreator().getTable();
         final ILineSelectionListener beforeLineSelectionListener = new ILineSelectionListener() {
 
+            @Override
             public void handle(LineSelectionEvent e) {
                 if (e.selectionByMethod && !selectionHelper.isMouseSelectionning() && !forceExecuteSelectionEvent) {
                     executeSelectionEvent = false;
@@ -166,6 +169,7 @@ public abstract class AbstractExtendedTableViewer<B> extends AbstractExtendedCon
         };
         final ILineSelectionListener afterLineSelectionListener = new ILineSelectionListener() {
 
+            @Override
             public void handle(LineSelectionEvent e) {
                 executeSelectionEvent = true;
             }
@@ -175,6 +179,7 @@ public abstract class AbstractExtendedTableViewer<B> extends AbstractExtendedCon
 
         DisposeListener disposeListener = new DisposeListener() {
 
+            @Override
             public void widgetDisposed(DisposeEvent e) {
                 selectionHelper.removeBeforeSelectionListener(beforeLineSelectionListener);
                 selectionHelper.removeAfterSelectionListener(afterLineSelectionListener);
@@ -185,6 +190,7 @@ public abstract class AbstractExtendedTableViewer<B> extends AbstractExtendedCon
 
         table.addListener(SWT.KeyUp, new Listener() {
 
+            @Override
             public void handleEvent(Event event) {
 
                 if (event.character == '\u0001') { // CTRL + A
@@ -251,7 +257,11 @@ public abstract class AbstractExtendedTableViewer<B> extends AbstractExtendedCon
         newTableViewerCreator.setLazyLoad(TableViewerCreator.getRecommandLazyLoad());
         newTableViewerCreator.setFirstVisibleColumnIsSelection(false);
         newTableViewerCreator.setCheckboxInFirstColumn(false);
-        newTableViewerCreator.setBgColorForEmptyArea(getParentComposite().getDisplay().getSystemColor(SWT.COLOR_WHITE));
+        Color bgColorForEmptyArea = ITalendThemeService.getColor("org.talend.commons.ui.BgColorForEmptyArea");
+        if (bgColorForEmptyArea == null) {
+            bgColorForEmptyArea = getParentComposite().getDisplay().getSystemColor(SWT.COLOR_WHITE);
+        }
+        newTableViewerCreator.setBgColorForEmptyArea(bgColorForEmptyArea);
     }
 
     /**
@@ -271,6 +281,7 @@ public abstract class AbstractExtendedTableViewer<B> extends AbstractExtendedCon
 
             getExtendedTableModel().addBeforeOperationListListener(1, new IListenableListListener() {
 
+                @Override
                 public void handleEvent(ListenableListEvent event) {
                     handleBeforeListenableListOperationEvent(event);
                 }
@@ -279,6 +290,7 @@ public abstract class AbstractExtendedTableViewer<B> extends AbstractExtendedCon
 
             getExtendedTableModel().addAfterOperationListListener(1, new IListenableListListener() {
 
+                @Override
                 public void handleEvent(ListenableListEvent event) {
                     handleAfterListenableListOperationEvent(event);
                 }
@@ -287,6 +299,7 @@ public abstract class AbstractExtendedTableViewer<B> extends AbstractExtendedCon
 
             getExtendedTableModel().addAfterOperationListListener(100, new IListenableListListener<B>() {
 
+                @Override
                 public void handleEvent(ListenableListEvent<B> event) {
                     if (tableViewerCreator.getTable() != null && !tableViewerCreator.getTable().isDisposed()) {
                         // tableViewerCreator.getTable().forceFocus();
@@ -368,6 +381,7 @@ public abstract class AbstractExtendedTableViewer<B> extends AbstractExtendedCon
                 tableViewerCreator.setInputList(getBeansList());
                 new AsynchronousThreading(100, true, tableViewerCreator.getTable().getDisplay(), new Runnable() {
 
+                    @Override
                     public void run() {
                         tableViewerCreator.layout();
                     }

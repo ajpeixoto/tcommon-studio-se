@@ -24,8 +24,6 @@
     font-family: '#org-eclipse-ui-workbench-TAB_TEXT_FONT';
     swt-tab-renderer: url('bundleclass://org.eclipse.e4.ui.workbench.renderers.swt/org.eclipse.e4.ui.workbench.renderers.swt.CTabRendering');
     swt-shadow-visible: false;
-    jtab-hover-color : #a8bf10;
-    jtab-hover-tabs-background: none;
 }
 
 CTabFolder {
@@ -38,20 +36,15 @@ CTabFolder {
     swt-selected-tab-fill: '#org-eclipse-ui-workbench-ACTIVE_TAB_BG_END'; /* title background for selected tab */
     swt-shadow-visible: false;
     swt-unselected-hot-tab-color-background: #161616; /* Bug 465711 */
-    swt-unselected-hot-tab-color: #a8bf10;
     swt-selected-tab-highlight: none;
-    
 }
 
 CTabFolder[style~='SWT.DOWN'][style~='SWT.BOTTOM'] {
     /* Set the styles for the bottom inner tabs (Bug 430051): */
     swt-tab-renderer: url('bundleclass://org.eclipse.e4.ui.workbench.renderers.swt/org.eclipse.e4.ui.workbench.renderers.swt.CTabRendering');
     swt-unselected-hot-tab-color-background: #161616; /* Bug 465711 */
-    swt-unselected-hot-tab-color: #a8bf10;
     swt-selected-tab-highlight: #316c9b;
     swt-selected-highlight-top: false;
-    jtab-hover-color : #a8bf10;
-    jtab-hover-tabs-background: none;
 }
 
 

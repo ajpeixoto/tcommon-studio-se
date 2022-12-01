@@ -25,7 +25,29 @@
 
 /* ############################## Global Styles ############################## */
 
-Shell,
+Shell {
+    background-color:'#org-eclipse-ui-workbench-DARK_BACKGROUND'; 
+    color:'#org-eclipse-ui-workbench-DARK_FOREGROUND'; 
+}
+
+.TalendTabbedPropertyList{
+    background-color: black;
+    border-visible: true;
+    color:black;
+    _t-widget-normal-shadow-color:black;
+    _t-widget-dark-shadow-color:black;
+    _t-list-background-color: #ffffff;
+    _t-widget-vertical-line-color: #E3E3E3;
+}
+
+.TalendTabbedPropertyTitle{
+    border-visible: false;
+    _t-title-foreground-color:black;
+    _t-title-background-color:black;
+    _t-title-bottom-foreground-keyline1-color:black;
+    _t-title-bottom-foreground-keyline2-color:black;
+}
+
 Composite, ScrolledComposite, ExpandableComposite, Canvas, TabFolder, CLabel, Label,
 CoolBar, Sash, Group, RefactoringLocationControl, ChangeParametersControl, Link, FilteredTree,
 ProxyEntriesComposite, NonProxyHostsComposite, DelayedFilterCheckboxTree,
@@ -262,16 +284,11 @@ PageSiteComposite > PropertyTable:disabled {
  */
 Label#org-eclipse-ui-splash-progressText {
 	background-color: inherit; /* transparent */
-	color: #9c9696; /* see property startupForegroundColor in the product */ 
+	color: #9c9696; /* see property startupForegroundColor in the product */
 }
 
 Label#org-eclipse-ui-buildid-text {
 	background-color: inherit; /* transparent */
-}
-
-/*Cindy */
-Label {
-	color: white; /* see property startupForegroundColor in the product */ 
 }
 
 ProgressIndicator#org-eclipse-ui-splash-progressIndicator {
@@ -318,10 +335,6 @@ TabbedPropertyList {
     tPalette-mouseOver-background-color3:#3c8ad2;				/* */
     tPalette-expanded-background-color: black;
 /*   	tPalette-expanded-background-color:#0069d9;					/* background color when level is selected */
-
-
-
-    
     tPalette-collapse-topBorder-forground-lineColor1:'#org-eclipse-ui-workbench-DARK_BACKGROUND';   /* top border  */
     tPalette-collapse-topBorder-forground-lineColor2: #2F2F2F;     /* top border  */
     tPalette-collapse-expanded-forground-lineColor: #2F2F2F;     	/* bottom border  */
@@ -329,20 +342,9 @@ TabbedPropertyList {
     tPalette-scroll-pane-list-border:0 0 0 0;
     tPalette-scroll-pane-border:0 0 0 0;
     tPalette-color-increment:10;   								/* color increment in palette depth  */
-    
     tPalette-x-offset:17;
     tPalette-entryEditPart-entry-color-inheritFromParent:true;
-    
     tPalette-searchButton-background-color:'#org-eclipse-ui-workbench-DARK_BACKGROUND';
-    tPalette-searchButton-image: url('./default/pics/studio_6.0-repo-search.png');
-}
-
-/* Repository tree */
-.TalendRepositoryLabel {
-	STABLE_SECONDARY_ENTRY_COLOR: #646464;
-	STABLE_PRIMARY_ENTRY_COLOR: #000000;
-	INACTIVE_ENTRY_COLOR: #C8C8C8;
-	LOCKED_ENTRY: #C80000;
-	MERGED_REFERENCED_ITEMS_COLOR: #787878;
-	
+    tPalette-list-background-color:'#org-eclipse-ui-workbench-DARK_BACKGROUND';
+    tPalette-slider-palette-background-color:'#org-eclipse-ui-workbench-DARK_BACKGROUND';
 }

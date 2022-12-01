@@ -12,13 +12,21 @@
 // ============================================================================
 package org.talend.commons.ui.runtime;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.widgets.Display;
 
 /**
  * DOC cmeng  class global comment. Detailled comment
  */
 public interface ColorConstants {
+
+    static final String BUNDLE_ID_COMMON_UI_RUNTIME = "org.talend.common.ui.runtime";
+
+    static final String KEY_TABLE_BACKGROUND = "table.background";
+
+    static final String KEY_TABLE_FOREGROUND = "table.foreground";
 
     static final Color WHITE_COLOR = new Color(null, 255, 255, 255);
 
@@ -44,5 +52,23 @@ public interface ColorConstants {
     static final Color ERR_COLOR = new Color(null, 255, 235, 235);
 
     static final Color SUCCEED_COLOR = new Color(null, 221, 242, 217);
+
+    static Color getTableBackbroundColor() {
+        Color color = ITalendThemeService.getColor(ColorConstants.BUNDLE_ID_COMMON_UI_RUNTIME,
+                ColorConstants.KEY_TABLE_BACKGROUND);
+        if (color == null) {
+            color = WHITE_COLOR;
+        }
+        return color;
+    }
+
+    static Color getTableForegroundColor() {
+        Color color = ITalendThemeService.getColor(ColorConstants.BUNDLE_ID_COMMON_UI_RUNTIME,
+                ColorConstants.KEY_TABLE_FOREGROUND);
+        if (color == null) {
+            color = Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
+        }
+        return color;
+    }
 
 }
