@@ -15,7 +15,6 @@ package org.talend.presentation.onboarding.ui.managers;
 import java.util.Collection;
 
 import org.apache.log4j.Logger;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -107,11 +106,9 @@ public class OnBoardingUIManager {
                         int style = child.getStyle();
                         if (0 < (style & SWT.APPLICATION_MODAL) || 0 < (style & SWT.PRIMARY_MODAL)) {
                             child.open();
-                            if (!Platform.OS_WIN32.equals(Platform.getOS())) {
-                                onBoardingManager.close();
-                                log.info("force onBoardingShell to close for ubuntu and macos to avoid studio freezed");
-                                return;
-                            }
+                            onBoardingManager.close();
+                            log.info("force onBoardingShell to close to avoid studio freezed");
+                            return;
                         }
                     }
                 }
