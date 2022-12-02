@@ -12,11 +12,14 @@
 // ============================================================================
 package org.talend.core.runtime.util;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
@@ -24,15 +27,14 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.util.EList;
-import org.osgi.framework.Bundle;
 import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.utils.generation.JavaUtils;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.process.EParameterFieldType;
+import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.JobInfo;
 import org.talend.core.model.properties.JobletProcessItem;
 import org.talend.core.model.properties.ProcessItem;
@@ -48,28 +50,63 @@ public class ModuleAccessHelper {
 
     private static final String FORMAT_ADD_OPPENS = "--add-opens=@=ALL-UNNAMED"; //$NON-NLS-1$
 
-    private static final Logger LOGGER = Logger.getLogger(ModuleAccessHelper.class);
+    private static final String CLASS_PREVIEW_PROCESS = "org.talend.designer.component.preview.shadow.PreviewComponentDataProcess"; //$NON-NLS-1$
 
-    private static final Properties PROPS = new Properties();
+    private static final String CLASS_GUESS_SCHEMA_PROCESS = "org.talend.designer.core.ui.editor.properties.controllers.AbstractGuessSchemaProcess"; //$NON-NLS-1$
 
-    static {
-        Bundle bundle = Platform.getBundle(CoreRuntimePlugin.PLUGIN_ID);
-        URL templateUrl = bundle.getEntry("resources/module_access.properties"); //$NON-NLS-1$
-        try (InputStream input = templateUrl.openStream()) {
-            PROPS.load(input);
-        } catch (IOException e) {
-            ExceptionHandler.process(e);
+    private static Properties PROPS;
+
+    public static Properties getProperties() {
+        if (PROPS == null) {
+            PROPS = new Properties();
+            try (InputStream input = getConfigFileURL().openStream()) {
+                PROPS.load(input);
+            } catch (IOException e) {
+                ExceptionHandler.process(e);
+            }
+            List<Project> allProjects = new ArrayList<>();
+            allProjects.add(ProjectManager.getInstance().getCurrentProject());
+            allProjects.addAll(ProjectManager.getInstance().getAllReferencedProjects(true));
+            for (Project ref : allProjects) {
+                ProjectPreferenceManager prefManager = new ProjectPreferenceManager(ref, CoreRuntimePlugin.PLUGIN_ID, false);
+                String settings = prefManager.getValue(JavaUtils.CUSTOM_ACCESS_SETTINGS);
+                if (StringUtils.isNotBlank(settings)) {
+                    Properties customProps = new Properties();
+                    try {
+                        customProps.load(new ByteArrayInputStream(settings.getBytes()));
+                        customProps.entrySet().stream().filter(en -> StringUtils.isNotBlank((String) en.getValue()))
+                                .forEach(en -> {
+                                    String key = (String) en.getKey();
+                                    String value = (String) en.getValue();
+                                    if (!PROPS.containsKey(key)) {
+                                        PROPS.put(key, value);
+                                    } else {
+                                        // merge duplicate setup
+                                        PROPS.put(key, PROPS.getProperty(key) + "," + value);
+                                    }
+                                });
+
+                    } catch (IOException e) {
+                        ExceptionHandler.process(e);
+                    }
+                }
+            }
         }
+        return PROPS;
+    }
+
+    public static URL getConfigFileURL() {
+        return Platform.getBundle(CoreRuntimePlugin.PLUGIN_ID).getEntry("resources/module_access.properties"); //$NON-NLS-1$
     }
 
     private static boolean containsKey(String key) {
-        return PROPS.containsKey(key);
+        return getProperties().containsKey(key);
     }
 
     private static Set<String> getModules(String key) {
-        String modules = PROPS.getProperty(key);
+        String modules = getProperties().getProperty(key);
         if (modules != null) {
-            return Stream.of(modules.split(",")).map(module -> FORMAT_ADD_OPPENS.replace("@", module)) //$NON-NLS-1$ //$NON-NLS-2$
+            return Stream.of(modules.split(",")).map(module -> FORMAT_ADD_OPPENS.replace("@", module.trim())) //$NON-NLS-1$ //$NON-NLS-2$
                     .collect(Collectors.toSet());
         }
         return Collections.emptySet();
@@ -99,9 +136,9 @@ public class ModuleAccessHelper {
         if (property == null) {
             return Collections.emptySet();
         }
-        if ("Mock_job_for_Guess_schema".equals(property.getLabel())) {
+        if (isPreviewProcess(processor)) {
             // add all for preview process
-            return PROPS.entrySet().stream().filter(en -> StringUtils.isNotBlank((String) en.getValue()))
+            return getProperties().entrySet().stream().filter(en -> StringUtils.isNotBlank((String) en.getValue()))
                     .flatMap(en -> getModules((String) en.getKey()).stream()).collect(Collectors.toSet());
 
         }
@@ -162,7 +199,37 @@ public class ModuleAccessHelper {
         if (hasTck) {
             vmArgs.addAll(getModules("TCK_COMMON_ARGS"));
         }
+
+        if (getProperties().containsKey("GLOBAL")) {
+            vmArgs.addAll(getModules("GLOBAL"));
+        }
+
         return vmArgs;
+    }
+
+    public static void reset() {
+        PROPS = null;
+    }
+
+    private static boolean isPreviewProcess(IProcessor processor) {
+        IProcess process = processor.getProcess();
+        if (process == null) {
+            return false;
+        }
+        Property property = processor.getProperty();
+        if ("ID".equals(property.getId()) && "Mock_job_for_Guess_schema".equals(property.getLabel())) {
+            return true;
+        }
+        Class<?> clazz = process.getClass();
+        // preview process
+        if (CLASS_PREVIEW_PROCESS.equals(clazz.getName()) || CLASS_PREVIEW_PROCESS.equals(clazz.getSuperclass().getName())) {
+            return true;
+        }
+        // guess schema process
+        if (CLASS_GUESS_SCHEMA_PROCESS.equals(clazz.getSuperclass().getName())) {
+            return true;
+        }
+        return false;
     }
 
 }
