@@ -59,7 +59,6 @@ import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.process.JobInfo;
-import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Project;
@@ -78,6 +77,7 @@ import org.talend.core.runtime.process.TalendProcessOptionConstants;
 import org.talend.core.runtime.projectsetting.IProjectSettingPreferenceConstants;
 import org.talend.core.runtime.projectsetting.IProjectSettingTemplateConstants;
 import org.talend.core.runtime.projectsetting.ProjectPreferenceManager;
+import org.talend.core.runtime.util.ModuleAccessHelper;
 import org.talend.core.services.IGITProviderService;
 import org.talend.core.ui.ITestContainerProviderService;
 import org.talend.core.utils.TemplateFileUtils;
@@ -202,16 +202,29 @@ public class CreateMavenJobPom extends AbstractMavenProcessorPom {
         final IContext context = jProcessor.getContext();
         Property property = jProcessor.getProperty();
 
-        if (ProcessUtils.isTestContainer(process)) {
-            if (GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerProviderService.class)) {
-                ITestContainerProviderService testService = (ITestContainerProviderService) GlobalServiceRegister
-                        .getDefault()
-                        .getService(ITestContainerProviderService.class);
+        if (ITestContainerProviderService.get() != null) {
+            ITestContainerProviderService testService = ITestContainerProviderService.get();
+            if (testService.isTestContainerProcess(process)) {
                 try {
                     property = testService.getParentJobItem(property.getItem()).getProperty();
                     process = testService.getParentJobProcess(process);
                 } catch (PersistenceException e) {
                     ExceptionHandler.process(e);
+                }
+            }
+            List<ProcessItem> testcaseItems = testService.getAllTestContainers((ProcessItem) property.getItem(), true, true);
+            testcaseItems.add((ProcessItem) property.getItem());
+            if (!testcaseItems.isEmpty()) {
+                Set<String> testVMArgs = testcaseItems.stream().flatMap(item -> {
+                    Set<JobInfo> allInfos = new HashSet<>();
+                    allInfos.add(new JobInfo(item, item.getProcess().getDefaultContext()));
+                    allInfos.addAll(ProcessorUtilities.getChildrenJobInfo(item, false, true));
+                    return ModuleAccessHelper.getModuleAccessVMArgs(item.getProperty(), allInfos).stream();
+                }).collect(Collectors.toSet());
+                if (testVMArgs != null && !testVMArgs.isEmpty()) {
+                    StringBuilder vmArgsLine = new StringBuilder();
+                    testVMArgs.forEach(arg -> vmArgsLine.append(arg + " "));
+                    properties.setProperty("argLine", vmArgsLine.toString().trim());
                 }
             }
         }
