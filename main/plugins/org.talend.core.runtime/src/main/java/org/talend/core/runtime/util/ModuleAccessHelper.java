@@ -64,6 +64,10 @@ public class ModuleAccessHelper {
             } catch (IOException e) {
                 ExceptionHandler.process(e);
             }
+
+            Optional.ofNullable(System.getProperty("internal.custom.modules")).filter(StringUtils::isNotBlank)
+                    .ifPresent(modules -> put("GLOBAL", modules));
+
             List<Project> allProjects = new ArrayList<>();
             allProjects.add(ProjectManager.getInstance().getCurrentProject());
             allProjects.addAll(ProjectManager.getInstance().getAllReferencedProjects(true));
@@ -75,16 +79,7 @@ public class ModuleAccessHelper {
                     try {
                         customProps.load(new ByteArrayInputStream(settings.getBytes()));
                         customProps.entrySet().stream().filter(en -> StringUtils.isNotBlank((String) en.getValue()))
-                                .forEach(en -> {
-                                    String key = (String) en.getKey();
-                                    String value = (String) en.getValue();
-                                    if (!PROPS.containsKey(key)) {
-                                        PROPS.put(key, value);
-                                    } else {
-                                        // merge duplicate setup
-                                        PROPS.put(key, PROPS.getProperty(key) + "," + value);
-                                    }
-                                });
+                                .forEach(en -> put((String) en.getKey(), (String) en.getValue()));
 
                     } catch (IOException e) {
                         ExceptionHandler.process(e);
@@ -93,6 +88,10 @@ public class ModuleAccessHelper {
             }
         }
         return PROPS;
+    }
+
+    private static void put(String key, String value) {
+        PROPS.put(key, PROPS.containsKey(key) ? PROPS.getProperty(key) + "," + value : value);
     }
 
     public static URL getConfigFileURL() {
