@@ -254,7 +254,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
         CommonsPlugin.setWorkbenchCreated(true);
         TimeMeasurePerformance.afterStartup();
         TokenCollectorFactory.getFactory().monitor();
-        
+
         // TDQ-11355 avoid "java.nio.channels.ClosedChannelException" .If the current perspective is DQ, delay this
         // commit at here,it will be committed with DQ side(see DQRespositoryView Constructor).
         IWorkbenchPage activePage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
@@ -323,6 +323,10 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
             if (path == null) {
                 return;
             }
+            /**
+             * FIXME: seems the correct name should be workbench.xmi, means the following logic never works in recent
+             * target platform
+             */
             final File stateFile = path.append("workbench.xml").toFile(); //$NON-NLS-1$
             if (stateFile.exists()) {
                 FileInputStream input;
