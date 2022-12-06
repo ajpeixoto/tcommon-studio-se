@@ -28,7 +28,7 @@ public class ModuleAccessHelperTest {
         prop.entrySet().stream().filter(en -> StringUtils.isNotBlank((String) en.getValue())).forEach(en -> {
             String value = (String) en.getValue();
             for (String module : value.split(",")) {
-                if (module.isBlank() || module.contains(" ")) {
+                if (module.trim().isEmpty() || module.contains(" ")) {
                     fail("module:[" + module + "] in " + value + " is invalid!");
                 }
             }
