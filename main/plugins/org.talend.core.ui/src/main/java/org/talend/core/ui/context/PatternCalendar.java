@@ -62,7 +62,7 @@ public class PatternCalendar extends SWTCalendarWithTime {
         gridLayout.marginHeight = 5;
         composite.setLayout(gridLayout);
         composite.setLayoutData(new GridData(GridData.FILL_BOTH));
-        composite.setBackground(ColorConstants.getTableBackbroundColor());
+        composite.setBackground(ColorConstants.getTableBackgroundColor());
 
         Label patternLabel = new Label(composite, SWT.NONE);
         patternLabel.setText(Messages.getString("PatternCalendar.pattern")); //$NON-NLS-1$

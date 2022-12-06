@@ -257,10 +257,8 @@ public abstract class AbstractExtendedTableViewer<B> extends AbstractExtendedCon
         newTableViewerCreator.setLazyLoad(TableViewerCreator.getRecommandLazyLoad());
         newTableViewerCreator.setFirstVisibleColumnIsSelection(false);
         newTableViewerCreator.setCheckboxInFirstColumn(false);
-        Color bgColorForEmptyArea = ITalendThemeService.getColor("org.talend.commons.ui.BgColorForEmptyArea");
-        if (bgColorForEmptyArea == null) {
-            bgColorForEmptyArea = getParentComposite().getDisplay().getSystemColor(SWT.COLOR_WHITE);
-        }
+        Color bgColorForEmptyArea = ITalendThemeService.getColor("org.talend.commons.ui.BgColorForEmptyArea")
+                .orElse(getParentComposite().getDisplay().getSystemColor(SWT.COLOR_WHITE));
         newTableViewerCreator.setBgColorForEmptyArea(bgColorForEmptyArea);
     }
 

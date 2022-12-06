@@ -117,43 +117,23 @@ public class RepositoryLabelProvider extends LabelProvider implements IColorProv
     }
 
     private Color getStableSecondaryEntryColor() {
-        Color color = ITalendThemeService.getColor(STABLE_SECONDARY_ENTRY);
-        if (color == null) {
-            color = STABLE_SECONDARY_ENTRY_COLOR;
-        }
-        return color;
+        return ITalendThemeService.getColor(STABLE_SECONDARY_ENTRY).orElse(STABLE_SECONDARY_ENTRY_COLOR);
     }
 
     private Color getStablePrimaryEntryColor() {
-        Color color = ITalendThemeService.getColor(STABLE_PRIMARY_ENTRY);
-        if (color == null) {
-            color = STABLE_PRIMARY_ENTRY_COLOR;
-        }
-        return color;
+        return ITalendThemeService.getColor(STABLE_PRIMARY_ENTRY).orElse(STABLE_PRIMARY_ENTRY_COLOR);
     }
 
     private Color getInactiveEntryColor() {
-        Color color = ITalendThemeService.getColor(INACTIVE_ENTRY);
-        if (color == null) {
-            color = INACTIVE_ENTRY_COLOR;
-        }
-        return color;
+        return ITalendThemeService.getColor(INACTIVE_ENTRY).orElse(INACTIVE_ENTRY_COLOR);
     }
 
     private Color getLockedEntryColor() {
-        Color color = ITalendThemeService.getColor(LOCKED_ENTRY);
-        if (color == null) {
-            color = LOCKED_ENTRY_COLOR;
-        }
-        return color;
+        return ITalendThemeService.getColor(LOCKED_ENTRY).orElse(LOCKED_ENTRY_COLOR);
     }
 
     private Color getMergedReferencedItemsColor() {
-        Color color = ITalendThemeService.getColor(MERGED_PREFERENCED_ITEMS);
-        if (color == null) {
-            color = MERGED_REFERENCED_ITEMS_COLOR;
-        }
-        return color;
+        return ITalendThemeService.getColor(MERGED_PREFERENCED_ITEMS).orElse(MERGED_REFERENCED_ITEMS_COLOR);
     }
 
     public String getText(IRepositoryViewObject object) {

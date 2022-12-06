@@ -293,10 +293,8 @@ public class TableViewerCreatorNotModifiable<B> {
     public TableViewerCreatorNotModifiable(Composite compositeParent) {
         super();
         this.compositeParent = compositeParent;
-        this.emptyZoneColor = ITalendThemeService.getColor("org.talend.commons.ui.BgColorForEmptyArea");
-        if (this.emptyZoneColor == null) {
-            this.emptyZoneColor = compositeParent.getDisplay().getSystemColor(SWT.COLOR_WHITE);
-        }
+        this.emptyZoneColor = ITalendThemeService.getColor("org.talend.commons.ui.BgColorForEmptyArea")
+                .orElse(compositeParent.getDisplay().getSystemColor(SWT.COLOR_WHITE));
 
     }
 
@@ -676,7 +674,7 @@ public class TableViewerCreatorNotModifiable<B> {
 
         Color prefBackgroundColor = backgroundColor;
         if (prefBackgroundColor == null) {
-            prefBackgroundColor = ColorConstants.getTableBackbroundColor();
+            prefBackgroundColor = ColorConstants.getTableBackgroundColor();
             if (prefBackgroundColor == null) {
                 prefBackgroundColor = table.getDisplay().getSystemColor(SWT.COLOR_WHITE);
             }

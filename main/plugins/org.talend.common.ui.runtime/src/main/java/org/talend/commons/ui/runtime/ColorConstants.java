@@ -53,22 +53,14 @@ public interface ColorConstants {
 
     static final Color SUCCEED_COLOR = new Color(null, 221, 242, 217);
 
-    static Color getTableBackbroundColor() {
-        Color color = ITalendThemeService.getColor(ColorConstants.BUNDLE_ID_COMMON_UI_RUNTIME,
-                ColorConstants.KEY_TABLE_BACKGROUND);
-        if (color == null) {
-            color = WHITE_COLOR;
-        }
-        return color;
+    static Color getTableBackgroundColor() {
+        return ITalendThemeService.getColor(ColorConstants.BUNDLE_ID_COMMON_UI_RUNTIME, ColorConstants.KEY_TABLE_BACKGROUND)
+                .orElse(WHITE_COLOR);
     }
 
     static Color getTableForegroundColor() {
-        Color color = ITalendThemeService.getColor(ColorConstants.BUNDLE_ID_COMMON_UI_RUNTIME,
-                ColorConstants.KEY_TABLE_FOREGROUND);
-        if (color == null) {
-            color = Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
-        }
-        return color;
+        return ITalendThemeService.getColor(ColorConstants.BUNDLE_ID_COMMON_UI_RUNTIME, ColorConstants.KEY_TABLE_FOREGROUND)
+                .orElse(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
     }
 
 }

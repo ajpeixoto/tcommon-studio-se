@@ -12,6 +12,9 @@
 // ============================================================================
 package org.talend.commons.ui.runtime;
 
+import java.util.Optional;
+
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.swt.graphics.Color;
 import org.osgi.framework.BundleContext;
@@ -33,12 +36,8 @@ public interface ITalendThemeService {
      * @param prop
      * @return the Color, <font color="red">please <b>DON'T</b> dispose it, it is managed by JFaceResources</font>
      */
-    static Color getColor(String prop) {
-        ITalendThemeService theme = get();
-        if (theme != null) {
-            return theme.getColorForTheme(DEFAULT_PREFERENCE_ID, prop);
-        }
-        return null;
+    static Optional<Color> getColor(String prop) {
+        return getColor(DEFAULT_PREFERENCE_ID, prop);
     }
 
     /**
@@ -48,12 +47,12 @@ public interface ITalendThemeService {
      * @param prop
      * @return the Color, <font color="red">please <b>DON'T</b> dispose it, it is managed by JFaceResources</font>
      */
-    static Color getColor(String bundleId, String prop) {
+    static Optional<Color> getColor(String bundleId, String prop) {
         ITalendThemeService theme = get();
         if (theme != null) {
-            return theme.getColorForTheme(bundleId, prop);
+            return Optional.ofNullable(theme.getColorForTheme(bundleId, prop));
         }
-        return null;
+        return Optional.ofNullable(null);
     }
 
     Color getColorForTheme(String bundleId, String prop);
@@ -65,12 +64,8 @@ public interface ITalendThemeService {
      * @param key
      * @return
      */
-    static String getProperty(String key) {
-        ITalendThemeService theme = get();
-        if (theme != null) {
-            return theme.getPropertyForTheme(DEFAULT_PREFERENCE_ID, key);
-        }
-        return null;
+    static Optional<String> getProperty(String key) {
+        return getProperty(DEFAULT_PREFERENCE_ID, key);
     }
 
     /**
@@ -80,12 +75,17 @@ public interface ITalendThemeService {
      * @param key
      * @return
      */
-    static String getProperty(String bundleId, String key) {
+    static Optional<String> getProperty(String bundleId, String key) {
         ITalendThemeService theme = get();
+        String value = null;
         if (theme != null) {
-            return theme.getPropertyForTheme(bundleId, key);
+            value = theme.getPropertyForTheme(bundleId, key);
         }
-        return null;
+        if (StringUtils.isBlank(value)) {
+            return Optional.ofNullable(null);
+        } else {
+            return Optional.ofNullable(value);
+        }
     }
 
     String getPropertyForTheme(String bundleId, String key);

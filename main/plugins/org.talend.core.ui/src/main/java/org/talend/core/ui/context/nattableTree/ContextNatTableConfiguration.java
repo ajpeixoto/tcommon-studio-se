@@ -116,7 +116,7 @@ public class ContextNatTableConfiguration extends AbstractRegistryConfiguration 
     private void registerStyleRules(IConfigRegistry configRegistry) {
         // register the default cell fg/bg colour for the natTable
         Style cellStyleDefault = new Style();
-        cellStyleDefault.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, ColorConstants.getTableBackbroundColor());
+        cellStyleDefault.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, ColorConstants.getTableBackgroundColor());
         configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, cellStyleDefault, DisplayMode.NORMAL,
                 ContextTableConstants.COLUMN_TYPE_PROPERTY);
 

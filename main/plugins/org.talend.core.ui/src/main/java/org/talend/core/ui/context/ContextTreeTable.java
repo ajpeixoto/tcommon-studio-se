@@ -308,7 +308,7 @@ public class ContextTreeTable {
 
             attachCheckColumnTip(natTable);
 
-            final Color backgroundColor = ColorConstants.getTableBackbroundColor();
+            final Color backgroundColor = ColorConstants.getTableBackgroundColor();
             // global settings only effect on body and default region, so should set other regions' color separately.
             natTable.setBackground(backgroundColor);
             natTable.addConfiguration(new AbstractRegistryConfiguration() {
@@ -553,7 +553,7 @@ public class ContextTreeTable {
     private void addCustomSelectionBehaviour(SelectionLayer layer) {
         // need control the selection style when select the rows.
         DefaultSelectionStyleConfiguration selectStyleConfig = new DefaultSelectionStyleConfiguration();
-        selectStyleConfig.selectedHeaderBgColor = ColorConstants.getTableBackbroundColor();
+        selectStyleConfig.selectedHeaderBgColor = ColorConstants.getTableBackgroundColor();
         selectStyleConfig.selectedHeaderFgColor = ColorConstants.getTableForegroundColor();
         selectStyleConfig.selectedHeaderFont = GUIHelper.DEFAULT_FONT;
         layer.addConfiguration(selectStyleConfig);

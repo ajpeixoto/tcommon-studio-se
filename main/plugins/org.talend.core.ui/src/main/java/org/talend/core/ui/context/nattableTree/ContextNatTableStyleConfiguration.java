@@ -62,9 +62,9 @@ public class ContextNatTableStyleConfiguration extends AbstractRegistryConfigura
         configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_PAINTER, cellPainter);
 
         Style cellStyle = new Style();
-        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, ColorConstants.getTableBackbroundColor());
+        cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, ColorConstants.getTableBackgroundColor());
         cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, ColorConstants.getTableForegroundColor());
-        cellStyle.setAttributeValue(CellStyleAttributes.GRADIENT_BACKGROUND_COLOR, ColorConstants.getTableBackbroundColor());
+        cellStyle.setAttributeValue(CellStyleAttributes.GRADIENT_BACKGROUND_COLOR, ColorConstants.getTableBackgroundColor());
         cellStyle.setAttributeValue(CellStyleAttributes.GRADIENT_FOREGROUND_COLOR, gradientFgColor);
         cellStyle.setAttributeValue(CellStyleAttributes.FONT, font);
         cellStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT, hAlign);

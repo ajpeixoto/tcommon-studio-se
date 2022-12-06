@@ -186,19 +186,13 @@ public class TalendTabbedPropertyTitle extends Composite implements ITalendTabbe
     }
 
     private Color getStartColor() {
-        Color color = ITalendThemeService.getColor("org.talend.core.repository.TAB_START_COLOR");
-        if (color == null) {
-            color = factory.getColors().getColor(IFormColors.H_GRADIENT_END);
-        }
-        return color;
+        return ITalendThemeService.getColor("org.talend.core.repository.TAB_START_COLOR")
+                .orElse(factory.getColors().getColor(IFormColors.H_GRADIENT_END));
     }
 
     private Color getEndColor() {
-        Color color = ITalendThemeService.getColor("org.talend.core.repository.TAB_END_COLOR");
-        if (color == null) {
-            color = factory.getColors().getColor(IFormColors.H_GRADIENT_START);
-        }
-        return color;
+        return ITalendThemeService.getColor("org.talend.core.repository.TAB_END_COLOR")
+                .orElse(factory.getColors().getColor(IFormColors.H_GRADIENT_START));
     }
 
     /**
