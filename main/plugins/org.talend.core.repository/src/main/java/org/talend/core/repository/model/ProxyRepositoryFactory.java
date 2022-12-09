@@ -2380,10 +2380,12 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
             String str[] = new String[] { getRepositoryContext().getUser() + "", projectManager.getCurrentProject() + "" }; //$NON-NLS-1$ //$NON-NLS-2$
             log.info(Messages.getString("ProxyRepositoryFactory.log.loggedOn", str)); //$NON-NLS-1$
         } catch (LoginException e) {
-            try {
-                logOffProject();
-            } catch (Exception e1) {
-                ExceptionHandler.process(e1);
+            if (!LoginException.RESTART.equals(e.getKey())) {
+                try {
+                    logOffProject();
+                } catch (Exception e1) {
+                    ExceptionHandler.process(e1);
+                }
             }
             throw e;
         } catch (PersistenceException e) {
@@ -2561,7 +2563,6 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
 
     public void logOffProject() {
         // getRepositoryContext().setProject(null);
-        repositoryFactoryFromProvider.logOffProject();
         if (!CommonsPlugin.isHeadless()) {
             ProjectRepositoryNode root = ProjectRepositoryNode.getInstance();
             if (root != null) {
@@ -2617,6 +2618,7 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
 
         ReferenceProjectProvider.clearTacReferenceList();
         ReferenceProjectProblemManager.getInstance().clearAll();
+        repositoryFactoryFromProvider.logOffProject();
         fullLogonFinished = false;
     }
 
