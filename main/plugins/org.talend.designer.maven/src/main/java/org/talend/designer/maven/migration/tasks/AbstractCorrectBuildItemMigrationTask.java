@@ -18,8 +18,8 @@ import org.talend.core.repository.utils.ConvertJobsUtil;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
-import org.talend.designer.maven.migration.common.MigrationReportHelper;
-import org.talend.designer.maven.migration.common.MigrationReportRecorder;
+import org.talend.migration.MigrationReportHelper;
+import org.talend.migration.MigrationReportRecorder;
 import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.model.IRepositoryService;
 

@@ -11,7 +11,7 @@ import org.talend.core.model.components.filters.NameComponentFilter;
 import org.talend.core.model.properties.Item;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
-import org.talend.designer.maven.migration.common.MigrationReportRecorder;
+import org.talend.migration.MigrationReportRecorder;
 
 /*
 * (non-Javadoc)

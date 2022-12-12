@@ -13,8 +13,8 @@ import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
-import org.talend.designer.maven.migration.common.MigrationReportRecorder;
 import org.talend.designer.runprocess.ItemCacheManager;
+import org.talend.migration.MigrationReportRecorder;
 import org.talend.repository.ProjectManager;
 
 /*
