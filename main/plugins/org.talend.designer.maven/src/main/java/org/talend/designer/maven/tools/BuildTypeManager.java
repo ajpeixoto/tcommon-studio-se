@@ -1,6 +1,7 @@
 package org.talend.designer.maven.tools;
 
 import java.lang.reflect.InvocationTargetException;
+
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -15,14 +16,13 @@ import org.eclipse.swt.widgets.Display;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.model.general.Project;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
-import org.talend.designer.maven.migration.common.MigrationReportHelper;
 import org.talend.designer.maven.migration.tasks.CorrectBuildTypeForDIJobMigrationTask;
 import org.talend.designer.maven.migration.tasks.CorrectBuildTypeForDsRestMigrationTask;
 import org.talend.designer.maven.migration.tasks.CorrectBuildTypeForRoutesMigrationTask;
 import org.talend.designer.maven.migration.tasks.CorrectBuildTypeForSOAPServiceJobMigrationTask;
 import org.talend.designer.maven.migration.tasks.ICorrectBuildTypeMigrationTask;
 import org.talend.migration.IMigrationTask;
-import org.talend.migration.IProjectMigrationTask;
+import org.talend.migration.MigrationReportHelper;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.RepositoryWorkUnit;
 
