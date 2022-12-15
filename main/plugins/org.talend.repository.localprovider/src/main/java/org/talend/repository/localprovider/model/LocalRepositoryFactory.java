@@ -951,7 +951,7 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
         project.getEmfProject().getMigrationTask().addAll(FilteredTasks);
 
         // set default prefs for new created project
-        setPrefForNewProject(project);
+        // setPrefForNewProject(project);
 
         ProjectDataJsonProvider.saveProjectData(project.getEmfProject());
     }

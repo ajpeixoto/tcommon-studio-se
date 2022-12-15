@@ -112,12 +112,12 @@ public class ModuleAccessHelper {
     }
 
     private static boolean allowJavaInternalAcess(Property property) {
-        if (CommonsPlugin.isTUJTest()) {
-            return true;
-        }
         String allow = System.getProperty(JavaUtils.ALLOW_JAVA_INTERNAL_ACCESS);
         if (allow != null) {
             return Boolean.valueOf(allow);
+        }
+        if (CommonsPlugin.isTUJTest() || CommonsPlugin.isJUnitTest() || CommonsPlugin.isJunitWorking()) {
+            return true;
         }
         Project project;
         if (property != null) {
