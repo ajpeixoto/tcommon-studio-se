@@ -116,7 +116,7 @@ public class ModuleAccessHelper {
         if (allow != null) {
             return Boolean.valueOf(allow);
         }
-        if (CommonsPlugin.isTUJTest() || CommonsPlugin.isJUnitTest() || CommonsPlugin.isJunitWorking()) {
+        if (CommonsPlugin.isJUnitTest() || CommonsPlugin.isJunitWorking()) {
             return true;
         }
         Project project;
