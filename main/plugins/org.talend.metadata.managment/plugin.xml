@@ -95,6 +95,13 @@
                   required="true">
             </libraryNeeded>
       <libraryNeeded
+          context="plugin:org.talend.libraries.jdbc.ingres"
+          language="java"
+          message="Needed for Ingres jdbc plugin"
+          name="iijdbc.jar" mvn_uri="mvn:org.talend.libraries/iijdbc/6.0.0" 
+          required="true">
+      </libraryNeeded>
+      <libraryNeeded
               context="plugin:org.talend.libraries.jdbc.as400"
               language="java"
               message="Needed for AS400 jdbc plugin"

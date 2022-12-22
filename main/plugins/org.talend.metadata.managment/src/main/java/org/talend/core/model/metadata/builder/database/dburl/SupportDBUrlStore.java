@@ -86,6 +86,7 @@ public final class SupportDBUrlStore {
         supportDBUrlMap.put(SupportDBUrlType.SYBASEDEFAULTURL.getDBKey(), SupportDBUrlType.SYBASEDEFAULTURL);
         // supportDBUrlMap.put(SupportDBUrlType.INFORMIXDEFAULTURL.getDBKey(), SupportDBUrlType.INFORMIXDEFAULTURL);
         // supportDBUrlMap.put(SupportDBUrlType.FIREBIRDDEFAULTURL.getDBKey(), SupportDBUrlType.FIREBIRDDEFAULTURL);
+        supportDBUrlMap.put(SupportDBUrlType.INGRESDEFAULTURL.getDBKey(), SupportDBUrlType.INGRESDEFAULTURL);
         supportDBUrlMap.put(SupportDBUrlType.INFORMIXDEFAULTURL.getDBKey(), SupportDBUrlType.INFORMIXDEFAULTURL);
         supportDBUrlMap.put(SupportDBUrlType.SQLITE3DEFAULTURL.getDBKey(), SupportDBUrlType.SQLITE3DEFAULTURL);
         supportDBUrlMap.put(SupportDBUrlType.GENERICJDBCDEFAULTURL.getDBKey(), SupportDBUrlType.GENERICJDBCDEFAULTURL);
@@ -128,6 +129,8 @@ public final class SupportDBUrlStore {
         // SupportDBUrlType.INFORMIXDEFAULTURL);
         // supportDiverNameDBUrlMap.put(SupportDBUrlType.FIREBIRDDEFAULTURL.getDbDriver(),
         // SupportDBUrlType.FIREBIRDDEFAULTURL);
+        supportDiverNameDBUrlMap
+                .put(SupportDBUrlType.INGRESDEFAULTURL.getDbDriver(), SupportDBUrlType.INGRESDEFAULTURL);
         supportDiverNameDBUrlMap.put(SupportDBUrlType.INFORMIXDEFAULTURL.getDbDriver(),
                 SupportDBUrlType.INFORMIXDEFAULTURL);
         supportDiverNameDBUrlMap.put(SupportDBUrlType.SQLITE3DEFAULTURL.getDbDriver(),

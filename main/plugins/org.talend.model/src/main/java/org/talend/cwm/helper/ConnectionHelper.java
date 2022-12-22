@@ -812,6 +812,21 @@ public class ConnectionHelper {
     }
 
     /**
+     * DOC xqliu Comment method "isIngress".
+     *
+     * @param connection
+     * @return
+     */
+    public static boolean isIngress(Connection connection) {
+        DatabaseConnection dbConn = SwitchHelpers.DATABASECONNECTION_SWITCH.doSwitch(connection);
+        if (dbConn != null) {
+            String databaseType = dbConn.getDatabaseType() == null ? "" : dbConn.getDatabaseType(); //$NON-NLS-1$
+            return databaseType.toLowerCase().contains("ingres"); //$NON-NLS-1$
+        }
+        return false;
+    }
+
+    /**
      * DOC xqliu Comment method "isDb2".
      *
      * @param connection
