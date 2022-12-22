@@ -17,7 +17,10 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -136,7 +139,17 @@ public class MetadataTalendTypeFilterTest {
             when(component.getName()).thenReturn(componentName);
             return Arrays.asList(new SparkBatchMetadataTalendTypeFilter(node).filter(types)).contains(DYNAMIC);
         }).collect(Collectors.toList());
-        assertEquals(SparkBatchMetadataTalendTypeFilter.dynamicTypeCompatibleComponents, compatibleComponents);
+        
+        List<String> dynamicTypeCompatibleComponents = new ArrayList<String>();
+        dynamicTypeCompatibleComponents.addAll(SparkBatchMetadataTalendTypeFilter.dynamicTypeCompatibleComponents);              
+        Collections.sort(dynamicTypeCompatibleComponents, new Comparator<String>() {
+            @Override
+            public int compare(String s1, String s2) {
+                return s1.compareToIgnoreCase(s2);
+            }
+        });
+        
+        assertEquals(dynamicTypeCompatibleComponents, compatibleComponents);
     }
 
 }
