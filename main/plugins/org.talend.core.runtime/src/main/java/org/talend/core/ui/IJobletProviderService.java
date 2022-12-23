@@ -21,7 +21,6 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.talend.commons.exception.PersistenceException;
-import org.talend.core.GlobalServiceRegister;
 import org.talend.core.IService;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.metadata.IMetadataTable;
@@ -149,15 +148,5 @@ public interface IJobletProviderService extends IService {
     public void updateJobleModifiedRelated(Item item, String oldName, String newName);
 
     public IProcess getJobletGEFProcessFromNode(INode node);
-
-    public void clearJobletProcessProviderCache();
-
-    public static IJobletProviderService get() {
-        GlobalServiceRegister register = GlobalServiceRegister.getDefault();
-        if (!register.isServiceRegistered(IJobletProviderService.class)) {
-            return null;
-        }
-        return register.getService(IJobletProviderService.class);
-    }
 
 }
