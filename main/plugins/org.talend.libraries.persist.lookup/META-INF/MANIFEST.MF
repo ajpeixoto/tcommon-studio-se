@@ -3,8 +3,8 @@ Bundle-ManifestVersion: 2
 Bundle-Name: org.talend.libraries.persist.lookup
 Bundle-SymbolicName: org.talend.libraries.persist.lookup
 Bundle-Version: 7.3.1.qualifier
-Bundle-ClassPath: lib/advancedPersistentLookupLib-1.2.jar,
- .
+Bundle-ClassPath: .,
+ lib/advancedPersistentLookupLib-1.4.jar
 Export-Package: org.talend.commons.utils.data.map,
  org.talend.commons.utils.time,
  org.talend.core.model.process,
