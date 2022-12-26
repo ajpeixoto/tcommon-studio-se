@@ -12,9 +12,14 @@
 // ============================================================================
 package org.talend.commons.ui.runtime.utils;
 
+import org.eclipse.jface.resource.ColorRegistry;
+import org.eclipse.jface.resource.DataFormatException;
+import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.resource.StringConverter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Device;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 
 /**
@@ -102,4 +107,16 @@ public class TalendColorPalette {
     public static final java.awt.Color TERTIARY_ORANGE_AWT = new java.awt.Color(244, 175, 128);
 
     public static final java.awt.Color TERTIARY_YELLOW_AWT = new java.awt.Color(255, 217, 143);
+
+    public static Color convertToColor(String rgbStr) throws DataFormatException {
+        ColorRegistry colorRegistry = JFaceResources.getColorRegistry();
+        Color color = colorRegistry.get(rgbStr);
+        if (color != null) {
+            return color;
+        }
+        RGB rgb = StringConverter.asRGB(rgbStr);
+        colorRegistry.put(rgbStr, rgb);
+        return colorRegistry.get(rgbStr);
+    }
+
 }

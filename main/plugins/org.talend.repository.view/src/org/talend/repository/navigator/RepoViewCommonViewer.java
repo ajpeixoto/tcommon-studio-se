@@ -22,6 +22,7 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ISelection;
@@ -45,6 +46,7 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventConstants;
 import org.osgi.service.event.EventHandler;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.ui.runtime.ITalendThemeService;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.repository.CoreRepositoryPlugin;
@@ -52,6 +54,7 @@ import org.talend.core.repository.constants.Constant;
 import org.talend.core.repository.model.ProjectRepositoryNode;
 import org.talend.core.repository.ui.actions.MoveObjectAction;
 import org.talend.core.repository.ui.view.RepositoryDropAdapter;
+import org.talend.core.repository.ui.view.RepositoryLabelProvider;
 import org.talend.core.repository.utils.XmiResourceManager;
 import org.talend.repository.model.IRepositoryNode;
 import org.talend.repository.model.RepositoryNode;
@@ -79,6 +82,8 @@ public class RepoViewCommonViewer extends CommonViewer implements INavigatorCont
 
     private ServiceRegistration lockService;
 
+    private IPropertyChangeListener propertyChangeListener;
+
     /**
      * Getter for repViewCommonNavigator.
      *
@@ -102,6 +107,8 @@ public class RepoViewCommonViewer extends CommonViewer implements INavigatorCont
     protected void init() {
         super.init();
         registerLockUnlockServiceListener();
+        propertyChangeListener = RepositoryLabelProvider.createPropertyChangeListener(this);
+        ITalendThemeService.addPropertyChangeListener(propertyChangeListener);
     }
 
     // @SuppressWarnings("restriction")
@@ -441,6 +448,9 @@ public class RepoViewCommonViewer extends CommonViewer implements INavigatorCont
             lockService.unregister();
             lockService = null;
         }// else service already unregistered or not event instanciated
+        if (propertyChangeListener != null) {
+            ITalendThemeService.removePropertyChangeListener(propertyChangeListener);
+        }
         super.dispose();
     }
 }

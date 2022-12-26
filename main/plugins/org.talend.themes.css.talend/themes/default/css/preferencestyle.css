@@ -1,0 +1,26 @@
+/*******************************************************************************
+ * Copyright (c) 2014, 2015 Lars Vogel and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *     Lars Vogel <Lars.Vogel@gmail.com> - initial API and implementation
+ *     Andrea Guarinoni - intial color schema definition
+ *     Lars Vogel <Lars.Vogel@vogella.com> - Ongoing maintenance
+ *******************************************************************************/
+
+/* ############################## Eclipse UI properties ############################## */
+
+
+IEclipsePreferences#org-talend-designer-core:org-talend-themes-css-talend { /* pseudo attribute added to allow contributions without replacing this node, see Bug 466075 */
+	preferences:
+		'jobDesignerBackgroundColor=255,255,255'
+		'subjobColor=207,226,236'
+		'subjobTitleColor=92,131,150'
+}
+

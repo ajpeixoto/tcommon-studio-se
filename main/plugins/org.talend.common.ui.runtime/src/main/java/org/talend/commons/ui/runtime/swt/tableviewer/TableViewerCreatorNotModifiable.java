@@ -57,6 +57,8 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.talend.commons.ui.runtime.ColorConstants;
+import org.talend.commons.ui.runtime.ITalendThemeService;
 import org.talend.commons.ui.runtime.i18n.Messages;
 import org.talend.commons.ui.runtime.swt.proposal.IShowInvisibleCellEditorMethods;
 import org.talend.commons.ui.runtime.swt.tableviewer.behavior.DefaultHeaderColumnSelectionListener;
@@ -291,7 +293,8 @@ public class TableViewerCreatorNotModifiable<B> {
     public TableViewerCreatorNotModifiable(Composite compositeParent) {
         super();
         this.compositeParent = compositeParent;
-        this.emptyZoneColor = compositeParent.getDisplay().getSystemColor(SWT.COLOR_WHITE);
+        this.emptyZoneColor = ITalendThemeService.getColor("org.talend.commons.ui.BgColorForEmptyArea")
+                .orElse(compositeParent.getDisplay().getSystemColor(SWT.COLOR_WHITE));
 
     }
 
@@ -669,8 +672,22 @@ public class TableViewerCreatorNotModifiable<B> {
             table.addListener(SWTFacade.Paint, paintListener);
         }
 
-        setBackgroundColor(backgroundColor != null ? backgroundColor : table.getDisplay().getSystemColor(SWT.COLOR_WHITE));
-        setForegroundColor(foregroundColor != null ? foregroundColor : table.getDisplay().getSystemColor(SWT.COLOR_BLACK));
+        Color prefBackgroundColor = backgroundColor;
+        if (prefBackgroundColor == null) {
+            prefBackgroundColor = ColorConstants.getTableBackgroundColor();
+            if (prefBackgroundColor == null) {
+                prefBackgroundColor = table.getDisplay().getSystemColor(SWT.COLOR_WHITE);
+            }
+        }
+        Color prefForegroundColor = foregroundColor;
+        if (prefForegroundColor == null) {
+            prefForegroundColor = ColorConstants.getTableForegroundColor();
+            if (prefForegroundColor == null) {
+                prefForegroundColor = table.getDisplay().getSystemColor(SWT.COLOR_BLACK);
+            }
+        }
+        setBackgroundColor(prefBackgroundColor);
+        setForegroundColor(prefForegroundColor);
 
         if (useCustomItemColoring) {
             setUseCustomItemColoring(true);
