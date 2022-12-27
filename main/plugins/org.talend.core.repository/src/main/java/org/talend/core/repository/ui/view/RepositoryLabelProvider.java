@@ -87,15 +87,11 @@ public class RepositoryLabelProvider extends LabelProvider implements IColorProv
 
     private static final String LOCKED_ENTRY = "org.talend.core.repository.REPO_LOCKED_ENTRY";
 
-    private static final String INACTIVE_ENTRY = "org.talend.core.repository.REPO_INACTIVE_ENTRY_COLOR";
-
     private static final String STABLE_PRIMARY_ENTRY = "org.talend.core.repository.REPO_STABLE_PRIMARY_ENTRY_COLOR";
 
     private static final String STABLE_SECONDARY_ENTRY = "org.talend.core.repository.REPO_STABLE_SECONDARY_ENTRY_COLOR";
 
     private static final Color STABLE_SECONDARY_ENTRY_COLOR = new Color(null, 100, 100, 100);
-
-    private static final Color STABLE_PRIMARY_ENTRY_COLOR = new Color(null, 0, 0, 0);
 
     protected static final Color INACTIVE_ENTRY_COLOR = new Color(null, 200, 200, 200);
 
@@ -118,14 +114,6 @@ public class RepositoryLabelProvider extends LabelProvider implements IColorProv
 
     private Color getStableSecondaryEntryColor() {
         return ITalendThemeService.getColor(STABLE_SECONDARY_ENTRY).orElse(STABLE_SECONDARY_ENTRY_COLOR);
-    }
-
-    private Color getStablePrimaryEntryColor() {
-        return ITalendThemeService.getColor(STABLE_PRIMARY_ENTRY).orElse(STABLE_PRIMARY_ENTRY_COLOR);
-    }
-
-    private Color getInactiveEntryColor() {
-        return ITalendThemeService.getColor(INACTIVE_ENTRY).orElse(INACTIVE_ENTRY_COLOR);
     }
 
     private Color getLockedEntryColor() {
@@ -518,18 +506,8 @@ public class RepositoryLabelProvider extends LabelProvider implements IColorProv
         RepositoryNode node = (RepositoryNode) element;
         switch (node.getType()) {
         case REFERENCED_PROJECT:
-            return getStablePrimaryEntryColor();
         case STABLE_SYSTEM_FOLDER:
-            if (node.getLabel().equals(ERepositoryObjectType.SNIPPETS.toString())) {
-                return getInactiveEntryColor();
-            }
-            if (node.getContentType() == ERepositoryObjectType.METADATA) {
-                return getStablePrimaryEntryColor();
-            }
         case SYSTEM_FOLDER:
-            if (node.getContentType() == ERepositoryObjectType.PROCESS) {
-                return getStablePrimaryEntryColor();
-            }
             return getStableSecondaryEntryColor();
         default:
             ERepositoryStatus repositoryStatus = node.getObject().getRepositoryStatus();
