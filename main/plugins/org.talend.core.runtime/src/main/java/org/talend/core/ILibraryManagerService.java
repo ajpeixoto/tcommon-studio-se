@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -154,6 +155,8 @@ public interface ILibraryManagerService extends IService {
     public boolean contains(String jarName);
 
     public void clearCache();
+    
+    public void deployLibsFromCustomComponents(File componentFolder, List<ModuleNeeded> modulesNeeded);
 
     @Deprecated
     public Set<String> list(boolean withComponent, IProgressMonitor... monitorWrap);
