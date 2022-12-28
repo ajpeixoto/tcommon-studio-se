@@ -438,8 +438,6 @@ public final class TalendQuoteUtils {
             return QUOTATION_MARK;
         case IBMDB2:
             return QUOTATION_MARK;
-        case INGRES:
-            return QUOTATION_MARK;
         case MSODBC:
             return QUOTATION_MARK;
         case MSSQL:

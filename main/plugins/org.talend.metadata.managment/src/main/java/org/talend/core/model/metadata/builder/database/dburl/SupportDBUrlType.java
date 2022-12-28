@@ -142,7 +142,6 @@ public enum SupportDBUrlType {
             "org.firebirdsql.jdbc.FBDriver", //$NON-NLS-1$
             null,
             "FireBird"), //$NON-NLS-1$
-    INGRESDEFAULTURL("Ingres", "localhost", "II7", "dbname", null, "com.ingres.jdbc.IngresDriver", null, "Ingres"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
     SQLITE3DEFAULTURL("SQLite", "localhost", "", "dbname", null, "org.sqlite.JDBC", null, "SQLite"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
     GENERICJDBCDEFAULTURL("General JDBC", "", "", "", null, "", null, "General JDBC"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
     // MOD klliu 2010-06-04 bug 12819: upgrade jdbc driver class used in sql explorer
@@ -390,7 +389,7 @@ public enum SupportDBUrlType {
     }
 
     /**
-     * DOC msjian Comment method "hasSchema". (just have schema: oracle,teredata,ingres,DB2)
+     * DOC msjian Comment method "hasSchema". (just have schema: oracle,teredata,DB2)
      *
      * @param dbKey
      * @return
@@ -398,7 +397,6 @@ public enum SupportDBUrlType {
     public static boolean justHaveSchema(String dbKey) {
         SupportDBUrlType dbTypeByKey = getDBTypeByKey(dbKey);
         return dbTypeByKey != null
-                && (isOracle(dbKey) || dbTypeByKey == TERADATADEFAULTURL || dbTypeByKey == INGRESDEFAULTURL
-                        || dbTypeByKey == DB2DEFAULTURL || dbTypeByKey == DB2ZOSDEFAULTURL);
+                && (isOracle(dbKey) || dbTypeByKey == TERADATADEFAULTURL || dbTypeByKey == DB2DEFAULTURL || dbTypeByKey == DB2ZOSDEFAULTURL);
     }
 }

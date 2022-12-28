@@ -63,7 +63,6 @@ public final class GenerateQueryFactory {
         case IBMDB2ZOS:
         case MYSQL:
         case AMAZON_AURORA:
-        case INGRES:
             return new NonDatabaseDefaultQueryGenerator(dbType);
         case ORACLE_OCI:
         case ORACLEFORSID:
