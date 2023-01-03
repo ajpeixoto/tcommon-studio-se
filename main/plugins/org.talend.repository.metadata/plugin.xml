@@ -394,6 +394,30 @@
                type="Impala">
          </DBType>
       </RepositoryComponent>
+      <RepositoryComponent
+            input="tIngresInput"
+            name="INGRES"
+            output="tIngresOutput"
+            withSchema="true">
+         <Item
+               clazz="org.talend.core.model.properties.DatabaseConnectionItem">
+         </Item>
+         <DBType
+               type="Ingres">
+         </DBType>
+      </RepositoryComponent>
+      <RepositoryComponent
+            input="tVectorWiseInput"
+            name="VECTORWISE"
+            output="tVectorWiseOutput"
+            withSchema="true">
+         <Item
+               clazz="org.talend.core.model.properties.DatabaseConnectionItem">
+         </Item>
+         <DBType
+               type="VectorWise">
+         </DBType>
+      </RepositoryComponent>
    </extension>
    
    <extension
