@@ -113,6 +113,8 @@ public enum EDatabaseVersion4Drivers {
     EXASOL(new DbVersion4Drivers(EDatabaseTypeName.EXASOL, "exajdbc-6.0.9302.jar")), //$NON-NLS-1$
     MAXDB(new DbVersion4Drivers(EDatabaseTypeName.MAXDB, "sapdbc.jar")), //$NON-NLS-1$
 
+    INGRES(new DbVersion4Drivers(EDatabaseTypeName.INGRES, "iijdbc-10.2-4.1.10.jar")),
+    VECTORWISE(new DbVersion4Drivers(EDatabaseTypeName.VECTORWISE, "iijdbc-10.2-4.1.10.jar")),
     // HIVE(new DbVersion4Drivers(EDatabaseTypeName.HIVE, "STANDALONE", "STANDALONE", new String[] {
     // "hive-jdbc-0.8.1.jar",
     // "hive-metastore-0.8.1.jar", "hive-exec-0.8.1.jar", "hive-service-0.8.1.jar", "libfb303_new.jar",
