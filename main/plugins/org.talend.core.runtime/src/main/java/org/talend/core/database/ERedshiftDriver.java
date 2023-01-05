@@ -24,7 +24,7 @@ import org.talend.core.database.conn.version.EDatabaseVersion4Drivers;
  */
 public enum ERedshiftDriver {
 
-    DRIVER_V2("Driver v2", new String[] { "redshift-jdbc42-2.1.0.3.jar" }),
+    DRIVER_V2("Driver v2", new String[] { "redshift-jdbc42-2.1.0.10.jar" }),
     DRIVER_V1("Driver v1", new String[] { "redshift-jdbc42-no-awssdk-1.2.55.1083.jar" });
 
     private String displayName;
