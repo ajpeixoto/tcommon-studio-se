@@ -384,8 +384,6 @@ public enum EDatabaseConnTemplate {
             case PSQL:
             case PLUSPSQL:
             case GREENPLUM:
-            case INGRES:
-            case VECTORWISE:
             case REDSHIFT:
             case REDSHIFT_SSO:
             case IBMDB2:
