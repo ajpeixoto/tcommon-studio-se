@@ -50,6 +50,8 @@ public interface MavenConstants {
 
     static final String SKIP_LOOP_DEPENDENCY_CHECK = "SKIP_LOOP_DEPENDENCY_CHECK";
 
+    static final String USE_JOBLET_NAME_AS_PREFIX = "USE_JOBLET_NAME_AS_PREFIX";
+
     static final String SKIP_FOLDERS = "SKIP_FOLDERS";
 
     /*
