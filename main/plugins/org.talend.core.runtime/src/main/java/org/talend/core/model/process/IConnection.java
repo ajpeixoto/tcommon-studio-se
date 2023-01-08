@@ -61,6 +61,10 @@ public interface IConnection extends IElement {
 
     public String getUniqueName();
 
+    public String getDesignName();
+
+    public void setDesignName(String designName);
+
     /**
      * Return the given style of the connection.
      *
