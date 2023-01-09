@@ -31,8 +31,6 @@ public class BuildProjectSettingPage extends EmptyProjectSettingPage {
 
     private Button allowRecursiveJobsCheckbox;
 
-    private Button useJobletNameCheckbox;
-
     public BuildProjectSettingPage() {
         super();
     }
@@ -50,10 +48,6 @@ public class BuildProjectSettingPage extends EmptyProjectSettingPage {
         allowRecursiveJobsCheckbox = new Button(parent, SWT.CHECK);
         allowRecursiveJobsCheckbox.setText(Messages.getString("BuildProjectSettingPage.allowRecursiveJobs")); //$NON-NLS-1$
         allowRecursiveJobsCheckbox.setSelection(!preferenceStore.getBoolean(MavenConstants.SKIP_LOOP_DEPENDENCY_CHECK));
-
-        useJobletNameCheckbox = new Button(parent, SWT.CHECK);
-        useJobletNameCheckbox.setText("Use Joblet name as prefix");
-        useJobletNameCheckbox.setSelection(preferenceStore.getBoolean(MavenConstants.USE_JOBLET_NAME_AS_PREFIX));
     }
 
     @Override
@@ -61,7 +55,6 @@ public class BuildProjectSettingPage extends EmptyProjectSettingPage {
         boolean performOk = super.performOk();
         if (preferenceStore != null) {
             preferenceStore.setValue(MavenConstants.SKIP_LOOP_DEPENDENCY_CHECK, !allowRecursiveJobsCheckbox.getSelection());
-            preferenceStore.setValue(MavenConstants.USE_JOBLET_NAME_AS_PREFIX, useJobletNameCheckbox.getSelection());
         }
         return performOk;
     }
