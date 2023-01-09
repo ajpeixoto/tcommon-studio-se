@@ -54,7 +54,7 @@ public abstract class AbstractConnection implements IConnection, IAdditionalInfo
 
     private String uniqueName;
 
-    private String designNmae;
+    private String designName;
 
     private List<? extends IElementParameter> elementParameters = new ArrayList<IElementParameter>();
 
@@ -220,12 +220,12 @@ public abstract class AbstractConnection implements IConnection, IAdditionalInfo
 
     @Override
     public String getDesignName() {
-        return designNmae;
+        return designName;
     }
 
     @Override
     public void setDesignName(String designName) {
-        this.designNmae = designName;
+        this.designName = designName;
     }
 
     /**
