@@ -67,6 +67,7 @@ import org.talend.core.model.repository.Folder;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.repository.LockInfo;
 import org.talend.core.model.repository.RepositoryViewObject;
+import org.talend.core.model.routines.RoutinesUtil;
 import org.talend.core.repository.i18n.Messages;
 import org.talend.core.repository.utils.XmiResourceManager;
 import org.talend.core.runtime.CoreRuntimePlugin;
@@ -260,6 +261,7 @@ public abstract class AbstractEMFRepositoryFactory extends AbstractRepositoryFac
         if (type == ERepositoryObjectType.METADATA_CON_TABLE) {
             return false;
         }
+        
         boolean isAllowMultipleName = (type == ERepositoryObjectType.SQLPATTERNS || type == ERepositoryObjectType.METADATA_FILE_XML);
         String path = "";
         if (item.getState() != null) {
