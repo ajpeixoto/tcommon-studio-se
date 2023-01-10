@@ -76,7 +76,6 @@ import org.talend.core.runtime.process.TalendProcessArgumentConstant;
 import org.talend.core.runtime.process.TalendProcessOptionConstants;
 import org.talend.core.runtime.projectsetting.IProjectSettingPreferenceConstants;
 import org.talend.core.runtime.projectsetting.IProjectSettingTemplateConstants;
-import org.talend.core.runtime.projectsetting.ProjectPreferenceManager;
 import org.talend.core.runtime.util.ModuleAccessHelper;
 import org.talend.core.services.IGITProviderService;
 import org.talend.core.ui.ITestContainerProviderService;
@@ -93,7 +92,6 @@ import org.talend.designer.runprocess.IProcessor;
 import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.repository.ProjectManager;
-import org.talend.repository.model.RepositoryConstants;
 import org.talend.utils.io.FilesUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -290,18 +288,19 @@ public class CreateMavenJobPom extends AbstractMavenProcessorPom {
         org.talend.core.model.general.Project currentProject = ProjectManager.getInstance()
                 .getProjectFromProjectTechLabel(project.getTechnicalLabel());
         String branchName = ProjectManager.getInstance().getMainProjectBranch(project);
-        try {
-            if (branchName == null) {
-                ProjectPreferenceManager preferenceManager =
-                        new ProjectPreferenceManager(currentProject, "org.talend.repository", false);
-                branchName = preferenceManager.getValue(RepositoryConstants.PROJECT_BRANCH_ID);
+        if(branchName == null) {
+            try {
+                branchName = IGitInfoService.get().getProjectBranch(currentProject);
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
             }
-        } catch (Exception e) {
-            ExceptionHandler.process(e);
         }
-
         if (null != branchName) {
             properties.setProperty("talend.project.branch.name", branchName);
+            if(branchName.startsWith("branches/")) {
+                branchName = branchName.substring(9);
+                properties.setProperty("talend.project.branch.name", branchName);
+            }
         }
 
         try {
@@ -616,10 +615,13 @@ public class CreateMavenJobPom extends AbstractMavenProcessorPom {
         }
         String mainProjectBranch = ProjectManager.getInstance().getMainProjectBranch(project);
         if (mainProjectBranch == null) {
-            ProjectPreferenceManager preferenceManager =
-                    new ProjectPreferenceManager(project, "org.talend.repository", false);
-            mainProjectBranch = preferenceManager.getValue(RepositoryConstants.PROJECT_BRANCH_ID);
-            if (mainProjectBranch == null) {
+            try {
+                mainProjectBranch = IGitInfoService.get().getProjectBranch(project);
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
+            }
+            
+            if(mainProjectBranch == null) {
                 mainProjectBranch = "";
             }
         }
