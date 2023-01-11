@@ -135,14 +135,14 @@ public class ModuleAccessHelper {
         if (property == null) {
             return Collections.emptySet();
         }
+        if (!allowJavaInternalAcess(property)) {
+            return Collections.emptySet();
+        }
         if (isPreviewProcess(processor)) {
             // add all for preview process
             return getProperties().entrySet().stream().filter(en -> StringUtils.isNotBlank((String) en.getValue()))
                     .flatMap(en -> getModules((String) en.getKey()).stream()).collect(Collectors.toSet());
 
-        }
-        if (!allowJavaInternalAcess(property)) {
-            return Collections.emptySet();
         }
         ProcessItem mainJobItem = (ProcessItem) property.getItem();
         Set<JobInfo> allJobInfos = new HashSet<>();
