@@ -12,16 +12,28 @@
 // ============================================================================
 package org.talend.commons.utils.workbench.extensions;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.preferences.ConfigurationScope;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.IllegalPluginConfigurationException;
 import org.talend.commons.i18n.internal.Messages;
+import org.talend.utils.json.JSONException;
+import org.talend.utils.json.JSONObject;
 
 /**
  * Utilities class uses to get implementation of extension points defined by plug-ins. <br/>
@@ -35,6 +47,10 @@ public abstract class ExtensionImplementationProvider<I> {
     private IExtensionPointLimiter extensionPointLimiter;
 
     private String plugInId;
+
+    public final static String FILE_FEATURES_INDEX = "extra_feature.index";
+
+    public final static String DROP_BUNDLE_INFO = "drop.bundle.info";
 
     /**
      * Default Constructor. Must not be used.
@@ -166,9 +182,17 @@ public abstract class ExtensionImplementationProvider<I> {
         }
 
         IExtension[] extensions = pt.getExtensions();
-
+        Map<String, String> dropBundles = null;
+        try {
+            dropBundles = getDropBundleInfo();
+        } catch (IOException e) {
+            ExceptionHandler.process(e);
+        }
         for (IExtension extension : extensions) {
-
+            if (dropBundles != null && dropBundles.containsKey(extension.getNamespaceIdentifier())
+                    && StringUtils.isEmpty(dropBundles.get(extension.getNamespaceIdentifier()))) {
+                continue;
+            }
             if (plugInId == null || extension.getNamespaceIdentifier().equals(plugInId)) {
                 String configurationElementName = extensionPointLimiter.getConfigurationElementName();
                 if (configurationElementName != null) {
@@ -194,6 +218,32 @@ public abstract class ExtensionImplementationProvider<I> {
         }
 
         return toReturn;
+    }
+
+    /**********************************************************
+     * Copied from org.talend.commons.configurator
+     **********************************************************/
+    public Map<String, String> getDropBundleInfo() throws IOException {
+        File indexFile = new File(ConfigurationScope.INSTANCE.getLocation().toFile(), FILE_FEATURES_INDEX);
+        if (!indexFile.exists()) {
+            return Collections.emptyMap();
+        }
+        Map<String, String> dropInfoMap = new HashMap<>();
+        try {
+            String jsonStr = new String(Files.readAllBytes(indexFile.toPath()));
+            if (!jsonStr.isEmpty()) {
+                JSONObject obj = new JSONObject(jsonStr);
+                JSONObject dropInfo = obj.getJSONObject(DROP_BUNDLE_INFO);
+                Iterator<String> iterator = dropInfo.keys();
+                while (iterator.hasNext()) {
+                    String key = iterator.next();
+                    dropInfoMap.put(key, dropInfo.getString(key));
+                }
+            }
+        } catch (JSONException e) {
+            throw new IOException(e);
+        }
+        return dropInfoMap;
     }
 
     /**
