@@ -83,6 +83,7 @@ import org.talend.metadata.managment.connection.manager.HiveConnectionManager;
 import org.talend.metadata.managment.hive.EmbeddedHiveDataBaseMetadata;
 import org.talend.metadata.managment.repository.ManagerConnection;
 import org.talend.metadata.managment.utils.DatabaseConstant;
+import org.talend.metadata.managment.utils.EDataBaseType;
 import org.talend.metadata.managment.utils.ManagementTextUtils;
 import org.talend.metadata.managment.utils.MetadataConnectionUtils;
 import org.talend.utils.sql.ConnectionUtils;
@@ -1038,8 +1039,12 @@ public class DBConnectionFillerImpl extends MetadataFillerImpl<DatabaseConnectio
                 // for CDH4 HIVE2 , the table type are MANAGED_TABLE and EXTERNAL_TABLE ......
                 // tableType = null;
             }
+            Map<String,String> tableComments = null;
+            if (!isOracle8i) {
+                tableComments = this.getTableComments(dbJDBCMetadata, catalogName, schemaPattern);
+            }
             ResultSet tables = dbJDBCMetadata.getTables(catalogName, schemaPattern, tablePattern, tableType);
-
+            boolean hasRemarksCol = hasRemarksColumn(tables);
             while (tables.next()) {
                 String coloumnName = GetTable.TABLE_SCHEM.name();
                 if (schemaPattern != null) {
@@ -1064,8 +1069,13 @@ public class DBConnectionFillerImpl extends MetadataFillerImpl<DatabaseConnectio
                 // if (!isOracle && !isOracle8i && !isOracleJdbc && tableName.startsWith("/")) { //$NON-NLS-1$
                 // continue;
                 // }
-                if (!isOracle8i) {
-                    tableComment = getTableComment(dbJDBCMetadata, tables, tableName, catalogName, schemaPattern);
+                if (hasRemarksCol) {
+                    tableComment = getRemarksFromResultSet(tables);
+                }
+                if (tableComments != null) {
+                    if (StringUtils.isEmpty(tableComment)) {
+                        tableComment = tableComments.get(tableName);
+                    }
                 }
                 MetadataTable metadatatable = null;
                 if (TableType.VIEW.toString().equals(temptableType) || ETableTypes.VIRTUAL_VIEW.getName().equals(temptableType)) {
@@ -1209,6 +1219,69 @@ public class DBConnectionFillerImpl extends MetadataFillerImpl<DatabaseConnectio
         }
         return tableComment;
     }
+    
+    private Map<String, String> getTableComments(DatabaseMetaData dbJDBCMetadata, String catalogName, String schemaPattern) {
+        Map<String, String> ret = new HashMap<String, String>();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            String productName = dbJDBCMetadata.getDatabaseProductName();
+            if (StringUtils.isEmpty(productName)) {
+                return ret;
+            }
+            productName = productName.replaceAll(" ", "_"); //$NON-NLS-1$ //$NON-NLS-2$
+            EDataBaseType eDataBaseType = null;
+            try {
+                eDataBaseType = EDataBaseType.valueOf(productName);
+            } catch (Exception e) {
+                eDataBaseType = EDataBaseType.Microsoft_SQL_Server;
+            }
+
+            String sqlStr = ""; //$NON-NLS-1$
+            switch (eDataBaseType) {
+            case Oracle:
+                sqlStr = "SELECT TABLE_NAME,COMMENTS FROM ALL_TAB_COMMENTS WHERE OWNER=?";
+                ps = dbJDBCMetadata.getConnection().prepareStatement(sqlStr);
+                ps.setString(1, schemaPattern.toUpperCase());
+                break;
+            case MySQL:
+                sqlStr = "SELECT TABLE_NAME,TABLE_COMMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA=?";
+                ps = dbJDBCMetadata.getConnection().prepareStatement(sqlStr);
+                ps.setString(1, catalogName);
+                break;
+            default:
+                break;
+            }
+
+            if (ps != null) {
+                rs = ps.executeQuery();
+                while (rs != null && rs.next()) {
+                    String comment = rs.getString(2);
+                    if (!StringUtils.isEmpty(comment)) {
+                        ret.put(rs.getString(1), comment);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            log.error(e, e);
+        } finally {
+            if (ps != null) {
+                try {
+                    ps.close();
+                } catch (SQLException e) {
+                    CommonExceptionHandler.process(e);
+                }
+            }
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    CommonExceptionHandler.process(e);
+                }
+            }
+        }
+        return ret;
+    }
 
     /**
      * get the Column Comment especially for oracle type.
@@ -1295,9 +1368,12 @@ public class DBConnectionFillerImpl extends MetadataFillerImpl<DatabaseConnectio
                     }
                 }
             }
-
+            Map<String, String> tableComments = null;
+            if (!flag) {
+                tableComments = this.getTableComments(dbJDBCMetadata, catalogName, schemaPattern);
+            }
             ResultSet tables = dbJDBCMetadata.getTables(catalogName, schemaPattern, tablePattern, tableType);
-
+            boolean hasRemarksCol = hasRemarksColumn(tables);
             while (tables.next()) {
                 String tableName = getStringFromResultSet(tables, GetTable.TABLE_NAME.name());
                 String temptableType = getStringFromResultSet(tables, GetTable.TABLE_TYPE.name());
@@ -1316,8 +1392,13 @@ public class DBConnectionFillerImpl extends MetadataFillerImpl<DatabaseConnectio
                 if (tableName == null || tablesToFilter.contains(tableName) || tableName.startsWith("/")) { //$NON-NLS-1$
                     continue;
                 }
-                if (!flag) {
-                    tableComment = getTableComment(dbJDBCMetadata, tables, tableName, catalogName, schemaPattern);
+                if (hasRemarksCol) {
+                    tableComment = getRemarksFromResultSet(tables);
+                }
+                if (tableComments != null) {
+                    if (StringUtils.isEmpty(tableComment)) {
+                        tableComment = tableComments.get(tableName);
+                    }
                 }
                 // create table
                 TdTable table = RelationalFactory.eINSTANCE.createTdTable();
@@ -1367,8 +1448,17 @@ public class DBConnectionFillerImpl extends MetadataFillerImpl<DatabaseConnectio
             }
         }
         try {
-
+            boolean flag = true;
+            if (pack != null) {
+                Connection c = ConnectionHelper.getConnection(pack);
+                flag = MetadataConnectionUtils.isOracle8i(c);
+            }
+            Map<String, String> tableComments = null;
+            if (!flag) {
+                tableComments = this.getTableComments(dbJDBCMetadata, catalogName, schemaPattern);
+            }
             ResultSet tables = dbJDBCMetadata.getTables(catalogName, schemaPattern, viewPattern, tableType);
+            boolean hasRemarksCol = hasRemarksColumn(tables);
             while (tables.next()) {
 
                 String tableName = getStringFromResultSet(tables, GetTable.TABLE_NAME.name());
@@ -1379,14 +1469,14 @@ public class DBConnectionFillerImpl extends MetadataFillerImpl<DatabaseConnectio
                     continue;
                 }
                 // common
-                boolean flag = true;
                 String tableComment = null;
-                if (pack != null) {
-                    Connection c = ConnectionHelper.getConnection(pack);
-                    flag = MetadataConnectionUtils.isOracle8i(c);
+                if (hasRemarksCol) {
+                    tableComment = getRemarksFromResultSet(tables);
                 }
-                if (!flag) {
-                    tableComment = getTableComment(dbJDBCMetadata, tables, tableName, catalogName, schemaPattern);
+                if (tableComments != null) {
+                    if (StringUtils.isEmpty(tableComment)) {
+                        tableComment = tableComments.get(tableName);
+                    }
                 }
                 // create table
                 TdView table = RelationalFactory.eINSTANCE.createTdView();
@@ -1425,6 +1515,21 @@ public class DBConnectionFillerImpl extends MetadataFillerImpl<DatabaseConnectio
         return valueOfString;
     }
 
+    private boolean hasRemarksColumn(ResultSet resultSet) {
+        try {
+            int numOfCols = resultSet.getMetaData().getColumnCount();
+            for (int i = 1; i < numOfCols + 1; i++) {
+                String colName = resultSet.getMetaData().getColumnLabel(i);
+                if (StringUtils.equals(colName, GetColumn.REMARKS.name())) {
+                    return true;
+                }
+            }
+        } catch (SQLException e) {
+            CommonExceptionHandler.process(e);
+        }
+        return false;
+    }
+    
     private String getRemarksFromResultSet(ResultSet resultSet) {
         String valueOfString = null;
         try {
