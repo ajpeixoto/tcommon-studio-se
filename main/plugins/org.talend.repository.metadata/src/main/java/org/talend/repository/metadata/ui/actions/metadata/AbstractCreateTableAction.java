@@ -829,183 +829,143 @@ public abstract class AbstractCreateTableAction extends AbstractCreateAction {
         }
     }
 
-    private void openDatabaseTableWizard(final DatabaseConnectionItem item, final MetadataTable metadataTable,
-            final boolean forceReadOnly, final RepositoryNode node, final boolean creation) {
-        UIJob job = new UIJob(Messages.getString("CreateTableAction.action.createTitle")) { //$NON-NLS-1$
+    private void openDatabaseTableWizard(final DatabaseConnectionItem item, final MetadataTable metadataTable, final boolean forceReadOnly, final RepositoryNode node, final boolean creation) {
+
+        String name = "User action : " + getText(); //$NON-NLS-1$
+        RepositoryWorkUnit<Object> repositoryWorkUnit = new RepositoryWorkUnit<Object>(name, this) {
 
             @Override
-            public IStatus runInUIThread(final IProgressMonitor monitor) {
-                String name = "User action : " + getText(); //$NON-NLS-1$
-                RepositoryWorkUnit<Object> repositoryWorkUnit = new RepositoryWorkUnit<Object>(name, this) {
+            protected void run() throws LoginException, PersistenceException {
+                final ManagerConnection managerConnection = new ManagerConnection();
 
-                    @Override
-                    protected void run() throws LoginException, PersistenceException {
-
-                        monitor.beginTask(Messages.getString("CreateTableAction.action.createTitle"), IProgressMonitor.UNKNOWN); //$NON-NLS-1$
-
-                        if (!monitor.isCanceled()) {
-                            final ManagerConnection managerConnection = new ManagerConnection();
-
-                            DatabaseConnection connection = (DatabaseConnection) item.getConnection();
-                            boolean useKrb = Boolean.valueOf(connection.getParameters().get(
-                                    ConnParameterKeys.CONN_PARA_KEY_USE_KRB));
-                            // TUP-596 : Update the context name in connection when the user does a context switch in DI
-                            String oldContextName = connection.getContextName();
-                            Connection copyConnection = MetadataConnectionUtils.prepareConection(connection);
-                            if (copyConnection == null) {
-                                return;
-                            }
-                            IMetadataConnection metadataConnection = ConvertionHelper.convert(copyConnection, false,
-                                    copyConnection.getContextName());
-                            String newContextName = connection.getContextName();
-                            if (oldContextName != null && newContextName != null && !oldContextName.equals(newContextName)) {
-                                if (node != null && node.getObject() != null && node.getObject().getProperty() != null) {
-                                    Item itemTemp = node.getObject().getProperty().getItem();
-                                    if (itemTemp != null && itemTemp instanceof ConnectionItem) {
-                                        ConnectionItem connItem = (ConnectionItem) itemTemp;
-                                        SwitchContextGroupNameImpl.getInstance().updateContextGroup(connItem, newContextName);
-                                    }
-                                }
-                            }
-                            boolean isTcomDB = false;
-                            IGenericDBService dbService = null;
-                            if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericDBService.class)) {
-                                dbService = GlobalServiceRegister.getDefault().getService(
-                                        IGenericDBService.class);
-                            }
-                            if(dbService != null){
-                                for(ERepositoryObjectType type : dbService.getExtraTypes()){
-                                    if(type.getLabel().equals(metadataConnection.getDbType())){
-                                        isTcomDB = true;
-                                    }
-                                }
-                            }
-                            if (!metadataConnection.getDbType().equals(EDatabaseConnTemplate.GODBC.getDBDisplayName())
-                                    && !metadataConnection.getDbType().equals(EDatabaseConnTemplate.ACCESS.getDBDisplayName())
-                                    && !metadataConnection.getDbType().equals(
-                                            EDatabaseConnTemplate.GENERAL_JDBC.getDBDisplayName())
-                                    && !isTcomDB) {
-                                // TODO 1. To identify if it is hive connection.
-                                String hiveMode = (String) metadataConnection
-                                        .getParameter(ConnParameterKeys.CONN_PARA_KEY_HIVE_MODE);
-                                if (EDatabaseTypeName.HIVE.getDisplayName().equals(metadataConnection.getDbType())) {
-                                    // metadataConnection.setDriverJarPath((String)metadataConnection
-                                    // .getParameter(ConnParameterKeys.CONN_PARA_KEY_METASTORE_CONN_DRIVER_JAR));
-                                    if (HiveModeInfo.get(hiveMode) == HiveModeInfo.EMBEDDED) {
-                                        JavaSqlFactory.doHivePreSetup((DatabaseConnection) metadataConnection
-                                                .getCurrentConnection());
-                                    }
-                                } else if (EDatabaseTypeName.IMPALA.getDisplayName().equals(metadataConnection.getDbType())) {
-                                    DatabaseConnection originalValueConnection = null;
-                                    IRepositoryContextService repositoryContextService = CoreRuntimePlugin.getInstance()
-                                            .getRepositoryContextService();
-                                    if (repositoryContextService != null) {
-                                        originalValueConnection = repositoryContextService
-                                                .cloneOriginalValueConnection(connection, false, null);
-                                    }
-                                    if (originalValueConnection != null) {
-                                        metadataConnection.setUrl(originalValueConnection.getURL());
-                                    }
-                                } else {
-                                    String genUrl = DatabaseConnStrUtil.getURLString(metadataConnection.getDbType(),
-                                            metadataConnection.getDbVersionString(), metadataConnection.getServerName(),
-                                            metadataConnection.getUsername(), metadataConnection.getPassword(),
-                                            metadataConnection.getPort(), metadataConnection.getDatabase(),
-                                            metadataConnection.getFileFieldName(), metadataConnection.getDataSourceName(),
-                                            metadataConnection.getDbRootPath(), metadataConnection.getAdditionalParams());
-                                    if (!(metadataConnection.getDbType().equals(EDatabaseConnTemplate.IMPALA.getDBDisplayName()) && useKrb)) {
-                                        metadataConnection.setUrl(genUrl);
-                                    }
-                                }
-
-                            }
-                            // bug 23508:even open type is metaTable,not connection,we always need the connection's
-                            // datapackage to find the table schema when click the retrieve schema button
-                            if (connection != null) {
-                                EList<orgomg.cwm.objectmodel.core.Package> dp = connection.getDataPackage();
-                                Collection<Package> newDataPackage = EcoreUtil.copyAll(dp);
-                                ConnectionHelper.addPackages(newDataPackage,
-                                        (DatabaseConnection) metadataConnection.getCurrentConnection());
-                            }
-                            if (creation) {
-                                String hiveMode = (String) metadataConnection
-                                        .getParameter(ConnParameterKeys.CONN_PARA_KEY_HIVE_MODE);
-                                if (EDatabaseTypeName.HIVE.getDisplayName().equals(metadataConnection.getDbType())) {
-                                    try {
-                                        HiveConnectionManager.getInstance().checkConnection(metadataConnection);
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-                                } else {
-                                    managerConnection.check(metadataConnection);
-                                }
-
-                                // ExtractMetaDataUtils.metadataCon = metadataConnection;
-                                // when open,set use synonyms false.
-                                ExtractMetaDataUtils.getInstance().setUseAllSynonyms(false);
-
-                                IProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
-                                boolean repositoryObjectEditable = factory.isEditableAndLockIfPossible(node.getObject());
-                                if (!repositoryObjectEditable) {
-                                    boolean flag = MessageDialog.openConfirm(PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-                                            .getShell(), Messages.getString("CreateTableAction.action.Warning"),
-                                            Messages.getString("CreateTableAction.action.NotLockMessage"));
-                                    if (flag) {
-                                        DatabaseTableWizard databaseTableWizard = new DatabaseTableWizard(
-                                                PlatformUI.getWorkbench(), creation, node.getObject(), metadataTable,
-                                                getExistingNames(), forceReadOnly, managerConnection, metadataConnection);
-
-                                        WizardDialog wizardDialog = new WizardDialog(PlatformUI.getWorkbench()
-                                                .getActiveWorkbenchWindow().getShell(), databaseTableWizard);
-                                        wizardDialog.setBlockOnOpen(true);
-                                        handleWizard(node, wizardDialog);
-                                    }
-                                } else {
-                                    DatabaseTableWizard databaseTableWizard = new DatabaseTableWizard(PlatformUI.getWorkbench(),
-                                            creation, node.getObject(), metadataTable, getExistingNames(), forceReadOnly,
-                                            managerConnection, metadataConnection);
-
-                                    WizardDialog wizardDialog = new WizardDialog(PlatformUI.getWorkbench()
-                                            .getActiveWorkbenchWindow().getShell(), databaseTableWizard);
-                                    wizardDialog.setBlockOnOpen(true);
-                                    handleWizard(node, wizardDialog);
-                                }
-                            } else {
-                                // added for bug 16595
-                                // no need connect to database when double click one schema.
-                                final boolean skipStep = true;
-
-                                DatabaseTableWizard databaseTableWizard = new DatabaseTableWizard(PlatformUI.getWorkbench(),
-                                        creation, node.getObject(), metadataTable, getExistingNames(), forceReadOnly,
-                                        managerConnection, metadataConnection);
-                                databaseTableWizard.setSkipStep(skipStep);
-                                WizardDialog wizardDialog = new WizardDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-                                        .getShell(), databaseTableWizard);
-                                handleWizard(node, wizardDialog);
-                            }
-
+                DatabaseConnection connection = (DatabaseConnection) item.getConnection();
+                boolean useKrb = Boolean.valueOf(connection.getParameters().get(ConnParameterKeys.CONN_PARA_KEY_USE_KRB));
+                // TUP-596 : Update the context name in connection when the user does a context switch in DI
+                String oldContextName = connection.getContextName();
+                Connection copyConnection = MetadataConnectionUtils.prepareConection(connection);
+                if (copyConnection == null) {
+                    return;
+                }
+                IMetadataConnection metadataConnection = ConvertionHelper.convert(copyConnection, false, copyConnection.getContextName());
+                String newContextName = connection.getContextName();
+                if (oldContextName != null && newContextName != null && !oldContextName.equals(newContextName)) {
+                    if (node != null && node.getObject() != null && node.getObject().getProperty() != null) {
+                        Item itemTemp = node.getObject().getProperty().getItem();
+                        if (itemTemp != null && itemTemp instanceof ConnectionItem) {
+                            ConnectionItem connItem = (ConnectionItem) itemTemp;
+                            SwitchContextGroupNameImpl.getInstance().updateContextGroup(connItem, newContextName);
                         }
                     }
-                };
-                repositoryWorkUnit.setAvoidUnloadResources(isAvoidUnloadResources());
-                IRepositoryService repositoryService = GlobalServiceRegister.getDefault().getService(
-                        IRepositoryService.class);
-                repositoryService.getProxyRepositoryFactory().executeRepositoryWorkUnit(repositoryWorkUnit);
-                monitor.done();
-                return Status.OK_STATUS;
-            };
-        };
-        job.setUser(true);
-        job.addJobChangeListener(new JobChangeAdapter() {
+                }
+                boolean isTcomDB = false;
+                IGenericDBService dbService = null;
+                if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericDBService.class)) {
+                    dbService = GlobalServiceRegister.getDefault().getService(IGenericDBService.class);
+                }
+                if (dbService != null) {
+                    for (ERepositoryObjectType type : dbService.getExtraTypes()) {
+                        if (type.getLabel().equals(metadataConnection.getDbType())) {
+                            isTcomDB = true;
+                        }
+                    }
+                }
+                if (!metadataConnection.getDbType().equals(EDatabaseConnTemplate.GODBC.getDBDisplayName()) && !metadataConnection.getDbType().equals(EDatabaseConnTemplate.ACCESS.getDBDisplayName())
+                        && !metadataConnection.getDbType().equals(EDatabaseConnTemplate.GENERAL_JDBC.getDBDisplayName()) && !isTcomDB) {
+                    // TODO 1. To identify if it is hive connection.
+                    String hiveMode = (String) metadataConnection.getParameter(ConnParameterKeys.CONN_PARA_KEY_HIVE_MODE);
+                    if (EDatabaseTypeName.HIVE.getDisplayName().equals(metadataConnection.getDbType())) {
+                        // metadataConnection.setDriverJarPath((String)metadataConnection
+                        // .getParameter(ConnParameterKeys.CONN_PARA_KEY_METASTORE_CONN_DRIVER_JAR));
+                        if (HiveModeInfo.get(hiveMode) == HiveModeInfo.EMBEDDED) {
+                            JavaSqlFactory.doHivePreSetup((DatabaseConnection) metadataConnection.getCurrentConnection());
+                        }
+                    } else if (EDatabaseTypeName.IMPALA.getDisplayName().equals(metadataConnection.getDbType())) {
+                        DatabaseConnection originalValueConnection = null;
+                        IRepositoryContextService repositoryContextService = CoreRuntimePlugin.getInstance().getRepositoryContextService();
+                        if (repositoryContextService != null) {
+                            originalValueConnection = repositoryContextService.cloneOriginalValueConnection(connection, false, null);
+                        }
+                        if (originalValueConnection != null) {
+                            metadataConnection.setUrl(originalValueConnection.getURL());
+                        }
+                    } else {
+                        String genUrl = DatabaseConnStrUtil
+                                .getURLString(metadataConnection.getDbType(), metadataConnection.getDbVersionString(), metadataConnection.getServerName(), metadataConnection.getUsername(),
+                                        metadataConnection.getPassword(), metadataConnection.getPort(), metadataConnection.getDatabase(), metadataConnection.getFileFieldName(),
+                                        metadataConnection.getDataSourceName(), metadataConnection.getDbRootPath(), metadataConnection.getAdditionalParams());
+                        if (!(metadataConnection.getDbType().equals(EDatabaseConnTemplate.IMPALA.getDBDisplayName()) && useKrb)) {
+                            metadataConnection.setUrl(genUrl);
+                        }
+                    }
 
-            @Override
-            public void done(IJobChangeEvent event) {
-                if (!event.getResult().isOK()) {
-                    log.error(event.getResult().getMessage(), event.getResult().getException());
-                } // else eveything is fine so do not log anything
+                }
+                // bug 23508:even open type is metaTable,not connection,we always need the connection's
+                // datapackage to find the table schema when click the retrieve schema button
+                if (connection != null) {
+                    EList<orgomg.cwm.objectmodel.core.Package> dp = connection.getDataPackage();
+                    Collection<Package> newDataPackage = EcoreUtil.copyAll(dp);
+                    ConnectionHelper.addPackages(newDataPackage, (DatabaseConnection) metadataConnection.getCurrentConnection());
+                }
+                if (creation) {
+                    String hiveMode = (String) metadataConnection.getParameter(ConnParameterKeys.CONN_PARA_KEY_HIVE_MODE);
+                    if (EDatabaseTypeName.HIVE.getDisplayName().equals(metadataConnection.getDbType())) {
+                        try {
+                            HiveConnectionManager.getInstance().checkConnection(metadataConnection);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        managerConnection.check(metadataConnection);
+                    }
+
+                    // ExtractMetaDataUtils.metadataCon = metadataConnection;
+                    // when open,set use synonyms false.
+                    ExtractMetaDataUtils.getInstance().setUseAllSynonyms(false);
+
+                    IProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
+                    boolean repositoryObjectEditable = factory.isEditableAndLockIfPossible(node.getObject());
+                    if (!repositoryObjectEditable) {
+                        boolean flag = MessageDialog
+                                .openConfirm(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), Messages.getString("CreateTableAction.action.Warning"),
+                                        Messages.getString("CreateTableAction.action.NotLockMessage"));
+                        if (flag) {
+                            DatabaseTableWizard databaseTableWizard = new DatabaseTableWizard(PlatformUI.getWorkbench(), creation, node.getObject(), metadataTable, getExistingNames(), forceReadOnly,
+                                    managerConnection, metadataConnection);
+
+                            WizardDialog wizardDialog = new WizardDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), databaseTableWizard);
+                            wizardDialog.setBlockOnOpen(true);
+                            Display.getDefault().asyncExec(() -> {
+                                handleWizard(node, wizardDialog);
+                            });
+                        }
+                    } else {
+                        DatabaseTableWizard databaseTableWizard =
+                                new DatabaseTableWizard(PlatformUI.getWorkbench(), creation, node.getObject(), metadataTable, getExistingNames(), forceReadOnly, managerConnection, metadataConnection);
+
+                        WizardDialog wizardDialog = new WizardDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), databaseTableWizard);
+                        wizardDialog.setBlockOnOpen(true);
+                        Display.getDefault().asyncExec(() -> {
+                            handleWizard(node, wizardDialog);
+                        });
+                    }
+                } else {
+                    // added for bug 16595
+                    // no need connect to database when double click one schema.
+                    final boolean skipStep = true;
+
+                    DatabaseTableWizard databaseTableWizard =
+                            new DatabaseTableWizard(PlatformUI.getWorkbench(), creation, node.getObject(), metadataTable, getExistingNames(), forceReadOnly, managerConnection, metadataConnection);
+                    databaseTableWizard.setSkipStep(skipStep);
+                    WizardDialog wizardDialog = new WizardDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), databaseTableWizard);
+                    Display.getDefault().asyncExec(() -> {
+                        handleWizard(node, wizardDialog);
+                    });
+                }
             }
-        });
-        job.schedule();
+        };
+        repositoryWorkUnit.setAvoidUnloadResources(isAvoidUnloadResources());
+        IRepositoryService repositoryService = GlobalServiceRegister.getDefault().getService(IRepositoryService.class);
+        repositoryService.getProxyRepositoryFactory().executeRepositoryWorkUnit(repositoryWorkUnit);
 
     }
 
