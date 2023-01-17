@@ -43,3 +43,4 @@ Export-Package: org.talend.designer.maven.aether,
  org.talend.designer.maven.aether.selector,
  org.talend.designer.maven.aether.util
 Bundle-Vendor: .Talend SA.
+
