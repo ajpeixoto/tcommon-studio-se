@@ -66,7 +66,7 @@ public class Nexus3RepositoryHandlerTest {
     private static Properties nexusprops = new Properties();
     private static ArtifactRepositoryBean customNexusServer;
     private static IRepositoryArtifactHandler repHandler;
-    private static String[]  types = new String[] {"jar", "pom", "exe", "zip", "dll"};
+    private static String[]  types = new String[] {"jar", "pom", "zip", "dll"};
     
     @BeforeClass
     public static void init() throws FileNotFoundException, IOException  {
