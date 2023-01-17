@@ -22,12 +22,12 @@
        <version>1.0.0</version>
        <type>dll</type>
      </dependency>
-    <dependency>
+    <!--dependency>
        <groupId>org.talend.studio.test</groupId>
        <artifactId>nexus.upload.test.new</artifactId>
        <version>1.0.0</version>
        <type>exe</type>
-     </dependency>
+     </dependency-->
     <dependency>
        <groupId>org.talend.studio.test</groupId>
        <artifactId>nexus.upload.test.new</artifactId>
@@ -45,12 +45,12 @@
        <version>1.0.0</version>
        <type>dll</type>
      </dependency>
-    <dependency>
+    <!--dependency>
        <groupId>org.talend.studio.test</groupId>
        <artifactId>nexus.upload.test.old</artifactId>
        <version>1.0.0</version>
        <type>exe</type>
-     </dependency>
+     </dependency-->
     <dependency>
        <groupId>org.talend.studio.test</groupId>
        <artifactId>nexus.upload.test.old</artifactId>
