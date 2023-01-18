@@ -228,6 +228,14 @@
             required="true"
             uripath="platform:/plugin/org.talend.libraries.jdbc.hsql/lib/hsqldb.jar">
       </libraryNeeded>
+      <libraryNeeded
+           context="plugin:org.talend.metadata.managment"
+           language="java"
+           message="Needed for create sqlite connection"
+           mvn_uri="mvn:org.xerial/sqlite-jdbc/3.40.0.0"
+           name="sqlite-jdbc-3.40.0.0.jar"
+           required="true">
+     </libraryNeeded>
    </extension>
    <extension
          point="org.talend.core.migrationTask">
