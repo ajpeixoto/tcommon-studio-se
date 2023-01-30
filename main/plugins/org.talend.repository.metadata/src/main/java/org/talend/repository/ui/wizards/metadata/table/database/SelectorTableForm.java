@@ -44,8 +44,6 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.AbstractTreeViewer;
 import org.eclipse.jface.viewers.ICheckStateProvider;
-import org.eclipse.jface.viewers.ITreeViewerListener;
-import org.eclipse.jface.viewers.TreeExpansionEvent;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.wizard.WizardPage;
@@ -403,6 +401,9 @@ public class SelectorTableForm extends AbstractForm {
                 } else {
                     firstExpand = true;
                 }
+                if (treeItem.isDisposed()) {
+                    return;
+                }
                 for (TreeItem item : treeItem.getItems()) {
                     if (item.getData() != null) {
                         TableNode node = (TableNode) item.getData();
@@ -507,140 +508,9 @@ public class SelectorTableForm extends AbstractForm {
                     return;
                 }
                 
-                IMetadataConnection metadataConn = tableNode.getMetadataConn();
-
-                Connection conn = null;
-                Driver driver = null;
-
-                DatabaseMetaData dbMetaData = null;
-                ExtractMetaDataUtils extractMeta = ExtractMetaDataUtils.getInstance();
-                // Added by Marvin Wang on Mar. 13, 2013 for loading hive jars dynamically, refer to TDI-25072.
-                if (EDatabaseTypeName.HIVE.getXmlName().equalsIgnoreCase(metadataConn.getDbType())) {
-                    try {
-                        dbMetaData = HiveConnectionManager.getInstance().extractDatabaseMetaData(metadataConn);
-                    } catch (Exception e) {
-                        ExceptionHandler.process(e);
-                    }
-                } else if (EDatabaseTypeName.IMPALA.getDisplayName().equalsIgnoreCase(metadataConn.getDbType())) {
-                    try {
-                        dbMetaData = ImpalaConnectionManager.getInstance().createConnection(metadataConn).getMetaData();
-                    } catch (Exception e) {
-                        ExceptionHandler.process(e);
-                    }
-                } else {
-                    List list = extractMeta.getConnectionList(metadataConn);
-                    if (list != null && !list.isEmpty()) {
-                        for (int i = 0; i < list.size(); i++) {
-                            if (list.get(i) instanceof Connection) {
-                                conn = (Connection) list.get(i);
-                            }
-                            if (list.get(i) instanceof DriverShim) {
-                                driver = (DriverShim) list.get(i);
-                            }
-                        }
-                    }
-                    dbMetaData = extractMeta.getDatabaseMetaData(conn, metadataConn.getDbType(), metadataConn.isSqlMode(), metadataConn.getDatabase());
-                }
-
-                int type = tableNode.getType();
-                orgomg.cwm.objectmodel.core.Package pack = null;
-
                 List<MetadataTable> tableList = new ArrayList<MetadataTable>();
+                retrieveAllSubNodes(tableNode, tableList);
 
-                if (type == tableNode.CATALOG) {
-                    if (tableNode.getChildren().isEmpty()) {
-                        pack = tableNode.getCatalog();
-                    }
-                } else if (type == tableNode.SCHEMA) {
-                    pack = tableNode.getSchema();
-                }
-                try {
-                    if (pack != null) {
-                        TableInfoParameters paras = tableNode.getParas();
-                        List<ETableTypes> paraType = paras.getTypes();
-                        Set<String> availableTableTypes = new HashSet<String>();
-                        for (ETableTypes tableType : paraType) {
-                            availableTableTypes.add(tableType.getName());
-                        }
-
-                        // get all tables/views depending the filter selected
-
-                        Set<String> tableNameFilter = null;
-
-                        if (!paras.isUsedName()) {
-                            tableNameFilter = new HashSet<String>();
-                            if (paras.getSqlFiter() != null && !"".equals(paras.getSqlFiter())) { //$NON-NLS-1$
-                                PreparedStatement stmt = extractMeta.getConn().prepareStatement(paras.getSqlFiter());
-                                extractMeta.setQueryStatementTimeout(stmt);
-                                ResultSet rsTables = stmt.executeQuery();
-                                while (rsTables.next()) {
-                                    String nameKey = rsTables.getString(1).trim();
-                                    tableNameFilter.add(nameKey);
-                                }
-                                rsTables.close();
-                                stmt.close();
-                            }
-                        } else {
-                            tableNameFilter = paras.getNameFilters();
-                        }
-
-                        List<MetadataTable> tempListTables = new ArrayList<MetadataTable>();
-                        MetadataFillFactory dbInstance = MetadataFillFactory.getDBInstance(metadataConn);
-                        for (String filter : tableNameFilter) {
-                            tempListTables = dbInstance.fillAll(pack, dbMetaData, metadataConn, null, filter, availableTableTypes.toArray(new String[] {}));
-                            for (MetadataTable table : tempListTables) {
-                                boolean contains = false;
-                                for (MetadataTable inListTable : tableList) {
-                                    if (inListTable.getName().equals(table.getName())) {
-                                        contains = true;
-                                        break;
-                                    }
-                                }
-                                if (!contains) {
-                                    tableList.add(table);
-                                }
-                            }
-                        }
-                        if (tableNameFilter.isEmpty()) {
-                            tempListTables = dbInstance.fillAll(pack, dbMetaData, metadataConn, null, null, availableTableTypes.toArray(new String[] {}));
-                            for (MetadataTable table : tempListTables) {
-                                boolean contains = false;
-                                for (MetadataTable inListTable : tableList) {
-                                    if (inListTable.getName().equals(table.getName())) {
-                                        contains = true;
-                                        break;
-                                    }
-                                }
-                                if (!contains) {
-                                    tableList.add(table);
-                                }
-                            }
-                        }
-                    }
-                } catch (Exception e) {
-                    ExceptionHandler.process(e);
-                } finally {
-                    String dbType = metadataConn.getDbType();
-                    // bug 22619
-                    String driverClass = metadataConn.getDriverClass();
-                    if (conn != null) {
-                        ConnectionUtils.closeConnection(conn);
-                    }
-                    // for specific db such as derby
-                    if (driver != null) {
-                        if ((driverClass != null && driverClass.equals(EDatabase4DriverClassName.JAVADB_EMBEDED.getDriverClass()))
-                                || (dbType != null && (dbType.equals(EDatabaseTypeName.JAVADB_EMBEDED.getDisplayName()) || dbType.equals(EDatabaseTypeName.JAVADB_DERBYCLIENT.getDisplayName())
-                                        || dbType.equals(EDatabaseTypeName.JAVADB_JCCJDBC.getDisplayName()) || dbType.equals(EDatabaseTypeName.HSQLDB_IN_PROGRESS.getDisplayName())))) {
-                            try {
-                                driver.connect("jdbc:derby:;shutdown=true", null); //$NON-NLS-1$
-                            } catch (SQLException e) {
-                                // exception of shutdown success. no need to catch.
-                            }
-                        }
-                    }
-                }
-
-                transferToTableNode(tableList, tableNode);
                 Display.getDefault().syncExec(() -> {
                     viewer.setInput(tableNodeList);
                     viewer.expandToLevel(tableNode, viewer.ALL_LEVELS);
@@ -649,12 +519,174 @@ public class SelectorTableForm extends AbstractForm {
             }
 
         };
-        
+
         try {
             this.parentWizardPage.getWizard().getContainer().run(true, true, runnable);
         } catch (Exception e) {
             ExceptionHandler.process(e);
         }
+    }
+
+    private void retrieveAllSubNodes(TableNode tableNode, List<MetadataTable> tableList) {
+        tableList.clear();
+        List<TableNode> child = tableNode.getChildren();
+        boolean extended = false;
+        if (!child.isEmpty()) {
+            for (TableNode node : child) {
+                if (node.getType() == TableNode.TABLE) {
+                    extended = true;
+                    break;
+                }
+            }
+        }
+        // if extended is true, means table already got,no need to get again.
+        if (extended) {
+            return;
+        }
+
+        IMetadataConnection metadataConn = tableNode.getMetadataConn();
+
+        Connection conn = null;
+        Driver driver = null;
+
+        DatabaseMetaData dbMetaData = null;
+        ExtractMetaDataUtils extractMeta = ExtractMetaDataUtils.getInstance();
+        // Added by Marvin Wang on Mar. 13, 2013 for loading hive jars dynamically, refer to TDI-25072.
+        if (EDatabaseTypeName.HIVE.getXmlName().equalsIgnoreCase(metadataConn.getDbType())) {
+            try {
+                dbMetaData = HiveConnectionManager.getInstance().extractDatabaseMetaData(metadataConn);
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
+            }
+        } else if (EDatabaseTypeName.IMPALA.getDisplayName().equalsIgnoreCase(metadataConn.getDbType())) {
+            try {
+                dbMetaData = ImpalaConnectionManager.getInstance().createConnection(metadataConn).getMetaData();
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
+            }
+        } else {
+            List list = extractMeta.getConnectionList(metadataConn);
+            if (list != null && !list.isEmpty()) {
+                for (int i = 0; i < list.size(); i++) {
+                    if (list.get(i) instanceof Connection) {
+                        conn = (Connection) list.get(i);
+                    }
+                    if (list.get(i) instanceof DriverShim) {
+                        driver = (DriverShim) list.get(i);
+                    }
+                }
+            }
+            dbMetaData = extractMeta.getDatabaseMetaData(conn, metadataConn.getDbType(), metadataConn.isSqlMode(),
+                    metadataConn.getDatabase());
+        }
+
+        int type = tableNode.getType();
+        orgomg.cwm.objectmodel.core.Package pack = null;
+
+        if (type == tableNode.CATALOG) {
+            if (tableNode.getChildren().isEmpty()) {
+                pack = tableNode.getCatalog();
+            } else {
+                for (TableNode n : tableNode.getChildren()) {
+                    retrieveAllSubNodes(n, tableList);
+                }
+            }
+        } else if (type == tableNode.SCHEMA) {
+            pack = tableNode.getSchema();
+        }
+        try {
+            if (pack != null) {
+                TableInfoParameters paras = tableNode.getParas();
+                List<ETableTypes> paraType = paras.getTypes();
+                Set<String> availableTableTypes = new HashSet<String>();
+                for (ETableTypes tableType : paraType) {
+                    availableTableTypes.add(tableType.getName());
+                }
+                // get all tables/views depending the filter selected
+
+                Set<String> tableNameFilter = null;
+
+                if (!paras.isUsedName()) {
+                    tableNameFilter = new HashSet<String>();
+                    if (paras.getSqlFiter() != null && !"".equals(paras.getSqlFiter())) { //$NON-NLS-1$
+                        PreparedStatement stmt = extractMeta.getConn().prepareStatement(paras.getSqlFiter());
+                        extractMeta.setQueryStatementTimeout(stmt);
+                        ResultSet rsTables = stmt.executeQuery();
+                        while (rsTables.next()) {
+                            String nameKey = rsTables.getString(1).trim();
+                            tableNameFilter.add(nameKey);
+                        }
+                        rsTables.close();
+                        stmt.close();
+                    }
+                } else {
+                    tableNameFilter = paras.getNameFilters();
+                }
+
+                List<MetadataTable> tempListTables = new ArrayList<MetadataTable>();
+                MetadataFillFactory dbInstance = MetadataFillFactory.getDBInstance(metadataConn);
+                for (String filter : tableNameFilter) {
+                    tempListTables = dbInstance.fillAll(pack, dbMetaData, metadataConn, null, filter,
+                            availableTableTypes.toArray(new String[] {}));
+                    for (MetadataTable table : tempListTables) {
+                        boolean contains = false;
+                        for (MetadataTable inListTable : tableList) {
+                            if (inListTable.getName().equals(table.getName())) {
+                                contains = true;
+                                break;
+                            }
+                        }
+                        if (!contains) {
+                            tableList.add(table);
+                        }
+                    }
+                }
+                if (tableNameFilter.isEmpty()) {
+                    tempListTables = dbInstance.fillAll(pack, dbMetaData, metadataConn, null, null,
+                            availableTableTypes.toArray(new String[] {}));
+                    for (MetadataTable table : tempListTables) {
+                        boolean contains = false;
+                        for (MetadataTable inListTable : tableList) {
+                            if (inListTable.getName().equals(table.getName())) {
+                                contains = true;
+                                break;
+                            }
+                        }
+                        if (!contains) {
+                            tableList.add(table);
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        } finally {
+            String dbType = metadataConn.getDbType();
+            // bug 22619
+            String driverClass = metadataConn.getDriverClass();
+            if (conn != null) {
+                ConnectionUtils.closeConnection(conn);
+            }
+            // for specific db such as derby
+            if (driver != null) {
+                if ((driverClass != null && driverClass.equals(EDatabase4DriverClassName.JAVADB_EMBEDED.getDriverClass()))
+                        || (dbType != null && (dbType.equals(EDatabaseTypeName.JAVADB_EMBEDED.getDisplayName())
+                                || dbType.equals(EDatabaseTypeName.JAVADB_DERBYCLIENT.getDisplayName())
+                                || dbType.equals(EDatabaseTypeName.JAVADB_JCCJDBC.getDisplayName())
+                                || dbType.equals(EDatabaseTypeName.HSQLDB_IN_PROGRESS.getDisplayName())))) {
+                    try {
+                        driver.connect("jdbc:derby:;shutdown=true", null); //$NON-NLS-1$
+                    } catch (SQLException e) {
+                        // exception of shutdown success. no need to catch.
+                    }
+                }
+            }
+        }
+
+        if (!(tableNode.getType() == TableNode.CATALOG && pack == null)) {
+            transferToTableNode(tableList, tableNode);
+        }
+
     }
 
     protected void transferToTableNode(List<MetadataTable> list, TableNode parentNode) {
