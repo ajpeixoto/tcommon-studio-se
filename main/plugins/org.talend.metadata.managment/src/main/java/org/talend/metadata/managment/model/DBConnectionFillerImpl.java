@@ -1521,6 +1521,9 @@ public class DBConnectionFillerImpl extends MetadataFillerImpl<DatabaseConnectio
 
     private boolean hasRemarksColumn(ResultSet resultSet) {
         try {
+            if (resultSet == null || resultSet.getMetaData() == null) {
+                return false;
+            }
             int numOfCols = resultSet.getMetaData().getColumnCount();
             for (int i = 1; i < numOfCols + 1; i++) {
                 String colName = resultSet.getMetaData().getColumnLabel(i);
