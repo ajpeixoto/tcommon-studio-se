@@ -35,17 +35,12 @@ public enum EDatabaseVersion4Drivers {
     ORACLE_18(new DbVersion4Drivers(new EDatabaseTypeName[] { EDatabaseTypeName.ORACLEFORSID, EDatabaseTypeName.ORACLESN,
             EDatabaseTypeName.ORACLE_OCI, EDatabaseTypeName.ORACLE_CUSTOM }, "Oracle 18 and above", "ORACLE_18", "ojdbc8-19.3.0.0.jar")),
     ORACLE_12(new DbVersion4Drivers(new EDatabaseTypeName[] { EDatabaseTypeName.ORACLEFORSID, EDatabaseTypeName.ORACLESN,
-            EDatabaseTypeName.ORACLE_OCI, EDatabaseTypeName.ORACLE_CUSTOM }, "Oracle 12", "ORACLE_12", "ojdbc7.jar")),
+            EDatabaseTypeName.ORACLE_OCI, EDatabaseTypeName.ORACLE_CUSTOM }, "Oracle 12 (Deprecated)", "ORACLE_12",
+            "ojdbc7.jar")),
     ORACLE_11(new DbVersion4DriversForOracle11(new EDatabaseTypeName[] { EDatabaseTypeName.ORACLEFORSID,
             EDatabaseTypeName.ORACLESN, EDatabaseTypeName.ORACLE_OCI, EDatabaseTypeName.ORACLE_CUSTOM },
-            "Oracle 11", "ORACLE_11", new String[] { DbVersion4DriversForOracle11.DRIVER_1_5, //$NON-NLS-1$ //$NON-NLS-2$
+            "Oracle 11 (Deprecated)", "ORACLE_11", new String[] { DbVersion4DriversForOracle11.DRIVER_1_5, //$NON-NLS-1$ //$NON-NLS-2$
                     DbVersion4DriversForOracle11.DRIVER_1_6 })),
-    ORACLE_10(new DbVersion4Drivers(new EDatabaseTypeName[] { EDatabaseTypeName.ORACLEFORSID, EDatabaseTypeName.ORACLESN,
-            EDatabaseTypeName.ORACLE_OCI, EDatabaseTypeName.ORACLE_CUSTOM }, "Oracle 10", "ORACLE_10", "ojdbc14.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-    ORACLE_9(new DbVersion4Drivers(new EDatabaseTypeName[] { EDatabaseTypeName.ORACLEFORSID, EDatabaseTypeName.ORACLESN,
-            EDatabaseTypeName.ORACLE_OCI, EDatabaseTypeName.ORACLE_CUSTOM }, "Oracle 9", "ORACLE_9", "ojdbc14-9i.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-    ORACLE_8(new DbVersion4Drivers(new EDatabaseTypeName[] { EDatabaseTypeName.ORACLEFORSID, EDatabaseTypeName.ORACLESN,
-            EDatabaseTypeName.ORACLE_OCI, EDatabaseTypeName.ORACLE_CUSTOM }, "Oracle 8", "ORACLE_8", "ojdbc12.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     // AS400
     AS400_V7R1_V7R3(new DbVersion4Drivers(EDatabaseTypeName.AS400, "V7R1 to V7R3", "AS400_V7R1_V7R3", "jt400-9.8.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     AS400_V6R1_V7R2(new DbVersion4Drivers(EDatabaseTypeName.AS400, "V6R1 to V7R2", "AS400_V6R1_V7R2", "jt400_V6R1.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -60,7 +55,7 @@ public enum EDatabaseVersion4Drivers {
 
     //
     JAVADB_EMBEDED(new DbVersion4Drivers(EDatabaseTypeName.JAVADB_EMBEDED, "derby.jar")), //$NON-NLS-1$
-    SQLITE(new DbVersion4Drivers(EDatabaseTypeName.SQLITE, "sqlitejdbc-v056.jar")), //$NON-NLS-1$
+    SQLITE(new DbVersion4Drivers(EDatabaseTypeName.SQLITE, "sqlite-jdbc-3.40.0.0.jar")), //$NON-NLS-1$
     FIREBIRD(new DbVersion4Drivers(EDatabaseTypeName.FIREBIRD, "jaybird-full-2.1.1.jar")), //$NON-NLS-1$
     TERADATA(new DbVersion4Drivers(EDatabaseTypeName.TERADATA,
             new String[] { "terajdbc4-17.10.00.27.jar" })), //$NON-NLS-1$

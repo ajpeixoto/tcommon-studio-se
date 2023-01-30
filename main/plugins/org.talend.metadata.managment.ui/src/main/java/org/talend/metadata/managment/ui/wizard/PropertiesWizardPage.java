@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IPath;
@@ -67,6 +68,7 @@ import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.repository.LockInfo;
 import org.talend.core.model.routines.CodesJarInfo;
+import org.talend.core.model.routines.RoutinesUtil;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.ui.branding.IBrandingService;
@@ -241,11 +243,16 @@ public abstract class PropertiesWizardPage extends AbstractNamedWizardPage {
             list.addAll(repViewObjectWithSameType);
         }
 
-        List<IRepositoryViewObject> others = loadRepViewObjectWithOtherTypes();
-
-        // Loads other repository view objects with the different repository type.
-        if (others != null && others.size() > 0) {
-            list.addAll(others);
+        if (!RoutinesUtil.isInnerCodes(property)) {
+            List<IRepositoryViewObject> others = loadRepViewObjectWithOtherTypes();
+            // Loads other repository view objects with the different repository type.
+            if (others != null && others.size() > 0) {
+                for (IRepositoryViewObject object : others) {
+                    if (!RoutinesUtil.isInnerCodes(object.getProperty())) {
+                        list.add(object);
+                    }
+                }
+            }
         }
         return list;
     }
@@ -295,13 +302,12 @@ public abstract class PropertiesWizardPage extends AbstractNamedWizardPage {
         ERepositoryObjectType type = ERepositoryObjectType.getItemType(property.getItem());
         if (IProxyRepositoryService.get() != null) {
             IProxyRepositoryFactory factory = IProxyRepositoryService.get().getProxyRepositoryFactory();
-            list = factory.getAll(type, true, false);
-            if (ERepositoryObjectType.getAllTypesOfCodes().contains(type)) {
-                for (CodesJarInfo info : CodesJarResourceCache.getAllCodesJars()) {
-                    if (info.isInCurrentMainProject()
-                            && ERepositoryObjectType.CodeTypeEnum.isCodeRepositoryObjectTypeMatch(info.getType(), type)) {
-                        list.addAll(factory.getAllInnerCodes(info));
-                    }
+            if (!RoutinesUtil.isInnerCodes(property)) {
+                list = factory.getAll(type, true, false).stream().filter(a->(!RoutinesUtil.isInnerCodes(a.getProperty()))).collect(Collectors.toList());          
+            } else {
+                CodesJarInfo codeJarinfo = CodesJarResourceCache.getCodesJarByInnerCode((RoutineItem) property.getItem());
+                if (codeJarinfo != null) {
+                    return ProxyRepositoryFactory.getInstance().getAllInnerCodes(codeJarinfo);
                 }
             }
         }
@@ -1188,6 +1194,9 @@ public abstract class PropertiesWizardPage extends AbstractNamedWizardPage {
         }
         evaluateName(nameText.getText());
         updatePageStatus();
+        if (nameStatus.getSeverity() == IStatus.OK && RoutinesUtil.isInnerCodes(property)) {
+            evaluateNameInJob();
+        }
     }
 
     @Override

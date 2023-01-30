@@ -111,7 +111,14 @@ public class ComponentP2ExtraFeatureTest {
         assertEquals(EnumSet.of(UpdateSiteLocationType.DEFAULT_REPO), feature.getUpdateSiteCompatibleTypes());
     }
 
-    @Test
+    /**
+     * these were to try to install a custom component made with tcompv0
+     * but now we don't want customers to build custom component with tcompv0... we want them to use tck so remove the
+     * junits for TUP-35265
+     * (testExtraFeatureInstall/testExtraFeatureHasUpdateAndInstallIt/testExtraFeatureNoUpdateAvailable)
+     * 
+     * @throws Exception
+     */
     public void testExtraFeatureInstall() throws Exception {
         final File dataFile = BundleFileUtil.getBundleFile(this.getClass(), TEST_COMPONENTS_V1_UPDATE_SITE_FILE);
         assertTrue(dataFile.exists());
@@ -131,7 +138,7 @@ public class ComponentP2ExtraFeatureTest {
         }
     }
 
-    @Test
+
     public void testExtraFeatureHasUpdateAndInstallIt() throws Exception {
         final File dataV1File = BundleFileUtil.getBundleFile(this.getClass(), TEST_COMPONENTS_V1_UPDATE_SITE_FILE);
         assertTrue(dataV1File.exists());
@@ -167,7 +174,7 @@ public class ComponentP2ExtraFeatureTest {
         }
     }
 
-    @Test
+
     public void testExtraFeatureNoUpdateAvailable() throws Exception {
         final File dataV1File = BundleFileUtil.getBundleFile(this.getClass(), TEST_COMPONENTS_V1_UPDATE_SITE_FILE);
         assertTrue(dataV1File.exists());

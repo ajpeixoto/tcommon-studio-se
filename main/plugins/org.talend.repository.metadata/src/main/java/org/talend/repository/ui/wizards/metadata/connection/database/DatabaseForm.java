@@ -7303,15 +7303,11 @@ public class DatabaseForm extends AbstractForm {
     }
     
     private boolean isSupportNLSOracleVersion(String dbVersionString) {
-        if (!EDatabaseVersion4Drivers.ORACLE_8.getVersionDisplay().equals(dbVersionString) 
-                && !EDatabaseVersion4Drivers.ORACLE_9.getVersionDisplay().equals(dbVersionString) 
-                && !EDatabaseVersion4Drivers.ORACLE_10.getVersionDisplay().equals(dbVersionString)
-                && !EDatabaseVersion4Drivers.ORACLE_11.getVersionDisplay().equals(dbVersionString)
-                && !EDatabaseVersion4Drivers.ORACLE_12.getVersionDisplay().equals(dbVersionString)
-                ) {
+        if (!EDatabaseVersion4Drivers.ORACLE_11.getVersionDisplay().equals(dbVersionString)
+                && !EDatabaseVersion4Drivers.ORACLE_12.getVersionDisplay().equals(dbVersionString)) {
             return true;
         }
-        
+
         return false;
     }
 
