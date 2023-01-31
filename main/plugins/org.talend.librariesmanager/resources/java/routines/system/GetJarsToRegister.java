@@ -35,7 +35,7 @@ public class GetJarsToRegister {
     }
 
     private boolean setJarsToRegister() throws IOException, org.dom4j.DocumentException {
-        String jobXmlPath = new java.io.File("../../job.xml").getCanonicalPath();
+        String jobXmlPath = new java.io.File("../../job2.xml").getCanonicalPath();
         boolean isOozieExecution = isNeedAddLibsPath(jobXmlPath);
         if (!isOozieExecution) {
             jobXmlPath = new java.io.File("./job.xml").getCanonicalPath();
