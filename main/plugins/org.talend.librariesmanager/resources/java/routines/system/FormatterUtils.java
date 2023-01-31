@@ -32,6 +32,7 @@ public class FormatterUtils {
      */
     public static String fm(Object obj, String pattern) {
         if(obj == null) {
+        	System.out.println("test");
             return null;
         }
 
