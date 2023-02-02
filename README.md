@@ -2,7 +2,7 @@
 http://www.talend.com
 
 
-![alt text](https://www.talend.com/wp-content/uploads/talend_logo_5.png "Talend")
+![alt text](https://www.talend.com/wp-content/uploads/2016/07/talend-logo.png "Talend")
 
 
 ## Contents
