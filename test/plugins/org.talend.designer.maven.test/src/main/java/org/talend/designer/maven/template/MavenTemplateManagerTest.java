@@ -12,7 +12,7 @@
 // ============================================================================
 package org.talend.designer.maven.template;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Plugin;
@@ -43,11 +43,11 @@ public class MavenTemplateManagerTest {
     @Test
     public void testSetJavaVersionForModel() {
         manager.setValue(JavaUtils.PROJECT_JAVA_VERSION_KEY, JavaCore.VERSION_1_7);
-        Model model = MavenTemplateManager.getCodeProjectTemplateModel();
+        Model model = MavenTemplateManager.getCodeProjectTemplateModel(null);
         validateResult(model, JavaCore.VERSION_1_7);
 
         manager.setValue(JavaUtils.PROJECT_JAVA_VERSION_KEY, "");
-        model = MavenTemplateManager.getCodeProjectTemplateModel();
+        model = MavenTemplateManager.getCodeProjectTemplateModel(null);
         validateResult(model, JavaCore.VERSION_1_8);
     }
 
