@@ -26,6 +26,7 @@ import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.exception.SystemException;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.IService;
+import org.talend.core.model.general.ConnectionBean;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.properties.Property;
@@ -108,6 +109,8 @@ public interface ICoreTisService extends IService {
     void syncProjectUpdateSettingsFromServer(IProgressMonitor monitor, Project proj) throws Exception;
 
     void refreshPatchesFolderCache();
+    
+    boolean hasValidToken(ConnectionBean conn) throws Exception;
 
     static ICoreTisService get() {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ICoreTisService.class)) {
