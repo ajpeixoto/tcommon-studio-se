@@ -94,6 +94,15 @@
             name="RemoveConfigMavenRepository"
             version="6.0.2">
       </projecttask>
+      <projecttask
+            beforeLogon="true"
+            breaks="8.0.0"
+            class="org.talend.designer.maven.ui.setting.migration.ProjectPomTemplateMigrationTask"
+            description="Migrate custom project pom template"
+            id="org.talend.designer.maven.ui.setting.migration.ProjectPomTemplateMigrationTask"
+            name="ProjectPomTemplateMigrationTask"
+            version="8.0.1">
+      </projecttask>
    </extension>
 
 </plugin>
