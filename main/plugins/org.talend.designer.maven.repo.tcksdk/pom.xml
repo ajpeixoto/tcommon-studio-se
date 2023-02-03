@@ -23,7 +23,7 @@
 		<tomcat.version>9.0.68</tomcat.version>
 		<xbean.version>4.20</xbean.version>
 		<reload4j.version>1.2.22</reload4j.version>
-		<log4j2.version>2.17.2</log4j2.version>
+		<log4j2.version>2.18.0</log4j2.version>
 		<tycho.buildtimestamp.format>${timestamp}</tycho.buildtimestamp.format>
 	</properties>
 	<repositories>
