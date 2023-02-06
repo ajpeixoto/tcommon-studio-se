@@ -221,6 +221,13 @@
             uripath="platform:/plugin/org.talend.libraries.jdbc.hsql/lib/hsqldb.jar">
       </libraryNeeded>
       <libraryNeeded
+          context="plugin:org.talend.metadata.managment"
+          language="java"
+          message="Needed for Ingres jdbc plugin"
+          name="iijdbc-10.2-4.1.10.jar" mvn_uri="mvn:com.ingres.jdbc/iijdbc/10.2-4.1.10" 
+          required="true">
+      </libraryNeeded>
+      <libraryNeeded
            context="plugin:org.talend.metadata.managment"
            language="java"
            message="Needed for create sqlite connection"
