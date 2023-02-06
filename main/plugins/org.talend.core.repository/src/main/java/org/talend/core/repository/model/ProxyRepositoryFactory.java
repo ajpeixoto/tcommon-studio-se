@@ -153,6 +153,7 @@ import org.talend.core.runtime.services.IMavenUIService;
 import org.talend.core.runtime.util.ItemDateParser;
 import org.talend.core.runtime.util.JavaHomeUtil;
 import org.talend.core.runtime.util.SharedStudioUtils;
+import org.talend.core.service.IComponentJsonformGeneratorService;
 import org.talend.core.service.ICoreUIService;
 import org.talend.core.service.IDetectCVEService;
 import org.talend.core.utils.CodesJarResourceCache;
@@ -2379,6 +2380,15 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
             }
             String str[] = new String[] { getRepositoryContext().getUser() + "", projectManager.getCurrentProject() + "" }; //$NON-NLS-1$ //$NON-NLS-2$
             log.info(Messages.getString("ProxyRepositoryFactory.log.loggedOn", str)); //$NON-NLS-1$
+            
+            // no performance impact for studio or commandline
+            if (GlobalServiceRegister.getDefault().isServiceRegistered(IComponentJsonformGeneratorService.class)) {
+                IComponentJsonformGeneratorService jsonformSvc = GlobalServiceRegister.getDefault().getService(IComponentJsonformGeneratorService.class);
+                if (jsonformSvc != null && IComponentJsonformGeneratorService.isEnabled()) {
+                    jsonformSvc.generate(null);
+                }
+            }
+            
         } catch (LoginException e) {
             if (!LoginException.RESTART.equals(e.getKey())) {
                 try {
