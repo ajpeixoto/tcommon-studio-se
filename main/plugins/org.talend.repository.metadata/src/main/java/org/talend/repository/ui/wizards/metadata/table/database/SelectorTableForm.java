@@ -1181,6 +1181,10 @@ public class SelectorTableForm extends AbstractForm {
                         }
                         if (canAdd) {
                             tableNodes.add(schemaNode);
+                            if (schemaNode.getValue() != null && StringUtils.isEmpty(schemaNode.getValue().trim())) {
+                                List<MetadataTable> tableList = new ArrayList<MetadataTable>();
+                                retrieveAllSubNodes(schemaNode, tableList);
+                            }
                         }
                     }
                 }
