@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import org.apache.commons.codec.binary.StringUtils;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.components.IMultipleComponentManager;
@@ -509,7 +510,7 @@ public abstract class AbstractNode implements INode {
             }
             for (String key : childParameters.keySet()) {
                 IElementParameter param = childParameters.get(key);
-                if (param.getName().equals(name)) {
+                if (StringUtils.equals(name, param.getName())) {
                     return param;
                 }
             }
@@ -676,7 +677,8 @@ public abstract class AbstractNode implements INode {
             return null;
         }
         for (IMetadataTable table : metadataList) {
-            if (table.getAttachedConnector().equals(connector)) {
+            String attachedConnector = table.getAttachedConnector();
+            if (attachedConnector != null && attachedConnector.equals(connector)) {
                 return table;
             }
         }
