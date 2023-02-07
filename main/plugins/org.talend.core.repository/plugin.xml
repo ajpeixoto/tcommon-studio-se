@@ -286,6 +286,30 @@
           </DBType>
        </RepositoryComponent>
        <RepositoryComponent
+             name="INGRES"
+             withSchema="true"
+             input="tIngresInput"
+             output="tIngresOutput">
+          <Item
+                clazz="org.talend.core.model.properties.DatabaseConnectionItem">
+          </Item>
+          <DBType
+                type="INGRES">
+          </DBType>
+       </RepositoryComponent>
+       <RepositoryComponent
+             name="VECTORWISE"
+             withSchema="true"
+             input="tVectorWiseInput"
+             output="tVectorWiseOutput">
+          <Item
+                clazz="org.talend.core.model.properties.DatabaseConnectionItem">
+          </Item>
+          <DBType
+                type="VECTORWISE">
+          </DBType>
+       </RepositoryComponent>
+       <RepositoryComponent
              name="JAVADB"
              withSchema="true"
              input="tJavaDBInput"
