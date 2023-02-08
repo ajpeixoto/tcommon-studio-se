@@ -75,4 +75,6 @@ public interface IESBMicroService extends IService {
      * @return
      */
     IBuildJobHandler createBuildJobHandler(ProcessItem itemToExport, String version, String context, Map exportChoiceMap);
+    
+    public List<String> getExternalizedDependencies();
 }
