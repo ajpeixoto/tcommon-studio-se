@@ -9,4 +9,7 @@
   </parent>
   <artifactId>org.talend.utils.feature</artifactId>
   <packaging>eclipse-feature</packaging>
+  <properties>
+    <tycho.buildtimestamp.format>${timestamp}</tycho.buildtimestamp.format>
+  </properties>
 </project>
