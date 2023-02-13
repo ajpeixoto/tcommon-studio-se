@@ -1153,8 +1153,8 @@ public class TalendDate {
             maxDate = "2099-12-31";
         }
 
-        if (!minDate.matches("\\d{4}-\\d{2}-\\d{2}") || !minDate.matches("\\d{4}-\\d{2}-\\d{2}")) {
-            throw new IllegalArgumentException("The parameter should be \"yyy-MM-dd\"");
+        if (!minDate.matches("\\d{4}-\\d{2}-\\d{2}") || !maxDate.matches("\\d{4}-\\d{2}-\\d{2}")) {
+            throw new IllegalArgumentException("The parameter should be \"yyyy-MM-dd\"");
         }
 
         int minYear = Integer.parseInt(minDate.substring(0, 4));
