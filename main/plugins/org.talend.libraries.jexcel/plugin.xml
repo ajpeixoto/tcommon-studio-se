@@ -8,13 +8,6 @@
               message="Needed for jexcel component"
               name="jxl.jar" mvn_uri="mvn:org.talend.libraries/jxl/6.0.0" 
               required="true">
-        </libraryNeeded>
-      <libraryNeeded
-            context="plugin:org.talend.libraries.jexcel"
-            language="java"
-            message="Needed for jexcel plugin"
-            name="jxl-wizard.jar" mvn_uri="mvn:org.talend.libraries/jxl-wizard/6.0.0" 
-            required="true">
       </libraryNeeded>
    </extension>
 </plugin>

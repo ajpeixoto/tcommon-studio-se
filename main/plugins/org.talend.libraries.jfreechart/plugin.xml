@@ -16,27 +16,6 @@
               name="jfreechart-1.0.12.jar" mvn_uri="mvn:org.talend.libraries/jfreechart-1.0.12/6.0.0" 
               required="true">
         </libraryNeeded>
-        <libraryNeeded
-              context="plugin:org.talend.libraries.jfreechart"
-              language="java"
-              message="Needed for jfreechart plugin"
-              name="jfreechart-1.0.12-experimental.jar" mvn_uri="mvn:org.talend.libraries/jfreechart-1.0.12-experimental/6.0.0" 
-              required="true">
-        </libraryNeeded>
-        <libraryNeeded
-              context="plugin:org.talend.libraries.jfreechart"
-              language="java"
-              message="Needed for jfreechart plugin"
-              name="jfreechart-1.0.12-swt.jar" mvn_uri="mvn:org.talend.libraries/jfreechart-1.0.12-swt/6.0.0" 
-              required="true">
-        </libraryNeeded>
-        <libraryNeeded
-              context="plugin:org.talend.libraries.jfreechart"
-              language="java"
-              message="Needed for jfreechart plugin"
-              name="swtgraphics2d.jar" mvn_uri="mvn:org.talend.libraries/swtgraphics2d/6.0.0" 
-              required="true">
-        </libraryNeeded>
    </extension>
 
 </plugin>
