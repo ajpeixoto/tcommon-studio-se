@@ -173,6 +173,10 @@ public class MergeModelTool {
         if (customModel.getDistributionManagement() != null) {
             defaultModel.setDistributionManagement(customModel.getDistributionManagement());
         }
+        // SCM
+        if (customModel.getScm() != null) {
+            defaultModel.setScm(customModel.getScm());
+        }
     }
 
 }
