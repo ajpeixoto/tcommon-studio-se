@@ -78,6 +78,7 @@ public class RoutinesFunctionProposal implements IContentProposal {
         message += Messages.getString("RoutinesFunctionProposal.CreatedBy");
         message += Messages.getString("RoutinesFunctionProposal.ReturnType");
         message += Messages.getString("RoutinesFunctionProposal.VariableName");
+        message = message.replaceAll("\n", System.getProperty("line.separator", "\n")); // for display on Windows platform
 
         MessageFormat format = new MessageFormat(message);
         Object[] args = new Object[] { function.getDescription(),
