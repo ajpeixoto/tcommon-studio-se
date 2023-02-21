@@ -9,4 +9,33 @@
   </parent>
   <artifactId>org.talend.libraries.javacsv</artifactId>
   <packaging>eclipse-plugin</packaging>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>2.6</version>
+        <executions>
+          <execution>
+            <id>copy-resources</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}/lib</outputDirectory>
+              <resources>          
+                <resource>
+                  <directory>${basedir}/../org.talend.libraries.javacsv.jars/lib</directory>
+					<includes> 
+						<include>javacsv.jar</include> 
+					</includes>
+                  <filtering>false</filtering>
+                </resource>
+              </resources>              
+            </configuration>            
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>
