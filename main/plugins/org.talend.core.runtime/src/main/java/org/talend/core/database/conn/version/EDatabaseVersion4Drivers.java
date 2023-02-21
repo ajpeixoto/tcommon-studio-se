@@ -150,10 +150,11 @@ public enum EDatabaseVersion4Drivers {
     REDSHIFT(new DbVersion4Drivers(EDatabaseTypeName.REDSHIFT, "redshift", "REDSHIFT", //$NON-NLS-1$ //$NON-NLS-2$
             new String[]{ "redshift-jdbc42-no-awssdk-1.2.55.1083.jar", "antlr4-runtime-4.8-1.jar" })), //$NON-NLS-1$ //$NON-NLS-2$
     REDSHIFT_SSO(new DbVersion4Drivers(EDatabaseTypeName.REDSHIFT_SSO, "redshift sso", "REDSHIFT_SSO", //$NON-NLS-1$ //$NON-NLS-2$
-            new String[] { "redshift-jdbc42-no-awssdk-1.2.55.1083.jar", "antlr4-runtime-4.8-1.jar", "aws-java-sdk-1.11.848.jar", "jackson-core-2.13.4.jar", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-                    "jackson-databind-2.13.4.2.jar", "jackson-annotations-2.13.4.jar", "httpcore-4.4.13.jar", "httpclient-4.5.13.jar", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$//$NON-NLS-4$
-                    "joda-time-2.8.1.jar", "commons-logging-1.2.jar", "commons-codec-1.14.jar", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                    "aws-java-sdk-redshift-internal-1.12.x.jar" })), //$NON-NLS-1$
+            new String[] { "redshift-jdbc42-no-awssdk-1.2.55.1083.jar", "antlr4-runtime-4.8-1.jar", "jackson-core-2.13.4.jar", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    "jackson-databind-2.13.4.2.jar", "jackson-annotations-2.13.4.jar", "httpcore-4.4.13.jar", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    "httpclient-4.5.13.jar", "joda-time-2.8.1.jar", "commons-logging-1.2.jar", "commons-codec-1.14.jar", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$//$NON-NLS-4$
+                    "aws-java-sdk-redshift-internal-1.12.x.jar", "aws-java-sdk-core-1.12.315.jar", //$NON-NLS-1$ //$NON-NLS-2$
+                    "aws-java-sdk-sts-1.12.315.jar", "aws-java-sdk-redshift-1.12.315.jar", "jmespath-java-1.12.315.jar" })), //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
 
     AMAZON_AURORA(new DbVersion4Drivers(EDatabaseTypeName.AMAZON_AURORA, "mysql-connector-java-5.1.49.jar")); //$NON-NLS-1$
 
