@@ -14,13 +14,14 @@ package org.talend.core.model.metadata.builder.database;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import metadata.managment.i18n.Messages;
-
 import org.apache.log4j.Logger;
+
+import metadata.managment.i18n.Messages;
 
 /**
  * @author scorreia
@@ -81,6 +82,42 @@ abstract class CwmBuilder {
 
             // get the results
             resultSet = statement.getResultSet();
+            if (resultSet != null) {
+                while (resultSet.next()) {
+                    comment = (String) resultSet.getObject(1);
+                }
+            }
+        } catch (SQLException e) {
+            // do nothing here
+        } finally {
+            // -- release resources
+            if (resultSet != null) {
+                try {
+                    resultSet.close();
+                } catch (SQLException e) {
+                    log.error(e, e);
+                }
+            }
+            if (statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException e) {
+                    log.error(e, e);
+                }
+            }
+        }
+        return comment;
+    }
+
+    protected String executeGetCommentStatement(String queryStmt, String tableName) {
+        String comment = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        try {
+            statement = connection.prepareStatement(queryStmt);
+            statement.setString(1, tableName);
+            resultSet = statement.executeQuery();
+
             if (resultSet != null) {
                 while (resultSet.next()) {
                     comment = (String) resultSet.getObject(1);
