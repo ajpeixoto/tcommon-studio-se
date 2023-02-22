@@ -21,10 +21,6 @@ public interface ICloudSignOnService extends IService {
 
     TokenMode getToken(String authCode, String codeVerifier, String dataCenter) throws Exception;
 
-    void startHeartBeat() throws Exception;
-
-    void stopHeartBeat();
-
     String generateCodeVerifier();
 
     String getCodeChallenge(String seed) throws Exception;
@@ -43,11 +39,13 @@ public interface ICloudSignOnService extends IService {
     
     boolean isNeedShowSSOPage();
     
-    public void showReloginDialog();
+    public boolean showReloginDialog();
     
     public boolean isReloginDialogRunning();
     
     public void reload();
+    
+    public boolean isRelogined4CurrentTask(String clazz);
 
     public static ICloudSignOnService get() {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ICloudSignOnService.class)) {

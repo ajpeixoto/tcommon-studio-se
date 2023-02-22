@@ -285,13 +285,6 @@ public class ApplicationWorkbenchAdvisor extends IDEWorkbenchAdvisor {
     @Override
     public void postStartup() {
         super.postStartup();
-        try {
-            if (ICloudSignOnService.get() != null && ICloudSignOnService.get().isSignViaCloud()) {
-                ICloudSignOnService.get().startHeartBeat();
-            }
-        } catch (Exception e) {
-            ExceptionHandler.process(e);
-        }
         if (!ArrayUtils.contains(Platform.getApplicationArgs(), EclipseCommandLine.TALEND_DISABLE_LOGINDIALOG_COMMAND)) {
             RegisterManagement.getInstance().validateRegistration();
         }
@@ -312,9 +305,6 @@ public class ApplicationWorkbenchAdvisor extends IDEWorkbenchAdvisor {
         }
         if (commitChanges && IGitUIProviderService.get() != null && IGitUIProviderService.get().checkPendingChanges()) {
             preShutwond = false;
-        }
-        if (preShutwond && ICloudSignOnService.get() != null) {
-            ICloudSignOnService.get().stopHeartBeat();
         }
         return preShutwond;
     }
