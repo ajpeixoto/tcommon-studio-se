@@ -19,8 +19,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import metadata.managment.i18n.Messages;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.talend.cwm.helper.ColumnSetHelper;
@@ -29,6 +27,7 @@ import org.talend.metadata.managment.utils.MetadataConnectionUtils;
 import org.talend.utils.sql.metadata.constants.GetTable;
 import org.talend.utils.sql.metadata.constants.TableType;
 
+import metadata.managment.i18n.Messages;
 import orgomg.cwm.resource.relational.NamedColumnSet;
 
 /**
@@ -177,9 +176,9 @@ public abstract class AbstractTableBuilder<T extends NamedColumnSet> extends Cwm
         String tableComment = tablesSet.getString(GetTable.REMARKS.name());
         if (StringUtils.isBlank(tableComment)) {
             String dbProductName = getConnectionMetadata(connection).getDatabaseProductName();
-            String selectRemarkOnTable = MetadataConnectionUtils.getCommonQueryStr(dbProductName, tableName);
+            String selectRemarkOnTable = MetadataConnectionUtils.getCommonQueryStr(dbProductName);
             if (selectRemarkOnTable != null) {
-                tableComment = executeGetCommentStatement(selectRemarkOnTable);
+                tableComment = executeGetCommentStatement(selectRemarkOnTable, tableName);
             }
         }
         return tableComment;
