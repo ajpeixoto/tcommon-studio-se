@@ -5188,7 +5188,11 @@ public class DatabaseForm extends AbstractForm {
                     boolean b = true;
                     String databaseType = getConnection().getDatabaseType();
                     if (databaseType != null) {
-                        b = Pattern.matches(Messages.getString("DatabaseForm.otherDBRegex"), portText.getText()); //$NON-NLS-1$
+                        if (databaseType.equals("Ingres")) { //$NON-NLS-1$
+                            b = Pattern.matches(Messages.getString("DatabaseForm.ingresDBRegex"), portText.getText()); //$NON-NLS-1$
+                        } else {
+                            b = Pattern.matches(Messages.getString("DatabaseForm.otherDBRegex"), portText.getText()); //$NON-NLS-1$
+                        }
                     }
                     if (b) {
                         b = portText.getText().length() <= 5;
@@ -7299,15 +7303,11 @@ public class DatabaseForm extends AbstractForm {
     }
     
     private boolean isSupportNLSOracleVersion(String dbVersionString) {
-        if (!EDatabaseVersion4Drivers.ORACLE_8.getVersionDisplay().equals(dbVersionString) 
-                && !EDatabaseVersion4Drivers.ORACLE_9.getVersionDisplay().equals(dbVersionString) 
-                && !EDatabaseVersion4Drivers.ORACLE_10.getVersionDisplay().equals(dbVersionString)
-                && !EDatabaseVersion4Drivers.ORACLE_11.getVersionDisplay().equals(dbVersionString)
-                && !EDatabaseVersion4Drivers.ORACLE_12.getVersionDisplay().equals(dbVersionString)
-                ) {
+        if (!EDatabaseVersion4Drivers.ORACLE_11.getVersionDisplay().equals(dbVersionString)
+                && !EDatabaseVersion4Drivers.ORACLE_12.getVersionDisplay().equals(dbVersionString)) {
             return true;
         }
-        
+
         return false;
     }
 

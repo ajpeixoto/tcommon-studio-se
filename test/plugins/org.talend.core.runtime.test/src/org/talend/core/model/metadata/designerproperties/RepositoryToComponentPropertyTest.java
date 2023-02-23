@@ -183,6 +183,10 @@ public class RepositoryToComponentPropertyTest {
         dbConnection.setDatabaseType(EDatabaseTypeName.ORACLE_OCI.getDbType());
         Object result1 = RepositoryToComponentProperty.getValue(dbConnection, "DBTYPE", null); //$NON-NLS-1$
         assertEquals(EDatabaseTypeName.ORACLE_OCI.getXMLType(), result1);
+        
+        dbConnection.setDatabaseType(EDatabaseTypeName.INGRES.getDbType());
+        Object result2 = RepositoryToComponentProperty.getValue(dbConnection, "DBTYPE", null); //$NON-NLS-1$
+        assertEquals(EDatabaseTypeName.INGRES.getXMLType(), result2);
     }
 
     private void checkIfWithoutQuotes(DatabaseConnection connection, String value) {

@@ -202,9 +202,6 @@ public class JavaLibrariesService extends AbstractLibrariesService {
         if (!repositoryBundleService.isInitialized()) {
             // 2. Components libraries and libraries from extension
             repositoryBundleService.createModulesIndexFromComponentAndExtension(monitorWrap);
-        } else {
-            //TUP-31721 & TUP-36231:Handle the custom components deployment when studio index is not re-generated.
-            repositoryBundleService.deployLibsFromCustomComponents();
         }
 
         repositoryBundleService.installModules(ModulesNeededProvider.getSystemRunningModules(), null);

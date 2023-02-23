@@ -11,7 +11,7 @@
 	<packaging>eclipse-plugin</packaging>
 	<properties>
 		<tcomp.version>${component-runtime.version}</tcomp.version>
-		<cxf.version>3.5.2</cxf.version>
+		<cxf.version>3.5.5</cxf.version>
 		<geronimo.version>1.0.2</geronimo.version>
 		<jcache.version>1.0.5</jcache.version>
 		<jcache_spec.version>1.0-alpha-1</jcache_spec.version>
@@ -20,10 +20,10 @@
 		<microprofile.version>1.2.1</microprofile.version>
 		<owb.version>2.0.27</owb.version>
 		<slf4j.version>1.7.34</slf4j.version>
-		<tomcat.version>9.0.63</tomcat.version>
+		<tomcat.version>9.0.68</tomcat.version>
 		<xbean.version>4.20</xbean.version>
 		<reload4j.version>1.2.22</reload4j.version>
-		<log4j2.version>2.17.2</log4j2.version>
+		<log4j2.version>2.18.0</log4j2.version>
 		<tycho.buildtimestamp.format>${timestamp}</tycho.buildtimestamp.format>
 	</properties>
 	<repositories>
@@ -370,14 +370,8 @@
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
+			<artifactId>slf4j-reload4j</artifactId>
 			<version>${slf4j.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>log4j</groupId>
-					<artifactId>log4j</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>ch.qos.reload4j</groupId>

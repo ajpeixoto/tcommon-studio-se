@@ -294,8 +294,9 @@ public class PropertiesWizard extends Wizard {
                     // changed by hqzhang for TDI-19527, label=displayName
                     object.getProperty().setLabel(object.getProperty().getDisplayName());
 
-                    processBeforeItemSave(proxyRepositoryFactory);
+                    processBeforeItemSave(proxyRepositoryFactory, monitor);
                     proxyRepositoryFactory.save(object.getProperty(), originaleObjectLabel, originalVersion);
+                    
                     ExpressionPersistance.getInstance().jobNameChanged(originaleObjectLabel, object.getLabel());
 
                     if (!originalVersion.equals(object.getVersion())) {
@@ -328,21 +329,21 @@ public class PropertiesWizard extends Wizard {
         }
     }
     
-    private void processBeforeItemSave(IProxyRepositoryFactory proxyRepositoryFactory) throws PersistenceException {
+    private void processBeforeItemSave(IProxyRepositoryFactory proxyRepositoryFactory, final IProgressMonitor monitor) throws PersistenceException, CoreException {
         ERepositoryObjectType objectRepType = object.getRepositoryObjectType();
         if (!originaleObjectLabel.equals(object.getProperty().getLabel())
                 && ERepositoryObjectType.getAllTypesOfCodesJar().contains(objectRepType)) {
-            // for codejar to change innercode folder name
-            proxyRepositoryFactory.renameFolder(object.getRepositoryObjectType(), new Path(originaleObjectLabel),
-                    object.getProperty().getLabel());
-            Project currentProject = ProjectManager.getInstance().getCurrentProject();
+            Project currentProject = ProjectManager.getInstance().getCurrentProject();                
             IFolder innerCodeFolder = ResourceUtils.getFolder(ResourceUtils.getProject(currentProject),
-                    ERepositoryObjectType.getFolderName(objectRepType) + "/" + object.getProperty().getLabel(), true);
+                    ERepositoryObjectType.getFolderName(objectRepType) + "/" + originaleObjectLabel, true);
             List<IRepositoryViewObject> innerCodesObjs = proxyRepositoryFactory.getAll(currentProject, objectRepType, false,
                     false, innerCodeFolder);
+            proxyRepositoryFactory.renameFolder(object.getRepositoryObjectType(), new Path(originaleObjectLabel),
+                    object.getProperty().getLabel());
+            // for codejar to change innercode folder name
             if (innerCodesObjs != null && !innerCodesObjs.isEmpty()) {
                 innerCodesObjs.stream().forEach(repObj -> {
-                    RoutineUtils.changeInnerCodePackage(repObj.getProperty().getItem(), false);
+                    RoutineUtils.changeInnerCodePackage(repObj.getProperty().getItem(), false, false);
                 });
             }
         }

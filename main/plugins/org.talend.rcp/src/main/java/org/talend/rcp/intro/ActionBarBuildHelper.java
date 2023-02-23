@@ -46,6 +46,7 @@ import org.talend.core.language.ECodeLanguage;
 import org.talend.core.language.LanguageManager;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.util.SharedStudioUtils;
+import org.talend.core.services.IGITProviderService;
 import org.talend.core.ui.branding.IActionBarHelper;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.core.ui.perspective.PerspectiveMenuManager;
@@ -330,20 +331,26 @@ public class ActionBarBuildHelper implements IActionBarHelper {
         // ViewDescriptor[] descriptors = { viewDesc };
         // registry.removeExtension(viewDesc.getConfigurationElement().getDeclaringExtension(), descriptors);
         // }
+        
+        List<String> disabledPrefsIdList = new ArrayList<String>();
+        if (IGITProviderService.get() == null || !IGITProviderService.get().isStandardMode()) {
+            disabledPrefsIdList.add("org.eclipse.team.ui.TeamPreferences");
+        }
 
         List<IPreferenceNode> prefsToDelete = new ArrayList<IPreferenceNode>();
         IBrandingService brandingService = GlobalServiceRegister.getDefault().getService(
                 IBrandingService.class);
         String[] availableLanguages = brandingService.getBrandingConfiguration().getAvailableLanguages();
         if (ArrayUtils.contains(availableLanguages, ECodeLanguage.PERL.getName())) {
-            String[] prefsId = { "org.eclipse.team.ui.TeamPreferences" };
+            String[] prefsId = disabledPrefsIdList.toArray(new String[0]);
             for (IPreferenceNode node : window.getWorkbench().getPreferenceManager().getRootSubNodes()) {
                 if (ArrayUtils.contains(prefsId, node.getId())) {
                     prefsToDelete.add(node);
                 }
             }
         } else {
-            String[] prefsId = { "org.eclipse.team.ui.TeamPreferences", "org.epic.core.preferences.PerlMainPreferencePage" };
+            disabledPrefsIdList.add("org.epic.core.preferences.PerlMainPreferencePage");
+            String[] prefsId = disabledPrefsIdList.toArray(new String[0]);
             for (IPreferenceNode node : window.getWorkbench().getPreferenceManager().getRootSubNodes()) {
                 if (ArrayUtils.contains(prefsId, node.getId())) {
                     prefsToDelete.add(node);

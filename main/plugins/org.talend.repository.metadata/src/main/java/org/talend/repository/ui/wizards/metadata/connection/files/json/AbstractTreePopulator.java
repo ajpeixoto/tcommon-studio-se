@@ -28,6 +28,8 @@ public abstract class AbstractTreePopulator {
 
     private String encoding;
 
+    protected String originfilePath;
+    
     protected String filePath;
 
     protected static int limit;
@@ -81,6 +83,22 @@ public abstract class AbstractTreePopulator {
      */
     public static int getLimit() {
         return limit;
+    }
+    
+    /**
+     * Getter for originfilePath.
+     * @return the originfilePath
+     */
+    public String getOriginfilePath() {
+        return originfilePath;
+    }
+
+    /**
+     * Sets the originfilePath.
+     * @param originfilePath the originfilePath to set
+     */
+    public void setOriginfilePath(String originfilePath) {
+        this.originfilePath = originfilePath;
     }
 
     public void setFilePath(String filePath) {

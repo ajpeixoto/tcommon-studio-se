@@ -35,17 +35,12 @@ public enum EDatabaseVersion4Drivers {
     ORACLE_18(new DbVersion4Drivers(new EDatabaseTypeName[] { EDatabaseTypeName.ORACLEFORSID, EDatabaseTypeName.ORACLESN,
             EDatabaseTypeName.ORACLE_OCI, EDatabaseTypeName.ORACLE_CUSTOM }, "Oracle 18 and above", "ORACLE_18", "ojdbc8-19.3.0.0.jar")),
     ORACLE_12(new DbVersion4Drivers(new EDatabaseTypeName[] { EDatabaseTypeName.ORACLEFORSID, EDatabaseTypeName.ORACLESN,
-            EDatabaseTypeName.ORACLE_OCI, EDatabaseTypeName.ORACLE_CUSTOM }, "Oracle 12", "ORACLE_12", "ojdbc7.jar")),
+            EDatabaseTypeName.ORACLE_OCI, EDatabaseTypeName.ORACLE_CUSTOM }, "Oracle 12 (Deprecated)", "ORACLE_12",
+            "ojdbc7.jar")),
     ORACLE_11(new DbVersion4DriversForOracle11(new EDatabaseTypeName[] { EDatabaseTypeName.ORACLEFORSID,
             EDatabaseTypeName.ORACLESN, EDatabaseTypeName.ORACLE_OCI, EDatabaseTypeName.ORACLE_CUSTOM },
-            "Oracle 11", "ORACLE_11", new String[] { DbVersion4DriversForOracle11.DRIVER_1_5, //$NON-NLS-1$ //$NON-NLS-2$
+            "Oracle 11 (Deprecated)", "ORACLE_11", new String[] { DbVersion4DriversForOracle11.DRIVER_1_5, //$NON-NLS-1$ //$NON-NLS-2$
                     DbVersion4DriversForOracle11.DRIVER_1_6 })),
-    ORACLE_10(new DbVersion4Drivers(new EDatabaseTypeName[] { EDatabaseTypeName.ORACLEFORSID, EDatabaseTypeName.ORACLESN,
-            EDatabaseTypeName.ORACLE_OCI, EDatabaseTypeName.ORACLE_CUSTOM }, "Oracle 10", "ORACLE_10", "ojdbc14.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-    ORACLE_9(new DbVersion4Drivers(new EDatabaseTypeName[] { EDatabaseTypeName.ORACLEFORSID, EDatabaseTypeName.ORACLESN,
-            EDatabaseTypeName.ORACLE_OCI, EDatabaseTypeName.ORACLE_CUSTOM }, "Oracle 9", "ORACLE_9", "ojdbc14-9i.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-    ORACLE_8(new DbVersion4Drivers(new EDatabaseTypeName[] { EDatabaseTypeName.ORACLEFORSID, EDatabaseTypeName.ORACLESN,
-            EDatabaseTypeName.ORACLE_OCI, EDatabaseTypeName.ORACLE_CUSTOM }, "Oracle 8", "ORACLE_8", "ojdbc12.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     // AS400
     AS400_V7R1_V7R3(new DbVersion4Drivers(EDatabaseTypeName.AS400, "V7R1 to V7R3", "AS400_V7R1_V7R3", "jt400-9.8.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     AS400_V6R1_V7R2(new DbVersion4Drivers(EDatabaseTypeName.AS400, "V6R1 to V7R2", "AS400_V6R1_V7R2", "jt400_V6R1.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -60,7 +55,7 @@ public enum EDatabaseVersion4Drivers {
 
     //
     JAVADB_EMBEDED(new DbVersion4Drivers(EDatabaseTypeName.JAVADB_EMBEDED, "derby.jar")), //$NON-NLS-1$
-    SQLITE(new DbVersion4Drivers(EDatabaseTypeName.SQLITE, "sqlitejdbc-v056.jar")), //$NON-NLS-1$
+    SQLITE(new DbVersion4Drivers(EDatabaseTypeName.SQLITE, "sqlite-jdbc-3.40.0.0.jar")), //$NON-NLS-1$
     FIREBIRD(new DbVersion4Drivers(EDatabaseTypeName.FIREBIRD, "jaybird-full-2.1.1.jar")), //$NON-NLS-1$
     TERADATA(new DbVersion4Drivers(EDatabaseTypeName.TERADATA,
             new String[] { "terajdbc4-17.10.00.27.jar" })), //$NON-NLS-1$
@@ -113,6 +108,8 @@ public enum EDatabaseVersion4Drivers {
     EXASOL(new DbVersion4Drivers(EDatabaseTypeName.EXASOL, "exajdbc-6.0.9302.jar")), //$NON-NLS-1$
     MAXDB(new DbVersion4Drivers(EDatabaseTypeName.MAXDB, "sapdbc.jar")), //$NON-NLS-1$
 
+    INGRES(new DbVersion4Drivers(EDatabaseTypeName.INGRES, "iijdbc-10.2-4.1.10.jar")),
+    VECTORWISE(new DbVersion4Drivers(EDatabaseTypeName.VECTORWISE, "iijdbc-10.2-4.1.10.jar")),
     // HIVE(new DbVersion4Drivers(EDatabaseTypeName.HIVE, "STANDALONE", "STANDALONE", new String[] {
     // "hive-jdbc-0.8.1.jar",
     // "hive-metastore-0.8.1.jar", "hive-exec-0.8.1.jar", "hive-service-0.8.1.jar", "libfb303_new.jar",
@@ -153,10 +150,11 @@ public enum EDatabaseVersion4Drivers {
     REDSHIFT(new DbVersion4Drivers(EDatabaseTypeName.REDSHIFT, "redshift", "REDSHIFT", //$NON-NLS-1$ //$NON-NLS-2$
             new String[]{ "redshift-jdbc42-no-awssdk-1.2.55.1083.jar", "antlr4-runtime-4.8-1.jar" })), //$NON-NLS-1$ //$NON-NLS-2$
     REDSHIFT_SSO(new DbVersion4Drivers(EDatabaseTypeName.REDSHIFT_SSO, "redshift sso", "REDSHIFT_SSO", //$NON-NLS-1$ //$NON-NLS-2$
-            new String[] { "redshift-jdbc42-no-awssdk-1.2.55.1083.jar", "antlr4-runtime-4.8-1.jar", "aws-java-sdk-1.11.848.jar", "jackson-core-2.13.4.jar", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-                    "jackson-databind-2.13.4.2.jar", "jackson-annotations-2.13.4.jar", "httpcore-4.4.13.jar", "httpclient-4.5.13.jar", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$//$NON-NLS-4$
-                    "joda-time-2.8.1.jar", "commons-logging-1.2.jar", "commons-codec-1.14.jar", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                    "aws-java-sdk-redshift-internal-1.12.x.jar" })), //$NON-NLS-1$
+            new String[] { "redshift-jdbc42-no-awssdk-1.2.55.1083.jar", "antlr4-runtime-4.8-1.jar", "jackson-core-2.13.4.jar", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    "jackson-databind-2.13.4.2.jar", "jackson-annotations-2.13.4.jar", "httpcore-4.4.13.jar", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    "httpclient-4.5.13.jar", "joda-time-2.8.1.jar", "commons-logging-1.2.jar", "commons-codec-1.14.jar", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$//$NON-NLS-4$
+                    "aws-java-sdk-redshift-internal-1.12.x.jar", "aws-java-sdk-core-1.12.315.jar", //$NON-NLS-1$ //$NON-NLS-2$
+                    "aws-java-sdk-sts-1.12.315.jar", "aws-java-sdk-redshift-1.12.315.jar", "jmespath-java-1.12.315.jar" })), //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
 
     AMAZON_AURORA(new DbVersion4Drivers(EDatabaseTypeName.AMAZON_AURORA, "mysql-connector-java-5.1.49.jar")); //$NON-NLS-1$
 

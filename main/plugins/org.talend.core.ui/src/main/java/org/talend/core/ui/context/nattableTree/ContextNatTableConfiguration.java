@@ -43,6 +43,7 @@ import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
+import org.talend.commons.ui.runtime.ColorConstants;
 import org.talend.core.PluginChecker;
 import org.talend.core.model.metadata.types.ContextParameterJavaTypeManager;
 import org.talend.core.model.metadata.types.JavaTypesManager;
@@ -115,7 +116,7 @@ public class ContextNatTableConfiguration extends AbstractRegistryConfiguration 
     private void registerStyleRules(IConfigRegistry configRegistry) {
         // register the default cell fg/bg colour for the natTable
         Style cellStyleDefault = new Style();
-        cellStyleDefault.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, GUIHelper.COLOR_WHITE);
+        cellStyleDefault.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, ColorConstants.getTableBackgroundColor());
         configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, cellStyleDefault, DisplayMode.NORMAL,
                 ContextTableConstants.COLUMN_TYPE_PROPERTY);
 

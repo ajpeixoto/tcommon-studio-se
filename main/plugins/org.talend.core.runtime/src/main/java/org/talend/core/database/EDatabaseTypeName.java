@@ -347,8 +347,7 @@ public enum EDatabaseTypeName {
             isSupport = isSupportODBC;
         } else if (EDatabaseTypeName.SAS == this) {
             isSupport = false;
-        } else if (EDatabaseTypeName.INGRES == this || EDatabaseTypeName.INTERBASE == this || EDatabaseTypeName.VECTORWISE == this
-                || EDatabaseTypeName.PARACCEL == this) {
+        } else if (EDatabaseTypeName.INTERBASE == this || EDatabaseTypeName.PARACCEL == this) {
             return false;
         }
 

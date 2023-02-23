@@ -87,6 +87,7 @@ import org.talend.commons.ui.runtime.image.ImageUtils;
 import org.talend.commons.utils.VersionUtils;
 import org.talend.commons.utils.data.container.Container;
 import org.talend.commons.utils.data.container.RootContainer;
+import org.talend.commons.utils.generation.JavaUtils;
 import org.talend.commons.utils.io.FilesUtils;
 import org.talend.commons.utils.system.EclipseCommandLine;
 import org.talend.commons.utils.workbench.resources.ResourceUtils;
@@ -949,7 +950,20 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
         project.getEmfProject().getMigrationTask().clear();
         project.getEmfProject().getMigrationTask().addAll(FilteredTasks);
 
+        // set default prefs for new created project
+        // setPrefForNewProject(project);
+
         ProjectDataJsonProvider.saveProjectData(project.getEmfProject());
+    }
+
+    private void setPrefForNewProject(Project project) throws PersistenceException {
+        IFile projectSettingsFile = ResourceUtils.getProject(project.getTechnicalLabel())
+                .getFolder(FileConstants.SETTINGS_FOLDER_NAME).getFile(FileConstants.PROJECTSETTING_FILE_NAME);
+        if (!projectSettingsFile.exists()) {
+            ProjectPreferenceManager manager = new ProjectPreferenceManager(project, CoreRuntimePlugin.PLUGIN_ID, false);
+            manager.setValue(JavaUtils.ALLOW_JAVA_INTERNAL_ACCESS, true);
+            manager.save();
+        }
     }
 
     private void removeContentsFromProject(Resource projectResource, EClassifier type) {

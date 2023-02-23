@@ -82,6 +82,7 @@ import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
@@ -89,6 +90,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.talend.commons.exception.PersistenceException;
+import org.talend.commons.ui.runtime.ColorConstants;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IContextManager;
@@ -306,14 +308,15 @@ public class ContextTreeTable {
 
             attachCheckColumnTip(natTable);
 
+            final Color backgroundColor = ColorConstants.getTableBackgroundColor();
             // global settings only effect on body and default region, so should set other regions' color separately.
-            natTable.setBackground(GUIHelper.COLOR_WHITE);
+            natTable.setBackground(backgroundColor);
             natTable.addConfiguration(new AbstractRegistryConfiguration() {
 
                 @Override
                 public void configureRegistry(IConfigRegistry configRegistry) {
                     Style cellStyle = new Style();
-                    cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, GUIHelper.COLOR_WHITE);
+                    cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, backgroundColor);
                     configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, cellStyle, DisplayMode.NORMAL,
                             GridRegion.COLUMN_HEADER);
                     configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, cellStyle, DisplayMode.NORMAL,
@@ -550,8 +553,8 @@ public class ContextTreeTable {
     private void addCustomSelectionBehaviour(SelectionLayer layer) {
         // need control the selection style when select the rows.
         DefaultSelectionStyleConfiguration selectStyleConfig = new DefaultSelectionStyleConfiguration();
-        selectStyleConfig.selectedHeaderBgColor = GUIHelper.COLOR_WIDGET_BACKGROUND;
-        selectStyleConfig.selectedHeaderFgColor = GUIHelper.COLOR_BLACK;
+        selectStyleConfig.selectedHeaderBgColor = ColorConstants.getTableBackgroundColor();
+        selectStyleConfig.selectedHeaderFgColor = ColorConstants.getTableForegroundColor();
         selectStyleConfig.selectedHeaderFont = GUIHelper.DEFAULT_FONT;
         layer.addConfiguration(selectStyleConfig);
     }

@@ -1115,7 +1115,9 @@ public class RepositoryToComponentProperty {
                         || EDatabaseConnTemplate.SAPHana.getDBDisplayName().equals(databaseType)
                         || EDatabaseConnTemplate.MSSQL.getDBDisplayName().equals(databaseType)) {
                     if (dbVersionString != null) {
-                        driverValue = dbVersionString.toUpperCase();
+                        if (EDatabaseVersion4Drivers.getDbVersionName(databaseType, dbVersionString) != null) {
+                            driverValue = dbVersionString.toUpperCase();
+                        }
                     }
                 }
                 if (isContextMode(connection, dbVersionString)) {

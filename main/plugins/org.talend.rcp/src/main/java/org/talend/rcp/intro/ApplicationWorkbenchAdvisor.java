@@ -12,15 +12,36 @@
 // ============================================================================
 package org.talend.rcp.intro;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.inject.Inject;
+
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SubMonitor;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.model.application.ui.MElementContainer;
+import org.eclipse.e4.ui.model.application.ui.MUIElement;
+import org.eclipse.e4.ui.model.application.ui.advanced.MPerspective;
+import org.eclipse.e4.ui.model.application.ui.advanced.MPlaceholder;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.model.application.ui.basic.MPartSashContainer;
+import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
+import org.eclipse.e4.ui.model.application.ui.basic.MWindowElement;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.preference.PreferenceManager;
 import org.eclipse.ui.IPerspectiveDescriptor;
+import org.eclipse.ui.IPerspectiveRegistry;
+import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferenceConstants;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.application.IWorkbenchConfigurer;
@@ -28,6 +49,7 @@ import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
 import org.eclipse.ui.internal.WorkbenchPlugin;
 import org.eclipse.ui.internal.ide.application.IDEWorkbenchAdvisor;
+import org.eclipse.ui.views.IViewRegistry;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.LoginException;
 import org.talend.commons.exception.PersistenceException;
@@ -63,6 +85,15 @@ public class ApplicationWorkbenchAdvisor extends IDEWorkbenchAdvisor {
 
     private static final String PERSPECTIVE_ID = "org.talend.rcp.perspective"; //$NON-NLS-1$
 
+    @Inject
+    private MApplication mApp;
+
+    private void injectVariables() {
+        IWorkbench workbench = PlatformUI.getWorkbench();
+        IEclipseContext activeContext = ((IEclipseContext) workbench.getService(IEclipseContext.class)).getActiveLeaf();
+        ContextInjectionFactory.inject(this, activeContext);
+    }
+
     @Override
     public WorkbenchWindowAdvisor createWorkbenchWindowAdvisor(IWorkbenchWindowConfigurer configurer) {
         return new ApplicationWorkbenchWindowAdvisor(configurer);
@@ -70,6 +101,7 @@ public class ApplicationWorkbenchAdvisor extends IDEWorkbenchAdvisor {
 
     @Override
     public void initialize(IWorkbenchConfigurer configurer) {
+        injectVariables();
         super.initialize(configurer);
         configurer.setSaveAndRestore(false);
         TrayDialog.setDialogHelpAvailable(false);
@@ -78,6 +110,119 @@ public class ApplicationWorkbenchAdvisor extends IDEWorkbenchAdvisor {
         PlatformUI.getPreferenceStore().setDefault(IWorkbenchPreferenceConstants.SHOW_TRADITIONAL_STYLE_TABS, false);
         PlatformUI.getPreferenceStore().setDefault(IWorkbenchPreferenceConstants.DOCK_PERSPECTIVE_BAR,
                 IWorkbenchPreferenceConstants.TOP_RIGHT);
+
+        try {
+            removeInvalidElement(mApp);
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        }
+    }
+
+    private MApplication removeInvalidElement(MApplication appElement) {
+        boolean isOEM = false;
+        try {
+            isOEM = !IBrandingService.get().isPoweredbyTalend();
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        }
+        final String cleanProp = "talend.studio.lite.cleanInvalidView";
+        String cleanPropValue = System.getProperty(cleanProp);
+        if (isOEM && (StringUtils.isBlank(cleanPropValue) || !Boolean.valueOf(cleanPropValue))) {
+            return appElement;
+        }
+
+        if (!Boolean.valueOf(System.getProperty(cleanProp, Boolean.TRUE.toString()))) {
+            return appElement;
+        }
+        org.eclipse.ui.IWorkbench workbench = PlatformUI.getWorkbench();
+        IPerspectiveRegistry perspectiveRegistry = workbench.getPerspectiveRegistry();
+        IViewRegistry viewRegistry = workbench.getViewRegistry();
+        List<MWindow> windows = appElement.getChildren();
+        Set<Object> visited = new HashSet<>();
+        for (MWindow window : windows) {
+            List<MWindowElement> winElems = window.getChildren();
+            for (MWindowElement winElem : new ArrayList<>(winElems)) {
+                if (winElem instanceof MElementContainer) {
+                    cleanInvalidView((MElementContainer) winElem, perspectiveRegistry, viewRegistry, visited);
+                }
+            }
+            List<MUIElement> sharedElements = window.getSharedElements();
+            for (MUIElement sharedElement : new ArrayList<>(sharedElements)) {
+                if (sharedElement instanceof MPart) {
+                    String elemId = sharedElement.getElementId();
+                    if (StringUtils.isNotBlank(elemId) && viewRegistry.find(elemId) == null) {
+                        sharedElements.remove(sharedElement);
+                    }
+                }
+            }
+        }
+        return appElement;
+    }
+
+    private void cleanInvalidView(MElementContainer container, IPerspectiveRegistry perspectiveRegistry,
+            IViewRegistry viewRegistry, Set<Object> visited) {
+        if (container == null) {
+            return;
+        }
+        if (visited.contains(container)) {
+            return;
+        }
+        visited.add(container);
+        List children = container.getChildren();
+        if (children == null || children.isEmpty()) {
+            return;
+        }
+        MUIElement selectedElement = container.getSelectedElement();
+        String selectedId = null;
+        if (selectedElement != null) {
+            selectedId = selectedElement.getElementId();
+        }
+        boolean resetSelectedElem = false;
+        for (Object child : new ArrayList<>(children)) {
+            if (child instanceof MPerspective) {
+                String elemId = ((MPerspective) child).getElementId();
+                if (StringUtils.isNotBlank(elemId) && perspectiveRegistry.findPerspectiveWithId(elemId) == null) {
+                    children.remove(child);
+                    if (selectedId != null && selectedId.equals(elemId)) {
+                        resetSelectedElem = true;
+                    }
+                    continue;
+                }
+            }
+            if (child instanceof MElementContainer) {
+                cleanInvalidView((MElementContainer) child, perspectiveRegistry, viewRegistry, visited);
+                if (((MElementContainer) child).getChildren().isEmpty()) {
+                    children.remove(child);
+                }
+            } else if (child instanceof MPlaceholder) {
+                MUIElement ref = ((MPlaceholder) child).getRef();
+                if (ref instanceof MPartSashContainer) {
+                    continue;
+                }
+                String viewId = ((MPlaceholder) child).getElementId();
+                if (StringUtils.isNotBlank(viewId) && viewRegistry.find(viewId) == null) {
+                    if (selectedId != null && selectedId.equals(viewId)) {
+                        resetSelectedElem = true;
+                    }
+                    children.remove(child);
+                    continue;
+                }
+            }
+        }
+        if (resetSelectedElem) {
+            MUIElement newSelectedElem = null;
+            if (0 < children.size()) {
+                for (Object child : children) {
+                    if (child instanceof MUIElement) {
+                        if (((MUIElement) child).isToBeRendered()) {
+                            newSelectedElem = (MUIElement) child;
+                            break;
+                        }
+                    }
+                }
+            }
+            container.setSelectedElement(newSelectedElem);
+        }
     }
 
     @Override
@@ -140,13 +285,6 @@ public class ApplicationWorkbenchAdvisor extends IDEWorkbenchAdvisor {
     @Override
     public void postStartup() {
         super.postStartup();
-        try {
-            if (ICloudSignOnService.get() != null && ICloudSignOnService.get().isSignViaCloud()) {
-                ICloudSignOnService.get().startHeartBeat();
-            }
-        } catch (Exception e) {
-            ExceptionHandler.process(e);
-        }
         if (!ArrayUtils.contains(Platform.getApplicationArgs(), EclipseCommandLine.TALEND_DISABLE_LOGINDIALOG_COMMAND)) {
             RegisterManagement.getInstance().validateRegistration();
         }
@@ -167,9 +305,6 @@ public class ApplicationWorkbenchAdvisor extends IDEWorkbenchAdvisor {
         }
         if (commitChanges && IGitUIProviderService.get() != null && IGitUIProviderService.get().checkPendingChanges()) {
             preShutwond = false;
-        }
-        if (preShutwond && ICloudSignOnService.get() != null) {
-            ICloudSignOnService.get().stopHeartBeat();
         }
         return preShutwond;
     }

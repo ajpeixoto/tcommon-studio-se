@@ -648,7 +648,6 @@ CTabFolder.org-talend-rcp-abstractMultiPageEditor-footer CTabItem:selected {
 .TalendStagingView StyledText {
     background-color: COLOR-LIST-BACKGROUND;
 }
-
 /**************************************************
  * Palette
  **************************************************/
@@ -657,7 +656,7 @@ CTabFolder.org-talend-rcp-abstractMultiPageEditor-footer CTabItem:selected {
     tPalette-collapsed-background-color:white;
     tPalette-mouseOver-forground-color1:#ADADAD;
     tPalette-mouseOver-forground-color2:#ADADAD;
-    tPalette-mouseOver-forground-color3:#ADADAD;
+    tPalette-mouseOver-forground-color3:black;
     tPalette-mouseOver-background-color1:#ADADAD;
     tPalette-mouseOver-background-color2:#ADADAD;
     tPalette-mouseOver-background-color3:#ADADAD;				/* */
@@ -678,6 +677,15 @@ CTabFolder.org-talend-rcp-abstractMultiPageEditor-footer CTabItem:selected {
     tPalette-searchButton-image:url('./default/pics/studio_6.0-repo-search.png');
 }
 
+/* Repository tree */
+.TalendRepositoryLabel {
+	STABLE_SECONDARY_ENTRY_COLOR: #646464;
+	STABLE_PRIMARY_ENTRY_COLOR: #000000;
+	INACTIVE_ENTRY_COLOR: #C8C8C8;
+	LOCKED_ENTRY: #C80000;
+	MERGED_REFERENCED_ITEMS_COLOR: #787878;
+	
+}
 /**************************************************
  * User Color and Font Changes
  **************************************************/

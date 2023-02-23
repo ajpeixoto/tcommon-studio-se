@@ -69,6 +69,8 @@ public interface IGITProviderService extends IService {
      */
     void setStandardMode(boolean standardMode);
     
+    String getProjectLocationKey(Project project) throws PersistenceException;
+    
     /**
      * Get clean git repository url
      * @param project project
