@@ -31,9 +31,7 @@ import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.preference.IPreferenceNode;
 import org.eclipse.swt.SWT;
 import org.eclipse.ui.IWorkbenchActionConstants;
-import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.actions.ActionFactory.IWorkbenchAction;
 import org.eclipse.ui.application.IActionBarConfigurer;
@@ -52,7 +50,6 @@ import org.talend.core.ui.branding.IBrandingService;
 import org.talend.core.ui.perspective.PerspectiveMenuManager;
 import org.talend.core.ui.services.IOpenJobScriptActionService;
 import org.talend.rcp.i18n.Messages;
-import org.talend.rcp.intro.linksbar.LinksToolbarItem;
 import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.ui.actions.toolbar.ProjectSettingsAction;
 
@@ -241,7 +238,7 @@ public class ActionBarBuildHelper implements IActionBarHelper {
         menuBar.add(helpMenu);
 
         // Help
-        helpMenu.add(ActionFactory.HELP_CONTENTS.create(window));
+        helpMenu.add(new TalendHelpDocAction());
         helpMenu.add(new Separator());
 
         menuBar.add(new GroupMarker(IWorkbenchActionConstants.MB_ADDITIONS));
