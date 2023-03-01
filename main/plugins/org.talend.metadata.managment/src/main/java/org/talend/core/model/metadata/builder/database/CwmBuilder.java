@@ -17,7 +17,6 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import org.apache.log4j.Logger;
 
@@ -74,11 +73,11 @@ abstract class CwmBuilder {
      */
     protected String executeGetCommentStatement(String queryStmt) {
         String comment = null;
-        Statement statement = null;
+        PreparedStatement statement = null;
         ResultSet resultSet = null;
         try {
-            statement = connection.createStatement();
-            statement.execute(queryStmt);
+            statement = connection.prepareStatement(queryStmt);
+            resultSet = statement.executeQuery();
 
             // get the results
             resultSet = statement.getResultSet();
