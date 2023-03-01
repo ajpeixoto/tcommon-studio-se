@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import org.apache.commons.lang.StringUtils;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.components.IMultipleComponentManager;
@@ -89,8 +88,6 @@ public abstract class AbstractNode implements INode {
     private EConnectionType virtualLinkTo;
 
     private String uniqueShortName;
-
-    private String generatingUniqueName;
 
     private boolean subProcessContainBreakpoint;
 
@@ -1342,18 +1339,5 @@ public abstract class AbstractNode implements INode {
 
     public void setRealGraphicalNode(INode realGraphicalNode) {
         this.realGraphicalNode = realGraphicalNode;
-    }
-
-    @Override
-    public String getGeneratingUniqueName() {
-        if (StringUtils.isNotBlank(generatingUniqueName)) {
-            return generatingUniqueName;
-        }
-        return getUniqueName();
-    }
-
-    @Override
-    public void setGeneratingUniqueName(String generatingUniqueName) {
-        this.generatingUniqueName = generatingUniqueName;
     }
 }
