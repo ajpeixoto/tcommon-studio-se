@@ -91,12 +91,6 @@ public class TestFakeNode extends Element implements INode {
         return null;
     }
 
-    @Override
-    public void setUniqueShortName(String uniqueShortName) {
-        // TODO Auto-generated method stub
-
-    }
-
     /*
      * (non-Javadoc)
      *
@@ -911,18 +905,6 @@ public class TestFakeNode extends Element implements INode {
     public List<INodeConnector> getConnectorsFromType(final EConnectionType connType) {
 
         return null;
-    }
-
-    @Override
-    public String getGeneratingUniqueName() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public void setGeneratingUniqueName(String generatingUniqueName) {
-        // TODO Auto-generated method stub
-
     }
 
 }
