@@ -61,18 +61,6 @@ public interface INode extends IElement {
 
     public String getUniqueShortName();
 
-    public void setUniqueShortName(String uniqueShortName);
-
-    /**
-     * Return the unique name of the node or the full path unique name during generate. For replaced joblet nodes,
-     * getUniqueName() returns name prefix would be short name
-     * 
-     * @return
-     */
-    public String getGeneratingUniqueName();
-
-    public void setGeneratingUniqueName(String generatingUniqueName);
-
     /**
      * Return the start status of this node.
      *

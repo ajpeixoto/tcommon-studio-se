@@ -18,7 +18,7 @@
       </classloader>
       <classloader
             index="HIVE:AMAZON_EMR:MapR_EMR:STANDALONE"
-            libraries="hadoop-core-0.20.203.0.jar;reload4j-1.2.22.jar;hive-exec-0.7.1.jar;hive-jdbc-0.7.1.jar;hive-metastore-0.7.1.jar;hive-service-0.7.1.jar;libfb303.jar;slf4j-api-1.6.1.jar;slf4j-log4j12-1.6.1.jar;commons-logging-1.1.1.jar;commons-logging-api-1.0.4.jar">
+            libraries="hadoop-core-0.20.203.0.jar;reload4j-1.2.22.jar;libfb303.jar;slf4j-api-1.6.1.jar;slf4j-log4j12-1.6.1.jar;commons-logging-1.1.1.jar;commons-logging-api-1.0.4.jar">
       </classloader>
       <!-- -->
       <classloader
@@ -133,84 +133,11 @@
             required="true">
       </libraryNeeded>
       <libraryNeeded
-            context="plugin:org.talend.metadata.managment"
-            language="java"
-            message="Needed for plugin org.talend.metadata.managment"
-            mvn_uri="mvn:org.talend.libraries/wsdl4j-1.5.1/6.0.0"
-            name="wsdl4j-1.5.1.jar"
-            required="false"
-            uripath="platform:/plugin/org.talend.libraries.apache/lib/wsdl4j-1.5.1.jar">
-      </libraryNeeded>
-            <libraryNeeded
-            context="Hive wizard"
-            language="java"
-            message="Wizard for hive HDP 2.0 Embedded"
-            name="httpcore-4.1.2.jar" mvn_uri="mvn:org.talend.libraries/httpcore-4.1.2/6.0.0" 
-            required="true"
-            uripath="platform:/plugin/org.talend.libraries.apache.http/lib/httpcore-4.1.2.jar">
-      </libraryNeeded>
-            <libraryNeeded
             context="Hive wizard"
             language="java"
             message="Wizard for hive HDP 2.0"
             name="httpclient-4.5.13.jar" mvn_uri="mvn:org.apache.httpcomponents/httpclient/4.5.13" 
             required="true">
-      </libraryNeeded>
-       <libraryNeeded
-            context="Hive wizard"
-            language="java"
-            message="Wizard use for Hive"
-            name="hive-service-0.7.1.jar" mvn_uri="mvn:org.talend.libraries/hive-service-0.7.1/6.0.0" 
-            required="true"
-            uripath="platform:/plugin/org.talend.libraries.hadoop.apache.0.20.203/lib/hive-service-0.7.1.jar">
-      </libraryNeeded>
-            <libraryNeeded
-            context="Hive wizard"
-            language="java"
-            message="Wizard use for Hive"
-            name="hadoop-core-0.20.203.0.jar" mvn_uri="mvn:org.talend.libraries/hadoop-core-0.20.203.0/6.0.0" 
-            required="true"
-            uripath="platform:/plugin/org.talend.libraries.hadoop.apache.0.20.203/lib/hadoop-core-0.20.203.0.jar">
-      </libraryNeeded>
-            <libraryNeeded
-            context="Hive wizard"
-            language="java"
-            message="Wizard use for Hive"
-            name="hive-exec-0.7.1.jar" mvn_uri="mvn:org.talend.libraries/hive-exec-0.7.1/6.0.0" 
-            required="true"
-            uripath="platform:/plugin/org.talend.libraries.hadoop.apache.0.20.203/lib/hive-exec-0.7.1.jar">
-      </libraryNeeded>
-            <libraryNeeded
-            context="Hive wizard"
-            language="java"
-            message="Wizard use for Hive"
-            name="hive-metastore-0.7.1.jar" mvn_uri="mvn:org.talend.libraries/hive-metastore-0.7.1/6.0.0" 
-            required="true"
-            uripath="platform:/plugin/org.talend.libraries.hadoop.apache.0.20.203/lib/hive-metastore-0.7.1.jar">
-      </libraryNeeded>
-            <libraryNeeded
-            context="Hive wizard"
-            language="java"
-            message="Wizard use for Hive"
-            name="libfb303.jar" mvn_uri="mvn:org.talend.libraries/libfb303/6.0.0" 
-            required="true"
-            uripath="platform:/plugin/org.talend.libraries.hadoop.apache.0.20.203/lib/libfb303.jar">
-      </libraryNeeded>
-            <libraryNeeded
-            context="Hive wizard"
-            language="java"
-            message="Wizard use for Hive"
-            name="hive-jdbc-0.7.1.jar" mvn_uri="mvn:org.talend.libraries/hive-jdbc-0.7.1/6.0.0" 
-            required="true"
-            uripath="platform:/plugin/org.talend.libraries.hadoop.apache.0.20.203/lib/hive-jdbc-0.7.1.jar">
-      </libraryNeeded>
-            <libraryNeeded
-            context="Hive wizard"
-            language="java"
-            message="Wizard use for Hive"
-            name="commons-lang-2.4.jar" mvn_uri="mvn:org.talend.libraries/commons-lang-2.4/6.0.0" 
-            required="true"
-            uripath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-lang-2.4.jar">
       </libraryNeeded>
       <libraryNeeded
             context="plugin:org.talend.metadata.managment"
