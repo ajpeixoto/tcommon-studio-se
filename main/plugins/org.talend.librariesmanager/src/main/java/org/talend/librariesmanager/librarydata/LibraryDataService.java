@@ -437,7 +437,7 @@ public class LibraryDataService {
                 artifact.setLicense(licenseName);
                 artifact.setLicenseUrl(bestLicense.getUrl());
             }
-            artifact.setType(object.getType());
+
             // URL
             if (StringUtils.isEmpty(artifact.getUrl()) && StringUtils.isNotEmpty(object.getUrl())) {
                 artifact.setUrl(object.getUrl());
