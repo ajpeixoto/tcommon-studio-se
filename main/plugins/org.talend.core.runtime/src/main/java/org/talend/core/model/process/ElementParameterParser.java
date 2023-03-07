@@ -179,7 +179,7 @@ public final class ElementParameterParser {
             java.util.List<? extends INode> allGeneratingNodes = ((INode) node).getProcess().getGeneratingNodes();
             if (allGeneratingNodes != null && allGeneratingNodes.size() > 0) {
                 for (INode linkedNode : allGeneratingNodes) {
-                    if (linkedNode.getUniqueName().equals(linkedNodeName)) {
+                    if (linkedNode.getGeneratingUniqueName().equals(linkedNodeName)) {
                         return linkedNode;
                     }
                 }
