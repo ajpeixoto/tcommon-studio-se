@@ -161,11 +161,15 @@ public class ContextNatTableConfiguration extends AbstractRegistryConfiguration 
     private void registerValidateRules(IConfigRegistry configRegistry) {
         configRegistry.registerConfigAttribute(EditConfigAttributes.DATA_VALIDATOR,
                 new EventDataValidator(dataProvider, manager), DisplayMode.EDIT, ContextTableConstants.COLUMN_NAME_PROPERTY);
+        configRegistry.registerConfigAttribute(EditConfigAttributes.DATA_VALIDATOR,
+                new EventDataValueValidator(dataProvider, manager), DisplayMode.EDIT, ContextTableConstants.COLUMN_CONTEXT_VALUE);
     }
 
     private void registerErrorHandlingStrategies(IConfigRegistry configRegistry) {
         configRegistry.registerConfigAttribute(EditConfigAttributes.VALIDATION_ERROR_HANDLER, new DialogErrorHandling(),
                 DisplayMode.EDIT, ContextTableConstants.COLUMN_NAME_PROPERTY);
+        configRegistry.registerConfigAttribute(EditConfigAttributes.VALIDATION_ERROR_HANDLER, new DialogErrorHandling(),
+                DisplayMode.EDIT, ContextTableConstants.COLUMN_CONTEXT_VALUE);
     }
 
     private IEditableRule getEditRule() {
