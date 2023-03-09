@@ -1477,22 +1477,17 @@ public class ERepositoryObjectType extends DynaEnum<ERepositoryObjectType> {
         return allTypes;
     }
 
-    public static List<ERepositoryObjectType> getAllBigDataTypesOfJoblet(){
+    public static List<ERepositoryObjectType> getAllTypesOfJoblet() {
         List<ERepositoryObjectType> allTypes = new ArrayList<ERepositoryObjectType>();
+
+        if (ERepositoryObjectType.JOBLET != null) {
+            allTypes.add(ERepositoryObjectType.JOBLET);
+        }
         if (ERepositoryObjectType.SPARK_JOBLET != null) {
             allTypes.add(ERepositoryObjectType.SPARK_JOBLET);
         }
         if (ERepositoryObjectType.SPARK_STREAMING_JOBLET != null) {
             allTypes.add(ERepositoryObjectType.SPARK_STREAMING_JOBLET);
-        }
-        return allTypes;
-    }
-
-    public static List<ERepositoryObjectType> getAllTypesOfJoblet() {
-        List<ERepositoryObjectType> allTypes = new ArrayList<ERepositoryObjectType>();
-        allTypes.addAll(getAllBigDataTypesOfJoblet());
-        if (ERepositoryObjectType.JOBLET != null) {
-            allTypes.add(ERepositoryObjectType.JOBLET);
         }
         return allTypes;
     }
