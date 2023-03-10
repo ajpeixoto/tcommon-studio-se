@@ -203,34 +203,6 @@ public class ContextNatTableUtils {
             return ((ContextTableTabChildModel) element).getContextParameter().getName();
         }
     }
-    
-    private static IContextParameter getContextParameter(Object element, int index) {
-        if (element instanceof ContextTableTabParentModel) {
-            ContextTableTabParentModel parentMode = (ContextTableTabParentModel) element;
-            if (parentMode.getContextParameter() != null && parentMode.getContextParameter().getContext() != null) {
-                return parentMode.getContextParameter().getContext().getContextParameter(parentMode.getContextParameter().getName());
-            }
-        } else if (element instanceof ContextTableTabChildModel) {
-            return ((ContextTableTabChildModel) element).getContextParameter();
-        }
-        return null;
-    }
-    
-    public static String getCurrentContextDataType(Object element, int index) {
-        IContextParameter contextParameter = getContextParameter(element, index);
-        if (contextParameter != null) {
-            return contextParameter.getType();
-        }
-        return null;
-    }
-
-    public static String getCurrentContextValue(Object element, int index) {
-        IContextParameter contextParameter = getContextParameter(element, index);
-        if (contextParameter != null) {
-            return contextParameter.getValue();
-        }
-        return null;
-    }
 
     public static String getSpecialTypeDisplayValue(String parameterType, String parameterValue) {
         if (isResourceType(parameterType)) {

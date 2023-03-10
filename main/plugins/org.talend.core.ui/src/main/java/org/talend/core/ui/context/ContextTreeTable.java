@@ -274,7 +274,7 @@ public class ContextTreeTable {
             final GridLayer gridLayer = new GridLayer(viewportLayer, sortHeaderLayer, rowHeaderLayer, cornerLayer);
 
             // config the column edit configuration
-            ContextValueLabelAccumulator labelAccumulator = new ContextValueLabelAccumulator(bodyDataLayer, bodyDataProvider);
+            ContextValueLabelAccumulator labelAccumulator = new ContextValueLabelAccumulator(bodyDataLayer, bodyDataProvider, manager.getContextManager(), columnGroupModel);
             bodyDataLayer.setConfigLabelAccumulator(labelAccumulator);
             registerColumnLabels(labelAccumulator, ContextRowDataListFixture.getContexts(manager.getContextManager()));
 
