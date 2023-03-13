@@ -77,6 +77,7 @@ public class ContextNatTableStyleConfiguration extends AbstractRegistryConfigura
         Style cellStyleValueError = new Style();
         cellStyleValueError.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, ColorConstants.ERROR_FONT_COLOR);
         configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, cellStyleValueError, DisplayMode.NORMAL, ContextTableConstants.LABEL_VALUE_NOT_MATCH_TYPE);
+        configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, cellStyleValueError, DisplayMode.SELECT, ContextTableConstants.LABEL_VALUE_NOT_MATCH_TYPE);
         
         Style cellStyleChangedForceGround = new Style();
         cellStyleChangedForceGround.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, GUIHelper.COLOR_WIDGET_DARK_SHADOW);
