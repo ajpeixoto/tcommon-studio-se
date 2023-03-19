@@ -22,8 +22,6 @@ public final class TalendPropertiesUtil {
 
     public static final String PROD_APP = "talend.product.app";
 
-    public static final String OPTION_KEEP_ORIGINAL_JOBLET_NAME = "talend.job.keepOriginalJobletName";
-
     public static boolean isEnabled(String key) {
         String value = System.getProperty(key);
         return Boolean.parseBoolean(value);
@@ -83,6 +81,6 @@ public final class TalendPropertiesUtil {
     }
 
     public static boolean isEnabledUseShortJobletName() {
-        return !isEnabled(OPTION_KEEP_ORIGINAL_JOBLET_NAME);
+        return isEnabled("talend.job.build.useShortJobletName"); //$NON-NLS-1$
     }
 }
