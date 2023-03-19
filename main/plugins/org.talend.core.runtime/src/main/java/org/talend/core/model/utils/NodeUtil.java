@@ -784,7 +784,7 @@ public class NodeUtil {
             if (isReturnVirtualNode && current_node.isVirtualGenerateNode()) {
                 current_node = getVirtualNode(current_node);
             }
-            if (uniqueName.equals(current_node.getUniqueName()) || uniqueName.equals(current_node.getGeneratingUniqueName())) {
+            if (uniqueName.equals(current_node.getUniqueName())) {
                 return current_node;
             }
         }
