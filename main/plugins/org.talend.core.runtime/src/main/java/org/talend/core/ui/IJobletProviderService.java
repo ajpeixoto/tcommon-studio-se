@@ -150,8 +150,6 @@ public interface IJobletProviderService extends IService {
 
     public IProcess getJobletGEFProcessFromNode(INode node);
 
-    public void clearJobletProcessProviderCache();
-
     public static IJobletProviderService get() {
         GlobalServiceRegister register = GlobalServiceRegister.getDefault();
         if (!register.isServiceRegistered(IJobletProviderService.class)) {
