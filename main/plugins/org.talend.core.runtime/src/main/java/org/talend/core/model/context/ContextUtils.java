@@ -984,6 +984,14 @@ public class ContextUtils {
 
         }
 
+        public boolean remove(Item item, String param) {
+            Set<String> params = map.get(item);
+            if (params != null && params.contains(param)) {
+                return params.remove(param);
+            }
+            return false;
+        }
+
         public boolean isEmpty() {
             return map.isEmpty();
         }
