@@ -425,6 +425,7 @@ public class ExtendedContextColumnPropertyAccessor<R> implements IColumnProperty
                             && jobContextManager.isOriginalParameter(param.getName())) {
                         jobContextManager.setModified(true);
                         manager.fireContextsChangedEvent();
+                        modelManager.refresh();
                     }
                 }
             }
@@ -507,6 +508,7 @@ public class ExtendedContextColumnPropertyAccessor<R> implements IColumnProperty
                             && jobContextManager.isOriginalParameter(param.getName())) {
                         jobContextManager.setModified(true);
                         manager.fireContextsChangedEvent();
+                        modelManager.refresh();
                     }
                 }
             }
@@ -588,6 +590,7 @@ public class ExtendedContextColumnPropertyAccessor<R> implements IColumnProperty
                             && jobContextManager.isOriginalParameter(param.getName())) {
                         jobContextManager.setModified(true);
                         manager.fireContextsChangedEvent();
+                        modelManager.refresh();
                     }
                 }
             }
@@ -684,6 +687,7 @@ public class ExtendedContextColumnPropertyAccessor<R> implements IColumnProperty
                             && jobContextManager.isOriginalParameter(param.getName())) {
                         jobContextManager.setModified(true);
                         manager.fireContextsChangedEvent();
+                        modelManager.refresh();
                     }
                 }
             }
