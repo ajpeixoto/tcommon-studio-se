@@ -240,14 +240,14 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
         return singleton;
     }
 
-    private ICoreService getCoreService() {
+    public ICoreService getCoreService() {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ICoreService.class)) {
             return GlobalServiceRegister.getDefault().getService(ICoreService.class);
         }
         return null;
     }
 
-    private IRunProcessService getRunProcessService() {
+    public IRunProcessService getRunProcessService() {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
             return GlobalServiceRegister.getDefault().getService(IRunProcessService.class);
         }
@@ -352,7 +352,7 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
      * @param project
      * @throws LoginException
      */
-    private void checkProjectCompatibility(Project project) throws LoginException {
+    public void checkProjectCompatibility(Project project) throws LoginException {
         IMigrationToolService migrationToolService = GlobalServiceRegister.getDefault().getService(
                 IMigrationToolService.class);
         // update migration system.
@@ -1849,7 +1849,7 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
      * @param project
      * @throws PersistenceException
      */
-    private void emptyTempFolder(Project project) throws PersistenceException {
+    public void emptyTempFolder(Project project) throws PersistenceException {
     	try {
             String str = SharedStudioUtils.getTempFolderPath().toPortableString();
             FilesUtils.deleteFolder(new File(str), false);
@@ -2528,7 +2528,7 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
         }
     }
 
-    private void checkReferenceProjectsProblems(Project project) throws BusinessException, PersistenceException {
+    public void checkReferenceProjectsProblems(Project project) throws BusinessException, PersistenceException {
         if (ReferenceProjectProblemManager.getInstance().getAllInvalidProjectReferenceSet().size() > 0) {
             StringBuffer sb = new StringBuffer();
             for (String technicalLabel : ReferenceProjectProblemManager.getInstance().getAllInvalidProjectReferenceSet()) {
@@ -3026,4 +3026,11 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
         this.repositoryFactoryFromProvider.saveProject(project);
     }
     
+    public void setCancelled(boolean cancelled) {
+        this.isCancelled = cancelled;
+    }
+
+    public boolean isCancelled() {
+        return this.isCancelled;
+    }
 }
