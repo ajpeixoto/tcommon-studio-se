@@ -43,6 +43,8 @@ public interface MavenConstants {
     static final String DEFAULT_VERSION = "6.0.0";
 
     static final String SNAPSHOT = "-SNAPSHOT";
+    
+    static final String DOT_SNAPSHOT = ".SNAPSHOT";
 
     static final String POM_FILTER = "POM_FILTER";
 
