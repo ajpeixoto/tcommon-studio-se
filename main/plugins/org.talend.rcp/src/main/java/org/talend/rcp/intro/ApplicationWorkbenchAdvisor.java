@@ -90,7 +90,7 @@ public class ApplicationWorkbenchAdvisor extends IDEWorkbenchAdvisor {
 
     private void injectVariables() {
         IWorkbench workbench = PlatformUI.getWorkbench();
-        IEclipseContext activeContext = ((IEclipseContext) workbench.getService(IEclipseContext.class)).getActiveLeaf();
+        IEclipseContext activeContext = workbench.getService(IEclipseContext.class).getActiveLeaf();
         ContextInjectionFactory.inject(this, activeContext);
     }
 
@@ -227,7 +227,7 @@ public class ApplicationWorkbenchAdvisor extends IDEWorkbenchAdvisor {
 
     @Override
     public String getInitialWindowPerspectiveId() {
-        IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault().getService(
+        IBrandingService brandingService = GlobalServiceRegister.getDefault().getService(
                 IBrandingService.class);
         if (brandingService != null) {
             IBrandingConfiguration brandingConfiguration = brandingService.getBrandingConfiguration();
@@ -288,12 +288,12 @@ public class ApplicationWorkbenchAdvisor extends IDEWorkbenchAdvisor {
         if (!ArrayUtils.contains(Platform.getApplicationArgs(), EclipseCommandLine.TALEND_DISABLE_LOGINDIALOG_COMMAND)) {
             RegisterManagement.getInstance().validateRegistration();
         }
-
+        PreferenceManager pm = PlatformUI.getWorkbench().getPreferenceManager();
         // not git project, do not show git settings preference page
         if (IGITProviderService.get() == null || !IGITProviderService.get().isProjectInGitMode()) {
-            PreferenceManager pm = PlatformUI.getWorkbench().getPreferenceManager();
             pm.remove("org.talend.core.prefs" + WorkbenchPlugin.PREFERENCE_PAGE_CATEGORY_SEPARATOR + "org.talend.repository.gitprovider.settings.GitPreferencePage");
         }
+        pm.remove("org.eclipse.equinox.internal.p2.ui.sdk.ProvisioningPreferencePage"); //$NON-NLS-1$
     }
 
     @Override
