@@ -33,6 +33,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.talend.commons.exception.CommonExceptionHandler;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.runtime.utils.io.FileCopyUtils;
 
@@ -108,6 +109,7 @@ public class NetworkUtil {
                 return true;
             }
         } catch (Exception e) {
+            CommonExceptionHandler.process(e, getCheckUrl());
             return false;
         } finally {
             conn.disconnect();
@@ -144,6 +146,7 @@ public class NetworkUtil {
             conn.setRequestMethod("HEAD"); //$NON-NLS-1$
             conn.getResponseMessage();
         } catch (Exception e) {
+            CommonExceptionHandler.process(e, urlString);
             // if not reachable , will throw exception(time out/unknown host) .So if catched exception, make it a
             // invalid server
             return false;

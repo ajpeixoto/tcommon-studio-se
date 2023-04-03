@@ -36,12 +36,24 @@ public final class CommonExceptionHandler {
         Priority priority = getPriority(ex);
         process(ex, priority);
     }
+    
+    public static void process(Throwable ex, String msg) {
+        Priority priority = getPriority(ex);
+        process(ex, msg, priority);
+    }
 
     public static void process(Throwable ex, Priority priority) {
         String message = ex.getMessage();
 
         log.log(priority, message, ex);
 
+    }
+    
+    public static void process(Throwable ex, String msg, Priority priority) {
+        String message = ex.getMessage() + ": " + msg;
+        
+        log.log(priority, message, ex);
+        
     }
 
     public static void log(String message) {
