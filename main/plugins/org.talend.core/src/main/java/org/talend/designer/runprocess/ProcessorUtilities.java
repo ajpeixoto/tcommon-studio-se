@@ -861,7 +861,7 @@ public class ProcessorUtilities {
                 for (IContext context : list) {
                     if (context.getName().equals(currentContext.getName())) {
                         // override parameter value before generate current context
-                        IContext checkedContext = checkNeedOverrideContextParameterValue(currentContext, jobInfo);
+                        IContext checkedContext = checkNeedOverrideContextParameterValue(context, jobInfo);
                         checkedContext = checkCleanSecureContextParameterValue(checkedContext, jobInfo);
                         processor.setContext(checkedContext); // generate current context.
                     } else {
