@@ -279,6 +279,10 @@ public interface IStudioLiteP2Service extends IService {
                 return true;
             }
 
+            if (responseCode != HttpURLConnection.HTTP_OK) {
+                throw new Exception("status code: " + responseCode);
+            }
+            
             return false;
         }
 
@@ -322,7 +326,7 @@ public interface IStudioLiteP2Service extends IService {
             String nodeName = IRepository.PREFERENCE_NODE + '/' + nodeKey;
 
             if (securePreferences.nodeExists(nodeName)) {
-                securePreferences.remove(nodeName);
+                securePreferences.node(nodeName).removeNode();
                 securePreferences.flush();
             }
         }
