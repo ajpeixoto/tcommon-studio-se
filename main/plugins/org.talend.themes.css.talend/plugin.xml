@@ -10,7 +10,6 @@
              label="%theme.default">
              <!-- please see: TalendThemeConstants.TALEND_DEFAULT_THEME_ID -->
        </theme>
-<!--
        <theme
             basestylesheeturi="themes/dark/e4-dark_linux.css"
             id="org.eclipse.e4.ui.css.theme.e4_dark"
@@ -36,7 +35,6 @@
             os="macosx"
             os_version="10.11,10.12,10.13">
         </theme>
--->
         <stylesheet
             uri="themes/dark/dark/e4-dark_preferencestyle.css">
             <themeid
