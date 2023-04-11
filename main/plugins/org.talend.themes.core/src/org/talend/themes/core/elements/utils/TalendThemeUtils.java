@@ -12,6 +12,8 @@
 // ============================================================================
 package org.talend.themes.core.elements.utils;
 
+import org.eclipse.jface.preference.IPreferenceStore;
+import org.talend.commons.ui.runtime.ITalendThemeService;
 import org.talend.themes.core.elements.constants.TalendThemeConstants;
 
 /**
@@ -25,5 +27,14 @@ public class TalendThemeUtils {
             return false;
         }
         return themeId.startsWith(TalendThemeConstants.TALEND_THEME_PREFIX);
+    }
+
+    public static boolean isDarkModeTheme() {
+        IPreferenceStore themePreferenceStore = ITalendThemeService.get().getThemePreferenceStore();
+        if (themePreferenceStore != null
+                && TalendThemeConstants.TALEND_DARK_THEME_ID.equals(themePreferenceStore.getString("themeid"))) {
+            return true;
+        }
+        return false;
     }
 }
