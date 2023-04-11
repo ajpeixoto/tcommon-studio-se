@@ -138,6 +138,17 @@ public class MetadataDialog extends Dialog {
 
     private static boolean isSingleAndStruct = false;
 
+    private MetadataDialogBusinessHandler businessHandler;
+
+    public MetadataDialog(MetadataDialogBusinessHandler bh) {
+        this(bh.getParent().getShell(), bh.getInputMetaTable(), bh.getInputNode(), bh.getOutputMetaTable(), bh.getOutputNode(),
+                bh.getCommandStack());
+        this.businessHandler = bh;
+        this.setText(bh.getTitle());
+        this.setInputReadOnly(bh.isInputReadOnly());
+        this.setOutputReadOnly(bh.isOutputReadOnly());
+    }
+
     public MetadataDialog(Shell parent, IMetadataTable inputMetaTable, INode inputNode, IMetadataTable outputMetaTable,
             INode outputNode, CommandStack commandStack) {
         super(parent);
@@ -177,6 +188,13 @@ public class MetadataDialog extends Dialog {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    @Override
+    public int open() {
+        int openResult = super.open();
+        businessHandler.setOpenResult(openResult);
+        return openResult;
     }
 
     @Override

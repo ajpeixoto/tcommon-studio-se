@@ -130,6 +130,8 @@ public class MetadataDialogForMerge extends Dialog {
 
     Button copySelectionToInput;
 
+    private int openResult;
+
     public void init(Shell parent, IMetadataTable inputMetaTable, INode inputNode, IMetadataTable outputMetaTable,
             INode outputNode, CommandStack commandStack) {
 
@@ -158,6 +160,11 @@ public class MetadataDialogForMerge extends Dialog {
             INode outputNode, CommandStack commandStack) {
         super(parent);
         init(parent, inputMetaTable, inputNode, outputMetaTable, outputNode, commandStack);
+    }
+
+    public MetadataDialogForMerge(MetadataDialogForMergeBusinessHandler handler) {
+        this(handler.getParent().getShell(), handler.getInputInfos(), handler.getOutputMetaTable(), handler.getOutputNode(),
+                handler.getCommandStack());
     }
 
     public MetadataDialogForMerge(Shell parent, Map<INode, Map<IMetadataTable, Boolean>> inputInfos,
@@ -202,6 +209,16 @@ public class MetadataDialogForMerge extends Dialog {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public int getOpenResult() {
+        return openResult;
+    }
+
+    @Override
+    public int open() {
+        openResult = super.open();
+        return openResult;
     }
 
     @Override
