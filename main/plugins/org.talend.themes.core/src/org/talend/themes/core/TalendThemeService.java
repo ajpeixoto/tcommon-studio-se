@@ -106,6 +106,11 @@ public class TalendThemeService implements ITalendThemeService {
         }
     }
 
+    @Override
+    public IPreferenceStore getThemePreferenceStore() {
+        return getPreferenceStore(ITalendThemeService.THEME_PREFERENCE_ID);
+    }
+
     private IPreferenceStore getPreferenceStore(String bundleId) {
         IPreferenceStore prefStore = storeMap.get(bundleId);
         if (prefStore == null) {
