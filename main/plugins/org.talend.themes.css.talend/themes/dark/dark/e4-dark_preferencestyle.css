@@ -16,8 +16,16 @@
 
 /* ############################## Eclipse UI properties ############################## */
 
+IEclipsePreferences#org-talend-designer-core:org-talend-themes-css-talend-base { /* pseudo attribute added to allow contributions without replacing this node, see Bug 466075 */
+	preferences:
+		'jobDesignerBackgroundColor=122,122,122'
+		'subjobColor=70,70,70'
+		'subjobTitleColor=102,191,230'
+		'forbiddenSubjobColor=207,226,236'
+		'forbiddenSubjobTitleColor=92,131,150'
+}
 
-IEclipsePreferences#org-eclipse-ui-editors:org-talend-themes-css-talend { /* pseudo attribute added to allow contributions without replacing this node, see Bug 466075 */
+IEclipsePreferences#org-eclipse-ui-editors:org-talend-themes-css-talend-base { /* pseudo attribute added to allow contributions without replacing this node, see Bug 466075 */
 	preferences:
 		'AbstractTextEditor.Color.Background.SystemDefault=false'
 		'AbstractTextEditor.Color.SelectionForeground.SystemDefault=false'
@@ -52,7 +60,7 @@ IEclipsePreferences#org-eclipse-ui-editors:org-talend-themes-css-talend { /* pse
 		'writeOccurrenceIndicationColor=27,98,145'
 }
 
-IEclipsePreferences#org-eclipse-ui-workbench:org-talend-themes-css-talend { /* pseudo attribute added to allow contributions without replacing this node, see Bug 466075 */
+IEclipsePreferences#org-eclipse-ui-workbench:org-talend-themes-css-talend-base { /* pseudo attribute added to allow contributions without replacing this node, see Bug 466075 */
 	preferences:
 		'ACTIVE_HYPERLINK_COLOR=138,201,242'
 		'CONFLICTING_COLOR=240,15,66'
@@ -82,12 +90,57 @@ IEclipsePreferences#org-eclipse-ui-workbench:org-talend-themes-css-talend { /* p
 		'org.talend.core.repository.REPO_MERGED_REFERENCED_ITEMS_COLOR=175,175,175'
 		'org.talend.core.repository.TAB_START_COLOR=27,60,79'
 		'org.talend.core.repository.TAB_END_COLOR=86,86,86'
-}
+		
+		/*tMap*/
+		'COLOR_ENTRY_ERROR=100,200,255'
+		'COLOR_ENTRY_WARNING=0,200,60'
+		'COLOR_BACKGROUND_LINKS_ZONE=64,68,71' /* Link panel background */
+	
+		'COLOR_HIGHLIGHTED_TEXT_ROW=55,55,55'
+		'COLOR_BACKGROUND_ERROR_EXPRESSION_CELL=255,0,0' /*Error expression background*/
+		'COLOR_BACKGROUND_VALID_EXPRESSION_CELL=0,0,0' /*Normal expression background*/
 
-IEclipsePreferences#org-talend-designer-core:org-talend-themes-css-talend { /* pseudo attribute added to allow contributions without replacing this node, see Bug 466075 */
-	preferences:
-		'jobDesignerBackgroundColor=122,122,122'
-		'subjobColor=0,0,0'
-		'subjobTitleColor=128,255,0'
+		'COLOR_FOREGROUND_ERROR_EXPRESSION_CELL=255,255,255' /*Error expression foreground*/
+		'COLOR_FOREGROUND_VALID_EXPRESSION_CELL=255,255,255' /*Normal expression foreground*/
+		'COLOR_DRAGGING_INSERTION_INDICATOR=0,78,152'
+		'COLOR_TMAP_PREVIEW=235,234,230'
+		'COLOR_TMAP_SCROLLED_COMPOSITE=81,86,88'
+		/*For db map*/
+		'COLOR_BACKGROUND_WARNING_EXPRESSION_CELL=255,190,150'
+		/*For xml map*/
+		'COLOR_TREE_BORDER=153,186,243'
+		'ZONE_BACKGROUND_COLOR=81,86,88'
+		'COLOR_TREE_LINES=128,128,128'
+		'COLOR_COLUMN_SELECTION=90,180,255'
+		'COLOR_COLUMN_TREE_SETTING=200,225,250'
+		'COLOR_EXPREESION_DISABLE=240,240,240'
+		'NODE_FIGURE_BACKGROUND=0,0,0'
+		'NODE_FIGURE_FORCEGROUND=255,255,255'
+
+		'ColorStyledText.Color.Background=47,47,47'  /*ColorStyledText background*/
+		'ColorStyledText.Color.Foreground=204,204,204' /*ColorStyledText foreground*/
+		'ColorStyledText.Color.SelectionBackground=33,66,131' /*ColorStyledText selection background*/
+		'ColorStyledText.Color.SelectionForeground=147,161,161'  /*ColorStyledText selection foreground*/
+		
+		/*ColorManager for ColorStyledText*/
+		'nullColor=255,255,255' /*Express code color null color*/
+		'comment1Color=0,140,34'
+		'comment2Color=34,140,0'
+		'literal1Color=0,0,255'
+		'literal2Color=160,100,240'
+		'labelColor=160,0,240'
+		'keyword1Color=0,255,0'
+		'keyword2Color=240,160,80'
+		'keyword3Color=160,32,100'
+		'functionColor=160,32,0'
+		'markupColor=178,0,34'
+		'operatorColor=178,34,0'
+		'digitColor=160,32,0'
+		'invalidColor=178,0,34'
+		
+		/*GEF Job Editor*/
+		'NODE_FIGURE_LABEL_FORCEGROUND=255,255,255'
+		/*Context Table*/
+		'CONTEXT_TABLE_READONLY_FOREGROUND=163,163,163'
 }
 

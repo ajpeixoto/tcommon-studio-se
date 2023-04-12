@@ -24,6 +24,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
+import org.talend.commons.ui.runtime.ITalendThemeService;
 import org.talend.commons.ui.swt.colorstyledtext.scanner.ColoringScanner;
 
 /**
@@ -33,7 +34,7 @@ import org.talend.commons.ui.swt.colorstyledtext.scanner.ColoringScanner;
  *
  */
 public class ColorManager {
-
+    
     public static final RGB DEFAULT_STRING_COLOR = new RGB(0, 0, 0);
 
     public static final RGB DEFAULT_KEYWORD1_COLOR = new RGB(50, 32, 160);
@@ -93,6 +94,8 @@ public class ColorManager {
     public static final String BOLD_SUFFIX = "Bold"; //$NON-NLS-1$
 
     private Map<String, Color> colorMap;
+    
+    private static Map<String, Color> THEME_COLOR_MAP = new HashMap<String, Color>();
 
     private IPreferenceStore store;
 
@@ -106,15 +109,22 @@ public class ColorManager {
     }
 
     public Color getColor(String colorName) {
-        RGB prefColor = PreferenceConverter.getColor(store, colorName);
-        Color color = null;
-        if (colorMap.containsKey(colorName) && (colorMap.get(colorName)).getRGB().equals(prefColor)) {
-            color = (Color) colorMap.get(colorName);
+        Color prefColor = getThemeColor(colorName);
+        if (colorMap.containsKey(colorName) && (colorMap.get(colorName)).equals(prefColor)) {
+            return colorMap.get(colorName);
         } else {
-            color = new Color(Display.getDefault(), prefColor);
-            colorMap.put(colorName, color);
+            colorMap.put(colorName, prefColor);
         }
-        return color;
+        return prefColor;
+    }
+
+    private static Color getThemeColor(String colorName) {
+        if (!THEME_COLOR_MAP.containsKey(colorName)) {
+            Color c = ITalendThemeService.getColor(colorName)
+                    .orElse(Display.getDefault().getSystemColor(SWT.COLOR_INFO_FOREGROUND));
+            THEME_COLOR_MAP.put(colorName, c);
+        }
+        return THEME_COLOR_MAP.get(colorName);
     }
 
     public void dispose() {
@@ -125,6 +135,7 @@ public class ColorManager {
             color.dispose();
         }
         colorMap = null;
+        THEME_COLOR_MAP.clear();
     }
 
     /**
@@ -164,20 +175,20 @@ public class ColorManager {
     }
 
     public static void initDefaultColors(IPreferenceStore store) {
-        store.setDefault(NULL_COLOR, StringConverter.asString(DEFAULT_STRING_COLOR));
-        store.setDefault(COMMENT1_COLOR, StringConverter.asString(DEFAULT_COMMENT1_COLOR));
-        store.setDefault(COMMENT2_COLOR, StringConverter.asString(DEFAULT_COMMENT2_COLOR));
-        store.setDefault(LITERAL1_COLOR, StringConverter.asString(DEFAULT_LITERAL1_COLOR));
-        store.setDefault(LITERAL2_COLOR, StringConverter.asString(DEFAULT_LITERAL2_COLOR));
-        store.setDefault(LABEL_COLOR, StringConverter.asString(DEFAULT_LABEL_COLOR));
-        store.setDefault(KEYWORD1_COLOR, StringConverter.asString(DEFAULT_KEYWORD1_COLOR));
-        store.setDefault(KEYWORD2_COLOR, StringConverter.asString(DEFAULT_KEYWORD2_COLOR));
-        store.setDefault(KEYWORD3_COLOR, StringConverter.asString(DEFAULT_KEYWORD3_COLOR));
-        store.setDefault(FUNCTION_COLOR, StringConverter.asString(DEFAULT_FUNCTION_COLOR));
-        store.setDefault(MARKUP_COLOR, StringConverter.asString(DEFAULT_MARKUP_COLOR));
-        store.setDefault(OPERATOR_COLOR, StringConverter.asString(DEFAULT_OPERATOR_COLOR));
-        store.setDefault(DIGIT_COLOR, StringConverter.asString(DEFAULT_DIGIT_COLOR));
-        store.setDefault(INVALID_COLOR, StringConverter.asString(DEFAULT_INVALID_COLOR));
+        store.setDefault(NULL_COLOR, StringConverter.asString(getThemeColor(NULL_COLOR).getRGB()));
+        store.setDefault(COMMENT1_COLOR, StringConverter.asString(getThemeColor(COMMENT1_COLOR).getRGB()));
+        store.setDefault(COMMENT2_COLOR, StringConverter.asString(getThemeColor(COMMENT2_COLOR).getRGB()));
+        store.setDefault(LITERAL1_COLOR, StringConverter.asString(getThemeColor(LITERAL1_COLOR).getRGB()));
+        store.setDefault(LITERAL2_COLOR, StringConverter.asString(getThemeColor(LITERAL2_COLOR).getRGB()));
+        store.setDefault(LABEL_COLOR, StringConverter.asString(getThemeColor(LABEL_COLOR).getRGB()));
+        store.setDefault(KEYWORD1_COLOR, StringConverter.asString(getThemeColor(KEYWORD1_COLOR).getRGB()));
+        store.setDefault(KEYWORD2_COLOR, StringConverter.asString(getThemeColor(KEYWORD2_COLOR).getRGB()));
+        store.setDefault(KEYWORD3_COLOR, StringConverter.asString(getThemeColor(KEYWORD3_COLOR).getRGB()));
+        store.setDefault(FUNCTION_COLOR, StringConverter.asString(getThemeColor(FUNCTION_COLOR).getRGB()));
+        store.setDefault(MARKUP_COLOR, StringConverter.asString(getThemeColor(MARKUP_COLOR).getRGB()));
+        store.setDefault(OPERATOR_COLOR, StringConverter.asString(getThemeColor(OPERATOR_COLOR).getRGB()));
+        store.setDefault(DIGIT_COLOR, StringConverter.asString(getThemeColor(DIGIT_COLOR).getRGB()));
+        store.setDefault(INVALID_COLOR, StringConverter.asString(getThemeColor(INVALID_COLOR).getRGB()));
 
         String bold = BOLD_SUFFIX;
         store.setDefault(COMMENT1_COLOR + bold, false);

@@ -80,7 +80,7 @@ public class ContextNatTableStyleConfiguration extends AbstractRegistryConfigura
         configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, cellStyleValueError, DisplayMode.SELECT, ContextTableConstants.LABEL_VALUE_NOT_MATCH_TYPE);
         
         Style cellStyleChangedForceGround = new Style();
-        cellStyleChangedForceGround.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, GUIHelper.COLOR_WIDGET_DARK_SHADOW);
+        cellStyleChangedForceGround.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, ColorConstants.getTableReadOnlyForegroundColor());
         configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, cellStyleChangedForceGround, DisplayMode.NORMAL, ContextTableConstants.LABEL_CHANGED_FORCEGROUND);        
         
         configRegistry.registerConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER, new DefaultDisplayConverter());
