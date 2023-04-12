@@ -79,4 +79,8 @@ public final class TalendPropertiesUtil {
     public static String getProductApp() {
         return System.getProperty(PROD_APP);
     }
+
+    public static boolean isEnabledUseShortJobletName() {
+        return isEnabled("talend.job.build.useShortJobletName"); //$NON-NLS-1$
+    }
 }
