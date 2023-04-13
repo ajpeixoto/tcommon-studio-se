@@ -16,14 +16,14 @@
 		<jcache.version>1.0.5</jcache.version>
 		<jcache_spec.version>1.0-alpha-1</jcache_spec.version>
 		<johnzon.version>1.2.19</johnzon.version>
-		<meecrowave.version>1.2.14</meecrowave.version>
+		<meecrowave.version>1.2.15</meecrowave.version>
 		<microprofile.version>1.2.1</microprofile.version>
 		<owb.version>2.0.27</owb.version>
 		<slf4j.version>1.7.34</slf4j.version>
-		<tomcat.version>9.0.69</tomcat.version>
+		<tomcat.version>9.0.73</tomcat.version>
 		<xbean.version>4.20</xbean.version>
 		<reload4j.version>1.2.22</reload4j.version>
-		<log4j2.version>2.18.0</log4j2.version>
+		<log4j2.version>2.20.0</log4j2.version>
 	</properties>
 	<repositories>
 		<repository>
