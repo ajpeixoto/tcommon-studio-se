@@ -64,6 +64,12 @@ public interface IGITProviderService extends IService {
     boolean isStandardMode();
     
     /**
+     * Whether git storage mode is set in preference or not
+     * @return
+     */
+    boolean isGitModeInPreference();
+    
+    /**
      * Set git mode
      * @param standardMode
      */
