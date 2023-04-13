@@ -23,6 +23,8 @@ IEclipsePreferences#org-talend-designer-core:org-talend-themes-css-talend-base {
 		'subjobTitleColor=102,191,230'
 		'forbiddenSubjobColor=207,226,236'
 		'forbiddenSubjobTitleColor=92,131,150'
+		'jobletColor=76,73,228'
+		'readOnlyBackgroundColor=231,231,231'
 }
 
 IEclipsePreferences#org-eclipse-ui-editors:org-talend-themes-css-talend-base { /* pseudo attribute added to allow contributions without replacing this node, see Bug 466075 */
