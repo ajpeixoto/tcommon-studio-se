@@ -36,7 +36,8 @@ Require-Bundle: org.apache.commons.lang,
  org.talend.libraries.jackson,
  org.apache.xerces,
  org.talend.hadoop.distribution,
- org.talend.repository
+ org.talend.repository,
+ org.talend.designer.mapper
 Bundle-ActivationPolicy: lazy
 Bundle-Localization: plugin
 Export-Package: org.talend.repository.metadata,

@@ -30,6 +30,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.talend.commons.runtime.xml.XmlUtil;
+import org.talend.commons.ui.runtime.ITalendThemeService;
 import org.talend.commons.ui.runtime.i18n.Messages;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.commons.ui.swt.colorstyledtext.jedit.Mode;
@@ -52,6 +53,12 @@ import org.talend.commons.utils.threading.ExecutionLimiter;
  *
  */
 public class ColorStyledText extends StyledText {
+    
+
+    public static final String PREFERENCE_COLOR_FOREGROUND= "ColorStyledText.Color.Foreground"; //$NON-NLS-1$
+    public static final String PREFERENCE_COLOR_BACKGROUND= "ColorStyledText.Color.Background"; //$NON-NLS-1$
+    public static final String PREFERENCE_COLOR_SELECTION_FOREGROUND= "ColorStyledText.Color.SelectionForeground"; //$NON-NLS-1$
+    public static final String PREFERENCE_COLOR_SELECTION_BACKGROUND= "ColorStyledText.Color.SelectionBackground"; //$NON-NLS-1$
 
     private final static int MAXIMUM_CHARACTERS_BEFORE_USE_TIMER = 1000;
 
@@ -152,6 +159,15 @@ public class ColorStyledText extends StyledText {
         scanner = new ColoringScanner(mode, colorManager);
 
         addExtendedModifyListener(modifyListener);
+        initColorSetting();
+    }
+    
+
+    protected void initColorSetting() {       
+        this.setForeground(ITalendThemeService.getColor(PREFERENCE_COLOR_FOREGROUND).orElse(null));
+        this.setBackground(ITalendThemeService.getColor(PREFERENCE_COLOR_BACKGROUND).orElse(null));
+        this.setSelectionBackground(ITalendThemeService.getColor(PREFERENCE_COLOR_SELECTION_BACKGROUND).orElse(null));
+        this.setSelectionForeground(ITalendThemeService.getColor(PREFERENCE_COLOR_SELECTION_FOREGROUND).orElse(null));
     }
 
     /**

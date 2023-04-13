@@ -132,7 +132,7 @@ public class ContextTreeTable {
 
     private NatTable natTable;
 
-    // for bug TDI-32821， use LinkedList to keep the original order of context parameter list.
+    // for bug TDI-32821锛� use LinkedList to keep the original order of context parameter list.
     private List<ContextTreeNode> treeNodes = new LinkedList<ContextTreeNode>();
 
     private static Map<String, Boolean> expandMap = new HashMap<>();

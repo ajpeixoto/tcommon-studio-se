@@ -89,7 +89,7 @@ public abstract class DialogErrorForCellEditorListener implements ICellEditorLis
         final String errorMessage = validateValue(newValue, beanPosition);
         if (errorMessage == null) {
             newValidValueTyped(beanPosition, lastValidValue, newValue, state);
-            text.setBackground(text.getDisplay().getSystemColor(SWT.COLOR_WHITE));
+            text.setBackground(text.getParent().getBackground());
             lastValidValue = newValue;
         } else {
             text.setBackground(text.getDisplay().getSystemColor(SWT.COLOR_RED));
