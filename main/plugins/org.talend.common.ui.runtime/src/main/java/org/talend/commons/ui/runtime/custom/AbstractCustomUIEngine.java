@@ -10,16 +10,25 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.commons.ui.runtime;
+package org.talend.commons.ui.runtime.custom;
 
 
 /**
  * DOC cmeng  class global comment. Detailled comment
  */
-public interface ICustomUIEngine {
+public abstract class AbstractCustomUIEngine implements ICustomUIEngine {
 
-    void run(ICustomUI ui);
+    public AbstractCustomUIEngine() {
+        // nothing to do
+    }
 
-    void registerThreadLocalContext(String key, Object value);
+    @Override
+    public void run(ICustomUI ui) {
+        doRun(ui);
+    }
+
+    protected void doRun(ICustomUI ui) {
+        ui.run();
+    }
 
 }

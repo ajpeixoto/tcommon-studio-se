@@ -12,6 +12,8 @@
 // ============================================================================
 package org.talend.commons.ui.runtime;
 
+import org.talend.commons.ui.runtime.custom.ICustomUI;
+import org.talend.commons.ui.runtime.custom.ICustomUIEngine;
 
 /**
  * DOC cmeng  class global comment. Detailled comment

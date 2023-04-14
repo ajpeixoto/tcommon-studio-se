@@ -10,29 +10,39 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.commons.ui.runtime;
+package org.talend.commons.ui.runtime.custom;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.talend.commons.ui.runtime.custom.ICustomUI.IUIEvent;
+
 
 /**
  * DOC cmeng  class global comment. Detailled comment
  */
-public interface ICustomUI {
+public abstract class AbsUIEvent implements IUIEvent {
 
-    void run();
-    
-    void onEvent(IUIEvent event);
+    private String key;
 
-    public interface IEventListener {
+    private Map<String, Object> params = new HashMap<>();
 
-        void onEvent(IUIEvent event);
-
+    public AbsUIEvent(String key) {
+        this.key = key;
     }
 
-    public interface IUIEvent {
+    @Override
+    public String getEventKey() {
+        return key;
+    }
 
-        String getEventKey();
+    public void setKey(String key) {
+        this.key = key;
+    }
 
-        Object getEventParams();
-
+    @Override
+    public Map<String, Object> getEventParams() {
+        return params;
     }
 
 }
