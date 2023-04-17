@@ -18,9 +18,6 @@
 
 IEclipsePreferences#org-talend-designer-core:org-talend-themes-css-talend-base { /* pseudo attribute added to allow contributions without replacing this node, see Bug 466075 */
 	preferences:
-		'jobDesignerBackgroundColor=122,122,122'
-		'subjobColor=70,70,70'
-		'subjobTitleColor=102,191,230'
 		'forbiddenSubjobColor=207,226,236'
 		'forbiddenSubjobTitleColor=92,131,150'
 }
@@ -80,8 +77,8 @@ IEclipsePreferences#org-eclipse-ui-workbench:org-talend-themes-css-talend-base {
 		'org.eclipse.ui.editors.rangeIndicatorColor=27,118,153'
 		'org.eclipse.jface.REVISION_NEWEST_COLOR=75,44,3'
 		'org.eclipse.jface.REVISION_OLDEST_COLOR=154,113,61'
-		'org.talend.designer.core.lightColor=212,212,212'
-		'org.talend.designer.core.darkColor=0,0,0'
+		'org.talend.designer.core.lightColor=47,47,47'
+		'org.talend.designer.core.darkColor=20,20,20'
 		'org.talend.designer.core.alpha=95'
 		'org.talend.commons.ui.BgColorForEmptyArea=#org-eclipse-ui-workbench-DARK_BACKGROUND'
 		'org.talend.core.repository.REPO_STABLE_SECONDARY_ENTRY_COLOR=175,175,175'
@@ -137,6 +134,19 @@ IEclipsePreferences#org-eclipse-ui-workbench:org-talend-themes-css-talend-base {
 		'operatorColor=178,34,0'
 		'digitColor=160,32,0'
 		'invalidColor=178,0,34'
+		
+		/*Designer color preference page default color */
+		'jobDesignerBackgroundColor=47,47,47'
+		'subjobColor=0,0,0'
+		'subjobTitleColor=255,255,255'
+		'jobletColor=0,0,0'
+		'readOnlyBackgroundColor=181,180,180'
+		/*Joblet figure*/
+		'JOBLET_NORMAL_BG=0,0,0'
+		'JOBLET_HIDDEN_BG=255,255,255'
+		'JOBLET_PROBLEM_BG=250,72,80'
+		'SUBJOB_BORDER_FG=145,209,237'
+		'JOBLET_BORDER_FG=145,209,237'
 		
 		/*GEF Job Editor*/
 		'NODE_FIGURE_LABEL_FORCEGROUND=255,255,255'
