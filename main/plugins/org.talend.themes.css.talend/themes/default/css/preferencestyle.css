@@ -18,11 +18,8 @@
 
 IEclipsePreferences#org-talend-designer-core:org-talend-themes-css-talend-base { /* pseudo attribute added to allow contributions without replacing this node, see Bug 466075 */
 	preferences:
-		'jobDesignerBackgroundColor=250,250,250'
-		'subjobColor=207,226,236'
-		'subjobTitleColor=92,131,150'
-		'forbiddenSubjobColor=70,70,70'
-		'forbiddenSubjobTitleColor=102,191,230'
+		'forbiddenSubjobColor=0,0,0'
+		'forbiddenSubjobTitleColor=255,255,255'
 }
 
 IEclipsePreferences#org-eclipse-ui-workbench:org-talend-themes-css-talend-base { /* pseudo attribute added to allow contributions without replacing this node, see Bug 466075 */
@@ -75,6 +72,18 @@ IEclipsePreferences#org-eclipse-ui-workbench:org-talend-themes-css-talend-base {
 		'operatorColor=178,34,0'
 		'digitColor=160,32,0'
 		'invalidColor=178,0,34'
+		
+		/*Designer color preference page default color */
+		'jobDesignerBackgroundColor=250,250,250'
+		'subjobColor=207,226,236'
+		'subjobTitleColor=92,131,150'
+		'jobletColor=130,240,100'
+		'readOnlyBackgroundColor=231,231,231'
+		'JOBLET_NORMAL_BG=130,240,100'
+		'JOBLET_HIDDEN_BG=255,255,255'
+		'JOBLET_PROBLEM_BG=250,72,80'
+		'SUBJOB_BORDER_FG=224,233,238'
+		'JOBLET_BORDER_FG=135,243,146'
 }
 
 
