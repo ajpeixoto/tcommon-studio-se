@@ -18,7 +18,6 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.jface.resource.StringConverter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -94,8 +93,6 @@ public class ColorManager {
     public static final String BOLD_SUFFIX = "Bold"; //$NON-NLS-1$
 
     private Map<String, Color> colorMap;
-    
-    private static Map<String, Color> THEME_COLOR_MAP = new HashMap<String, Color>();
 
     private IPreferenceStore store;
 
@@ -119,12 +116,9 @@ public class ColorManager {
     }
 
     private static Color getThemeColor(String colorName) {
-        if (!THEME_COLOR_MAP.containsKey(colorName)) {
-            Color c = ITalendThemeService.getColor(colorName)
-                    .orElse(Display.getDefault().getSystemColor(SWT.COLOR_INFO_FOREGROUND));
-            THEME_COLOR_MAP.put(colorName, c);
-        }
-        return THEME_COLOR_MAP.get(colorName);
+        Color c = ITalendThemeService.getColor(colorName)
+                .orElse(Display.getDefault().getSystemColor(SWT.COLOR_INFO_FOREGROUND));
+        return c;
     }
 
     public void dispose() {
@@ -135,7 +129,6 @@ public class ColorManager {
             color.dispose();
         }
         colorMap = null;
-        THEME_COLOR_MAP.clear();
     }
 
     /**

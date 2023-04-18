@@ -38,7 +38,9 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPartSashContainer;
 import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
 import org.eclipse.e4.ui.model.application.ui.basic.MWindowElement;
 import org.eclipse.jface.dialogs.TrayDialog;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceManager;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IPerspectiveDescriptor;
 import org.eclipse.ui.IPerspectiveRegistry;
 import org.eclipse.ui.IWorkbench;
@@ -53,6 +55,8 @@ import org.eclipse.ui.views.IViewRegistry;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.LoginException;
 import org.talend.commons.exception.PersistenceException;
+import org.talend.commons.ui.runtime.CommonUIPlugin;
+import org.talend.commons.ui.swt.colorstyledtext.ColorManager;
 import org.talend.commons.utils.system.EclipseCommandLine;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
@@ -63,6 +67,8 @@ import org.talend.core.ui.branding.IBrandingConfiguration;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.core.ui.services.IGitUIProviderService;
 import org.talend.designer.codegen.CodeGeneratorActivator;
+import org.talend.designer.core.DesignerPlugin;
+import org.talend.designer.core.utils.DesignerColorUtils;
 import org.talend.designer.runprocess.RunProcessPlugin;
 import org.talend.login.ILoginTask;
 import org.talend.rcp.TalendSplashHandler;
@@ -294,6 +300,27 @@ public class ApplicationWorkbenchAdvisor extends IDEWorkbenchAdvisor {
             pm.remove("org.talend.core.prefs" + WorkbenchPlugin.PREFERENCE_PAGE_CATEGORY_SEPARATOR + "org.talend.repository.gitprovider.settings.GitPreferencePage");
         }
         pm.remove("org.eclipse.equinox.internal.p2.ui.sdk.ProvisioningPreferencePage"); //$NON-NLS-1$
+        
+        // Re-set 
+        if (!CommonUIPlugin.isFullyHeadless()) {
+            Display display = Display.getDefault();
+            if (display == null) {
+                display = Display.getCurrent();
+            }
+            if (display != null) {
+                display.syncExec(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        IPreferenceStore store = DesignerPlugin.getDefault().getPreferenceStore();
+                        // designer color
+                        DesignerColorUtils.initPreferenceDefault(store);
+                        // default colors for the ColorStyledText.
+                        ColorManager.initDefaultColors(store);
+                    }
+                });
+            }
+        }
     }
 
     @Override
