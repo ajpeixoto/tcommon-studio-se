@@ -12,25 +12,19 @@
 // ============================================================================
 package org.talend.commons.ui.runtime.custom;
 
+import java.util.Map;
+
 /**
  * DOC cmeng  class global comment. Detailled comment
  */
-public interface ICustomUIEngine {
+public interface IUIEvent {
 
-    void run(ICustomUI ui);
+    String getUIId();
 
-    void handleUIEvent(IUIEvent event);
+    void setUIId(String id);
 
-    void dispatchUIEvent(ICustomUI ui, IUIEvent event);
+    String getEventKey();
 
-    void registerThreadLocalContext(String key, Object value);
-
-    void registerUIEventHandler(String uiId, IUIEventHandler handler);
-
-    void unregisterUIEventHandler(String uiId);
-
-    void registerGlobalUIEventHandler(String eventId, IUIEventHandler handler);
-
-    void unregisterGlobalUIEventHandler(String eventId, IUIEventHandler handler);
+    Map<String, Object> getEventParams();
 
 }

@@ -15,20 +15,30 @@ package org.talend.commons.ui.runtime.custom;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.talend.commons.ui.runtime.custom.ICustomUI.IUIEvent;
-
-
 /**
  * DOC cmeng  class global comment. Detailled comment
  */
 public abstract class AbsUIEvent implements IUIEvent {
 
+    private String id;
+
     private String key;
 
     private Map<String, Object> params = new HashMap<>();
 
-    public AbsUIEvent(String key) {
+    public AbsUIEvent(String key, String id) {
         this.key = key;
+        this.id = id;
+    }
+
+    @Override
+    public String getUIId() {
+        return id;
+    }
+
+    @Override
+    public void setUIId(String id) {
+        this.id = id;
     }
 
     @Override
@@ -36,13 +46,29 @@ public abstract class AbsUIEvent implements IUIEvent {
         return key;
     }
 
-    public void setKey(String key) {
+    public void setEventKey(String key) {
         this.key = key;
     }
 
     @Override
     public Map<String, Object> getEventParams() {
         return params;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 
 }

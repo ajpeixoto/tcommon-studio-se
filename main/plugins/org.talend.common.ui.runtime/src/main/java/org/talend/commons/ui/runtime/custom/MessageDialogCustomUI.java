@@ -21,7 +21,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
  */
 public class MessageDialogCustomUI extends AbstractCustomUI {
 
-    private static final String ID = "MessageDialog";
+    private static final String UI_KEY = "MessageDialog";
 
     private int dialogType = MessageDialog.NONE;
 
@@ -30,7 +30,7 @@ public class MessageDialogCustomUI extends AbstractCustomUI {
     private String message;
 
     public MessageDialogCustomUI(int dialogType, String title, String message) {
-        super(ID, true);
+        super(UI_KEY, true);
         this.dialogType = dialogType;
         this.title = title;
         this.message = message;

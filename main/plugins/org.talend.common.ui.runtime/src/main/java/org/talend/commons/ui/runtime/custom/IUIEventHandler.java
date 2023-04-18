@@ -12,25 +12,14 @@
 // ============================================================================
 package org.talend.commons.ui.runtime.custom;
 
+
 /**
  * DOC cmeng  class global comment. Detailled comment
  */
-public interface ICustomUIEngine {
+public interface IUIEventHandler {
 
-    void run(ICustomUI ui);
+    boolean canHandle(IUIEvent event);
 
     void handleUIEvent(IUIEvent event);
-
-    void dispatchUIEvent(ICustomUI ui, IUIEvent event);
-
-    void registerThreadLocalContext(String key, Object value);
-
-    void registerUIEventHandler(String uiId, IUIEventHandler handler);
-
-    void unregisterUIEventHandler(String uiId);
-
-    void registerGlobalUIEventHandler(String eventId, IUIEventHandler handler);
-
-    void unregisterGlobalUIEventHandler(String eventId, IUIEventHandler handler);
 
 }

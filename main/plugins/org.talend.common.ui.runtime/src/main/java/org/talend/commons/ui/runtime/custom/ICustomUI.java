@@ -12,34 +12,16 @@
 // ============================================================================
 package org.talend.commons.ui.runtime.custom;
 
-import java.util.Map;
-
 /**
  * DOC cmeng  class global comment. Detailled comment
  */
-public interface ICustomUI {
+public interface ICustomUI extends IUIEventHandler {
 
     String getId();
 
     void run();
     
-    void handleUIEvent(IUIEvent event);
-
     void dispatchUIEvent(IUIEvent event);
-
-    public interface IEventHandler {
-
-        void handleEvent(IUIEvent event);
-
-    }
-
-    public interface IUIEvent {
-
-        String getEventKey();
-
-        Map<String, Object> getEventParams();
-
-    }
 
     static enum BuiltinEvent {
         open,
@@ -50,7 +32,7 @@ public interface ICustomUI {
     }
 
     static enum BuiltinParams {
-        uiId,
+        uiKey,
         title,
         message;
     }

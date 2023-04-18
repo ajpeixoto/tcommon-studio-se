@@ -14,13 +14,14 @@ package org.talend.commons.ui.runtime.custom;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.Semaphore;
 
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.TalendUI;
 
 /**
- * DOC cmeng  class global comment. Detailled comment
+ * DOC cmeng class global comment. Detailled comment
  */
 public abstract class AbstractCustomUI implements ICustomUI {
 
@@ -28,23 +29,31 @@ public abstract class AbstractCustomUI implements ICustomUI {
 
     private boolean isModalDialog = true;
 
-    private String id;
+    private String uiId;
+
+    private String uiKey;
 
     private ICustomUIEngine uiEngine;
 
-    private Map<String, IEventHandler> eventMap = new HashMap<>();
+    private Map<String, IUIEventHandler> eventMap = new HashMap<>();
 
-    public AbstractCustomUI(String id, boolean isModalDialog) {
-        this.id = id;
+    public AbstractCustomUI(String uiKey, boolean isModalDialog) {
+        this.uiId = UUID.randomUUID().toString();
+        this.uiKey = uiKey;
         this.isModalDialog = isModalDialog;
         this.uiEngine = TalendUI.get().getStigmaUIEngine();
         registerEventHandlers();
     }
 
     protected IUIEvent createOpenEvent() {
-        DefaultUIEvent openEvent = new DefaultUIEvent(BuiltinEvent.open.name());
-        openEvent.getEventParams().put(BuiltinParams.uiId.name(), getId());
+        DefaultUIEvent openEvent = new DefaultUIEvent(BuiltinEvent.open.name(), uiId);
+        openEvent.getEventParams().put(BuiltinParams.uiKey.name(), getId());
         return openEvent;
+    }
+
+    @Override
+    public boolean canHandle(IUIEvent event) {
+        return true;
     }
 
     @Override
@@ -60,9 +69,9 @@ public abstract class AbstractCustomUI implements ICustomUI {
         } else if (BuiltinEvent.cancel.name().equals(eventKey)) {
             closeDialog = onCancel(event);
         } else {
-            IEventHandler eventListener = eventMap.get(eventKey);
+            IUIEventHandler eventListener = eventMap.get(eventKey);
             if (eventListener != null) {
-                eventListener.handleEvent(event);
+                eventListener.handleUIEvent(event);
             } else {
                 ExceptionHandler.process(new Exception("Can't handle event: " + eventKey));
             }
@@ -73,6 +82,11 @@ public abstract class AbstractCustomUI implements ICustomUI {
     }
 
     protected void closeDialog() {
+        try {
+            dispatchUIEvent(new DefaultUIEvent(BuiltinEvent.close.name(), uiId));
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        }
         modalLock.release();
     }
 
@@ -101,10 +115,11 @@ public abstract class AbstractCustomUI implements ICustomUI {
 
     @Override
     public void dispatchUIEvent(IUIEvent event) {
+        event.setUIId(uiId);
         this.uiEngine.dispatchUIEvent(this, event);
     }
 
-    protected void registerEventListener(String key, IEventHandler listener) {
+    protected void registerEventListener(String key, IUIEventHandler listener) {
         eventMap.put(key, listener);
     }
 
@@ -115,7 +130,7 @@ public abstract class AbstractCustomUI implements ICustomUI {
 
     @Override
     public String getId() {
-        return this.id;
+        return this.uiKey;
     }
 
     protected void registerEventHandlers() {

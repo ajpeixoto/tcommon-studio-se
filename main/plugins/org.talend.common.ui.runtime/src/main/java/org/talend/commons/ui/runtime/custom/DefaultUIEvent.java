@@ -18,8 +18,8 @@ package org.talend.commons.ui.runtime.custom;
  */
 public class DefaultUIEvent extends AbsUIEvent {
 
-    public DefaultUIEvent(String key) {
-        super(key);
+    public DefaultUIEvent(String key, String id) {
+        super(key, id);
     }
 
 }
