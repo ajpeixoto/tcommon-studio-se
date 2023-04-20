@@ -48,7 +48,7 @@ public abstract class AbstractCustomUI implements ICustomUI {
 
     protected IUIEvent createOpenEvent() {
         DefaultUIEvent openEvent = new DefaultUIEvent(BuiltinEvent.open.name(), uiId);
-        openEvent.getEventParams().put(BuiltinParams.uiKey.name(), getId());
+        openEvent.getParams().put(BuiltinParams.uiKey.name(), getId());
         return openEvent;
     }
 
@@ -59,7 +59,7 @@ public abstract class AbstractCustomUI implements ICustomUI {
 
     @Override
     public void handleUIEvent(IUIEvent event) {
-        String eventKey = event.getEventKey();
+        String eventKey = event.getKey();
         boolean closeDialog = false;
         if (BuiltinEvent.ok.name().equals(eventKey)) {
             closeDialog = onOk(event);
@@ -80,6 +80,11 @@ public abstract class AbstractCustomUI implements ICustomUI {
         if (closeDialog) {
             closeDialog();
         }
+    }
+
+    @Override
+    public Object getUIData(IUIData uiData) {
+        return null;
     }
 
     protected void closeDialog() {

@@ -16,12 +16,6 @@ package org.talend.commons.ui.runtime.custom;
 /**
  * DOC cmeng  class global comment. Detailled comment
  */
-public interface IUIEventHandler {
-
-    boolean canHandle(IUIEvent event);
-
-    void handleUIEvent(IUIEvent event);
-
-    Object getUIData(IUIData uiData);
+public interface IUIData extends IUIEvent {
 
 }

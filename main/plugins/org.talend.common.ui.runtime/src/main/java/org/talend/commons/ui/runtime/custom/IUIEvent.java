@@ -23,8 +23,8 @@ public interface IUIEvent {
 
     void setUIId(String id);
 
-    String getEventKey();
+    String getKey();
 
-    Map<String, Object> getEventParams();
+    Map<String, Object> getParams();
 
 }

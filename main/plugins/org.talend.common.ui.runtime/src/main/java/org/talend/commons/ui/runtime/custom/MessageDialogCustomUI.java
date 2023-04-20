@@ -39,7 +39,7 @@ public class MessageDialogCustomUI extends AbstractCustomUI {
     @Override
     protected IUIEvent createOpenEvent() {
         IUIEvent openEvent = super.createOpenEvent();
-        Map<String, Object> params = openEvent.getEventParams();
+        Map<String, Object> params = openEvent.getParams();
         params.put(BuiltinParams.title.name(), this.title);
         params.put(BuiltinParams.message.name(), this.message);
         params.put("dialogType", dialogType);

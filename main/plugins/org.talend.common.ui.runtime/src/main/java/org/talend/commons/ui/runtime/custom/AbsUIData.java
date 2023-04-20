@@ -16,12 +16,10 @@ package org.talend.commons.ui.runtime.custom;
 /**
  * DOC cmeng  class global comment. Detailled comment
  */
-public interface IUIEventHandler {
+public abstract class AbsUIData extends AbsUIEvent implements IUIData {
 
-    boolean canHandle(IUIEvent event);
-
-    void handleUIEvent(IUIEvent event);
-
-    Object getUIData(IUIData uiData);
+    public AbsUIData(String key, String id) {
+        super(key, id);
+    }
 
 }

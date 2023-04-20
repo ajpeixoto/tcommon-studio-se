@@ -49,7 +49,7 @@ public abstract class AbstractCustomUIEngine implements ICustomUIEngine {
     public void handleUIEvent(IUIEvent event) {
         String uiId = event.getUIId();
         if (StringUtils.isBlank(uiId)) {
-            Set<IUIEventHandler> handlers = globalUIEventHandlers.get(event.getEventKey());
+            Set<IUIEventHandler> handlers = globalUIEventHandlers.get(event.getKey());
             if (handlers != null) {
                 new Thread(() -> {
                     for (IUIEventHandler handler : handlers) {
@@ -61,12 +61,22 @@ public abstract class AbstractCustomUIEngine implements ICustomUIEngine {
             }
         } else {
             IUIEventHandler handler = uiEventHandlers.get(uiId);
-            if (handler != null && handler.canHandle(event)) {
+            if (handler != null) {
                 new Thread(() -> {
                     handler.handleUIEvent(event);
                 }).start();
             }
         }
+    }
+
+    @Override
+    public Object getUIData(IUIData uiData) {
+        String uiId = uiData.getUIId();
+        IUIEventHandler handler = uiEventHandlers.get(uiId);
+        if (handler != null) {
+            return handler.getUIData(uiData);
+        }
+        return null;
     }
 
     @Override

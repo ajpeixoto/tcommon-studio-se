@@ -42,16 +42,16 @@ public abstract class AbsUIEvent implements IUIEvent {
     }
 
     @Override
-    public String getEventKey() {
+    public String getKey() {
         return key;
     }
 
-    public void setEventKey(String key) {
+    public void setKey(String key) {
         this.key = key;
     }
 
     @Override
-    public Map<String, Object> getEventParams() {
+    public Map<String, Object> getParams() {
         return params;
     }
 
@@ -61,14 +61,6 @@ public abstract class AbsUIEvent implements IUIEvent {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
     }
 
 }
