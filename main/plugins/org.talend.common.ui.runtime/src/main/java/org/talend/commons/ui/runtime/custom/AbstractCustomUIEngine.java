@@ -49,13 +49,6 @@ public abstract class AbstractCustomUIEngine implements ICustomUIEngine {
     public void handleUIEvent(IUIEvent event) {
         String uiId = event.getUIId();
         if (StringUtils.isBlank(uiId)) {
-            IUIEventHandler handler = uiEventHandlers.get(event.getUIId());
-            if (handler != null && handler.canHandle(event)) {
-                new Thread(() -> {
-                    handler.handleUIEvent(event);
-                }).start();
-            }
-        } else {
             Set<IUIEventHandler> handlers = globalUIEventHandlers.get(event.getEventKey());
             if (handlers != null) {
                 new Thread(() -> {
@@ -64,6 +57,13 @@ public abstract class AbstractCustomUIEngine implements ICustomUIEngine {
                             handler.handleUIEvent(event);
                         }
                     }
+                }).start();
+            }
+        } else {
+            IUIEventHandler handler = uiEventHandlers.get(uiId);
+            if (handler != null && handler.canHandle(event)) {
+                new Thread(() -> {
+                    handler.handleUIEvent(event);
                 }).start();
             }
         }

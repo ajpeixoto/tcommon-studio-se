@@ -33,4 +33,6 @@ public interface ICustomUIEngine {
 
     void unregisterGlobalUIEventHandler(String eventId, IUIEventHandler handler);
 
+    boolean isClientAlive();
+
 }

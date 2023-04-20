@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.TalendUI;
@@ -87,6 +88,7 @@ public abstract class AbstractCustomUI implements ICustomUI {
         } catch (Exception e) {
             ExceptionHandler.process(e);
         }
+        this.uiEngine.unregisterUIEventHandler(uiId);
         modalLock.release();
     }
 
@@ -97,10 +99,22 @@ public abstract class AbstractCustomUI implements ICustomUI {
         } catch (InterruptedException e) {
             throw new RuntimeException("Can't open dialog", e);
         }
+        this.uiEngine.registerUIEventHandler(uiId, this);
         doRun();
         if (isModalDialog()) {
             try {
-                modalLock.acquire();
+                while (true) {
+                    boolean succeed = modalLock.tryAcquire(5, TimeUnit.MINUTES);
+                    if (succeed) {
+                        break;
+                    }
+                    if (Thread.currentThread().isInterrupted()) {
+                        break;
+                    }
+                    if (this.uiEngine == null || !this.uiEngine.isClientAlive()) {
+                        break;
+                    }
+                }
             } catch (InterruptedException e) {
                 throw new RuntimeException("Dialog is closed unexpected", e);
             }
@@ -130,7 +144,7 @@ public abstract class AbstractCustomUI implements ICustomUI {
 
     @Override
     public String getId() {
-        return this.uiKey;
+        return this.uiId;
     }
 
     protected void registerEventHandlers() {
