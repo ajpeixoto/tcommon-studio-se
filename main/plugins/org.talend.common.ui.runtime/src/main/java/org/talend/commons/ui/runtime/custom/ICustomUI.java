@@ -12,6 +12,8 @@
 // ============================================================================
 package org.talend.commons.ui.runtime.custom;
 
+import java.util.concurrent.CompletableFuture;
+
 /**
  * DOC cmeng  class global comment. Detailled comment
  */
@@ -20,8 +22,16 @@ public interface ICustomUI extends IUIEventHandler {
     String getId();
 
     void run();
-    
+
+    /**
+     * Send event to stigma
+     */
     void dispatchUIEvent(IUIEvent event);
+
+    /**
+     * Request data from stigma
+     */
+    CompletableFuture<Object> requestUIData(IUIData uiData);
 
     static enum BuiltinEvent {
         open,

@@ -15,6 +15,7 @@ package org.talend.commons.ui.runtime.custom;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
@@ -136,6 +137,12 @@ public abstract class AbstractCustomUI implements ICustomUI {
     public void dispatchUIEvent(IUIEvent event) {
         event.setUIId(uiId);
         this.uiEngine.dispatchUIEvent(this, event);
+    }
+
+    @Override
+    public CompletableFuture<Object> requestUIData(IUIData uiData) {
+        uiData.setUIId(uiId);
+        return this.uiEngine.requestUIData(this, uiData);
     }
 
     protected void registerEventListener(String key, IUIEventHandler listener) {
