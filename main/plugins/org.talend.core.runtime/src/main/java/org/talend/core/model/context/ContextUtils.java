@@ -951,6 +951,14 @@ public class ContextUtils {
             params.add(param);
         }
 
+        public boolean remove(Item item, String param) {
+            Set<String> params = map.get(item);
+            if (params != null && params.contains(param)) {
+                return params.remove(param);
+            }
+            return false;
+        }
+
         @SuppressWarnings("unchecked")
         public Set<String> get(Item item) {
             Set<String> params = map.get(item);
