@@ -19,7 +19,12 @@ package org.talend.commons.ui.runtime.custom;
 public class DefaultUIEvent extends AbsUIEvent {
 
     public DefaultUIEvent(String key, String id) {
-        super(key, id);
+        // type is null, means it is an event side the custom ui, which id is 'id'
+        super(key, id, null);
+    }
+
+    public DefaultUIEvent(String key, String id, String type) {
+        super(key, id, type);
     }
 
 }

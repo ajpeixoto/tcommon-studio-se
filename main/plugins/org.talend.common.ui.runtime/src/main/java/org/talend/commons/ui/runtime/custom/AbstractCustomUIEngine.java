@@ -47,8 +47,7 @@ public abstract class AbstractCustomUIEngine implements ICustomUIEngine {
 
     @Override
     public void handleUIEvent(IUIEvent event) {
-        String uiId = event.getUIId();
-        if (StringUtils.isBlank(uiId)) {
+        if (StringUtils.equals(event.getType(), IUIEvent.TYPE_GLOBAL)) {
             Set<IUIEventHandler> handlers = globalUIEventHandlers.get(event.getKey());
             if (handlers != null) {
                 new Thread(() -> {
@@ -60,7 +59,7 @@ public abstract class AbstractCustomUIEngine implements ICustomUIEngine {
                 }).start();
             }
         } else {
-            IUIEventHandler handler = uiEventHandlers.get(uiId);
+            IUIEventHandler handler = uiEventHandlers.get(event.getUIId());
             if (handler != null) {
                 new Thread(() -> {
                     handler.handleUIEvent(event);
@@ -94,16 +93,25 @@ public abstract class AbstractCustomUIEngine implements ICustomUIEngine {
 
     @Override
     public void registerGlobalUIEventHandler(String eventId, IUIEventHandler handler) {
-        Set<IUIEventHandler> handlers = globalUIEventHandlers.getOrDefault(eventId,
-                Collections.synchronizedSet(new LinkedHashSet<>()));
+        Set<IUIEventHandler> handlers = globalUIEventHandlers.get(eventId);
+        if (handlers == null) {
+            synchronized (globalUIEventHandlers) {
+                handlers = globalUIEventHandlers.get(eventId);
+                if (handlers == null) {
+                    handlers = Collections.synchronizedSet(new LinkedHashSet<>());
+                    globalUIEventHandlers.put(eventId, handlers);
+                }
+            }
+        }
         handlers.add(handler);
     }
 
     @Override
     public void unregisterGlobalUIEventHandler(String eventId, IUIEventHandler handler) {
-        Set<IUIEventHandler> handlers = globalUIEventHandlers.getOrDefault(eventId,
-                Collections.synchronizedSet(new LinkedHashSet<>()));
-        handlers.remove(handler);
+        Set<IUIEventHandler> handlers = globalUIEventHandlers.get(eventId);
+        if (handlers != null) {
+            handlers.remove(handler);
+        }
     }
 
 }

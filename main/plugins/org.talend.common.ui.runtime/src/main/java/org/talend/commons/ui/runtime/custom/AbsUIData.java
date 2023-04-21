@@ -18,8 +18,8 @@ package org.talend.commons.ui.runtime.custom;
  */
 public abstract class AbsUIData extends AbsUIEvent implements IUIData {
 
-    public AbsUIData(String key, String id) {
-        super(key, id);
+    public AbsUIData(String key, String id, String type) {
+        super(key, id, type);
     }
 
 }

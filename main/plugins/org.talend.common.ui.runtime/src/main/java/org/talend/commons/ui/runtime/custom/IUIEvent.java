@@ -19,6 +19,10 @@ import java.util.Map;
  */
 public interface IUIEvent {
 
+    static final String TYPE_GLOBAL = "global";
+
+    String getType();
+
     String getUIId();
 
     void setUIId(String id);

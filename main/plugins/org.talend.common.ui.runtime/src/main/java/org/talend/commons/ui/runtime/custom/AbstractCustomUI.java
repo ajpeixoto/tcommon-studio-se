@@ -48,7 +48,7 @@ public abstract class AbstractCustomUI implements ICustomUI {
     }
 
     protected IUIEvent createOpenEvent() {
-        DefaultUIEvent openEvent = new DefaultUIEvent(BuiltinEvent.open.name(), uiId);
+        DefaultUIEvent openEvent = new DefaultUIEvent(BuiltinEvent.open.name(), uiId, IUIEvent.TYPE_GLOBAL);
         openEvent.getParams().put(BuiltinParams.uiKey.name(), getId());
         return openEvent;
     }

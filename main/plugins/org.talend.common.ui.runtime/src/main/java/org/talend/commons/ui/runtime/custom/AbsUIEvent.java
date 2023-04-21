@@ -20,15 +20,18 @@ import java.util.Map;
  */
 public abstract class AbsUIEvent implements IUIEvent {
 
+    private String type;
+
     private String id;
 
     private String key;
 
     private Map<String, Object> params = new HashMap<>();
 
-    public AbsUIEvent(String key, String id) {
+    public AbsUIEvent(String key, String id, String type) {
         this.key = key;
         this.id = id;
+        this.type = type;
     }
 
     @Override
@@ -48,6 +51,15 @@ public abstract class AbsUIEvent implements IUIEvent {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    @Override
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     @Override
