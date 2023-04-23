@@ -19,7 +19,7 @@ import java.util.concurrent.CompletableFuture;
  */
 public interface ICustomUIEngine {
 
-    void run(ICustomUI ui);
+    <T> T run(ICustomUI ui);
 
     /**
      * Handle event from stigma
@@ -29,7 +29,7 @@ public interface ICustomUIEngine {
     /**
      * Provide UI data to stigma
      */
-    Object getUIData(IUIData uiData);
+    Object provideUIData(IUIData uiData);
 
     /**
      * Send event to stigma

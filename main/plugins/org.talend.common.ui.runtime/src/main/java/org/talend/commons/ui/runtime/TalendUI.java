@@ -58,20 +58,26 @@ public class TalendUI {
         this.stigmaUIEngine = engine;
     }
 
-    public void run(Runnable studioRun, ICustomUI stigmaRun) {
+    public <T> T run(IStudioRunnable studioRun, ICustomUI stigmaRun) {
         if (isStudio()) {
-            runInStudio(studioRun);
+            return runInStudio(studioRun);
         } else {
-            runInStigma(stigmaRun);
+            return runInStigma(stigmaRun);
         }
     }
 
-    public void runInStudio(Runnable run) {
-        run.run();
+    public <T> T runInStudio(IStudioRunnable run) {
+        return run.run();
     }
 
-    public void runInStigma(ICustomUI ui) {
-        stigmaUIEngine.run(ui);
+    public <T> T runInStigma(ICustomUI ui) {
+        return stigmaUIEngine.run(ui);
+    }
+
+    public static interface IStudioRunnable {
+
+        <T> T run();
+
     }
 
 }

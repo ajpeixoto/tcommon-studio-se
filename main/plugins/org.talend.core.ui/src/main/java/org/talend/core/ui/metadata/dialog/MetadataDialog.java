@@ -80,7 +80,7 @@ import org.talend.designer.core.IDesignerCoreService;
  * $Id$
  *
  */
-public class MetadataDialog extends Dialog {
+public class MetadataDialog extends Dialog implements IMetadataDialog {
 
     private static final String DATABASE_LABEL = "Database"; //$NON-NLS-1$
 

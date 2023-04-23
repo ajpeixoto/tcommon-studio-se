@@ -25,7 +25,7 @@ import org.talend.commons.ui.runtime.TalendUI;
 /**
  * DOC cmeng class global comment. Detailled comment
  */
-public abstract class AbstractCustomUI implements ICustomUI {
+public abstract class AbstractCustomUI<T> implements ICustomUI {
 
     private Semaphore modalLock = new Semaphore(1);
 
@@ -36,6 +36,8 @@ public abstract class AbstractCustomUI implements ICustomUI {
     private String uiKey;
 
     private ICustomUIEngine uiEngine;
+
+    private T dialogResult;
 
     private Map<String, IUIEventHandler> eventMap = new HashMap<>();
 
@@ -49,7 +51,7 @@ public abstract class AbstractCustomUI implements ICustomUI {
 
     protected IUIEvent createOpenEvent() {
         DefaultUIEvent openEvent = new DefaultUIEvent(BuiltinEvent.open.name(), uiId, IUIEvent.TYPE_GLOBAL);
-        openEvent.getParams().put(BuiltinParams.uiKey.name(), getId());
+        openEvent.getParams().put(BuiltinParams.uiKey.name(), getUiKey());
         return openEvent;
     }
 
@@ -84,11 +86,12 @@ public abstract class AbstractCustomUI implements ICustomUI {
     }
 
     @Override
-    public Object getUIData(IUIData uiData) {
-        return null;
+    public Object provideUIData(IUIData uiData) {
+        return getUIEngine().provideUIData(uiData);
     }
 
     protected void closeDialog() {
+        dialogResult = getDialogData();
         try {
             dispatchUIEvent(new DefaultUIEvent(BuiltinEvent.close.name(), uiId));
         } catch (Exception e) {
@@ -96,36 +99,47 @@ public abstract class AbstractCustomUI implements ICustomUI {
         }
         this.uiEngine.unregisterUIEventHandler(uiId);
         modalLock.release();
+        onDialogClosed();
     }
 
     @Override
-    public void run() {
+    public T run() {
         try {
             modalLock.acquire();
         } catch (InterruptedException e) {
             throw new RuntimeException("Can't open dialog", e);
         }
-        this.uiEngine.registerUIEventHandler(uiId, this);
-        doRun();
-        if (isModalDialog()) {
-            try {
-                while (true) {
-                    boolean succeed = modalLock.tryAcquire(5, TimeUnit.MINUTES);
-                    if (succeed) {
-                        break;
+        try {
+            this.uiEngine.registerUIEventHandler(uiId, this);
+            doRun();
+            if (isModalDialog()) {
+                try {
+                    while (true) {
+                        boolean succeed = modalLock.tryAcquire(5, TimeUnit.MINUTES);
+                        if (succeed) {
+                            break;
+                        }
+                        if (Thread.currentThread().isInterrupted()) {
+                            throw new InterruptedException();
+                        }
+                        if (this.uiEngine == null || !this.uiEngine.isClientAlive()) {
+                            throw new Exception("Lose connection with client");
+                        }
                     }
-                    if (Thread.currentThread().isInterrupted()) {
-                        break;
-                    }
-                    if (this.uiEngine == null || !this.uiEngine.isClientAlive()) {
-                        break;
-                    }
+                } catch (Exception e) {
+                    throw new RuntimeException("Dialog is closed unexpected", e);
                 }
-            } catch (InterruptedException e) {
-                throw new RuntimeException("Dialog is closed unexpected", e);
             }
+            return dialogResult;
+        } finally {
+            modalLock.release();
         }
-        modalLock.release();
+    }
+
+    abstract protected T getDialogData();
+
+    protected void onDialogClosed() {
+        // nothing to do
     }
 
     protected void doRun() {
@@ -154,9 +168,17 @@ public abstract class AbstractCustomUI implements ICustomUI {
         return isModalDialog;
     }
 
+    protected ICustomUIEngine getUIEngine() {
+        return this.uiEngine;
+    }
+
     @Override
     public String getId() {
         return this.uiId;
+    }
+
+    public String getUiKey() {
+        return uiKey;
     }
 
     protected void registerEventHandlers() {

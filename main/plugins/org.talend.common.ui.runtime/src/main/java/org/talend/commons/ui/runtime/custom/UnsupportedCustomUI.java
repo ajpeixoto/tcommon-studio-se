@@ -14,27 +14,23 @@ package org.talend.commons.ui.runtime.custom;
 
 import java.util.Map;
 
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.talend.commons.exception.ExceptionHandler;
-import org.talend.commons.ui.runtime.custom.MessageDialogCustomUI.IMessageDialogResult;
+import org.talend.commons.ui.runtime.custom.UnsupportedCustomUI.IUnsupportedDialogResult;
 
 /**
  * DOC cmeng  class global comment. Detailled comment
  */
-public class MessageDialogCustomUI extends AbstractCustomUI<IMessageDialogResult> {
+public class UnsupportedCustomUI extends AbstractCustomUI<IUnsupportedDialogResult> {
 
-    private static final String UI_KEY = "MessageDialog";
+    private static final String UI_KEY = "UnsupportedDialog";
 
-    private int dialogType = MessageDialog.NONE;
-
-    private String title;
+    private String dialogName;
 
     private String message;
 
-    public MessageDialogCustomUI(int dialogType, String title, String message) {
+    public UnsupportedCustomUI(String dialogName, String message) {
         super(UI_KEY, true);
-        this.dialogType = dialogType;
-        this.title = title;
+        this.dialogName = dialogName;
         this.message = message;
     }
 
@@ -42,15 +38,14 @@ public class MessageDialogCustomUI extends AbstractCustomUI<IMessageDialogResult
     protected IUIEvent createOpenEvent() {
         IUIEvent openEvent = super.createOpenEvent();
         Map<String, Object> params = openEvent.getParams();
-        params.put(BuiltinParams.title.name(), this.title);
+        params.put(BuiltinParams.name.name(), this.dialogName);
         params.put(BuiltinParams.message.name(), this.message);
-        params.put("dialogType", dialogType);
         return openEvent;
     }
 
     @Override
-    protected IMessageDialogResult getDialogData() {
-        MessageDialogResult result = new MessageDialogResult();
+    protected IUnsupportedDialogResult getDialogData() {
+        UnsupportedDialogResult result = new UnsupportedDialogResult();
         DefaultUIData uiData = new DefaultUIData("openResult", getId());
         try {
             result.openResult = requestUIData(uiData).get();
@@ -60,13 +55,13 @@ public class MessageDialogCustomUI extends AbstractCustomUI<IMessageDialogResult
         return result;
     }
 
-    public static interface IMessageDialogResult {
+    public static interface IUnsupportedDialogResult {
 
         Object getOpenResult();
 
     }
 
-    public static class MessageDialogResult implements IMessageDialogResult {
+    public static class UnsupportedDialogResult implements IUnsupportedDialogResult {
 
         private Object openResult;
 

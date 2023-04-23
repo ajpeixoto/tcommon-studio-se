@@ -21,7 +21,7 @@ public interface ICustomUI extends IUIEventHandler {
 
     String getId();
 
-    void run();
+    <T> T run();
 
     /**
      * Send event to stigma
@@ -43,6 +43,7 @@ public interface ICustomUI extends IUIEventHandler {
 
     static enum BuiltinParams {
         uiKey,
+        name,
         title,
         message;
     }

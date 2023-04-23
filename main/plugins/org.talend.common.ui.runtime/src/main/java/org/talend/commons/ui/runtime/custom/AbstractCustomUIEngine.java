@@ -37,12 +37,12 @@ public abstract class AbstractCustomUIEngine implements ICustomUIEngine {
     }
 
     @Override
-    public void run(ICustomUI ui) {
-        doRun(ui);
+    public <T> T run(ICustomUI ui) {
+        return doRun(ui);
     }
 
-    protected void doRun(ICustomUI ui) {
-        ui.run();
+    protected <T> T doRun(ICustomUI ui) {
+        return ui.run();
     }
 
     @Override
@@ -69,11 +69,11 @@ public abstract class AbstractCustomUIEngine implements ICustomUIEngine {
     }
 
     @Override
-    public Object getUIData(IUIData uiData) {
+    public Object provideUIData(IUIData uiData) {
         String uiId = uiData.getUIId();
         IUIEventHandler handler = uiEventHandlers.get(uiId);
         if (handler != null) {
-            return handler.getUIData(uiData);
+            return handler.provideUIData(uiData);
         }
         return null;
     }
