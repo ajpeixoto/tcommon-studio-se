@@ -12,42 +12,21 @@
 // ============================================================================
 package org.talend.commons.ui.runtime.custom;
 
-import java.util.concurrent.CompletableFuture;
 
 /**
  * DOC cmeng  class global comment. Detailled comment
  */
-public interface ICustomUI<T> extends IUIEventHandler {
+public class MessageDialogResult implements IMessageDialogResult {
 
-    String getId();
+    private Object openResult;
 
-    T getModel();
-
-    T run();
-
-    /**
-     * Send event to stigma
-     */
-    void dispatchUIEvent(IUIEvent event);
-
-    /**
-     * Request data from stigma
-     */
-    CompletableFuture<Object> requestUIData(IUIData uiData);
-
-    static enum BuiltinEvent {
-        open,
-        ok,
-        apply,
-        close,
-        cancel;
+    @Override
+    public Object getOpenResult() {
+        return openResult;
     }
 
-    static enum BuiltinParams {
-        uiKey,
-        name,
-        title,
-        message;
+    public void setOpenResult(Object openResult) {
+        this.openResult = openResult;
     }
 
 }

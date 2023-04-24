@@ -12,23 +12,29 @@
 // ============================================================================
 package org.talend.core.ui.metadata.dialog;
 
+import org.talend.commons.ui.runtime.custom.ICustomUIDialog;
 import org.talend.core.model.metadata.IMetadataTable;
 
 /**
  * DOC cmeng  class global comment. Detailled comment
  */
-public interface IMetadataDialog {
+public interface IMetadataDialog extends ICustomUIDialog {
 
-    void setText(String title);
+    default void setText(String title) {
+    }
 
-    void setInputReadOnly(boolean readonly);
+    default void setInputReadOnly(boolean readonly) {
+    }
 
-    void setOutputReadOnly(boolean readonly);
+    default void setOutputReadOnly(boolean readonly) {
+    }
 
-    int open();
+    default IMetadataTable getInputMetaData() {
+        return null;
+    }
 
-    IMetadataTable getInputMetaData();
-
-    IMetadataTable getOutputMetaData();
+    default IMetadataTable getOutputMetaData() {
+        return null;
+    }
 
 }

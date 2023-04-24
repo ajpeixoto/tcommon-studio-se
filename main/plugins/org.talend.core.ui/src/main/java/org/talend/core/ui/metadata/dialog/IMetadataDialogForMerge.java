@@ -10,44 +10,31 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.commons.ui.runtime.custom;
+package org.talend.core.ui.metadata.dialog;
 
-import java.util.concurrent.CompletableFuture;
+import org.talend.commons.ui.runtime.custom.ICustomUIDialog;
+import org.talend.core.model.metadata.IMetadataTable;
 
 /**
  * DOC cmeng  class global comment. Detailled comment
  */
-public interface ICustomUI<T> extends IUIEventHandler {
+public interface IMetadataDialogForMerge extends ICustomUIDialog {
 
-    String getId();
-
-    T getModel();
-
-    T run();
-
-    /**
-     * Send event to stigma
-     */
-    void dispatchUIEvent(IUIEvent event);
-
-    /**
-     * Request data from stigma
-     */
-    CompletableFuture<Object> requestUIData(IUIData uiData);
-
-    static enum BuiltinEvent {
-        open,
-        ok,
-        apply,
-        close,
-        cancel;
+    default void setText(String title) {
     }
 
-    static enum BuiltinParams {
-        uiKey,
-        name,
-        title,
-        message;
+    default void setInputReadOnly(boolean readonly) {
+    }
+
+    default void setOutputReadOnly(boolean readonly) {
+    }
+
+    default IMetadataTable getInputMetaData() {
+        return null;
+    }
+
+    default IMetadataTable getOutputMetaData() {
+        return null;
     }
 
 }

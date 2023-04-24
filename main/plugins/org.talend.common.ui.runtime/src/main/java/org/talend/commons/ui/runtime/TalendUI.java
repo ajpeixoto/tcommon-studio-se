@@ -58,7 +58,17 @@ public class TalendUI {
         this.stigmaUIEngine = engine;
     }
 
-    public <T> T run(IStudioRunnable studioRun, ICustomUI stigmaRun) {
+    public <T> UIHandler<T> createHandler(IStudioRunnable<T> studioRun, ICustomUI<T> stigmaRun) {
+        T model = null;
+        if (isStudio()) {
+            model = studioRun.getModel();
+        } else {
+            model = stigmaRun.getModel();
+        }
+        return new UIHandler<>(model, studioRun, stigmaRun);
+    }
+
+    public <T> T run(IStudioRunnable<T> studioRun, ICustomUI<T> stigmaRun) {
         if (isStudio()) {
             return runInStudio(studioRun);
         } else {
@@ -66,17 +76,80 @@ public class TalendUI {
         }
     }
 
-    public <T> T runInStudio(IStudioRunnable run) {
+    public <T> T runInStudio(IStudioRunnable<T> run) {
         return run.run();
     }
 
-    public <T> T runInStigma(ICustomUI ui) {
+    public <T> T runInStigma(ICustomUI<T> ui) {
+        if (ui == null) {
+            throw new RuntimeException("Custom ui is not defined!");
+        }
         return stigmaUIEngine.run(ui);
     }
 
-    public static interface IStudioRunnable {
+    public static interface IStudioRunnable<T> {
 
-        <T> T run();
+        default T getModel() {
+            return null;
+        }
+
+        T run();
+
+    }
+
+    public static abstract class AbsStudioRunnable<T> implements IStudioRunnable<T> {
+
+        private T model;
+
+        public AbsStudioRunnable() {
+        }
+
+        public void init() {
+            // nothing to do
+        }
+
+        @Override
+        public T getModel() {
+            if (model == null) {
+                model = createModel();
+            }
+            return model;
+        }
+
+        @Override
+        public T run() {
+            init();
+            return doRun();
+        }
+
+        abstract public T doRun();
+
+        abstract public T createModel();
+
+    }
+
+    public class UIHandler<T> {
+
+        T model;
+
+        IStudioRunnable<T> studioRun;
+
+        ICustomUI<T> stigmaRun;
+
+        public UIHandler(T model, IStudioRunnable<T> studioRun, ICustomUI<T> stigmaRun) {
+            super();
+            this.model = model;
+            this.studioRun = studioRun;
+            this.stigmaRun = stigmaRun;
+        }
+
+        public T get() {
+            return model;
+        }
+
+        public T run() {
+            return TalendUI.this.run(studioRun, stigmaRun);
+        }
 
     }
 

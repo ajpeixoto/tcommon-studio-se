@@ -25,7 +25,7 @@ import org.talend.commons.ui.runtime.TalendUI;
 /**
  * DOC cmeng class global comment. Detailled comment
  */
-public abstract class AbstractCustomUI<T> implements ICustomUI {
+public abstract class AbstractCustomUI<T> implements ICustomUI<T> {
 
     private Semaphore modalLock = new Semaphore(1);
 
@@ -53,6 +53,16 @@ public abstract class AbstractCustomUI<T> implements ICustomUI {
         DefaultUIEvent openEvent = new DefaultUIEvent(BuiltinEvent.open.name(), uiId, IUIEvent.TYPE_GLOBAL);
         openEvent.getParams().put(BuiltinParams.uiKey.name(), getUiKey());
         return openEvent;
+    }
+
+    protected DefaultUIEvent createUIEvent(String key) {
+        DefaultUIEvent event = new DefaultUIEvent(key, uiId);
+        return event;
+    }
+
+    protected DefaultUIData createUIDataEvent(String key) {
+        DefaultUIData uiData = new DefaultUIData(key, uiId);
+        return uiData;
     }
 
     @Override
@@ -91,7 +101,7 @@ public abstract class AbstractCustomUI<T> implements ICustomUI {
     }
 
     protected void closeDialog() {
-        dialogResult = getDialogData();
+        dialogResult = collectDialogData();
         try {
             dispatchUIEvent(new DefaultUIEvent(BuiltinEvent.close.name(), uiId));
         } catch (Exception e) {
@@ -136,7 +146,7 @@ public abstract class AbstractCustomUI<T> implements ICustomUI {
         }
     }
 
-    abstract protected T getDialogData();
+    abstract protected T collectDialogData();
 
     protected void onDialogClosed() {
         // nothing to do

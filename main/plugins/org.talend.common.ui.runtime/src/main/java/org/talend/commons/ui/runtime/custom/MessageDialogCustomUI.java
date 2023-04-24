@@ -16,12 +16,11 @@ import java.util.Map;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.talend.commons.exception.ExceptionHandler;
-import org.talend.commons.ui.runtime.custom.MessageDialogCustomUI.IMessageDialogResult;
 
 /**
  * DOC cmeng  class global comment. Detailled comment
  */
-public class MessageDialogCustomUI extends AbstractCustomUI<IMessageDialogResult> {
+public class MessageDialogCustomUI extends AbstractCustomUI<IMessageDialogResult> implements IMessageDialogResult {
 
     private static final String UI_KEY = "MessageDialog";
 
@@ -30,6 +29,8 @@ public class MessageDialogCustomUI extends AbstractCustomUI<IMessageDialogResult
     private String title;
 
     private String message;
+
+    private Object openResult;
 
     public MessageDialogCustomUI(int dialogType, String title, String message) {
         super(UI_KEY, true);
@@ -49,36 +50,24 @@ public class MessageDialogCustomUI extends AbstractCustomUI<IMessageDialogResult
     }
 
     @Override
-    protected IMessageDialogResult getDialogData() {
-        MessageDialogResult result = new MessageDialogResult();
-        DefaultUIData uiData = new DefaultUIData("openResult", getId());
+    protected IMessageDialogResult collectDialogData() {
+        DefaultUIData uiData = createUIDataEvent("openResult");
         try {
-            result.openResult = requestUIData(uiData).get();
+            openResult = requestUIData(uiData).get();
         } catch (Exception e) {
             ExceptionHandler.process(e);
         }
-        return result;
+        return this;
     }
 
-    public static interface IMessageDialogResult {
-
-        Object getOpenResult();
-
+    @Override
+    public IMessageDialogResult getModel() {
+        return this;
     }
 
-    public static class MessageDialogResult implements IMessageDialogResult {
-
-        private Object openResult;
-
-        @Override
-        public Object getOpenResult() {
-            return openResult;
-        }
-
-        public void setOpenResult(Object openResult) {
-            this.openResult = openResult;
-        }
-
+    @Override
+    public Object getOpenResult() {
+        return openResult;
     }
 
 }

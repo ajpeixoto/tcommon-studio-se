@@ -64,7 +64,7 @@ import org.talend.core.ui.metadata.editor.MetadataTableEditorView;
  * $Id: MetadataDialog.java 4400 2007-07-10 07:59:06 +0000 (星期二, 10 七月 2007) bqian $
  *
  */
-public class MetadataDialogForMerge extends Dialog {
+public class MetadataDialogForMerge extends Dialog implements IMetadataDialogForMerge {
 
     private static final String ELT_LABEL = "ELT"; //$NON-NLS-1$
 
@@ -129,6 +129,8 @@ public class MetadataDialogForMerge extends Dialog {
     Button copyToInput;
 
     Button copySelectionToInput;
+
+    private int openResult;
 
     public void init(Shell parent, IMetadataTable inputMetaTable, INode inputNode, IMetadataTable outputMetaTable,
             INode outputNode, CommandStack commandStack) {
@@ -200,8 +202,20 @@ public class MetadataDialogForMerge extends Dialog {
         this(parent, null, null, outputMetaTable, outputNode, commandStack);
     }
 
+    @Override
     public void setText(String text) {
         this.text = text;
+    }
+
+    @Override
+    public int getOpenResult() {
+        return openResult;
+    }
+
+    @Override
+    public int open() {
+        openResult = super.open();
+        return openResult;
     }
 
     @Override
@@ -556,6 +570,7 @@ public class MetadataDialogForMerge extends Dialog {
      *
      * @return
      */
+    @Override
     public IMetadataTable getInputMetaData() {
         if (inputMetaView == null) {
             return null;
@@ -580,14 +595,17 @@ public class MetadataDialogForMerge extends Dialog {
      *
      * @return
      */
+    @Override
     public IMetadataTable getOutputMetaData() {
         return outputMetaView.getMetadataTableEditor().getMetadataTable();
     }
 
+    @Override
     public void setInputReadOnly(boolean inputReadOnly) {
         this.inputReadOnly = inputReadOnly;
     }
 
+    @Override
     public void setOutputReadOnly(boolean outputReadOnly) {
         this.outputReadOnly = outputReadOnly;
     }

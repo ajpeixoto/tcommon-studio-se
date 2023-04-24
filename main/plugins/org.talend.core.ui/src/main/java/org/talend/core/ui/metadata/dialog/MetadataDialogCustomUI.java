@@ -12,23 +12,29 @@
 // ============================================================================
 package org.talend.core.ui.metadata.dialog;
 
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.custom.AbstractCustomUI;
 import org.talend.commons.ui.runtime.custom.IUIEvent;
+import org.talend.core.model.metadata.IMetadataColumn;
 import org.talend.core.model.metadata.IMetadataTable;
-import org.talend.core.ui.metadata.dialog.MetadataDialogCustomUI.IMetadataDialogResult;
+import org.talend.core.model.metadata.MetadataColumn;
 
 /**
  * DOC cmeng  class global comment. Detailled comment
  */
-public class MetadataDialogCustomUI extends AbstractCustomUI<IMetadataDialogResult> implements IMetadataDialog {
+public class MetadataDialogCustomUI extends AbstractCustomUI<IMetadataDialog> implements IMetadataDialog {
 
     private static final String UI_KEY = "MetadataDialog";
 
     private String title;
 
     private IMetadataTable outputMetaTable;
+
+    private Object openResult;
 
     public MetadataDialogCustomUI(IMetadataTable outputMetaTable) {
         super(UI_KEY, true);
@@ -60,7 +66,42 @@ public class MetadataDialogCustomUI extends AbstractCustomUI<IMetadataDialogResu
     }
 
     @Override
+    protected IMetadataDialog collectDialogData() {
+        CompletableFuture<Object> openResultRequest = requestUIData(createUIDataEvent("openResult"));
+        CompletableFuture<Object> outputMetaDataRequest = requestUIData(createUIDataEvent("output"));
+        try {
+            openResult = openResultRequest.get();
+            List<Object> output = (List<Object>) outputMetaDataRequest.get();
+//            Object outputObj = this.getUIEngine().readJson(output.toString());
+//            List objList = this.getUIEngine().convertValue(outputObj, List.class);
+            List<IMetadataColumn> listColumns = outputMetaTable.getListColumns();
+            Class<? extends IMetadataColumn> clazz = listColumns.get(0).getClass();
+            for (int i = 0; i < output.size(); i++) {
+                Object obj = output.get(i);
+                IMetadataColumn convertValue = this.getUIEngine().convertValue(obj, clazz);
+                IMetadataColumn originalColumn = null;
+                if (i < listColumns.size()) {
+                    originalColumn = listColumns.get(i);
+                } else {
+                    originalColumn = new MetadataColumn();
+                    listColumns.add(originalColumn);
+                }
+                originalColumn.updateWith(convertValue);
+            }
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        }
+
+        return this;
+    }
+
+    @Override
     public int open() {
+        return 0;
+    }
+
+    @Override
+    public int getOpenResult() {
         return 0;
     }
 
@@ -71,32 +112,12 @@ public class MetadataDialogCustomUI extends AbstractCustomUI<IMetadataDialogResu
 
     @Override
     public IMetadataTable getOutputMetaData() {
-        return null;
+        return outputMetaTable;
     }
 
     @Override
-    protected IMetadataDialogResult getDialogData() {
-        return null;
+    public IMetadataDialog getModel() {
+        return this;
     }
 
-    public static interface IMetadataDialogResult {
-
-        Object getOpenResult();
-
-    }
-
-    public static class MetadataDialogResult implements IMetadataDialogResult {
-
-        private Object openResult;
-
-        @Override
-        public Object getOpenResult() {
-            return openResult;
-        }
-
-        public void setOpenResult(Object openResult) {
-            this.openResult = openResult;
-        }
-
-    }
 }

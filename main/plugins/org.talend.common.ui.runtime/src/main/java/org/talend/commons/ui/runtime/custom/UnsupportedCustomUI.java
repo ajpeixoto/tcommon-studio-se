@@ -12,15 +12,14 @@
 // ============================================================================
 package org.talend.commons.ui.runtime.custom;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Map;
-
-import org.talend.commons.exception.ExceptionHandler;
-import org.talend.commons.ui.runtime.custom.UnsupportedCustomUI.IUnsupportedDialogResult;
 
 /**
  * DOC cmeng  class global comment. Detailled comment
  */
-public class UnsupportedCustomUI extends AbstractCustomUI<IUnsupportedDialogResult> {
+public class UnsupportedCustomUI<T> extends AbstractCustomUI<T> {
 
     private static final String UI_KEY = "UnsupportedDialog";
 
@@ -28,10 +27,23 @@ public class UnsupportedCustomUI extends AbstractCustomUI<IUnsupportedDialogResu
 
     private String message;
 
-    public UnsupportedCustomUI(String dialogName, String message) {
+    private T model;
+
+    public UnsupportedCustomUI(String dialogName, T model) {
+        super(UI_KEY, true);
+        this.dialogName = dialogName;
+        this.model = model;
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        new Exception().printStackTrace(pw);
+        this.message = sw.toString();
+    }
+
+    public UnsupportedCustomUI(String dialogName, String message, T model) {
         super(UI_KEY, true);
         this.dialogName = dialogName;
         this.message = message;
+        this.model = model;
     }
 
     @Override
@@ -44,36 +56,13 @@ public class UnsupportedCustomUI extends AbstractCustomUI<IUnsupportedDialogResu
     }
 
     @Override
-    protected IUnsupportedDialogResult getDialogData() {
-        UnsupportedDialogResult result = new UnsupportedDialogResult();
-        DefaultUIData uiData = new DefaultUIData("openResult", getId());
-        try {
-            result.openResult = requestUIData(uiData).get();
-        } catch (Exception e) {
-            ExceptionHandler.process(e);
-        }
-        return result;
+    protected T collectDialogData() {
+        return model;
     }
 
-    public static interface IUnsupportedDialogResult {
-
-        Object getOpenResult();
-
-    }
-
-    public static class UnsupportedDialogResult implements IUnsupportedDialogResult {
-
-        private Object openResult;
-
-        @Override
-        public Object getOpenResult() {
-            return openResult;
-        }
-
-        public void setOpenResult(Object openResult) {
-            this.openResult = openResult;
-        }
-
+    @Override
+    public T getModel() {
+        return model;
     }
 
 }

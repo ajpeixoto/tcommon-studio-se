@@ -19,7 +19,7 @@ import java.util.concurrent.CompletableFuture;
  */
 public interface ICustomUIEngine {
 
-    <T> T run(ICustomUI ui);
+    <T> T run(ICustomUI<T> ui);
 
     /**
      * Handle event from stigma
@@ -34,12 +34,16 @@ public interface ICustomUIEngine {
     /**
      * Send event to stigma
      */
-    void dispatchUIEvent(ICustomUI ui, IUIEvent event);
+    <T> void dispatchUIEvent(ICustomUI<T> ui, IUIEvent event);
 
     /**
      * Request data from stigma
      */
-    CompletableFuture<Object> requestUIData(ICustomUI ui, IUIData uiData);
+    <T> CompletableFuture<Object> requestUIData(ICustomUI<T> ui, IUIData uiData);
+
+    <M> M convertValue(Object value, Class<M> clz);
+
+    Object readJson(String value) throws Exception;
 
     void registerThreadLocalContext(String key, Object value);
 
