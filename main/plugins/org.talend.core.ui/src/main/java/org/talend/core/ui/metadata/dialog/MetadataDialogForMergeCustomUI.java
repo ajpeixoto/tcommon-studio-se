@@ -26,26 +26,19 @@ import org.talend.core.model.metadata.MetadataColumn;
 /**
  * DOC cmeng  class global comment. Detailled comment
  */
-public class MetadataDialogCustomUI extends AbstractCustomUI<IMetadataDialog> implements IMetadataDialog {
+public class MetadataDialogForMergeCustomUI extends AbstractCustomUI<IMetadataDialogForMerge> implements IMetadataDialogForMerge {
 
     private static final String UI_KEY = "MetadataDialog";
 
     private String title;
 
-    private IMetadataTable inputMetaTable;
-
     private IMetadataTable outputMetaTable;
 
     private Object openResult;
 
-    public MetadataDialogCustomUI(IMetadataTable inputMetaTable, IMetadataTable outputMetaTable) {
+    public MetadataDialogForMergeCustomUI(IMetadataTable outputMetaTable) {
         super(UI_KEY, true);
-        this.inputMetaTable = inputMetaTable;
         this.outputMetaTable = outputMetaTable;
-    }
-
-    public MetadataDialogCustomUI(IMetadataTable outputMetaTable) {
-        this(null, outputMetaTable);
     }
 
     @Override
@@ -53,9 +46,6 @@ public class MetadataDialogCustomUI extends AbstractCustomUI<IMetadataDialog> im
         IUIEvent openEvent = super.createOpenEvent();
         Map<String, Object> params = openEvent.getParams();
         params.put(BuiltinParams.title.name(), this.title);
-        if (inputMetaTable != null) {
-            params.put("inputMetaTable", inputMetaTable);
-        }
         params.put("outputMetaTable", outputMetaTable);
         return openEvent;
     }

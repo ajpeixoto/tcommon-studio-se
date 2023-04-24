@@ -24,6 +24,10 @@ public class MessageDialogCustomUI extends AbstractCustomUI<IMessageDialogResult
 
     private static final String UI_KEY = "MessageDialog";
 
+    private static final String OK = "ok";
+
+    private static final String CANCEL = "cancel";
+
     private int dialogType = MessageDialog.NONE;
 
     private String title;
@@ -45,8 +49,27 @@ public class MessageDialogCustomUI extends AbstractCustomUI<IMessageDialogResult
         Map<String, Object> params = openEvent.getParams();
         params.put(BuiltinParams.title.name(), this.title);
         params.put(BuiltinParams.message.name(), this.message);
-        params.put("dialogType", dialogType);
+        params.put("dialogType", mapDialogType(dialogType));
         return openEvent;
+    }
+
+    private String mapDialogType(int type) {
+        switch (type) {
+        case MessageDialog.CONFIRM:
+            return "confirm";
+        case MessageDialog.ERROR:
+            return "error";
+        case MessageDialog.INFORMATION:
+            return "info";
+        case MessageDialog.QUESTION:
+            return "question";
+        case MessageDialog.QUESTION_WITH_CANCEL:
+            return "questionWithCancel";
+        case MessageDialog.WARNING:
+            return "warning";
+        default:
+            return "none";
+        }
     }
 
     @Override
@@ -54,10 +77,44 @@ public class MessageDialogCustomUI extends AbstractCustomUI<IMessageDialogResult
         DefaultUIData uiData = createUIDataEvent("openResult");
         try {
             openResult = requestUIData(uiData).get();
+            openResult = mapOpenResult(openResult);
         } catch (Exception e) {
             ExceptionHandler.process(e);
         }
         return this;
+    }
+
+    private Object mapOpenResult(Object data) {
+        Object result = data;
+        switch (dialogType) {
+        case MessageDialog.CONFIRM:
+        case MessageDialog.ERROR:
+        case MessageDialog.INFORMATION:
+        case MessageDialog.WARNING:
+            if (OK.equals(data)) {
+                result = Boolean.TRUE;
+            } else {
+                result = Boolean.FALSE;
+            }
+            break;
+        case MessageDialog.QUESTION:
+            if (OK.equals(data)) {
+                result = Boolean.TRUE;
+            } else {
+                result = Boolean.FALSE;
+            }
+            break;
+        case MessageDialog.QUESTION_WITH_CANCEL:
+            if (OK.equals(data)) {
+                result = Boolean.TRUE;
+            } else {
+                result = Boolean.FALSE;
+            }
+            break;
+        default:
+            break;
+        }
+        return result;
     }
 
     @Override
