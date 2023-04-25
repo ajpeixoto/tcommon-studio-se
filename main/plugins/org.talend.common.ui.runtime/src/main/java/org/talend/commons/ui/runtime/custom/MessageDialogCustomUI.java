@@ -20,36 +20,24 @@ import org.talend.commons.exception.ExceptionHandler;
 /**
  * DOC cmeng  class global comment. Detailled comment
  */
-public class MessageDialogCustomUI extends AbstractCustomUI<IMessageDialogResult> implements IMessageDialogResult {
-
-    private static final String UI_KEY = "MessageDialog";
+public class MessageDialogCustomUI extends AbstractCustomUI<MessageDialogBusinessHandler> {
 
     private static final String OK = "ok";
 
     private static final String CANCEL = "cancel";
 
-    private int dialogType = MessageDialog.NONE;
-
-    private String title;
-
-    private String message;
-
-    private Object openResult;
-
-    public MessageDialogCustomUI(int dialogType, String title, String message) {
-        super(UI_KEY, true);
-        this.dialogType = dialogType;
-        this.title = title;
-        this.message = message;
+    public MessageDialogCustomUI(MessageDialogBusinessHandler businessHandler) {
+        super(businessHandler);
     }
 
     @Override
     protected IUIEvent createOpenEvent() {
         IUIEvent openEvent = super.createOpenEvent();
         Map<String, Object> params = openEvent.getParams();
-        params.put(BuiltinParams.title.name(), this.title);
-        params.put(BuiltinParams.message.name(), this.message);
-        params.put("dialogType", mapDialogType(dialogType));
+        MessageDialogBusinessHandler bh = getBusinessHandler();
+        params.put(BuiltinParams.title.name(), bh.getTitle());
+        params.put(BuiltinParams.message.name(), bh.getMessage());
+        params.put("dialogType", mapDialogType(bh.getDialogType()));
         return openEvent;
     }
 
@@ -73,20 +61,22 @@ public class MessageDialogCustomUI extends AbstractCustomUI<IMessageDialogResult
     }
 
     @Override
-    protected IMessageDialogResult collectDialogData() {
+    protected MessageDialogBusinessHandler collectDialogData() {
         DefaultUIData uiData = createUIDataEvent("openResult");
+        MessageDialogBusinessHandler businessHandler = getBusinessHandler();
         try {
-            openResult = requestUIData(uiData).get();
+            Object openResult = requestUIData(uiData).get();
             openResult = mapOpenResult(openResult);
+            businessHandler.setOpenResult(openResult);
         } catch (Exception e) {
             ExceptionHandler.process(e);
         }
-        return this;
+        return businessHandler;
     }
 
     private Object mapOpenResult(Object data) {
         Object result = data;
-        switch (dialogType) {
+        switch (getBusinessHandler().getDialogType()) {
         case MessageDialog.CONFIRM:
         case MessageDialog.ERROR:
         case MessageDialog.INFORMATION:
@@ -115,16 +105,6 @@ public class MessageDialogCustomUI extends AbstractCustomUI<IMessageDialogResult
             break;
         }
         return result;
-    }
-
-    @Override
-    public IMessageDialogResult getModel() {
-        return this;
-    }
-
-    @Override
-    public Object getOpenResult() {
-        return openResult;
     }
 
 }

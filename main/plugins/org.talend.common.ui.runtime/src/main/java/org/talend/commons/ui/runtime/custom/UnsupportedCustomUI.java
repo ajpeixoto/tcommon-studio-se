@@ -16,53 +16,76 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Map;
 
+import org.talend.commons.ui.runtime.custom.UnsupportedCustomUI.UnsupportedBusinessHandler;
+
 /**
  * DOC cmeng  class global comment. Detailled comment
  */
-public class UnsupportedCustomUI<T> extends AbstractCustomUI<T> {
+public class UnsupportedCustomUI extends AbstractCustomUI<UnsupportedBusinessHandler> {
 
-    private static final String UI_KEY = "UnsupportedDialog";
-
-    private String dialogName;
-
-    private String message;
-
-    private T model;
-
-    public UnsupportedCustomUI(String dialogName, T model) {
-        super(UI_KEY, true);
-        this.dialogName = dialogName;
-        this.model = model;
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        new Exception().printStackTrace(pw);
-        this.message = sw.toString();
-    }
-
-    public UnsupportedCustomUI(String dialogName, String message, T model) {
-        super(UI_KEY, true);
-        this.dialogName = dialogName;
-        this.message = message;
-        this.model = model;
+    public UnsupportedCustomUI(UnsupportedBusinessHandler bh) {
+        super(bh);
     }
 
     @Override
     protected IUIEvent createOpenEvent() {
         IUIEvent openEvent = super.createOpenEvent();
         Map<String, Object> params = openEvent.getParams();
-        params.put(BuiltinParams.name.name(), this.dialogName);
-        params.put(BuiltinParams.message.name(), this.message);
+        UnsupportedBusinessHandler bh = getBusinessHandler();
+        params.put(BuiltinParams.name.name(), bh.getDialogName());
+        params.put(BuiltinParams.message.name(), bh.getDialogName());
         return openEvent;
     }
 
     @Override
-    protected T collectDialogData() {
-        return model;
+    protected UnsupportedBusinessHandler collectDialogData() {
+        return getBusinessHandler();
     }
 
-    @Override
-    public T getModel() {
-        return model;
+    public static class UnsupportedBusinessHandler extends AbsBusinessHandler {
+
+        private static final String UI_KEY = "UnsupportedDialog";
+
+        private String dialogName;
+
+        private String message;
+
+        public UnsupportedBusinessHandler(String name) {
+            super();
+            this.dialogName = name;
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            new Exception().printStackTrace(pw);
+            this.message = sw.toString();
+        }
+
+        public UnsupportedBusinessHandler(String name, String message) {
+            super();
+            this.dialogName = name;
+            this.message = message;
+        }
+
+        @Override
+        public String getUiKey() {
+            return UI_KEY;
+        }
+
+        public String getDialogName() {
+            return dialogName;
+        }
+
+        public void setDialogName(String dialogName) {
+            this.dialogName = dialogName;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
+        }
+
     }
 
 }

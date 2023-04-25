@@ -16,118 +16,92 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import org.apache.commons.lang3.StringUtils;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.custom.AbstractCustomUI;
+import org.talend.commons.ui.runtime.custom.IBusinessHandler;
 import org.talend.commons.ui.runtime.custom.IUIEvent;
 import org.talend.core.model.metadata.IMetadataColumn;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.MetadataColumn;
 
 /**
- * DOC cmeng  class global comment. Detailled comment
+ * DOC cmeng class global comment. Detailled comment
  */
-public class MetadataDialogCustomUI extends AbstractCustomUI<IMetadataDialog> implements IMetadataDialog {
+public class MetadataDialogCustomUI extends AbstractCustomUI<MetadataDialogBusinessHandler> {
 
-    private static final String UI_KEY = "MetadataDialog";
-
-    private String title;
-
-    private IMetadataTable inputMetaTable;
-
-    private IMetadataTable outputMetaTable;
-
-    private Object openResult;
-
-    public MetadataDialogCustomUI(IMetadataTable inputMetaTable, IMetadataTable outputMetaTable) {
-        super(UI_KEY, true);
-        this.inputMetaTable = inputMetaTable;
-        this.outputMetaTable = outputMetaTable;
-    }
-
-    public MetadataDialogCustomUI(IMetadataTable outputMetaTable) {
-        this(null, outputMetaTable);
+    public MetadataDialogCustomUI(MetadataDialogBusinessHandler bh) {
+        super(bh);
     }
 
     @Override
     protected IUIEvent createOpenEvent() {
         IUIEvent openEvent = super.createOpenEvent();
         Map<String, Object> params = openEvent.getParams();
-        params.put(BuiltinParams.title.name(), this.title);
+        MetadataDialogBusinessHandler bh = getBusinessHandler();
+        params.put(BuiltinParams.title.name(), bh.getTitle());
+        IMetadataTable inputMetaTable = bh.getInputMetaTable();
         if (inputMetaTable != null) {
             params.put("inputMetaTable", inputMetaTable);
         }
+        IMetadataTable outputMetaTable = bh.getOutputMetaTable();
         params.put("outputMetaTable", outputMetaTable);
         return openEvent;
     }
 
     @Override
-    public void setText(String title) {
-        this.title = title;
-    }
-
-    @Override
-    public void setInputReadOnly(boolean readonly) {
-
-    }
-
-    @Override
-    public void setOutputReadOnly(boolean readonly) {
-
-    }
-
-    @Override
-    protected IMetadataDialog collectDialogData() {
+    protected MetadataDialogBusinessHandler collectDialogData() {
         CompletableFuture<Object> openResultRequest = requestUIData(createUIDataEvent("openResult"));
         CompletableFuture<Object> outputMetaDataRequest = requestUIData(createUIDataEvent("output"));
+        CompletableFuture<Object> inputMetaDataRequest = requestUIData(createUIDataEvent("input"));
+        MetadataDialogBusinessHandler bh = getBusinessHandler();
         try {
-            openResult = openResultRequest.get();
+            Object openResult = openResultRequest.get();
+            if (StringUtils.equals("cancel", openResult.toString())) {
+                bh.setOpenResult(IBusinessHandler.CANCEL);
+                return bh;
+            }
+            bh.setOpenResult(IBusinessHandler.OK);
             List<Object> output = (List<Object>) outputMetaDataRequest.get();
-//            Object outputObj = this.getUIEngine().readJson(output.toString());
-//            List objList = this.getUIEngine().convertValue(outputObj, List.class);
-            List<IMetadataColumn> listColumns = outputMetaTable.getListColumns();
-            Class<? extends IMetadataColumn> clazz = listColumns.get(0).getClass();
-            for (int i = 0; i < output.size(); i++) {
-                Object obj = output.get(i);
-                IMetadataColumn convertValue = this.getUIEngine().convertValue(obj, clazz);
-                IMetadataColumn originalColumn = null;
-                if (i < listColumns.size()) {
-                    originalColumn = listColumns.get(i);
-                } else {
-                    originalColumn = new MetadataColumn();
-                    listColumns.add(originalColumn);
-                }
-                originalColumn.updateWith(convertValue);
+            IMetadataTable outputMetaTable = bh.getOutputMetaTable();
+            if (outputMetaTable != null) {
+                List<IMetadataColumn> outputColumns = outputMetaTable.getListColumns();
+                extracted(output, outputColumns);
+            }
+
+            List<Object> input = (List<Object>) inputMetaDataRequest.get();
+            IMetadataTable inputMetaTable = bh.getInputMetaTable();
+            if (inputMetaTable != null) {
+                List<IMetadataColumn> inputColumns = inputMetaTable.getListColumns();
+                extracted(input, inputColumns);
             }
         } catch (Exception e) {
             ExceptionHandler.process(e);
         }
 
-        return this;
+        return bh;
     }
 
-    @Override
-    public int open() {
-        return 0;
-    }
-
-    @Override
-    public int getOpenResult() {
-        return 0;
-    }
-
-    @Override
-    public IMetadataTable getInputMetaData() {
-        return null;
-    }
-
-    @Override
-    public IMetadataTable getOutputMetaData() {
-        return outputMetaTable;
-    }
-
-    @Override
-    public IMetadataDialog getModel() {
-        return this;
+    private void extracted(List<Object> newColumns, List<IMetadataColumn> originalColumns) {
+        Class<? extends IMetadataColumn> clazz = originalColumns.get(0).getClass();
+        int i = 0;
+        for (; i < newColumns.size(); i++) {
+            Object obj = newColumns.get(i);
+            IMetadataColumn convertValue = this.getUIEngine().convertValue(obj, clazz);
+            IMetadataColumn originalColumn = null;
+            if (i < originalColumns.size()) {
+                originalColumn = originalColumns.get(i);
+            } else {
+                originalColumn = new MetadataColumn();
+                originalColumns.add(originalColumn);
+            }
+            originalColumn.updateWith(convertValue);
+        }
+        if (0 < originalColumns.size()) {
+            for (int j = originalColumns.size() - 1; i <= j; j--) {
+                originalColumns.remove(j);
+            }
+        }
     }
 
 }

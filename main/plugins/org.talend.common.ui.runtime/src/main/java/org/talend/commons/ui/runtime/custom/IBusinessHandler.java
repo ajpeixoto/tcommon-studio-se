@@ -16,17 +16,14 @@ package org.talend.commons.ui.runtime.custom;
 /**
  * DOC cmeng  class global comment. Detailled comment
  */
-public class MessageDialogResult implements IMessageDialogResult {
+public interface IBusinessHandler {
 
-    private Object openResult;
+    public static final int OK = 0;
 
-    @Override
-    public Object getOpenResult() {
-        return openResult;
-    }
+    public static final int CANCEL = 1;
 
-    public void setOpenResult(Object openResult) {
-        this.openResult = openResult;
-    }
+    String getUiKey();
+
+    boolean isModalDialog();
 
 }

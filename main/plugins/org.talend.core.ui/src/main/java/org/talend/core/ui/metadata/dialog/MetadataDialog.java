@@ -80,7 +80,7 @@ import org.talend.designer.core.IDesignerCoreService;
  * $Id$
  *
  */
-public class MetadataDialog extends Dialog implements IMetadataDialog {
+public class MetadataDialog extends Dialog {
 
     private static final String DATABASE_LABEL = "Database"; //$NON-NLS-1$
 
@@ -138,7 +138,13 @@ public class MetadataDialog extends Dialog implements IMetadataDialog {
 
     private static boolean isSingleAndStruct = false;
 
-    private int openResult;
+    private MetadataDialogBusinessHandler businessHandler;
+
+    public MetadataDialog(MetadataDialogBusinessHandler bh) {
+        this(bh.getParent().getShell(), bh.getInputMetaTable(), bh.getInputNode(), bh.getOutputMetaTable(), bh.getOutputNode(),
+                bh.getCommandStack());
+        this.businessHandler = bh;
+    }
 
     public MetadataDialog(Shell parent, IMetadataTable inputMetaTable, INode inputNode, IMetadataTable outputMetaTable,
             INode outputNode, CommandStack commandStack) {
@@ -177,19 +183,14 @@ public class MetadataDialog extends Dialog implements IMetadataDialog {
         this(parent, null, null, outputMetaTable, outputNode, commandStack);
     }
 
-    @Override
     public void setText(String text) {
         this.text = text;
     }
 
     @Override
     public int open() {
-        openResult = super.open();
-        return openResult;
-    }
-
-    @Override
-    public int getOpenResult() {
+        int openResult = super.open();
+        businessHandler.setOpenResult(openResult);
         return openResult;
     }
 
@@ -665,7 +666,6 @@ public class MetadataDialog extends Dialog implements IMetadataDialog {
      *
      * @return
      */
-    @Override
     public IMetadataTable getInputMetaData() {
         if (inputMetaView == null) {
             return null;
@@ -678,17 +678,14 @@ public class MetadataDialog extends Dialog implements IMetadataDialog {
      *
      * @return
      */
-    @Override
     public IMetadataTable getOutputMetaData() {
         return outputMetaView.getMetadataTableEditor().getMetadataTable();
     }
 
-    @Override
     public void setInputReadOnly(boolean inputReadOnly) {
         this.inputReadOnly = inputReadOnly;
     }
 
-    @Override
     public void setOutputReadOnly(boolean outputReadOnly) {
         this.outputReadOnly = outputReadOnly;
     }

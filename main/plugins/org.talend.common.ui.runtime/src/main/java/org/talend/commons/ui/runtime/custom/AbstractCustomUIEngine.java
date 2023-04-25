@@ -37,11 +37,11 @@ public abstract class AbstractCustomUIEngine implements ICustomUIEngine {
     }
 
     @Override
-    public <T> T run(ICustomUI<T> ui) {
+    public <T extends IBusinessHandler> T run(ICustomUI<T> ui) {
         return doRun(ui);
     }
 
-    protected <T> T doRun(ICustomUI<T> ui) {
+    protected <T extends IBusinessHandler> T doRun(ICustomUI<T> ui) {
         return ui.run();
     }
 

@@ -17,11 +17,11 @@ import java.util.concurrent.CompletableFuture;
 /**
  * DOC cmeng  class global comment. Detailled comment
  */
-public interface ICustomUI<T> extends IUIEventHandler {
+public interface ICustomUI<T extends IBusinessHandler> extends IUIEventHandler {
 
     String getId();
 
-    T getModel();
+    T getBusinessHandler();
 
     T run();
 

@@ -10,31 +10,20 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.core.ui.metadata.dialog;
+package org.talend.commons.ui.runtime.custom;
 
-import org.talend.commons.ui.runtime.custom.ICustomUIDialog;
-import org.talend.core.model.metadata.IMetadataTable;
 
 /**
  * DOC cmeng  class global comment. Detailled comment
  */
-public interface IMetadataDialog extends ICustomUIDialog {
+public abstract class AbsBusinessHandler implements IBusinessHandler {
 
-    default void setText(String title) {
+    public AbsBusinessHandler() {
     }
 
-    default void setInputReadOnly(boolean readonly) {
-    }
-
-    default void setOutputReadOnly(boolean readonly) {
-    }
-
-    default IMetadataTable getInputMetaData() {
-        return null;
-    }
-
-    default IMetadataTable getOutputMetaData() {
-        return null;
+    @Override
+    public boolean isModalDialog() {
+        return true;
     }
 
 }

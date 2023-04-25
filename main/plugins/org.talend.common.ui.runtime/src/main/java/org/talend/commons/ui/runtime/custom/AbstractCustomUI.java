@@ -25,7 +25,7 @@ import org.talend.commons.ui.runtime.TalendUI;
 /**
  * DOC cmeng class global comment. Detailled comment
  */
-public abstract class AbstractCustomUI<T> implements ICustomUI<T> {
+public abstract class AbstractCustomUI<T extends IBusinessHandler> implements ICustomUI<T> {
 
     private Semaphore modalLock = new Semaphore(1);
 
@@ -37,14 +37,15 @@ public abstract class AbstractCustomUI<T> implements ICustomUI<T> {
 
     private ICustomUIEngine uiEngine;
 
-    private T dialogResult;
+    private T businessHandler;
 
     private Map<String, IUIEventHandler> eventMap = new HashMap<>();
 
-    public AbstractCustomUI(String uiKey, boolean isModalDialog) {
+    public AbstractCustomUI(T businessHandler) {
+        this.businessHandler = businessHandler;
         this.uiId = UUID.randomUUID().toString();
-        this.uiKey = uiKey;
-        this.isModalDialog = isModalDialog;
+        this.uiKey = this.businessHandler.getUiKey();
+        this.isModalDialog = this.businessHandler.isModalDialog();
         this.uiEngine = TalendUI.get().getStigmaUIEngine();
         registerEventHandlers();
     }
@@ -101,7 +102,7 @@ public abstract class AbstractCustomUI<T> implements ICustomUI<T> {
     }
 
     protected void closeDialog() {
-        dialogResult = collectDialogData();
+        collectDialogData();
         try {
             dispatchUIEvent(new DefaultUIEvent(BuiltinEvent.close.name(), uiId));
         } catch (Exception e) {
@@ -140,10 +141,15 @@ public abstract class AbstractCustomUI<T> implements ICustomUI<T> {
                     throw new RuntimeException("Dialog is closed unexpected", e);
                 }
             }
-            return dialogResult;
+            return businessHandler;
         } finally {
             modalLock.release();
         }
+    }
+
+    @Override
+    public T getBusinessHandler() {
+        return this.businessHandler;
     }
 
     abstract protected T collectDialogData();
