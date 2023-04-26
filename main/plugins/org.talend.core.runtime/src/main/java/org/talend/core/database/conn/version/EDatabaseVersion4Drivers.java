@@ -88,8 +88,8 @@ public enum EDatabaseVersion4Drivers {
             "Microsoft", "MSSQL_PROP", //$NON-NLS-1$ //$NON-NLS-2$
             new String[] { "mssql-jdbc.jar", "slf4j-api-1.7.25.jar", "slf4j-log4j12-1.7.25.jar", "adal4j-1.6.7.jar", //$NON-NLS-1$
                     "commons-lang3-3.10.jar", "commons-codec-1.14.jar", "gson-2.8.9.jar", "oauth2-oidc-sdk-9.7.jar",
-                    "json-smart-2.4.7.jar", "nimbus-jose-jwt-9.22.jar", "javax.mail-1.6.2.jar", "reload4j-1.2.19.jar",
-                    "accessors-smart-2.4.7.jar", "asm-9.1.jar", "content-type-2.1.jar" })),
+                    "json-smart-2.4.9.jar", "nimbus-jose-jwt-9.22.jar", "javax.mail-1.6.2.jar", "reload4j-1.2.19.jar",
+                    "accessors-smart-2.4.9.jar", "asm-9.5.jar", "content-type-2.1.jar" })),
 
     VERTICA_9(new DbVersion4Drivers(EDatabaseTypeName.VERTICA, "VERTICA 9.X", "VERTICA_9_0", "vertica-jdbc-9.3.1-0.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     VERTICA_7_1_X(new DbVersion4Drivers(EDatabaseTypeName.VERTICA, "VERTICA 7.1.X (Deprecated)", "VERTICA_7_1_X", "vertica-jdbc-7.1.2-0.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
