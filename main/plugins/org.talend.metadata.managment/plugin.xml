@@ -162,6 +162,30 @@
            name="sqlite-jdbc-3.40.0.0.jar"
            required="true">
      </libraryNeeded>
+     <libraryNeeded
+           context="plugin:org.talend.metadata.managment"
+           language="java"
+           message="Needed for create Microsoft SQL Server db connection"
+           mvn_uri="mvn:net.minidev/json-smart/2.4.9"
+           name="json-smart-2.4.9.jar"
+           required="true">
+     </libraryNeeded>
+     <libraryNeeded
+           context="plugin:org.talend.metadata.managment"
+           language="java"
+           message="Needed for create Microsoft SQL Server db connection"
+           mvn_uri="mvn:net.minidev/accessors-smart/2.4.9"
+           name="accessors-smart-2.4.9.jar"
+           required="true">
+     </libraryNeeded>
+     <libraryNeeded
+           context="plugin:org.talend.metadata.managment"
+           language="java"
+           message="Needed for create Microsoft SQL Server db connection"
+           mvn_uri="mvn:org.ow2.asm/asm/9.5"
+           name="asm-9.5.jar"
+           required="true">
+     </libraryNeeded>
    </extension>
    <extension
          point="org.talend.core.migrationTask">
