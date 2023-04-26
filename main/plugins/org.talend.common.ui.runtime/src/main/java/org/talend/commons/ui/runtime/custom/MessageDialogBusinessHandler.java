@@ -12,11 +12,10 @@
 // ============================================================================
 package org.talend.commons.ui.runtime.custom;
 
-
 /**
  * DOC cmeng  class global comment. Detailled comment
  */
-public class MessageDialogBusinessHandler extends AbsBusinessHandler {
+public class MessageDialogBusinessHandler extends AbsBusinessHandler<MessageDialogBusinessHandler> {
 
     private static final String UI_KEY = "MessageDialog";
 
@@ -32,6 +31,11 @@ public class MessageDialogBusinessHandler extends AbsBusinessHandler {
 
     public MessageDialogBusinessHandler() {
         super();
+    }
+
+    @Override
+    protected ICustomUI<MessageDialogBusinessHandler> getCustomUI() {
+        return new MessageDialogCustomUI(this);
     }
 
     public int getDialogType() {

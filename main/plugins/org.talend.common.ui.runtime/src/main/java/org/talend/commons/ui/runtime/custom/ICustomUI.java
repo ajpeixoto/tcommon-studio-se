@@ -17,7 +17,7 @@ import java.util.concurrent.CompletableFuture;
 /**
  * DOC cmeng  class global comment. Detailled comment
  */
-public interface ICustomUI<T extends IBusinessHandler> extends IUIEventHandler {
+public interface ICustomUI<T extends IBusinessHandler<?>> extends IUIEventHandler {
 
     String getId();
 

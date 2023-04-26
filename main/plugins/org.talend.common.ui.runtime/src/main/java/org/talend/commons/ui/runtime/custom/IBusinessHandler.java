@@ -12,11 +12,12 @@
 // ============================================================================
 package org.talend.commons.ui.runtime.custom;
 
+import org.talend.commons.ui.runtime.TalendUI.IStudioRunnable;
 
 /**
  * DOC cmeng  class global comment. Detailled comment
  */
-public interface IBusinessHandler {
+public interface IBusinessHandler<T extends IBusinessHandler<?>> {
 
     public static final int OK = 0;
 
@@ -25,5 +26,9 @@ public interface IBusinessHandler {
     String getUiKey();
 
     boolean isModalDialog();
+
+    T run(IStudioRunnable<T> studioRun);
+
+    T run(IStudioRunnable<T> studioRun, ICustomUI<T> stigmaUI);
 
 }

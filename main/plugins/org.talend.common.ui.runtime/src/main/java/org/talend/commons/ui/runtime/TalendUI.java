@@ -59,7 +59,7 @@ public class TalendUI {
         this.stigmaUIEngine = engine;
     }
 
-    public <T extends IBusinessHandler> T run(IStudioRunnable<T> studioRun, ICustomUI<T> stigmaRun) {
+    public <T extends IBusinessHandler<?>> T run(IStudioRunnable<T> studioRun, ICustomUI<T> stigmaRun) {
         if (isStudio()) {
             return runInStudio(studioRun);
         } else {
@@ -67,24 +67,24 @@ public class TalendUI {
         }
     }
 
-    public <T extends IBusinessHandler> T runInStudio(IStudioRunnable<T> run) {
+    public <T extends IBusinessHandler<?>> T runInStudio(IStudioRunnable<T> run) {
         return run.run();
     }
 
-    public <T extends IBusinessHandler> T runInStigma(ICustomUI<T> ui) {
+    public <T extends IBusinessHandler<?>> T runInStigma(ICustomUI<T> ui) {
         if (ui == null) {
             throw new RuntimeException("Custom ui is not defined!");
         }
         return stigmaUIEngine.run(ui);
     }
 
-    public static interface IStudioRunnable<T> {
+    public static interface IStudioRunnable<T extends IBusinessHandler<?>> {
 
         T run();
 
     }
 
-    public static abstract class AbsStudioRunnable<T> implements IStudioRunnable<T> {
+    public static abstract class AbsStudioRunnable<T extends IBusinessHandler<?>> implements IStudioRunnable<T> {
 
         @Override
         public T run() {

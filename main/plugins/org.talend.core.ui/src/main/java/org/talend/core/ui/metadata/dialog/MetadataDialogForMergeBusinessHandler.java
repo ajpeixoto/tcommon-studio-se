@@ -12,10 +12,13 @@
 // ============================================================================
 package org.talend.core.ui.metadata.dialog;
 
+import java.util.Map;
+
 import org.eclipse.gef.commands.CommandStack;
 import org.eclipse.swt.widgets.Composite;
 import org.talend.commons.ui.runtime.custom.AbsBusinessHandler;
 import org.talend.commons.ui.runtime.custom.ICustomUI;
+import org.talend.commons.ui.runtime.custom.UnsupportedCustomUI;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.process.INode;
 
@@ -23,23 +26,15 @@ import org.talend.core.model.process.INode;
 /**
  * DOC cmeng  class global comment. Detailled comment
  */
-public class MetadataDialogBusinessHandler extends AbsBusinessHandler<MetadataDialogBusinessHandler> {
+public class MetadataDialogForMergeBusinessHandler extends AbsBusinessHandler<MetadataDialogForMergeBusinessHandler> {
 
-    private static final String UI_KEY = "MetadataDialog";
+    private static final String UI_KEY = "MetadataDialogForMerge";
 
     private String title;
-
-    private IMetadataTable inputMetaTable;
-
-    private IMetadataTable outputMetaTable;
 
     private Object openResult;
 
     private Composite parent;
-
-    private INode inputNode;
-
-    private INode outputNode;
 
     private CommandStack commandStack;
 
@@ -47,19 +42,24 @@ public class MetadataDialogBusinessHandler extends AbsBusinessHandler<MetadataDi
 
     private boolean outputReadOnly;
 
-    public MetadataDialogBusinessHandler(Composite parent, IMetadataTable inputMetaTable, INode inputNode,
+    private Map<INode, Map<IMetadataTable, Boolean>> inputInfos;
+
+    private IMetadataTable outputMetaTable;
+
+    private INode outputNode;
+
+    public MetadataDialogForMergeBusinessHandler(Composite parent, Map<INode, Map<IMetadataTable, Boolean>> inputInfos,
             IMetadataTable outputMetaTable, INode outputNode, CommandStack commandStack) {
         this.parent = parent;
-        this.inputMetaTable = inputMetaTable;
-        this.inputNode = inputNode;
+        this.inputInfos = inputInfos;
         this.outputMetaTable = outputMetaTable;
         this.outputNode = outputNode;
         this.commandStack = commandStack;
     }
 
     @Override
-    protected ICustomUI<MetadataDialogBusinessHandler> getCustomUI() {
-        return new MetadataDialogCustomUI(this);
+    protected ICustomUI<MetadataDialogForMergeBusinessHandler> getCustomUI() {
+        return new UnsupportedCustomUI<MetadataDialogForMergeBusinessHandler>(this, UI_KEY);
     }
 
     public String getTitle() {
@@ -68,14 +68,6 @@ public class MetadataDialogBusinessHandler extends AbsBusinessHandler<MetadataDi
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public IMetadataTable getInputMetaTable() {
-        return inputMetaTable;
-    }
-
-    public void setInputMetaTable(IMetadataTable inputMetaTable) {
-        this.inputMetaTable = inputMetaTable;
     }
 
     public IMetadataTable getOutputMetaTable() {
@@ -100,14 +92,6 @@ public class MetadataDialogBusinessHandler extends AbsBusinessHandler<MetadataDi
 
     public void setParent(Composite parent) {
         this.parent = parent;
-    }
-
-    public INode getInputNode() {
-        return inputNode;
-    }
-
-    public void setInputNode(INode inputNode) {
-        this.inputNode = inputNode;
     }
 
     public INode getOutputNode() {
@@ -140,6 +124,14 @@ public class MetadataDialogBusinessHandler extends AbsBusinessHandler<MetadataDi
 
     public void setOutputReadOnly(boolean outputReadOnly) {
         this.outputReadOnly = outputReadOnly;
+    }
+
+    public Map<INode, Map<IMetadataTable, Boolean>> getInputInfos() {
+        return inputInfos;
+    }
+
+    public void setInputInfos(Map<INode, Map<IMetadataTable, Boolean>> inputInfos) {
+        this.inputInfos = inputInfos;
     }
 
     @Override

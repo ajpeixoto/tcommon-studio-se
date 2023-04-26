@@ -25,7 +25,7 @@ import org.talend.commons.ui.runtime.TalendUI;
 /**
  * DOC cmeng class global comment. Detailled comment
  */
-public abstract class AbstractCustomUI<T extends IBusinessHandler> implements ICustomUI<T> {
+public abstract class AbstractCustomUI<T extends IBusinessHandler<?>> implements ICustomUI<T> {
 
     private Semaphore modalLock = new Semaphore(1);
 

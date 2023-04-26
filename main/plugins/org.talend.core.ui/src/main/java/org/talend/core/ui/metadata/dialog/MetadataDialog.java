@@ -144,6 +144,9 @@ public class MetadataDialog extends Dialog {
         this(bh.getParent().getShell(), bh.getInputMetaTable(), bh.getInputNode(), bh.getOutputMetaTable(), bh.getOutputNode(),
                 bh.getCommandStack());
         this.businessHandler = bh;
+        this.setText(bh.getTitle());
+        this.setInputReadOnly(bh.isInputReadOnly());
+        this.setOutputReadOnly(bh.isOutputReadOnly());
     }
 
     public MetadataDialog(Shell parent, IMetadataTable inputMetaTable, INode inputNode, IMetadataTable outputMetaTable,

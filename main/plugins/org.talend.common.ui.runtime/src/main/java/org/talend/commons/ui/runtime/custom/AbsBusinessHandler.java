@@ -12,13 +12,27 @@
 // ============================================================================
 package org.talend.commons.ui.runtime.custom;
 
+import org.talend.commons.ui.runtime.TalendUI;
+import org.talend.commons.ui.runtime.TalendUI.IStudioRunnable;
 
 /**
  * DOC cmeng  class global comment. Detailled comment
  */
-public abstract class AbsBusinessHandler implements IBusinessHandler {
+public abstract class AbsBusinessHandler<T extends IBusinessHandler<?>> implements IBusinessHandler<T> {
 
     public AbsBusinessHandler() {
+    }
+
+    abstract protected ICustomUI<T> getCustomUI();
+
+    @Override
+    public T run(IStudioRunnable<T> studioRun) {
+        return TalendUI.get().run(studioRun, getCustomUI());
+    }
+
+    @Override
+    public T run(IStudioRunnable<T> studioRun, ICustomUI<T> stigmaUI) {
+        return TalendUI.get().run(studioRun, stigmaUI);
     }
 
     @Override

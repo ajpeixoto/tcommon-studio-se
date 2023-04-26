@@ -64,7 +64,7 @@ import org.talend.core.ui.metadata.editor.MetadataTableEditorView;
  * $Id: MetadataDialog.java 4400 2007-07-10 07:59:06 +0000 (星期二, 10 七月 2007) bqian $
  *
  */
-public class MetadataDialogForMerge extends Dialog implements IMetadataDialogForMerge {
+public class MetadataDialogForMerge extends Dialog {
 
     private static final String ELT_LABEL = "ELT"; //$NON-NLS-1$
 
@@ -162,6 +162,11 @@ public class MetadataDialogForMerge extends Dialog implements IMetadataDialogFor
         init(parent, inputMetaTable, inputNode, outputMetaTable, outputNode, commandStack);
     }
 
+    public MetadataDialogForMerge(MetadataDialogForMergeBusinessHandler handler) {
+        this(handler.getParent().getShell(), handler.getInputInfos(), handler.getOutputMetaTable(), handler.getOutputNode(),
+                handler.getCommandStack());
+    }
+
     public MetadataDialogForMerge(Shell parent, Map<INode, Map<IMetadataTable, Boolean>> inputInfos,
             IMetadataTable outputMetaTable, INode outputNode, CommandStack commandStack) {
         super(parent);
@@ -202,12 +207,10 @@ public class MetadataDialogForMerge extends Dialog implements IMetadataDialogFor
         this(parent, null, null, outputMetaTable, outputNode, commandStack);
     }
 
-    @Override
     public void setText(String text) {
         this.text = text;
     }
 
-    @Override
     public int getOpenResult() {
         return openResult;
     }
@@ -570,7 +573,6 @@ public class MetadataDialogForMerge extends Dialog implements IMetadataDialogFor
      *
      * @return
      */
-    @Override
     public IMetadataTable getInputMetaData() {
         if (inputMetaView == null) {
             return null;
@@ -595,17 +597,14 @@ public class MetadataDialogForMerge extends Dialog implements IMetadataDialogFor
      *
      * @return
      */
-    @Override
     public IMetadataTable getOutputMetaData() {
         return outputMetaView.getMetadataTableEditor().getMetadataTable();
     }
 
-    @Override
     public void setInputReadOnly(boolean inputReadOnly) {
         this.inputReadOnly = inputReadOnly;
     }
 
-    @Override
     public void setOutputReadOnly(boolean outputReadOnly) {
         this.outputReadOnly = outputReadOnly;
     }

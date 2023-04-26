@@ -16,33 +16,38 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Map;
 
-import org.talend.commons.ui.runtime.custom.UnsupportedCustomUI.UnsupportedBusinessHandler;
-
 /**
  * DOC cmeng  class global comment. Detailled comment
  */
-public class UnsupportedCustomUI extends AbstractCustomUI<UnsupportedBusinessHandler> {
+public class UnsupportedCustomUI<T extends IBusinessHandler<?>> extends AbstractCustomUI<T> {
 
-    public UnsupportedCustomUI(UnsupportedBusinessHandler bh) {
+    UnsupportedBusinessHandler realHandler;
+
+    public UnsupportedCustomUI(T bh, String name) {
         super(bh);
+        realHandler = new UnsupportedBusinessHandler(name);
+    }
+
+    public UnsupportedCustomUI(T bh, String name, String message) {
+        super(bh);
+        realHandler = new UnsupportedBusinessHandler(name, message);
     }
 
     @Override
     protected IUIEvent createOpenEvent() {
         IUIEvent openEvent = super.createOpenEvent();
         Map<String, Object> params = openEvent.getParams();
-        UnsupportedBusinessHandler bh = getBusinessHandler();
-        params.put(BuiltinParams.name.name(), bh.getDialogName());
-        params.put(BuiltinParams.message.name(), bh.getDialogName());
+        params.put(BuiltinParams.name.name(), realHandler.getDialogName());
+        params.put(BuiltinParams.message.name(), realHandler.getDialogName());
         return openEvent;
     }
 
     @Override
-    protected UnsupportedBusinessHandler collectDialogData() {
+    protected T collectDialogData() {
         return getBusinessHandler();
     }
 
-    public static class UnsupportedBusinessHandler extends AbsBusinessHandler {
+    public static class UnsupportedBusinessHandler extends AbsBusinessHandler<UnsupportedBusinessHandler> {
 
         private static final String UI_KEY = "UnsupportedDialog";
 
@@ -63,6 +68,11 @@ public class UnsupportedCustomUI extends AbstractCustomUI<UnsupportedBusinessHan
             super();
             this.dialogName = name;
             this.message = message;
+        }
+
+        @Override
+        protected ICustomUI<UnsupportedBusinessHandler> getCustomUI() {
+            return new UnsupportedCustomUI(this, dialogName, message);
         }
 
         @Override
