@@ -27,6 +27,8 @@ public interface IBusinessHandler<T extends IBusinessHandler<?>> {
 
     boolean isModalDialog();
 
+    Object getOpenResult();
+
     T run(IStudioRunnable<T> studioRun);
 
     T run(IStudioRunnable<T> studioRun, ICustomUI<T> stigmaUI);

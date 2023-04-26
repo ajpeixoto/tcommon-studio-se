@@ -17,8 +17,6 @@ import java.util.Map;
 import org.eclipse.gef.commands.CommandStack;
 import org.eclipse.swt.widgets.Composite;
 import org.talend.commons.ui.runtime.custom.AbsBusinessHandler;
-import org.talend.commons.ui.runtime.custom.ICustomUI;
-import org.talend.commons.ui.runtime.custom.UnsupportedCustomUI;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.process.INode;
 
@@ -31,8 +29,6 @@ public class MetadataDialogForMergeBusinessHandler extends AbsBusinessHandler<Me
     private static final String UI_KEY = "MetadataDialogForMerge";
 
     private String title;
-
-    private Object openResult;
 
     private Composite parent;
 
@@ -57,11 +53,6 @@ public class MetadataDialogForMergeBusinessHandler extends AbsBusinessHandler<Me
         this.commandStack = commandStack;
     }
 
-    @Override
-    protected ICustomUI<MetadataDialogForMergeBusinessHandler> getCustomUI() {
-        return new UnsupportedCustomUI<MetadataDialogForMergeBusinessHandler>(this, UI_KEY);
-    }
-
     public String getTitle() {
         return title;
     }
@@ -76,14 +67,6 @@ public class MetadataDialogForMergeBusinessHandler extends AbsBusinessHandler<Me
 
     public void setOutputMetaTable(IMetadataTable outputMetaTable) {
         this.outputMetaTable = outputMetaTable;
-    }
-
-    public Object getOpenResult() {
-        return openResult;
-    }
-
-    public void setOpenResult(Object openResult) {
-        this.openResult = openResult;
     }
 
     public Composite getParent() {

@@ -19,8 +19,6 @@ public class MessageDialogBusinessHandler extends AbsBusinessHandler<MessageDial
 
     private static final String UI_KEY = "MessageDialog";
 
-    private Object openResult;
-
     private String title;
 
     private String message;
@@ -44,14 +42,6 @@ public class MessageDialogBusinessHandler extends AbsBusinessHandler<MessageDial
 
     public void setDialogType(int dialogType) {
         this.dialogType = dialogType;
-    }
-
-    public Object getOpenResult() {
-        return openResult;
-    }
-
-    public void setOpenResult(Object openResult) {
-        this.openResult = openResult;
     }
 
     public String getTitle() {

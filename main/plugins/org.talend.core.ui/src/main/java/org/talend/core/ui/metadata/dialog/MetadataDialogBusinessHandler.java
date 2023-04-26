@@ -33,8 +33,6 @@ public class MetadataDialogBusinessHandler extends AbsBusinessHandler<MetadataDi
 
     private IMetadataTable outputMetaTable;
 
-    private Object openResult;
-
     private Composite parent;
 
     private INode inputNode;
@@ -84,14 +82,6 @@ public class MetadataDialogBusinessHandler extends AbsBusinessHandler<MetadataDi
 
     public void setOutputMetaTable(IMetadataTable outputMetaTable) {
         this.outputMetaTable = outputMetaTable;
-    }
-
-    public Object getOpenResult() {
-        return openResult;
-    }
-
-    public void setOpenResult(Object openResult) {
-        this.openResult = openResult;
     }
 
     public Composite getParent() {

@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.commons.ui.runtime.custom;
 
+import org.eclipse.jface.dialogs.Dialog;
 import org.talend.commons.ui.runtime.TalendUI;
 import org.talend.commons.ui.runtime.TalendUI.IStudioRunnable;
 
@@ -20,10 +21,14 @@ import org.talend.commons.ui.runtime.TalendUI.IStudioRunnable;
  */
 public abstract class AbsBusinessHandler<T extends IBusinessHandler<?>> implements IBusinessHandler<T> {
 
+    private Object openResult = Dialog.CANCEL;
+
     public AbsBusinessHandler() {
     }
 
-    abstract protected ICustomUI<T> getCustomUI();
+    protected ICustomUI<T> getCustomUI() {
+        return new UnsupportedCustomUI<T>((T) this, getUiKey());
+    }
 
     @Override
     public T run(IStudioRunnable<T> studioRun) {
@@ -38,6 +43,15 @@ public abstract class AbsBusinessHandler<T extends IBusinessHandler<?>> implemen
     @Override
     public boolean isModalDialog() {
         return true;
+    }
+
+    @Override
+    public Object getOpenResult() {
+        return openResult;
+    }
+
+    public void setOpenResult(Object openResult) {
+        this.openResult = openResult;
     }
 
 }
