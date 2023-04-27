@@ -148,33 +148,6 @@
             required="true"
             uripath="platform:/plugin/org.talend.libraries.jdbc.hsql/lib/hsqldb.jar">
       </libraryNeeded>
-      <libraryNeeded
-            context="plugin:org.talend.metadata.managment"
-            language="java"
-            message="Needed for create Microsoft SQL Server db connection"
-            mvn_uri="mvn:net.minidev/json-smart/2.4.9"
-            name="json-smart-2.4.9.jar"
-            required="true"
-            uripath="platform:/plugin/org.talend.libraries.tis.custom/lib/json-smart-2.4.9.jar">
-     </libraryNeeded>
-     <libraryNeeded
-           context="plugin:org.talend.metadata.managment"
-           language="java"
-           message="Needed for create Microsoft SQL Server db connection"
-           mvn_uri="mvn:net.minidev/accessors-smart/2.4.9"
-           name="accessors-smart-2.4.9.jar"
-           required="true"
-           uripath="platform:/plugin/org.talend.libraries.tis.custom/lib/accessors-smart-2.4.9.jar">
-     </libraryNeeded>
-     <libraryNeeded
-           context="plugin:org.talend.metadata.managment"
-           language="java"
-           message="Needed for create Microsoft SQL Server db connection"
-           mvn_uri="mvn:org.ow2.asm/asm/9.5"
-           name="asm-9.5.jar"
-           required="true"
-           uripath="platform:/plugin/org.talend.libraries.tis.custom/lib/asm-9.5.jar">
-     </libraryNeeded>
    </extension>
    <extension
          point="org.talend.core.migrationTask">
