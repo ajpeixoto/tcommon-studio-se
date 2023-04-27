@@ -27,8 +27,9 @@ public class MessageDialogBusinessHandler extends AbsBusinessHandler<MessageDial
 
     private boolean isModalDialog = true;
 
-    public MessageDialogBusinessHandler() {
+    public MessageDialogBusinessHandler(int dialogType) {
         super();
+        this.dialogType = dialogType;
     }
 
     @Override
