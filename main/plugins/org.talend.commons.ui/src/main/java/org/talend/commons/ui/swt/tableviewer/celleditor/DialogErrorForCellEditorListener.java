@@ -16,8 +16,10 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ICellEditorListener;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Text;
+import org.talend.commons.ui.runtime.ColorConstants;
 import org.talend.commons.ui.runtime.i18n.Messages;
 import org.talend.commons.ui.runtime.swt.tableviewer.data.ModifiedObjectInfo;
 import org.talend.commons.ui.runtime.thread.AsynchronousThreading;
@@ -39,6 +41,8 @@ public abstract class DialogErrorForCellEditorListener implements ICellEditorLis
     protected TableViewerCreatorColumn column;
 
     protected TableViewerCreator tableViewerCreator;
+    
+    private Color tableBackground = ColorConstants.getTableBackgroundColor();
 
     /**
      * DOC amaumont CellEditorListener constructor comment.
@@ -89,7 +93,7 @@ public abstract class DialogErrorForCellEditorListener implements ICellEditorLis
         final String errorMessage = validateValue(newValue, beanPosition);
         if (errorMessage == null) {
             newValidValueTyped(beanPosition, lastValidValue, newValue, state);
-            text.setBackground(text.getDisplay().getSystemColor(SWT.COLOR_WHITE));
+            text.setBackground(tableBackground);
             lastValidValue = newValue;
         } else {
             text.setBackground(text.getDisplay().getSystemColor(SWT.COLOR_RED));

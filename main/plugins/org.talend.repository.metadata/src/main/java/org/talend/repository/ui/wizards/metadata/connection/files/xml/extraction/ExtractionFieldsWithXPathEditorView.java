@@ -42,6 +42,7 @@ import org.talend.commons.utils.data.list.UniqueStringGenerator;
 import org.talend.core.model.metadata.builder.connection.SchemaTarget;
 import org.talend.core.model.update.ConnectionColumnUpdateManager;
 import org.talend.core.ui.metadata.editor.XmlExtractorFieldModel;
+import org.talend.designer.mapper.ui.color.ColorInfo;
 import org.talend.repository.metadata.i18n.Messages;
 
 /**
@@ -345,7 +346,7 @@ public class ExtractionFieldsWithXPathEditorView extends AbstractDataTableEditor
             if (conflictNames.contains(name)) {
                 getTable().getItem(i).setBackground(Display.getDefault().getSystemColor(SWT.COLOR_RED));
             } else {
-                getTable().getItem(i).setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+                getTable().getItem(i).setBackground(ColorInfo.EDITABLE_WIDGET_BACKGROUND());
             }
         }
 

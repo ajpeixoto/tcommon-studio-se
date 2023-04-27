@@ -348,3 +348,9 @@ TabbedPropertyList {
     tPalette-list-background-color:'#org-eclipse-ui-workbench-DARK_BACKGROUND';
     tPalette-slider-palette-background-color:'#org-eclipse-ui-workbench-DARK_BACKGROUND';
 }
+
+.FooterComposite {
+	background-color:'#org-eclipse-ui-workbench-DARK_BACKGROUND'; 
+    color:'#org-eclipse-ui-workbench-DARK_FOREGROUND'; 
+}
+

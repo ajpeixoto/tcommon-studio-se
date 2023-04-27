@@ -84,6 +84,7 @@ import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.datatools.xml.utils.ATreeNode;
 import org.talend.datatools.xml.utils.XPathPopulationUtil;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
+import org.talend.designer.mapper.ui.color.ColorInfo;
 import org.talend.metadata.managment.ui.preview.AsynchronousPreviewHandler;
 import org.talend.metadata.managment.ui.preview.IPreviewHandlerListener;
 import org.talend.metadata.managment.ui.preview.ProcessDescription;
@@ -779,7 +780,7 @@ public class XmlFileStep2Form extends AbstractXmlFileStepForm implements IRefres
         StyledText text = new StyledText(outputComposite, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL | SWT.READ_ONLY);
         GridData gridData = new GridData(GridData.FILL_BOTH);
         text.setLayoutData(gridData);
-        outputComposite.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+        outputComposite.setBackground(ColorInfo.EDITABLE_WIDGET_BACKGROUND());
 
         String errorInfo = Messages.getString("FileStep2.noresult") + "\n"; //$NON-NLS-1$ //$NON-NLS-2$
         errorInfo = errorInfo + Messages.getString("FileStep2.noresultDetailMessage") + "\n"; //$NON-NLS-1$ //$NON-NLS-2$
