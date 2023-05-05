@@ -16,9 +16,13 @@ package org.talend.utils.xml;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
+
+import org.xml.sax.SAXNotRecognizedException;
+import org.xml.sax.SAXNotSupportedException;
 
 public class XmlUtils {
 
@@ -56,6 +60,24 @@ public class XmlUtils {
                 factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true); //$NON-NLS-1$
             }
         } catch (ParserConfigurationException e) {
+            throw new RuntimeException(e);
+        }
+        return factory;
+    }
+
+    public static SAXParserFactory getSecureSAXParserFactory() {
+        SAXParserFactory factory = SAXParserFactory.newInstance();
+        try {
+            factory.setFeature(javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING, Boolean.TRUE);
+            factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+            factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            factory.setXIncludeAware(false);
+        } catch (ParserConfigurationException e) {
+            throw new RuntimeException(e);
+        } catch (SAXNotRecognizedException e) {
+            throw new RuntimeException(e);
+        } catch (SAXNotSupportedException e) {
             throw new RuntimeException(e);
         }
         return factory;
