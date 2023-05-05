@@ -14,6 +14,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.apache.ant
 Export-Package: 
  org.talend.commons.ui.runtime,
+ org.talend.commons.ui.runtime.custom,
  org.talend.commons.ui.runtime.exception,
  org.talend.commons.ui.runtime.expressionbuilder,
  org.talend.commons.ui.runtime.geometry,

@@ -336,6 +336,22 @@ public class MetadataColumn implements IMetadataColumn, Cloneable {
         this.defaut = defaut;
     }
 
+    /**
+     * use {@code #getDefault()}
+     */
+    @Deprecated
+    public String getDefaut() {
+        return defaut;
+    }
+
+    /**
+     * use {@code #setDefault()}
+     */
+    @Deprecated
+    public void setDefaut(String defaut) {
+        this.defaut = defaut;
+    }
+
     /*
      * (non-Javadoc)
      *
@@ -581,6 +597,7 @@ public class MetadataColumn implements IMetadataColumn, Cloneable {
      * 
      * @return the ignoreCustomSort
      */
+    @Override
     public boolean isIgnoreCustomSort() {
         return ignoreCustomSort;
     }
@@ -590,6 +607,7 @@ public class MetadataColumn implements IMetadataColumn, Cloneable {
      * 
      * @param ignoreCustomSort the ignoreCustomSort to set
      */
+    @Override
     public void setIgnoreCustomSort(boolean ignoreCustomSort) {
         this.ignoreCustomSort = ignoreCustomSort;
     }
@@ -700,4 +718,17 @@ public class MetadataColumn implements IMetadataColumn, Cloneable {
     public void setUsefulColumn(boolean isUseful) {
         this.usefulColumn = isUseful;
     }
+
+    @Override
+    public void updateWith(IMetadataColumn value) {
+        this.label = value.getLabel();
+        this.key = value.isKey();
+        this.talendType = value.getTalendType();
+        this.nullable = value.isNullable();
+        this.pattern = value.getPattern();
+        this.length = value.getLength();
+        this.defaut = value.getDefault();
+        this.comment = value.getComment();
+    }
+
 }

@@ -155,4 +155,7 @@ public interface IMetadataColumn {
 
     public void setUsefulColumn(boolean isUseful);
 
+    default public void updateWith(IMetadataColumn value) {
+    };
+
 }
