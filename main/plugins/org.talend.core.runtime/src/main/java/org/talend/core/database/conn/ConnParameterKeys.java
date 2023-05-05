@@ -252,6 +252,8 @@ public class ConnParameterKeys {
     
     public static final String CONN_PARA_KEY_EXECUTOR_MEMORY = "CONN_PARA_KEY_EXECUTOR_MEMORY"; //$NON-NLS-1$
     
+    public static final String CONN_PARA_KEY_EXECUTOR_CORES = "CONN_PARA_KEY_EXECUTOR_CORES";
+    
     public static final String CONN_PARA_KEY_TUNING_PROPERTIES = "CONN_PARA_KEY_TUNING_PROPERTIES"; //$NON-NLS-1$
 
     /******************************************/
