@@ -377,8 +377,8 @@ public class PomIdsHelper {
             if (version == null) {
                 version = VersionUtils.getPublishVersion(property.getVersion());
             }
-            if (useSnapshot && version != null && !version.contains(MavenConstants.SNAPSHOT)) {
-                version += MavenConstants.SNAPSHOT;
+            if (useSnapshot && version != null && !version.contains(MavenConstants.DOT_SNAPSHOT)) {
+                version += MavenConstants.DOT_SNAPSHOT;
             }
         }
         return version;

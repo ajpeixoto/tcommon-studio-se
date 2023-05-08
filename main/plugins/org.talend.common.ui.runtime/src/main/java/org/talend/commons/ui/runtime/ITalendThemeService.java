@@ -15,6 +15,7 @@ package org.talend.commons.ui.runtime;
 import java.util.Optional;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.swt.graphics.Color;
 import org.osgi.framework.BundleContext;
@@ -28,6 +29,8 @@ import org.talend.commons.exception.ExceptionHandler;
 public interface ITalendThemeService {
 
     public static String DEFAULT_PREFERENCE_ID = "org.eclipse.ui.workbench";
+
+    public static String THEME_PREFERENCE_ID = "org.eclipse.e4.ui.css.swt.theme";
 
     /**
      * Get color from instance scope preference of default bundleId, which managed by theme; the standard way eclipse
@@ -131,6 +134,8 @@ public interface ITalendThemeService {
     }
 
     void removePropertyChangeListenerFor(String bundleId, IPropertyChangeListener listener);
+
+    IPreferenceStore getThemePreferenceStore();
 
     static ITalendThemeService get() {
         try {

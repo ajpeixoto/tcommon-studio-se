@@ -77,6 +77,7 @@ import org.talend.core.prefs.ITalendCorePrefConstants;
 import org.talend.core.ui.CoreUIPlugin;
 import org.talend.cwm.helper.ConnectionHelper;
 import org.talend.datatools.xml.utils.ATreeNode;
+import org.talend.designer.mapper.ui.color.ColorInfo;
 import org.talend.metadata.managment.ui.wizard.metadata.xml.FoxNodeComboViewProvider;
 import org.talend.metadata.managment.ui.wizard.metadata.xml.node.Attribute;
 import org.talend.metadata.managment.ui.wizard.metadata.xml.node.Element;
@@ -262,7 +263,7 @@ public class XmlFileOutputStep2Form extends AbstractXmlFileStepForm {
             tree.setEnabled(false);
         }
         tree.setLinesVisible(true);
-        tree.setBackground(tree.getDisplay().getSystemColor(SWT.COLOR_WHITE));
+        tree.setBackground(ColorInfo.EDITABLE_WIDGET_BACKGROUND());
         TreeColumn column1 = new TreeColumn(tree, SWT.LEFT);
         column1.setText("XML Tree");
         column1.setWidth(120);
@@ -1162,7 +1163,7 @@ public class XmlFileOutputStep2Form extends AbstractXmlFileStepForm {
             }
 
             if (errorMessage == null) {
-                text.setBackground(text.getDisplay().getSystemColor(SWT.COLOR_WHITE));
+                text.setBackground(ColorInfo.EDITABLE_WIDGET_BACKGROUND());
             } else {
                 text.setBackground(text.getDisplay().getSystemColor(SWT.COLOR_RED));
                 if (showAlertIfError) {

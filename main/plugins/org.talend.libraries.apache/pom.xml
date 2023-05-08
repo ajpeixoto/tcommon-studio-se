@@ -81,6 +81,11 @@
 			<artifactId>log4j-1.2-api</artifactId>
 			<version>${log4j2.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.james</groupId>
+			<artifactId>apache-mime4j-core</artifactId>
+			<version>0.8.9</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -109,7 +114,7 @@
 							<excludeTypes>pom</excludeTypes>
 							<excludeTransitive>true</excludeTransitive>
 							<outputDirectory>${project.basedir}/lib</outputDirectory>
-							<includeGroupIds>ch.qos.reload4j,org.slf4j,org.apache.logging.log4j</includeGroupIds>
+							<includeGroupIds>ch.qos.reload4j,org.slf4j,org.apache.logging.log4j,org.apache.james</includeGroupIds>
 						</configuration>
 					</execution>
 				</executions>

@@ -57,12 +57,17 @@ public interface ColorConstants {
 
     static Color getTableBackgroundColor() {
         return ITalendThemeService.getColor(ColorConstants.BUNDLE_ID_COMMON_UI_RUNTIME, ColorConstants.KEY_TABLE_BACKGROUND)
-                .orElse(WHITE_COLOR);
+                .orElse(Display.getDefault().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
     }
 
     static Color getTableForegroundColor() {
         return ITalendThemeService.getColor(ColorConstants.BUNDLE_ID_COMMON_UI_RUNTIME, ColorConstants.KEY_TABLE_FOREGROUND)
-                .orElse(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
+                .orElse(Display.getDefault().getSystemColor(SWT.COLOR_LIST_FOREGROUND));
+    }
+    
+    static Color getTableReadOnlyForegroundColor() {
+        return ITalendThemeService.getColor("CONTEXT_TABLE_READONLY_FOREGROUND")
+                .orElse(Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_DARK_SHADOW));
     }
 
 }

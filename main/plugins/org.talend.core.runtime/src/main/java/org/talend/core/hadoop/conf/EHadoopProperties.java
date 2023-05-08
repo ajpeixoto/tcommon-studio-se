@@ -142,6 +142,8 @@ public enum EHadoopProperties {
     
     SPARK_EXECUTOR_MEMORY,
     
+    SPARK_EXECUTOR_CORES,
+    
     DATABRICKS_ENDPOINT,
     
     DATABRICKS_CLOUD_PROVIDER,
