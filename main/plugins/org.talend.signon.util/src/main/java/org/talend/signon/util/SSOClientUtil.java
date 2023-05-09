@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -62,7 +63,7 @@ public class SSOClientUtil {
     private static final String CLIENT_INI_FILE_NAME_ON_LINUX_AARCH64 = "Talend_Sign_On_Tool_linux_gtk_aarch64.ini";
 
     private static final String CLIENT_INI_FILE_NAME_ON_MAC_X86 = "Talend_Sign_On_Tool.ini";
-    
+
     private static final String CLIENT_INI_FILE_NAME_ON_MAC_AARCH64 = "Talend_Sign_On_Tool_aarch64.ini";
 
     private static final String DEBUG_PARAMETER_NAME = "-Xdebug";
@@ -76,6 +77,8 @@ public class SSOClientUtil {
     static final String DATA_CENTER_DISPLAY_KEY = "talend.tmc.datacenter.display";
 
     public static final String TALEND_DEBUG = "--talendDebug"; //$NON-NLS-1$
+
+    private static List<String> STUDIO_INI_CONTENT = new ArrayList<String>();
 
     private static final SSOClientUtil instance = new SSOClientUtil();
 
@@ -159,7 +162,8 @@ public class SSOClientUtil {
         if (isDebugMode()) {
             LOGGER.info("Prepare to start cloud client on " + signOnClientListener.getListenPort());
         }
-        signOnClientExec = new SSOClientExec(execFile, clientId, codeChallenge, signOnClientListener.getListenPort(), listener);
+        signOnClientExec = new SSOClientExec(execFile, clientId, codeChallenge, signOnClientListener.getListenPort(), listener,
+                STUDIO_INI_CONTENT);
         new Thread(signOnClientExec).start();
         if (isDebugMode()) {
             LOGGER.info("Login cloud client started.");
@@ -181,6 +185,7 @@ public class SSOClientUtil {
                 fileContentList.remove(debugIndex + 1);
                 fileContentList.remove(debugIndex);
             }
+            STUDIO_INI_CONTENT = fileContentList;
             saveIniFile(fileContentList);
         } else {
             LOGGER.error("Can't find Studio's ini file.");
