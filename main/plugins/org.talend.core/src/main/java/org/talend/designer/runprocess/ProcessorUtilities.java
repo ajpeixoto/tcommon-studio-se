@@ -1076,6 +1076,21 @@ public class ProcessorUtilities {
             }
             progressMonitor.subTask(Messages.getString("ProcessorUtilities.loadingJob") + currentJobName); //$NON-NLS-1$
 
+            //APPINT-35554 correct build type for child job of Route
+            JobInfo parentJobInfo = jobInfo.getFatherJobInfo();
+            if (selectedProcessItem != null && parentJobInfo != null 
+            		&& parentJobInfo.getProcessor() != null && parentJobInfo.getProcessor().getProperty() != null ) {
+            	Property childProperty = selectedProcessItem.getProperty();
+                String childBuildType = (String)childProperty.getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE);
+                if (childBuildType == null) {
+                    Property parentProperty = parentJobInfo.getProcessor().getProperty();
+                    String parentBuildType = (String)parentProperty.getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE);
+                    if ("ROUTE".equalsIgnoreCase(parentBuildType)) {
+                    	childProperty.getAdditionalProperties().put(TalendProcessArgumentConstant.ARG_BUILD_TYPE, "OSGI");
+                    }
+                }
+            }
+            
             if (jobInfo.getProcess() == null) {
                 if (selectedProcessItem != null) {
                     IDesignerCoreService service = CorePlugin.getDefault().getDesignerCoreService();
