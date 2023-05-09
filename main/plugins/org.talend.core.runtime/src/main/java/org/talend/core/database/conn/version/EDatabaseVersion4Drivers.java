@@ -163,7 +163,6 @@ public enum EDatabaseVersion4Drivers {
     AMAZON_AURORA_3(new DbVersion4Drivers(EDatabaseTypeName.AMAZON_AURORA, "MySQL 8", "MYSQL_8", //$NON-NLS-1$
             "mysql-connector-j-8.0.33.jar"));
 
-
     private DbVersion4Drivers dbVersionBean;
 
     EDatabaseVersion4Drivers(DbVersion4Drivers dbVersionBean) {
