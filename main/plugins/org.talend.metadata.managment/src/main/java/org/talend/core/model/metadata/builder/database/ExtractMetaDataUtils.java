@@ -126,7 +126,7 @@ public class ExtractMetaDataUtils {
 
     public static final String SNOWFLAKE = "Snowflake"; //$NON-NLS-1$
 
-    public static final String SNOWFLAKE_DRIVER_JAR = "snowflake-jdbc-3.13.8.jar"; //$NON-NLS-1$
+    public static final String SNOWFLAKE_DRIVER_JAR = "snowflake-jdbc-3.13.29.jar"; //$NON-NLS-1$
 
     private ExtractMetaDataUtils() {
     }
