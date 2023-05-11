@@ -83,11 +83,10 @@ public class MetadataDialogCustomUI extends AbstractCustomUI<MetadataDialogBusin
     }
 
     private void extracted(List<Object> newColumns, List<IMetadataColumn> originalColumns) {
-        Class<? extends IMetadataColumn> clazz = originalColumns.get(0).getClass();
         int i = 0;
         for (; i < newColumns.size(); i++) {
             Object obj = newColumns.get(i);
-            IMetadataColumn convertValue = this.getUIEngine().convertValue(obj, clazz);
+            IMetadataColumn convertValue = this.getUIEngine().convertValue(obj, MetadataColumn.class);
             IMetadataColumn originalColumn = null;
             if (i < originalColumns.size()) {
                 originalColumn = originalColumns.get(i);
