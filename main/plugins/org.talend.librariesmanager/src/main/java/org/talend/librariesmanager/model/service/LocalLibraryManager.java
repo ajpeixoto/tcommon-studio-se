@@ -927,8 +927,11 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
                                 urlWarned.add(moduleLocation);
                             }
                             moduleLocation = relativePath;
-                            found = true;
-                            fileToDeploy = new File(getJarPathFromPlatform(moduleLocation));
+                            String jarPathFromPlatform = getJarPathFromPlatform(moduleLocation);
+                            if(jarPathFromPlatform != null) {
+                                found = true;
+                                fileToDeploy = new File(jarPathFromPlatform);
+                            }
                         }
                     }
                 }
