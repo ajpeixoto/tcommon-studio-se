@@ -296,7 +296,9 @@ public class LibrariesIndexManager {
         this.mavenLibLock.readLock().lock();
         try {
             Map<String, String> retMap = new HashMap<String, String>();
-            retMap.putAll(this.mavenLibIndex.getJarsToRelativePath().map());
+            if (!this.mavenLibIndex.getJarsToRelativePath().isEmpty()) {
+                retMap.putAll(this.mavenLibIndex.getJarsToRelativePath().map());
+            }
             return Collections.unmodifiableMap(retMap);
         } finally {
             this.mavenLibLock.readLock().unlock();
