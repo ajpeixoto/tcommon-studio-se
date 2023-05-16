@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -296,8 +297,13 @@ public class LibrariesIndexManager {
         this.mavenLibLock.readLock().lock();
         try {
             Map<String, String> retMap = new HashMap<String, String>();
-            if (!this.mavenLibIndex.getJarsToRelativePath().isEmpty()) {
-                retMap.putAll(this.mavenLibIndex.getJarsToRelativePath().map());
+            java.util.Iterator<Entry<String, String>> it =
+                    this.mavenLibIndex.getJarsToRelativePath().iterator();
+            while (it.hasNext()) {
+                Entry<String, String> next = it.next();
+                if (next != null) {
+                    retMap.put(next.getKey(), next.getValue());
+                }
             }
             return Collections.unmodifiableMap(retMap);
         } finally {
