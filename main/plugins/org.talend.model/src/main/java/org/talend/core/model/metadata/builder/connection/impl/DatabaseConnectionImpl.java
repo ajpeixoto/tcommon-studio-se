@@ -17,6 +17,7 @@ import org.eclipse.emf.ecore.util.InternalEList;
 import org.talend.core.model.metadata.builder.connection.CDCConnection;
 import org.talend.core.model.metadata.builder.connection.ConnectionPackage;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
+import org.talend.cwm.helper.StudioEncryptionHelper;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '<em><b>Database Connection</b></em>'. <!--
@@ -723,7 +724,7 @@ public class DatabaseConnectionImpl extends ConnectionImpl implements DatabaseCo
      */
     public void setPort(String newPort) {
         String oldPort = port;
-        port = newPort;
+        port = newPort;       
         if (eNotificationRequired())
             eNotify(new ENotificationImpl(this, Notification.SET, ConnectionPackage.DATABASE_CONNECTION__PORT, oldPort, port));
     }
@@ -773,6 +774,9 @@ public class DatabaseConnectionImpl extends ConnectionImpl implements DatabaseCo
     }
 
     public void setRawPassword(String value) {
+        if (value != null && StudioEncryptionHelper.isLatestEncryptionKey(password) && value.equals(getRawPassword())) {
+            return;
+        }
         setPassword(getValue(value, true));
     }
 

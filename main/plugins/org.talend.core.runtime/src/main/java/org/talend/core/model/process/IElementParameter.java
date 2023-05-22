@@ -234,4 +234,9 @@ public interface IElementParameter {
     public void setSerialized(boolean isSerialized);
 
     public boolean isSelectedFromItemValue();
+    
+    /*This value may dirty, only use to cache encrypted value*/
+    public String getOrignEncryptedValue();
+    
+    public void setOrignEncryptedValue(String value);
 }

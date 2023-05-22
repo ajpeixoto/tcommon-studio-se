@@ -46,6 +46,9 @@ public class JobContextParameter implements IContextParameter, Cloneable {
     String[] valueList;
 
     String internalId;
+    
+    /*This value may dirty, only use to cache encrypted value*/
+    String originEncryptedValue;
 
     /**
      * change to save id always for bug 13184.
@@ -299,6 +302,15 @@ public class JobContextParameter implements IContextParameter, Cloneable {
     @Override
     public void setSource(String source) {
         this.source = source;
+    }
+
+    public String getOriginEncryptedValue() {
+        return originEncryptedValue;
+    }
+
+    
+    public void setOriginEncryptedValue(String originEncryptedValue) {
+        this.originEncryptedValue = originEncryptedValue;
     }
 
     /*
