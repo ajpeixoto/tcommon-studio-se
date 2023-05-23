@@ -4358,6 +4358,8 @@ public class DatabaseForm extends AbstractForm {
             return getSybaseVersionDrivers(dbType);
         }else if(asGreenplumVersionEnable()) {
             return getGreenplumVersionDrivers(dbType);
+        } else if (asAmazonAuroraVersionEnable()) {
+            return getAmazonAuroraVersionDrivers(dbType);
         }
         List<String> result = new ArrayList<String>();
         List<EDatabaseVersion4Drivers> v4dList = EDatabaseVersion4Drivers.indexOfByDbType(dbType);
@@ -4391,6 +4393,14 @@ public class DatabaseForm extends AbstractForm {
         result.add(EDatabaseVersion4Drivers.GREENPLUM_PSQL.getVersionDisplay());
         return result;
     }
+
+    private List<String> getAmazonAuroraVersionDrivers(String dbType) {
+        List<String> result = new ArrayList<String>();
+        result.add(EDatabaseVersion4Drivers.AMAZON_AURORA_3.getVersionDisplay());
+        result.add(EDatabaseVersion4Drivers.AMAZON_AURORA.getVersionDisplay());
+        return result;
+    }
+
     private void addFieldsForGeneralDB(Composite parent) {
 
         generalDbCompositeParent = new Composite(parent, SWT.NULL);
