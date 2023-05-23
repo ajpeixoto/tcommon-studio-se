@@ -582,6 +582,18 @@ public class RepositoryObjectTypeBuildProviderTest {
             return null;
         }
 
+        @Override
+        public boolean isRefactoringToJoblet() {
+            // TODO Auto-generated method stub
+            return false;
+        }
+
+        @Override
+        public void refactoringToJoblet(boolean isRefactoring) {
+            // TODO Auto-generated method stub
+
+        }
+
     }
 
     @Before
