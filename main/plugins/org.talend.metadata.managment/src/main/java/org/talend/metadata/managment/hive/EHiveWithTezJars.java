@@ -50,7 +50,7 @@ public enum EHiveWithTezJars {
             "jersey-json-1.9.jar", "jersey-server-1.9.jar", "jetty-util-6.1.26.hwx.jar",
             "microsoft-windowsazure-storage-sdk-0.6.0.jar", "netty-3.6.2.Final.jar", "paranamer-2.3.jar", "servlet-api-2.5.jar",
             "slf4j-api-1.7.5.jar", "slf4j-log4j12-1.7.5.jar", "snappy-java-1.0.4.1.jar", "stax-api-1.0.1.jar",
-            "xercesImpl-2.9.1.jar", "xml-apis-1.3.04.jar", "xmlenc-0.52.jar", "xz-1.0.jar", "zookeeper-3.4.6.jar" }),
+            "xercesImpl-2.12.2.jar", "xml-apis-1.4.01.jar", "xmlenc-0.52.jar", "xz-1.0.jar", "zookeeper-3.4.6.jar" }),
 
     HDP_2_3(new String[] { "aopalliance-1.0.jar", "apacheds-i18n-2.0.0-M15.jar", "apacheds-kerberos-codec-2.0.0-M15.jar",
             "api-asn1-api-1.0.0-M20.jar", "api-util-1.0.0-M20.jar", "asm-3.2.jar", "avro-1.7.5.jar",
@@ -66,7 +66,7 @@ public enum EHiveWithTezJars {
             "jersey-guice-1.9.jar", "jersey-json-1.9.jar", "jersey-server-1.9.jar", "jetty-util-6.1.26.hwx.jar",
             "microsoft-windowsazure-storage-sdk-0.6.0.jar", "netty-3.6.2.Final.jar", "paranamer-2.3.jar", "servlet-api-2.5.jar",
             "slf4j-api-1.7.10.jar", "slf4j-log4j12-1.7.10.jar", "snappy-java-1.0.4.1.jar", "stax-api-1.0-2.jar",
-            "xercesImpl-2.9.1.jar", "xml-apis-1.3.04.jar", "xmlenc-0.52.jar", "xz-1.0.jar", "zookeeper-3.4.6.2.3.2.0-2950.jar" }),
+            "xercesImpl-2.12.2.jar", "xml-apis-1.4.01.jar", "xmlenc-0.52.jar", "xz-1.0.jar", "zookeeper-3.4.6.2.3.2.0-2950.jar" }),
     MAPR401(new String[] { "commons-collections4-4.0.jar", "guava-11.0.2.jar", "guice-3.0.jar",
             "hadoop-mapreduce-client-shuffle-2.4.1-mapr-1408.jar", "jettison-1.3.4.jar", "snappy-java-1.0.4.1.jar",
             "tez-api-0.4.0-mapr-1408.jar", "tez-common-0.4.0-mapr-1408.jar", "tez-dag-0.4.0-mapr-1408.jar",
