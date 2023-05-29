@@ -117,6 +117,14 @@
             required="true">
       </libraryNeeded>
       <libraryNeeded
+              context="Mysql 8 dbwizard"
+              language="java"
+              message="Mysql 8 dbwizard for TOP"
+              mvn_uri="mvn:com.mysql/mysql-connector-j/8.0.33"
+              name="mysql-connector-j-8.0.33.jar"
+              required="true">
+        </libraryNeeded>
+      <libraryNeeded
             context="Sybase wizard"
             language="java"
             message="Needed for create Sybase connection"

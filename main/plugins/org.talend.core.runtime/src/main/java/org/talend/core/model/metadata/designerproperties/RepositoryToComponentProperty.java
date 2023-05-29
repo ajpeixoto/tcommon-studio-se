@@ -1091,6 +1091,10 @@ public class RepositoryToComponentProperty {
                 if (dbVersionString != null) {
                     return dbVersionString.toUpperCase();
                 }
+            } else if (EDatabaseConnTemplate.AMAZON_AURORA.getDBDisplayName().equals(databaseType)) {
+                if (dbVersionString != null) {
+                    return dbVersionString.toUpperCase();
+                }
             } else if (EDatabaseTypeName.HIVE.getDisplayName().equals(databaseType)) {
                 return connection.getParameters().get(ConnParameterKeys.CONN_PARA_KEY_HIVE_VERSION);
             } else if (EDatabaseTypeName.HBASE.getDisplayName().equals(databaseType)) {

@@ -69,7 +69,7 @@ public enum EDatabaseVersion4Drivers {
             "SAS 9.2", "SAS_9.2", new String[] { "sas.core.jar", "sas.security.sspi.jar", "sas.svc.connection.jar", "reload4j-1.2.22.jar" })), //$NON-NLS-1$ //$NON-NLS-2$
     SAPHana(new DbVersion4Drivers(EDatabaseTypeName.SAPHana, "HDB 1.0", "HDB_1_0", "ngdbc.jar")), //$NON-NLS-1$
     // MYSQL, add for 9594
-    MYSQL_8(new DbVersion4Drivers(EDatabaseTypeName.MYSQL, "MySQL 8", "MYSQL_8", "mysql-connector-java-8.0.18.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    MYSQL_8(new DbVersion4Drivers(EDatabaseTypeName.MYSQL, "MySQL 8", "MYSQL_8", "mysql-connector-j-8.0.33.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     MYSQL_5(new DbVersion4Drivers(EDatabaseTypeName.MYSQL, "MySQL 5", "MYSQL_5", "mysql-connector-java-5.1.49.jar")), //$NON-NLS-1$  //$NON-NLS-2$ //$NON-NLS-3$
     MARIADB(new DbVersion4Drivers(EDatabaseTypeName.MYSQL, "MariaDB", "MARIADB", "mariadb-java-client-2.5.3.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     // add for 9594
@@ -156,7 +156,10 @@ public enum EDatabaseVersion4Drivers {
                     "aws-java-sdk-redshift-internal-1.12.x.jar", "aws-java-sdk-core-1.12.315.jar", //$NON-NLS-1$ //$NON-NLS-2$
                     "aws-java-sdk-sts-1.12.315.jar", "aws-java-sdk-redshift-1.12.315.jar", "jmespath-java-1.12.315.jar" })), //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
 
-    AMAZON_AURORA(new DbVersion4Drivers(EDatabaseTypeName.AMAZON_AURORA, "mysql-connector-java-5.1.49.jar")); //$NON-NLS-1$
+    AMAZON_AURORA(new DbVersion4Drivers(EDatabaseTypeName.AMAZON_AURORA, "MySQL 5", "MYSQL_5", //$NON-NLS-1$
+            "mysql-connector-java-5.1.49.jar")),
+    AMAZON_AURORA_3(new DbVersion4Drivers(EDatabaseTypeName.AMAZON_AURORA, "MySQL 8", "MYSQL_8", //$NON-NLS-1$
+            "mysql-connector-j-8.0.33.jar"));
 
     private DbVersion4Drivers dbVersionBean;
 

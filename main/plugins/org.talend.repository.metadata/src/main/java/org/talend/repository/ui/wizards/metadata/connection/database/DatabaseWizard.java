@@ -511,6 +511,12 @@ public class DatabaseWizard extends CheckLastVersionRepositoryWizard implements 
                     } else if (EDatabaseVersion4Drivers.MARIADB.getVersionValue().equals(dbVersion)) {
                         driverClass = EDatabase4DriverClassName.MARIADB.getDriverClass();
                     }
+                } else if (EDatabaseTypeName.AMAZON_AURORA.equals(dbType)) {
+                    if (EDatabaseVersion4Drivers.AMAZON_AURORA.getVersionValue().equals(dbVersion)) {
+                        driverClass = EDatabase4DriverClassName.AMAZON_AURORA.getDriverClass();
+                    } else if (EDatabaseVersion4Drivers.AMAZON_AURORA_3.getVersionValue().equals(dbVersion)) {
+                        driverClass = EDatabase4DriverClassName.AMAZON_AURORA_3.getDriverClass();
+                    }
                 } else if (EDatabaseTypeName.MSSQL.equals(dbType)
                         && EDatabaseVersion4Drivers.MSSQL_PROP.getVersionValue().equals(dbVersion)) {
                     driverClass = EDatabase4DriverClassName.MSSQL2.getDriverClass();
