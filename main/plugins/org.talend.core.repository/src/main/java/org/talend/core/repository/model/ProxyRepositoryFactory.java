@@ -54,9 +54,7 @@ import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.osgi.internal.serviceregistry.ServiceReferenceImpl;
 import org.eclipse.osgi.internal.serviceregistry.ServiceRegistrationImpl;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.navigator.CommonViewer;
@@ -447,12 +445,10 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
                             if (currentShell == null) {
                                 currentShell = DisplayUtils.getDefaultShell(false);
                             }
-                            MessageBox box = new MessageBox(currentShell, SWT.ICON_WARNING | SWT.OK | SWT.CANCEL);
-                            box.setText(Messages.getString("ProxyRepositoryFactory.JobNameErroe")); //$NON-NLS-1$
-                            box.setMessage(Messages.getString("ProxyRepositoryFactory.Label") + " " + name + " " + Messages.getString("ProxyRepositoryFactory.ReplaceJob")); //$NON-NLS-1$ //$NON-NLS-2$//$NON-NLS-3$//$NON-NLS-4$
-
-                            if (box.open() == SWT.OK) {
-
+                            if (MessageDialog.openQuestion(currentShell,
+                                    Messages.getString("ProxyRepositoryFactory.JobNameErroe"), //$NON-NLS-1$
+                                    Messages.getString("ProxyRepositoryFactory.Label") + " " + name + " " //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                                            + Messages.getString("ProxyRepositoryFactory.ReplaceJob"))) { //$NON-NLS-1$
                                 ok[0] = true;
                             }
                         }
