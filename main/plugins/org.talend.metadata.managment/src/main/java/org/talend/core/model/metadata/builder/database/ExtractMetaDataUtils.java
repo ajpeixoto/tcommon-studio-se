@@ -1009,6 +1009,12 @@ public class ExtractMetaDataUtils {
                     }else if(EDatabaseTypeName.GREENPLUM.getDisplayName().equals(dbType)
                             && EDatabaseVersion4Drivers.GREENPLUM.getVersionValue().equals(dbVersion)){
                         driverClassName = EDatabase4DriverClassName.GREENPLUM.getDriverClass();
+                    } else if (EDatabaseTypeName.AMAZON_AURORA.getXmlName().equals(dbType)) {
+                        if (EDatabaseVersion4Drivers.AMAZON_AURORA.getVersionValue().equals(dbVersion)) {
+                            driverClassName = EDatabase4DriverClassName.AMAZON_AURORA.getDriverClass();
+                        } else if (EDatabaseVersion4Drivers.AMAZON_AURORA_3.getVersionValue().equals(dbVersion)) {
+                            driverClassName = EDatabase4DriverClassName.AMAZON_AURORA_3.getDriverClass();
+                        }
                     }
                 }
             } else {
