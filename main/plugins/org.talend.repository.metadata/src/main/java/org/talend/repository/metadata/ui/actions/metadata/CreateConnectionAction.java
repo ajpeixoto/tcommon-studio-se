@@ -37,6 +37,7 @@ import org.talend.core.model.update.RepositoryUpdateManager;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.ui.actions.metadata.AbstractCreateAction;
 import org.talend.core.runtime.services.IGenericDBService;
+import org.talend.metadata.managment.ui.wizard.RepositoryWizard;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.metadata.i18n.Messages;
 import org.talend.repository.model.IProxyRepositoryFactory;
@@ -46,6 +47,7 @@ import org.talend.repository.model.RepositoryNode;
 import org.talend.repository.model.RepositoryNodeUtilities;
 import org.talend.repository.ui.views.IRepositoryView;
 import org.talend.repository.ui.wizards.metadata.connection.database.DatabaseWizard;
+import org.talend.repository.ui.wizards.metadata.connection.database.NewDatabaseWizard;
 
 /**
  * Action used to create a new connection.<br/>
@@ -185,13 +187,12 @@ public class CreateConnectionAction extends AbstractCreateAction {
                 ExceptionHandler.process(e);
             }
         }
-
-        DatabaseWizard databaseWizard;
-        if (isToolbar()) {
-            databaseWizard = new DatabaseWizard(PlatformUI.getWorkbench(), creation, node, getExistingNames());
-            databaseWizard.setToolBar(true);
+        RepositoryWizard databaseWizard;
+        if (creation) {
+            databaseWizard = new NewDatabaseWizard(PlatformUI.getWorkbench(), creation, isToolbar(), node, getExistingNames());
         } else {
-            databaseWizard = new DatabaseWizard(PlatformUI.getWorkbench(), creation, node, getExistingNames());
+            databaseWizard = new DatabaseWizard(getWorkbench(), creation, node, getExistingNames());
+            DatabaseWizard.class.cast(databaseWizard).setToolBar(isToolbar());
         }
 
         // Open the Wizard
