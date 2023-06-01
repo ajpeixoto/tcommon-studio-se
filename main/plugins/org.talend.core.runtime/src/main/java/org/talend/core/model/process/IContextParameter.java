@@ -75,4 +75,9 @@ public interface IContextParameter {
     public String getInternalId();
 
     public void setInternalId(String internalId);
+    
+    /*This value may dirty, only use to cache encrypted value*/
+    public String getOriginEncryptedValue();
+    
+    public void setOriginEncryptedValue(String originEncryptedValue);
 }
