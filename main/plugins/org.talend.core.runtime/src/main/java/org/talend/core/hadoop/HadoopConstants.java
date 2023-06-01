@@ -30,6 +30,8 @@ public class HadoopConstants {
     public static final String SPARK_MODE_DATAPROC = "DATAPROC";
     
     public static final String SPARK_MODE_SYNAPSE = "SYNAPSE";
+    
+    public static final String SPARK_MODE_HDI = "HDI";
 
     public static final String FRAMEWORK = "FRAMEWORK";
 
