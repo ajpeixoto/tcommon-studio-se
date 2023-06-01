@@ -1329,7 +1329,7 @@ public class ProjectRepositoryNode extends RepositoryNode implements IProjectRep
 
     }
 
-    private void addNode(RepositoryNode parent, ERepositoryObjectType type, IRepositoryViewObject repositoryObject,
+    public void addNode(RepositoryNode parent, ERepositoryObjectType type, IRepositoryViewObject repositoryObject,
             List<IRepositoryViewObject> validationRules) {
 
         boolean isAvaliableInTOS = true; // this flag filter the databaseconnections which didn't supported by TOS but
@@ -1589,7 +1589,7 @@ public class ProjectRepositoryNode extends RepositoryNode implements IProjectRep
         return objs;
     }
 
-    private void createTables(RepositoryNode node, final IRepositoryViewObject repObj, Connection metadataConnection,
+    public void createTables(RepositoryNode node, final IRepositoryViewObject repObj, Connection metadataConnection,
             List<IRepositoryViewObject> validationRules) {
 
         // // 5.GENERIC SCHEMAS

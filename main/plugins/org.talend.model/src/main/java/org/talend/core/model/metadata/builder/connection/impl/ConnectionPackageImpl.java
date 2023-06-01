@@ -81,6 +81,7 @@ import org.talend.core.model.metadata.builder.connection.SalesforceModuleUnit;
 import org.talend.core.model.metadata.builder.connection.SalesforceSchemaConnection;
 import org.talend.core.model.metadata.builder.connection.SchemaTarget;
 import org.talend.core.model.metadata.builder.connection.SubscriberTable;
+import org.talend.core.model.metadata.builder.connection.TacokitDatabaseConnection;
 import org.talend.core.model.metadata.builder.connection.ValidationRulesConnection;
 import org.talend.core.model.metadata.builder.connection.WSDLParameter;
 import org.talend.core.model.metadata.builder.connection.WSDLSchemaConnection;
@@ -195,6 +196,13 @@ public class ConnectionPackageImpl extends EPackageImpl implements ConnectionPac
      * @generated
      */
     private EClass databaseConnectionEClass = null;
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    private EClass tacokitDatabaseConnectionEClass = null;
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1569,6 +1577,15 @@ public class ConnectionPackageImpl extends EPackageImpl implements ConnectionPac
      */
     public EAttribute getDatabaseConnection_SupportNLS() {
         return (EAttribute) databaseConnectionEClass.getEStructuralFeatures().get(26);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EClass getTacokitDatabaseConnection() {
+        return tacokitDatabaseConnectionEClass;
     }
 
     /**
@@ -4536,6 +4553,8 @@ public class ConnectionPackageImpl extends EPackageImpl implements ConnectionPac
         createEReference(databaseConnectionEClass, DATABASE_CONNECTION__PARAMETERS);
         createEAttribute(databaseConnectionEClass, DATABASE_CONNECTION__SUPPORT_NLS);
 
+        tacokitDatabaseConnectionEClass = createEClass(TACOKIT_DATABASE_CONNECTION);
+
         sapConnectionEClass = createEClass(SAP_CONNECTION);
         createEAttribute(sapConnectionEClass, SAP_CONNECTION__HOST);
         createEAttribute(sapConnectionEClass, SAP_CONNECTION__USERNAME);
@@ -4994,6 +5013,7 @@ public class ConnectionPackageImpl extends EPackageImpl implements ConnectionPac
         ebcdicConnectionEClass.getESuperTypes().add(this.getFileConnection());
         mdmConnectionEClass.getESuperTypes().add(this.getConnection());
         databaseConnectionEClass.getESuperTypes().add(this.getConnection());
+        tacokitDatabaseConnectionEClass.getESuperTypes().add(this.getDatabaseConnection());
         sapConnectionEClass.getESuperTypes().add(this.getConnection());
         sapFunctionUnitEClass.getESuperTypes().add(this.getAbstractMetadataObject());
         sapiDocUnitEClass.getESuperTypes().add(this.getAbstractMetadataObject());
@@ -5317,6 +5337,9 @@ public class ConnectionPackageImpl extends EPackageImpl implements ConnectionPac
         initEAttribute(getDatabaseConnection_SupportNLS(), ecorePackage.getEBoolean(), "supportNLS", "false", 0, 1,
                 DatabaseConnection.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
                 !IS_DERIVED, IS_ORDERED);
+
+        initEClass(tacokitDatabaseConnectionEClass, TacokitDatabaseConnection.class, "TacokitDatabaseConnection", !IS_ABSTRACT,
+                !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
         initEClass(sapConnectionEClass, SAPConnection.class, "SAPConnection", !IS_ABSTRACT, !IS_INTERFACE,
                 IS_GENERATED_INSTANCE_CLASS);

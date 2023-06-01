@@ -118,6 +118,7 @@ import org.talend.core.model.properties.SpagoBiServer;
 import org.talend.core.model.properties.StatAndLogsSettings;
 import org.talend.core.model.properties.Status;
 import org.talend.core.model.properties.TDQItem;
+import org.talend.core.model.properties.TacokitDatabaseConnectionItem;
 import org.talend.core.model.properties.TalendTrigger;
 import org.talend.core.model.properties.TaskExecutionHistory;
 import org.talend.core.model.properties.TechnicalVariable;
@@ -332,6 +333,13 @@ public class PropertiesPackageImpl extends EPackageImpl implements PropertiesPac
      * @generated
      */
     private EClass databaseConnectionItemEClass = null;
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    private EClass tacokitDatabaseConnectionItemEClass = null;
 
     /**
      * <!-- begin-user-doc -->
@@ -2095,6 +2103,15 @@ public class PropertiesPackageImpl extends EPackageImpl implements PropertiesPac
      */
     public EClass getDatabaseConnectionItem() {
         return databaseConnectionItemEClass;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EClass getTacokitDatabaseConnectionItem() {
+        return tacokitDatabaseConnectionItemEClass;
     }
 
     /**
@@ -6485,6 +6502,8 @@ public class PropertiesPackageImpl extends EPackageImpl implements PropertiesPac
 
         databaseConnectionItemEClass = createEClass(DATABASE_CONNECTION_ITEM);
 
+        tacokitDatabaseConnectionItemEClass = createEClass(TACOKIT_DATABASE_CONNECTION_ITEM);
+
         sapConnectionItemEClass = createEClass(SAP_CONNECTION_ITEM);
 
         xmlFileConnectionItemEClass = createEClass(XML_FILE_CONNECTION_ITEM);
@@ -7085,6 +7104,7 @@ public class PropertiesPackageImpl extends EPackageImpl implements PropertiesPac
         regExFileConnectionItemEClass.getESuperTypes().add(this.getConnectionItem());
         csvFileConnectionItemEClass.getESuperTypes().add(this.getDelimitedFileConnectionItem());
         databaseConnectionItemEClass.getESuperTypes().add(this.getConnectionItem());
+        tacokitDatabaseConnectionItemEClass.getESuperTypes().add(this.getDatabaseConnectionItem());
         sapConnectionItemEClass.getESuperTypes().add(this.getConnectionItem());
         xmlFileConnectionItemEClass.getESuperTypes().add(this.getConnectionItem());
         ldifFileConnectionItemEClass.getESuperTypes().add(this.getConnectionItem());
@@ -7263,6 +7283,8 @@ public class PropertiesPackageImpl extends EPackageImpl implements PropertiesPac
         initEClass(csvFileConnectionItemEClass, CSVFileConnectionItem.class, "CSVFileConnectionItem", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
         initEClass(databaseConnectionItemEClass, DatabaseConnectionItem.class, "DatabaseConnectionItem", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+
+        initEClass(tacokitDatabaseConnectionItemEClass, TacokitDatabaseConnectionItem.class, "TacokitDatabaseConnectionItem", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
         initEClass(sapConnectionItemEClass, SAPConnectionItem.class, "SAPConnectionItem", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 

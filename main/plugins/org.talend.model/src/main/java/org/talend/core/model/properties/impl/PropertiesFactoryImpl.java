@@ -73,6 +73,7 @@ public class PropertiesFactoryImpl extends EFactoryImpl implements PropertiesFac
             case PropertiesPackage.REG_EX_FILE_CONNECTION_ITEM: return createRegExFileConnectionItem();
             case PropertiesPackage.CSV_FILE_CONNECTION_ITEM: return createCSVFileConnectionItem();
             case PropertiesPackage.DATABASE_CONNECTION_ITEM: return createDatabaseConnectionItem();
+            case PropertiesPackage.TACOKIT_DATABASE_CONNECTION_ITEM: return createTacokitDatabaseConnectionItem();
             case PropertiesPackage.SAP_CONNECTION_ITEM: return createSAPConnectionItem();
             case PropertiesPackage.XML_FILE_CONNECTION_ITEM: return createXmlFileConnectionItem();
             case PropertiesPackage.LDIF_FILE_CONNECTION_ITEM: return createLdifFileConnectionItem();
@@ -381,6 +382,16 @@ public class PropertiesFactoryImpl extends EFactoryImpl implements PropertiesFac
     public DatabaseConnectionItem createDatabaseConnectionItem() {
         DatabaseConnectionItemImpl databaseConnectionItem = new DatabaseConnectionItemImpl();
         return databaseConnectionItem;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public TacokitDatabaseConnectionItem createTacokitDatabaseConnectionItem() {
+        TacokitDatabaseConnectionItemImpl tacokitDatabaseConnectionItem = new TacokitDatabaseConnectionItemImpl();
+        return tacokitDatabaseConnectionItem;
     }
 
     /**

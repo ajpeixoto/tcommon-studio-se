@@ -590,6 +590,8 @@ public class ERepositoryObjectType extends DynaEnum<ERepositoryObjectType> {
             .valueOf("METADATA_SAP_BW_INFOOBJECT"); //$NON-NLS-1$
 
     public final static ERepositoryObjectType JDBC = ERepositoryObjectType.valueOf("JDBC"); //$NON-NLS-1$
+    
+    public static final ERepositoryObjectType METADATA_TACOKIT_JDBC = ERepositoryObjectType.valueOf("repository.metadata.tacokit.jdbcnew.jdbcdatastore"); //$NON-NLS-1$
 
     private static Map<String, ERepositoryObjectType> typeCacheById = new HashMap<String, ERepositoryObjectType>();
 

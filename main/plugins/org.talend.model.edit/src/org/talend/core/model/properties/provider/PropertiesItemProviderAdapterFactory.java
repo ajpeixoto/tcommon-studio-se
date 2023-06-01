@@ -516,6 +516,28 @@ public class PropertiesItemProviderAdapterFactory extends PropertiesAdapterFacto
     }
 
     /**
+     * This keeps track of the one adapter used for all {@link org.talend.core.model.properties.TacokitDatabaseConnectionItem} instances.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    protected TacokitDatabaseConnectionItemItemProvider tacokitDatabaseConnectionItemItemProvider;
+
+    /**
+     * This creates an adapter for a {@link org.talend.core.model.properties.TacokitDatabaseConnectionItem}.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public Adapter createTacokitDatabaseConnectionItemAdapter() {
+        if (tacokitDatabaseConnectionItemItemProvider == null) {
+            tacokitDatabaseConnectionItemItemProvider = new TacokitDatabaseConnectionItemItemProvider(this);
+        }
+
+        return tacokitDatabaseConnectionItemItemProvider;
+    }
+
+    /**
      * This keeps track of the one adapter used for all {@link org.talend.core.model.properties.SAPConnectionItem} instances.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -645,6 +667,28 @@ public class PropertiesItemProviderAdapterFactory extends PropertiesAdapterFacto
         }
 
         return mdmConnectionItemItemProvider;
+    }
+
+    /**
+     * This keeps track of the one adapter used for all {@link org.talend.core.model.properties.ValidationRulesConnectionItem} instances.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    protected ValidationRulesConnectionItemItemProvider validationRulesConnectionItemItemProvider;
+
+    /**
+     * This creates an adapter for a {@link org.talend.core.model.properties.ValidationRulesConnectionItem}.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public Adapter createValidationRulesConnectionItemAdapter() {
+        if (validationRulesConnectionItemItemProvider == null) {
+            validationRulesConnectionItemItemProvider = new ValidationRulesConnectionItemItemProvider(this);
+        }
+
+        return validationRulesConnectionItemItemProvider;
     }
 
     /**
@@ -1129,6 +1173,28 @@ public class PropertiesItemProviderAdapterFactory extends PropertiesAdapterFacto
         }
 
         return executionTaskItemProvider;
+    }
+
+    /**
+     * This keeps track of the one adapter used for all {@link org.talend.core.model.properties.ExecutionTaskProperties} instances.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    protected ExecutionTaskPropertiesItemProvider executionTaskPropertiesItemProvider;
+
+    /**
+     * This creates an adapter for a {@link org.talend.core.model.properties.ExecutionTaskProperties}.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public Adapter createExecutionTaskPropertiesAdapter() {
+        if (executionTaskPropertiesItemProvider == null) {
+            executionTaskPropertiesItemProvider = new ExecutionTaskPropertiesItemProvider(this);
+        }
+
+        return executionTaskPropertiesItemProvider;
     }
 
     /**
@@ -1968,6 +2034,292 @@ public class PropertiesItemProviderAdapterFactory extends PropertiesAdapterFacto
     }
 
     /**
+     * This keeps track of the one adapter used for all {@link org.talend.core.model.properties.BRMSConnectionItem} instances.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    protected BRMSConnectionItemItemProvider brmsConnectionItemItemProvider;
+
+    /**
+     * This creates an adapter for a {@link org.talend.core.model.properties.BRMSConnectionItem}.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public Adapter createBRMSConnectionItemAdapter() {
+        if (brmsConnectionItemItemProvider == null) {
+            brmsConnectionItemItemProvider = new BRMSConnectionItemItemProvider(this);
+        }
+
+        return brmsConnectionItemItemProvider;
+    }
+
+    /**
+     * This keeps track of the one adapter used for all {@link org.talend.core.model.properties.JobScriptItem} instances.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    protected JobScriptItemItemProvider jobScriptItemItemProvider;
+
+    /**
+     * This creates an adapter for a {@link org.talend.core.model.properties.JobScriptItem}.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public Adapter createJobScriptItemAdapter() {
+        if (jobScriptItemItemProvider == null) {
+            jobScriptItemItemProvider = new JobScriptItemItemProvider(this);
+        }
+
+        return jobScriptItemItemProvider;
+    }
+
+    /**
+     * This keeps track of the one adapter used for all {@link org.talend.core.model.properties.EDIFACTConnectionItem} instances.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    protected EDIFACTConnectionItemItemProvider edifactConnectionItemItemProvider;
+
+    /**
+     * This creates an adapter for a {@link org.talend.core.model.properties.EDIFACTConnectionItem}.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public Adapter createEDIFACTConnectionItemAdapter() {
+        if (edifactConnectionItemItemProvider == null) {
+            edifactConnectionItemItemProvider = new EDIFACTConnectionItemItemProvider(this);
+        }
+
+        return edifactConnectionItemItemProvider;
+    }
+
+    /**
+     * This keeps track of the one adapter used for all {@link org.talend.core.model.properties.TechnicalVariable} instances.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    protected TechnicalVariableItemProvider technicalVariableItemProvider;
+
+    /**
+     * This creates an adapter for a {@link org.talend.core.model.properties.TechnicalVariable}.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public Adapter createTechnicalVariableAdapter() {
+        if (technicalVariableItemProvider == null) {
+            technicalVariableItemProvider = new TechnicalVariableItemProvider(this);
+        }
+
+        return technicalVariableItemProvider;
+    }
+
+    /**
+     * This keeps track of the one adapter used for all {@link org.talend.core.model.properties.ReferenceFileItem} instances.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    protected ReferenceFileItemItemProvider referenceFileItemItemProvider;
+
+    /**
+     * This creates an adapter for a {@link org.talend.core.model.properties.ReferenceFileItem}.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public Adapter createReferenceFileItemAdapter() {
+        if (referenceFileItemItemProvider == null) {
+            referenceFileItemItemProvider = new ReferenceFileItemItemProvider(this);
+        }
+
+        return referenceFileItemItemProvider;
+    }
+
+    /**
+     * This keeps track of the one adapter used for all {@link org.talend.core.model.properties.ReferenceItem} instances.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    protected ReferenceItemItemProvider referenceItemItemProvider;
+
+    /**
+     * This creates an adapter for a {@link org.talend.core.model.properties.ReferenceItem}.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public Adapter createReferenceItemAdapter() {
+        if (referenceItemItemProvider == null) {
+            referenceItemItemProvider = new ReferenceItemItemProvider(this);
+        }
+
+        return referenceItemItemProvider;
+    }
+
+    /**
+     * This keeps track of the one adapter used for all {@link org.talend.core.model.properties.ExchangeUser} instances.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    protected ExchangeUserItemProvider exchangeUserItemProvider;
+
+    /**
+     * This creates an adapter for a {@link org.talend.core.model.properties.ExchangeUser}.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public Adapter createExchangeUserAdapter() {
+        if (exchangeUserItemProvider == null) {
+            exchangeUserItemProvider = new ExchangeUserItemProvider(this);
+        }
+
+        return exchangeUserItemProvider;
+    }
+
+    /**
+     * This keeps track of the one adapter used for all {@link org.talend.core.model.properties.ArtifactNotification} instances.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    protected ArtifactNotificationItemProvider artifactNotificationItemProvider;
+
+    /**
+     * This creates an adapter for a {@link org.talend.core.model.properties.ArtifactNotification}.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public Adapter createArtifactNotificationAdapter() {
+        if (artifactNotificationItemProvider == null) {
+            artifactNotificationItemProvider = new ArtifactNotificationItemProvider(this);
+        }
+
+        return artifactNotificationItemProvider;
+    }
+
+    /**
+     * This keeps track of the one adapter used for all {@link java.util.Map.Entry} instances.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    protected AdditionalInfoMapItemProvider additionalInfoMapItemProvider;
+
+    /**
+     * This creates an adapter for a {@link java.util.Map.Entry}.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public Adapter createAdditionalInfoMapAdapter() {
+        if (additionalInfoMapItemProvider == null) {
+            additionalInfoMapItemProvider = new AdditionalInfoMapItemProvider(this);
+        }
+
+        return additionalInfoMapItemProvider;
+    }
+
+    /**
+     * This keeps track of the one adapter used for all {@link org.talend.core.model.properties.MigrationTask} instances.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    protected MigrationTaskItemProvider migrationTaskItemProvider;
+
+    /**
+     * This creates an adapter for a {@link org.talend.core.model.properties.MigrationTask}.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public Adapter createMigrationTaskAdapter() {
+        if (migrationTaskItemProvider == null) {
+            migrationTaskItemProvider = new MigrationTaskItemProvider(this);
+        }
+
+        return migrationTaskItemProvider;
+    }
+
+    /**
+     * This keeps track of the one adapter used for all {@link org.talend.core.model.properties.PigudfItem} instances.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    protected PigudfItemItemProvider pigudfItemItemProvider;
+
+    /**
+     * This creates an adapter for a {@link org.talend.core.model.properties.PigudfItem}.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public Adapter createPigudfItemAdapter() {
+        if (pigudfItemItemProvider == null) {
+            pigudfItemItemProvider = new PigudfItemItemProvider(this);
+        }
+
+        return pigudfItemItemProvider;
+    }
+
+    /**
+     * This keeps track of the one adapter used for all {@link org.talend.core.model.properties.RoutinesJarType} instances.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    protected RoutinesJarTypeItemProvider routinesJarTypeItemProvider;
+
+    /**
+     * This creates an adapter for a {@link org.talend.core.model.properties.RoutinesJarType}.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public Adapter createRoutinesJarTypeAdapter() {
+        if (routinesJarTypeItemProvider == null) {
+            routinesJarTypeItemProvider = new RoutinesJarTypeItemProvider(this);
+        }
+
+        return routinesJarTypeItemProvider;
+    }
+
+    /**
+     * This keeps track of the one adapter used for all {@link org.talend.core.model.properties.RoutinesJarItem} instances.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    protected RoutinesJarItemItemProvider routinesJarItemItemProvider;
+
+    /**
+     * This creates an adapter for a {@link org.talend.core.model.properties.RoutinesJarItem}.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public Adapter createRoutinesJarItemAdapter() {
+        if (routinesJarItemItemProvider == null) {
+            routinesJarItemItemProvider = new RoutinesJarItemItemProvider(this);
+        }
+
+        return routinesJarItemItemProvider;
+    }
+
+    /**
      * This returns the root adapter factory that contains this factory.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -2083,12 +2435,14 @@ public class PropertiesItemProviderAdapterFactory extends PropertiesAdapterFacto
         if (regExFileConnectionItemItemProvider != null) regExFileConnectionItemItemProvider.dispose();
         if (csvFileConnectionItemItemProvider != null) csvFileConnectionItemItemProvider.dispose();
         if (databaseConnectionItemItemProvider != null) databaseConnectionItemItemProvider.dispose();
+        if (tacokitDatabaseConnectionItemItemProvider != null) tacokitDatabaseConnectionItemItemProvider.dispose();
         if (sapConnectionItemItemProvider != null) sapConnectionItemItemProvider.dispose();
         if (xmlFileConnectionItemItemProvider != null) xmlFileConnectionItemItemProvider.dispose();
         if (ldifFileConnectionItemItemProvider != null) ldifFileConnectionItemItemProvider.dispose();
         if (excelFileConnectionItemItemProvider != null) excelFileConnectionItemItemProvider.dispose();
         if (ebcdicConnectionItemItemProvider != null) ebcdicConnectionItemItemProvider.dispose();
         if (mdmConnectionItemItemProvider != null) mdmConnectionItemItemProvider.dispose();
+        if (validationRulesConnectionItemItemProvider != null) validationRulesConnectionItemItemProvider.dispose();
         if (processItemItemProvider != null) processItemItemProvider.dispose();
         if (userRoleItemProvider != null) userRoleItemProvider.dispose();
         if (userItemProvider != null) userItemProvider.dispose();
@@ -2110,6 +2464,7 @@ public class PropertiesItemProviderAdapterFactory extends PropertiesAdapterFacto
         if (executionPlanPartCmdPrmItemProvider != null) executionPlanPartCmdPrmItemProvider.dispose();
         if (executionPlanPartJobPrmItemProvider != null) executionPlanPartJobPrmItemProvider.dispose();
         if (executionTaskItemProvider != null) executionTaskItemProvider.dispose();
+        if (executionTaskPropertiesItemProvider != null) executionTaskPropertiesItemProvider.dispose();
         if (executionTaskCmdPrmItemProvider != null) executionTaskCmdPrmItemProvider.dispose();
         if (executionTaskJobPrmItemProvider != null) executionTaskJobPrmItemProvider.dispose();
         if (taskExecutionHistoryItemProvider != null) taskExecutionHistoryItemProvider.dispose();
@@ -2149,6 +2504,19 @@ public class PropertiesItemProviderAdapterFactory extends PropertiesAdapterFacto
         if (ftpConnectionItemItemProvider != null) ftpConnectionItemItemProvider.dispose();
         if (customComponentSettingItemProvider != null) customComponentSettingItemProvider.dispose();
         if (tdqItemItemProvider != null) tdqItemItemProvider.dispose();
+        if (brmsConnectionItemItemProvider != null) brmsConnectionItemItemProvider.dispose();
+        if (jobScriptItemItemProvider != null) jobScriptItemItemProvider.dispose();
+        if (edifactConnectionItemItemProvider != null) edifactConnectionItemItemProvider.dispose();
+        if (technicalVariableItemProvider != null) technicalVariableItemProvider.dispose();
+        if (referenceFileItemItemProvider != null) referenceFileItemItemProvider.dispose();
+        if (referenceItemItemProvider != null) referenceItemItemProvider.dispose();
+        if (exchangeUserItemProvider != null) exchangeUserItemProvider.dispose();
+        if (artifactNotificationItemProvider != null) artifactNotificationItemProvider.dispose();
+        if (additionalInfoMapItemProvider != null) additionalInfoMapItemProvider.dispose();
+        if (migrationTaskItemProvider != null) migrationTaskItemProvider.dispose();
+        if (pigudfItemItemProvider != null) pigudfItemItemProvider.dispose();
+        if (routinesJarTypeItemProvider != null) routinesJarTypeItemProvider.dispose();
+        if (routinesJarItemItemProvider != null) routinesJarItemItemProvider.dispose();
     }
 
 }

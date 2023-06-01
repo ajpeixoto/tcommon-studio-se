@@ -2593,6 +2593,7 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
             case PropertiesPackage.FTP_CONNECTION_ITEM:
             case PropertiesPackage.BRMS_CONNECTION_ITEM:
             case PropertiesPackage.EBCDIC_CONNECTION_ITEM:
+            case PropertiesPackage.TACOKIT_DATABASE_CONNECTION_ITEM:
                 // not really usefull for ConnectionItem : it's not copied to
                 // another resource for edition
                 itemResource = save(resourceSet, (ConnectionItem) item);
@@ -2946,6 +2947,9 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
             switch (eClass.getClassifierID()) {
             case PropertiesPackage.DATABASE_CONNECTION_ITEM:
                 itemResource = create(project2, (ConnectionItem) item, ERepositoryObjectType.METADATA_CONNECTIONS, path);
+                break;
+            case PropertiesPackage.TACOKIT_DATABASE_CONNECTION_ITEM:
+                itemResource = create(project2, (ConnectionItem) item, ERepositoryObjectType.METADATA_TACOKIT_JDBC, path);
                 break;
             case PropertiesPackage.SAP_CONNECTION_ITEM:
                 itemResource = create(project2, (ConnectionItem) item, ERepositoryObjectType.METADATA_SAPCONNECTIONS, path);
@@ -3422,7 +3426,8 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
                 p2Service.setProfileKey(profKey);
                 Project localProject = getRepositoryContext().getProject();
                 boolean doUpgrade = p2Service.checkProjectCompatibility(monitor, localProject);
-                int adaptResult = p2Service.adaptFeaturesForProject(monitor, project);
+               // int adaptResult = p2Service.adaptFeaturesForProject(monitor, project);
+                int adaptResult = IStudioLiteP2Service.RESULT_SKIP;
                 if (IStudioLiteP2Service.RESULT_DONE == adaptResult) {
                     // when switch product,need to set --disableLoginDialog to avoid pop up logindialog
                     EclipseCommandLine.updateOrCreateExitDataPropertyWithCommand(

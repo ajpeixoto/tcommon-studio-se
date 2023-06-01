@@ -127,6 +127,8 @@ public class ConnectionFactoryImpl extends EFactoryImpl implements ConnectionFac
             return createMDMConnection();
         case ConnectionPackage.DATABASE_CONNECTION:
             return createDatabaseConnection();
+        case ConnectionPackage.TACOKIT_DATABASE_CONNECTION:
+            return createTacokitDatabaseConnection();
         case ConnectionPackage.SAP_CONNECTION:
             return createSAPConnection();
         case ConnectionPackage.SAP_FUNCTION_UNIT:
@@ -378,6 +380,16 @@ public class ConnectionFactoryImpl extends EFactoryImpl implements ConnectionFac
     public DatabaseConnection createDatabaseConnection() {
         DatabaseConnectionImpl databaseConnection = new DatabaseConnectionImpl();
         return databaseConnection;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public TacokitDatabaseConnection createTacokitDatabaseConnection() {
+        TacokitDatabaseConnectionImpl tacokitDatabaseConnection = new TacokitDatabaseConnectionImpl();
+        return tacokitDatabaseConnection;
     }
 
     /**
