@@ -71,11 +71,6 @@ public class UnsupportedCustomUI<T extends IBusinessHandler<?>> extends Abstract
         }
 
         @Override
-        protected ICustomUI<UnsupportedBusinessHandler> getCustomUI() {
-            return new UnsupportedCustomUI(this, dialogName, message);
-        }
-
-        @Override
         public String getUiKey() {
             return UI_KEY;
         }

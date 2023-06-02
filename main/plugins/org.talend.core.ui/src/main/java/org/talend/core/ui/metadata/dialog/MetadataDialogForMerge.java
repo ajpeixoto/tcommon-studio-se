@@ -162,9 +162,8 @@ public class MetadataDialogForMerge extends Dialog {
         init(parent, inputMetaTable, inputNode, outputMetaTable, outputNode, commandStack);
     }
 
-    public MetadataDialogForMerge(MetadataDialogForMergeBusinessHandler handler) {
-        this(handler.getParent().getShell(), handler.getInputInfos(), handler.getOutputMetaTable(), handler.getOutputNode(),
-                handler.getCommandStack());
+    public MetadataDialogForMerge(MetadataDialogForMergeBusinessHandler handler, Shell parent, CommandStack commandStack) {
+        this(parent, handler.getInputInfos(), handler.getOutputMetaTable(), handler.getOutputNode(), commandStack);
     }
 
     public MetadataDialogForMerge(Shell parent, Map<INode, Map<IMetadataTable, Boolean>> inputInfos,

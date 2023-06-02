@@ -12,7 +12,6 @@
 // ============================================================================
 package org.talend.commons.ui.swt.dialogs;
 
-import org.eclipse.swt.widgets.Shell;
 import org.talend.commons.ui.runtime.custom.AbsBusinessHandler;
 import org.talend.commons.ui.swt.dialogs.ModelSelectionDialog.EEditSelection;
 import org.talend.commons.ui.swt.dialogs.ModelSelectionDialog.ESelectionType;
@@ -24,16 +23,13 @@ public class ModelSelectionBusinessHandler extends AbsBusinessHandler<ModelSelec
 
     private static final String UI_KEY = "ModelSelectionDialog";
 
-    private Shell parentShell;
-
     private ESelectionType selectionType;
 
     private boolean isReadOnly;
 
     private EEditSelection optionValue;
 
-    public ModelSelectionBusinessHandler(Shell parentShell, ESelectionType selectionType, boolean isReadOnly) {
-        this.parentShell = parentShell;
+    public ModelSelectionBusinessHandler(ESelectionType selectionType, boolean isReadOnly) {
         this.selectionType = selectionType;
         this.isReadOnly = isReadOnly;
     }
@@ -41,14 +37,6 @@ public class ModelSelectionBusinessHandler extends AbsBusinessHandler<ModelSelec
     @Override
     public String getUiKey() {
         return UI_KEY;
-    }
-
-    public Shell getParentShell() {
-        return parentShell;
-    }
-
-    public void setParentShell(Shell parentShell) {
-        this.parentShell = parentShell;
     }
 
     public ESelectionType getSelectionType() {

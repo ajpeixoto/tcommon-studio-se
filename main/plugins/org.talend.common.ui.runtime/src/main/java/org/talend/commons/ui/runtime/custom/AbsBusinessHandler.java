@@ -13,8 +13,6 @@
 package org.talend.commons.ui.runtime.custom;
 
 import org.eclipse.jface.dialogs.Dialog;
-import org.talend.commons.ui.runtime.TalendUI;
-import org.talend.commons.ui.runtime.TalendUI.IStudioRunnable;
 
 /**
  * DOC cmeng  class global comment. Detailled comment
@@ -24,20 +22,6 @@ public abstract class AbsBusinessHandler<T extends IBusinessHandler<?>> implemen
     private Object openResult = Dialog.CANCEL;
 
     public AbsBusinessHandler() {
-    }
-
-    protected ICustomUI<T> getCustomUI() {
-        return new UnsupportedCustomUI<T>((T) this, getUiKey());
-    }
-
-    @Override
-    public T run(IStudioRunnable<T> studioRun) {
-        return TalendUI.get().run(studioRun, getCustomUI());
-    }
-
-    @Override
-    public T run(IStudioRunnable<T> studioRun, ICustomUI<T> stigmaUI) {
-        return TalendUI.get().run(studioRun, stigmaUI);
     }
 
     @Override

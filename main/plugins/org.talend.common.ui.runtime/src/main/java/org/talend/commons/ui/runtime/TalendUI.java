@@ -59,31 +59,41 @@ public class TalendUI {
         this.stigmaUIEngine = engine;
     }
 
+    /**
+     * should try to refactor them to different fragment
+     */
+    @Deprecated
     public <T extends IBusinessHandler<?>> T run(IStudioRunnable<T> studioRun, ICustomUI<T> stigmaRun) {
         if (isStudio()) {
-            return runInStudio(studioRun);
+            return run(studioRun);
         } else {
-            return runInStigma(stigmaRun);
+            return run(stigmaRun);
         }
     }
 
-    public <T extends IBusinessHandler<?>> T runInStudio(IStudioRunnable<T> run) {
+    /**
+     * should try to refactor them to different fragment
+     */
+    @Deprecated
+    public <T extends IBusinessHandler<?>> T run(IStudioRunnable<T> run) {
         return run.run();
     }
 
-    public <T extends IBusinessHandler<?>> T runInStigma(ICustomUI<T> ui) {
+    public <T extends IBusinessHandler<?>> T run(ICustomUI<T> ui) {
         if (ui == null) {
             throw new RuntimeException("Custom ui is not defined!");
         }
         return stigmaUIEngine.run(ui);
     }
 
+    @Deprecated
     public static interface IStudioRunnable<T extends IBusinessHandler<?>> {
 
         T run();
 
     }
 
+    @Deprecated
     public static abstract class AbsStudioRunnable<T extends IBusinessHandler<?>> implements IStudioRunnable<T> {
 
         @Override

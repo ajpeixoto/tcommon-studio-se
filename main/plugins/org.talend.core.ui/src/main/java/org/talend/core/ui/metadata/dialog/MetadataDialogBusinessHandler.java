@@ -12,10 +12,7 @@
 // ============================================================================
 package org.talend.core.ui.metadata.dialog;
 
-import org.eclipse.gef.commands.CommandStack;
-import org.eclipse.swt.widgets.Composite;
 import org.talend.commons.ui.runtime.custom.AbsBusinessHandler;
-import org.talend.commons.ui.runtime.custom.ICustomUI;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.process.INode;
 
@@ -33,31 +30,20 @@ public class MetadataDialogBusinessHandler extends AbsBusinessHandler<MetadataDi
 
     private IMetadataTable outputMetaTable;
 
-    private Composite parent;
-
     private INode inputNode;
 
     private INode outputNode;
-
-    private CommandStack commandStack;
 
     private boolean inputReadOnly;
 
     private boolean outputReadOnly;
 
-    public MetadataDialogBusinessHandler(Composite parent, IMetadataTable inputMetaTable, INode inputNode,
-            IMetadataTable outputMetaTable, INode outputNode, CommandStack commandStack) {
-        this.parent = parent;
+    public MetadataDialogBusinessHandler(IMetadataTable inputMetaTable, INode inputNode, IMetadataTable outputMetaTable,
+            INode outputNode) {
         this.inputMetaTable = inputMetaTable;
         this.inputNode = inputNode;
         this.outputMetaTable = outputMetaTable;
         this.outputNode = outputNode;
-        this.commandStack = commandStack;
-    }
-
-    @Override
-    protected ICustomUI<MetadataDialogBusinessHandler> getCustomUI() {
-        return new MetadataDialogCustomUI(this);
     }
 
     public String getTitle() {
@@ -84,14 +70,6 @@ public class MetadataDialogBusinessHandler extends AbsBusinessHandler<MetadataDi
         this.outputMetaTable = outputMetaTable;
     }
 
-    public Composite getParent() {
-        return parent;
-    }
-
-    public void setParent(Composite parent) {
-        this.parent = parent;
-    }
-
     public INode getInputNode() {
         return inputNode;
     }
@@ -106,14 +84,6 @@ public class MetadataDialogBusinessHandler extends AbsBusinessHandler<MetadataDi
 
     public void setOutputNode(INode outputNode) {
         this.outputNode = outputNode;
-    }
-
-    public CommandStack getCommandStack() {
-        return commandStack;
-    }
-
-    public void setCommandStack(CommandStack commandStack) {
-        this.commandStack = commandStack;
     }
 
     public boolean isInputReadOnly() {

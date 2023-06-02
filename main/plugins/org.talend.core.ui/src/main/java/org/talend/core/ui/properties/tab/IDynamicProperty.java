@@ -12,28 +12,24 @@
 // ============================================================================
 package org.talend.core.ui.properties.tab;
 
-import java.util.Map;
-
 import org.apache.commons.collections.BidiMap;
 import org.eclipse.swt.widgets.Composite;
-import org.talend.core.model.process.EComponentCategory;
+import org.talend.core.model.metadata.IDynamicBaseProperty;
 import org.talend.core.model.process.Element;
-import org.talend.core.model.properties.ConnectionItem;
+import org.talend.core.model.process.INode;
+import org.talend.core.model.process.IProcess;
+import org.talend.core.model.process.IProcess2;
 import org.talend.designer.core.IMultiPageTalendEditor;
 
 /**
  * DOC nrousseau class global comment. Detailled comment <br/>
  *
  */
-public interface IDynamicProperty {
+public interface IDynamicProperty extends IDynamicBaseProperty {
 
     public BidiMap getHashCurControls();
 
-    public Element getElement();
-
     public IMultiPageTalendEditor getPart();
-
-    public EComponentCategory getSection();
 
     public Composite getComposite();
 
@@ -48,12 +44,22 @@ public interface IDynamicProperty {
 
     // public Map<String, Query> getRepositoryQueryStoreMap();
 
-    public Map<String, String> getTableIdAndDbTypeMap();
-
-    public Map<String, String> getTableIdAndDbSchemaMap();
-
     public void refresh();
 
-    public String getRepositoryAliasName(ConnectionItem connectionItem);
+    @Override
+    default IProcess2 getProcess() {
+        IProcess process = null;
+        IMultiPageTalendEditor part = getPart();
+        if (part == null) {
+            // achen modify to fix 0005991 part is null
+            Element elem = getElement();
+            if (elem instanceof INode) {
+                process = ((INode) elem).getProcess();
+            }
+        } else {
+            process = part.getProcess();
+        }
+        return (IProcess2) process;
+    }
 
 }

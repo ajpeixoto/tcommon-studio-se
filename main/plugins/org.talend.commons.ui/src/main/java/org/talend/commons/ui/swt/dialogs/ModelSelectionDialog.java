@@ -62,8 +62,8 @@ public class ModelSelectionDialog extends SelectionDialog {
         this(parentShell, selectionType, false);
     }
 
-    public ModelSelectionDialog(ModelSelectionBusinessHandler handler) {
-        this(handler.getParentShell(), handler.getSelectionType(), handler.isReadOnly());
+    public ModelSelectionDialog(ModelSelectionBusinessHandler handler, Shell parentShell) {
+        this(parentShell, handler.getSelectionType(), handler.isReadOnly());
     }
 
     public ModelSelectionDialog(Shell parentShell, ESelectionType selectionType, boolean isReadOnly) {

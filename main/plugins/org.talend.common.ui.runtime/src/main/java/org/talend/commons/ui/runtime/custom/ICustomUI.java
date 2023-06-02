@@ -14,6 +14,8 @@ package org.talend.commons.ui.runtime.custom;
 
 import java.util.concurrent.CompletableFuture;
 
+import org.talend.commons.ui.runtime.TalendUI;
+
 /**
  * DOC cmeng  class global comment. Detailled comment
  */
@@ -24,6 +26,10 @@ public interface ICustomUI<T extends IBusinessHandler<?>> extends IUIEventHandle
     T getBusinessHandler();
 
     T run();
+
+    default T open() {
+        return TalendUI.get().run(this);
+    }
 
     /**
      * Send event to stigma

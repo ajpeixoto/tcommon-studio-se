@@ -14,8 +14,6 @@ package org.talend.core.ui.metadata.dialog;
 
 import java.util.Map;
 
-import org.eclipse.gef.commands.CommandStack;
-import org.eclipse.swt.widgets.Composite;
 import org.talend.commons.ui.runtime.custom.AbsBusinessHandler;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.process.INode;
@@ -30,10 +28,6 @@ public class MetadataDialogForMergeBusinessHandler extends AbsBusinessHandler<Me
 
     private String title;
 
-    private Composite parent;
-
-    private CommandStack commandStack;
-
     private boolean inputReadOnly;
 
     private boolean outputReadOnly;
@@ -44,13 +38,11 @@ public class MetadataDialogForMergeBusinessHandler extends AbsBusinessHandler<Me
 
     private INode outputNode;
 
-    public MetadataDialogForMergeBusinessHandler(Composite parent, Map<INode, Map<IMetadataTable, Boolean>> inputInfos,
-            IMetadataTable outputMetaTable, INode outputNode, CommandStack commandStack) {
-        this.parent = parent;
+    public MetadataDialogForMergeBusinessHandler(Map<INode, Map<IMetadataTable, Boolean>> inputInfos,
+            IMetadataTable outputMetaTable, INode outputNode) {
         this.inputInfos = inputInfos;
         this.outputMetaTable = outputMetaTable;
         this.outputNode = outputNode;
-        this.commandStack = commandStack;
     }
 
     public String getTitle() {
@@ -69,28 +61,12 @@ public class MetadataDialogForMergeBusinessHandler extends AbsBusinessHandler<Me
         this.outputMetaTable = outputMetaTable;
     }
 
-    public Composite getParent() {
-        return parent;
-    }
-
-    public void setParent(Composite parent) {
-        this.parent = parent;
-    }
-
     public INode getOutputNode() {
         return outputNode;
     }
 
     public void setOutputNode(INode outputNode) {
         this.outputNode = outputNode;
-    }
-
-    public CommandStack getCommandStack() {
-        return commandStack;
-    }
-
-    public void setCommandStack(CommandStack commandStack) {
-        this.commandStack = commandStack;
     }
 
     public boolean isInputReadOnly() {

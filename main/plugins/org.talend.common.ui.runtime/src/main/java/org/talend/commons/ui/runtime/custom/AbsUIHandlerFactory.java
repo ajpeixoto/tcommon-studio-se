@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2022 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2023 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -12,19 +12,17 @@
 // ============================================================================
 package org.talend.commons.ui.runtime.custom;
 
+
 /**
  * DOC cmeng  class global comment. Detailled comment
  */
-public interface IBusinessHandler<T extends IBusinessHandler<?>> {
+public abstract class AbsUIHandlerFactory implements IUIHandlerFactory {
 
-    public static final int OK = 0;
-
-    public static final int CANCEL = 1;
-
-    String getUiKey();
-
-    boolean isModalDialog();
-
-    Object getOpenResult();
+    /**
+     * DOC cmeng AbsUIHandlerFactory constructor comment.
+     */
+    public AbsUIHandlerFactory() {
+        // TODO Auto-generated constructor stub
+    }
 
 }
