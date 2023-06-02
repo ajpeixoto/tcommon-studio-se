@@ -12,6 +12,8 @@
 // ============================================================================
 package org.talend.repository.metadata.ui.actions.metadata;
 
+import java.util.Optional;
+
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -20,6 +22,7 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 import org.talend.commons.exception.PersistenceException;
+import org.talend.commons.runtime.service.ITaCoKitService;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.image.ECoreImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
@@ -219,10 +222,11 @@ public class CreateConnectionAction extends AbstractCreateAction {
         if(dbService != null){
             isExtraType = dbService.getExtraTypes().contains(nodeType);
         }
-        if (!ERepositoryObjectType.METADATA_CONNECTIONS.equals(nodeType) && !isExtraType) {
+        if ((!ERepositoryObjectType.METADATA_CONNECTIONS.equals(nodeType) && !isExtraType) || Optional.ofNullable(ITaCoKitService.getInstance()).map(s -> s.isTaCoKitRepositoryNode(node)).orElse(false)) {
             setEnabled(false);
             return;
         }
+        
         IProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
         switch (node.getType()) {
         case SIMPLE_FOLDER:
