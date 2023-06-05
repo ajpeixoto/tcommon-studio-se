@@ -1257,6 +1257,43 @@ public class RepositoryToComponentProperty {
 
         }
         
+        if (value.equals("configuration.dataSet.dataStore.jdbcUrl")) {
+            return getAppropriateValue(connection, connection.getURL());
+        }
+
+        if (value.equals("configuration.dataSet.dataStore.host")) {
+            return getAppropriateValue(connection, connection.getServerName());
+        }
+
+        if (value.equals("configuration.dataSet.dataStore.port")) {
+            return getAppropriateValue(connection, connection.getPort());
+        }
+
+        if (value.equals("configuration.dataSet.dataStore.jdbcDriver")) {
+            return getAppropriateValue(connection, connection.getDriverJarPath());
+        }
+
+        if (value.equals("configuration.dataSet.dataStore.jdbcClass")) {
+            return getAppropriateValue(connection, connection.getDriverClass());
+        }
+
+        if (value.equals("configuration.dataSet.dataStore.userId")) {
+            return getAppropriateValue(connection, connection.getUsername());
+        }
+
+        if (value.equals("configuration.dataSet.dataStore.password")) {
+            return getAppropriateValue(connection, connection.getPassword());
+        }
+
+        // if(value.equals("configuration.dataSet.dataStore.dbMapping")) {
+        // return getAppropriateValue(connection, connection.GET);
+        // }
+        //
+        // if(value.equals("configuration.dataSet.dataStore.database")) {
+        // return getAppropriateValue(connection, connection.getDatasourceName()); //TODO --KK
+        // }
+        
+        
         if(value.equals("SUPPORT_NLS")) {
             return connection.isSupportNLS();
         }
