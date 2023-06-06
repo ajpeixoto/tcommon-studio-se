@@ -1,5 +1,15 @@
-/**
- */
+// ============================================================================
+//
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
+//
+// This source code is available under agreement available at
+// %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
+//
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
+//
+// ============================================================================
 package org.talend.core.model.metadata.builder.connection.impl;
 
 import org.eclipse.emf.ecore.EClass;
@@ -40,7 +50,7 @@ public class TacokitDatabaseConnectionImpl extends DatabaseConnectionImpl implem
      */
     @Override
     public String getDriverJarPath() {
-        String jdbcDriverData = (String) this.getProperties().get("configuration.jdbcDriver");
+        String jdbcDriverData = (String) this.getProperties().get(KEY_DRIVER);
         String jdbcDriverPath = null;
         if (jdbcDriverData != null) {
             if (jdbcDriverData.startsWith("[") && jdbcDriverData.endsWith("]")) {
@@ -66,7 +76,7 @@ public class TacokitDatabaseConnectionImpl extends DatabaseConnectionImpl implem
      */
     @Override
     public void setDriverJarPath(String value) {
-        String jdbcDriverData = (String) this.getProperties().get("configuration.jdbcDriver");
+        String jdbcDriverData = (String) this.getProperties().get(KEY_DRIVER);
         boolean hasSquareBrackets = false, hasBracket = false;
 
         if (jdbcDriverData != null) {
@@ -106,8 +116,8 @@ public class TacokitDatabaseConnectionImpl extends DatabaseConnectionImpl implem
             if (hasBracket) {
                 sb.append("}");
             }
-            this.getProperties().put("configuration.jdbcDriver", sb.toString());
-        }// TODO --KK
+            this.getProperties().put(KEY_DRIVER, sb.toString());
+        }
     }
 
     /**
@@ -115,7 +125,7 @@ public class TacokitDatabaseConnectionImpl extends DatabaseConnectionImpl implem
      */
     @Override
     public String getDriverClass() {
-        return (String) this.getProperties().get("configuration.jdbcClass");
+        return (String) this.getProperties().get(KEY_DRIVER_CLASS);
     }
 
     /**
@@ -123,7 +133,7 @@ public class TacokitDatabaseConnectionImpl extends DatabaseConnectionImpl implem
      */
     @Override
     public void setDriverClass(String value) {
-        this.getProperties().put("configuration.jdbcClass", value);
+        this.getProperties().put(KEY_DRIVER_CLASS, value);
     }
 
     /**
@@ -131,7 +141,7 @@ public class TacokitDatabaseConnectionImpl extends DatabaseConnectionImpl implem
      */
     @Override
     public String getURL() {
-        return (String) this.getProperties().get("configuration.jdbcUrl");
+        return (String) this.getProperties().get(KEY_URL);
     }
 
     /**
@@ -139,7 +149,7 @@ public class TacokitDatabaseConnectionImpl extends DatabaseConnectionImpl implem
      */
     @Override
     public void setURL(String value) {
-        this.getProperties().put("configuration.jdbcUrl", value);
+        this.getProperties().put(KEY_URL, value);
     }
 
     /**
@@ -147,7 +157,7 @@ public class TacokitDatabaseConnectionImpl extends DatabaseConnectionImpl implem
      */
     @Override
     public String getPort() {
-        return (String) this.getProperties().get("configuration.port");
+        return (String) this.getProperties().get(KEY_PORT);
     }
 
     /**
@@ -155,7 +165,7 @@ public class TacokitDatabaseConnectionImpl extends DatabaseConnectionImpl implem
      */
     @Override
     public void setPort(String value) {
-        this.getProperties().put("configuration.port", value);
+        this.getProperties().put(KEY_PORT, value);
     }
 
     /**
@@ -163,7 +173,7 @@ public class TacokitDatabaseConnectionImpl extends DatabaseConnectionImpl implem
      */
     @Override
     public String getUsername() {
-        return (String) this.getProperties().get("configuration.userId");
+        return (String) this.getProperties().get(KEY_USER_ID);
     }
 
     /**
@@ -171,7 +181,7 @@ public class TacokitDatabaseConnectionImpl extends DatabaseConnectionImpl implem
      */
     @Override
     public void setUsername(String value) {
-        this.getProperties().put("configuration.userId", value);
+        this.getProperties().put(KEY_USER_ID, value);
 
     }
 
@@ -179,13 +189,13 @@ public class TacokitDatabaseConnectionImpl extends DatabaseConnectionImpl implem
     @Override
     public void setPassword(String newPassword) {
         this.password = newPassword;
-        this.getProperties().put("configuration.password", newPassword);
+        this.getProperties().put(KEY_PASSWORD, newPassword);
     }
 
     @Override
     public void setRawPassword(String value) {
         super.setRawPassword(value);
-        this.getProperties().put("configuration.password", this.password);
+        this.getProperties().put(KEY_PASSWORD, this.password);
     }
 
     /**
@@ -193,14 +203,120 @@ public class TacokitDatabaseConnectionImpl extends DatabaseConnectionImpl implem
      */
     @Override
     public String getPassword() {
-        return (String) this.getProperties().get("configuration.password");
+        return (String) this.getProperties().get(KEY_PASSWORD);
     }
 
+    /**
+     * @generated NOT
+     */
     @Override
     public String getRawPassword() {
         this.password = getPassword();
         return super.getRawPassword();
     }
+
+    /**
+     * @generated NOT
+     */
+    @Override
+    public String getDatabaseMappingFile() {
+        if (this.getProperties().containsKey(KEY_DATABASE_MAPPING)) {
+            return (String) this.getProperties().get(KEY_DATABASE_MAPPING);
+        }
+        return null;
+    }
+
+    /**
+     * @generated NOT
+     */
+    @Override
+    public boolean useSharedDBConnection() {
+        if (this.getProperties().containsKey(KEY_USE_SHARED_DB_CONNECTION)) {
+            return (boolean) this.getProperties().get(KEY_USE_SHARED_DB_CONNECTION);
+        }
+        return false;
+    }
+
+    /**
+     * @generated NOT
+     */
+    @Override
+    public String getSharedDBConnectionName() {
+        if (this.getProperties().containsKey(KEY_SHARED_DB_CONNECTION)) {
+            return (String) this.getProperties().get(KEY_SHARED_DB_CONNECTION);
+        }
+        return null;
+    }
+
+    /**
+     * @generated NOT
+     */
+    @Override
+    public boolean useDatasourceName() {
+        if (this.getProperties().containsKey(KEY_USE_DATASOURCE_NAME)) {
+            return (boolean) this.getProperties().get(KEY_USE_DATASOURCE_NAME);
+        }
+        return false;
+    }
     
+    /**
+     * @generated NOT
+     */
+    @Override
+    public String getDatasourceName() {
+        if (this.getProperties().containsKey(KEY_DATASOURCE_NAME)) {
+            return (String) this.getProperties().get(KEY_DATASOURCE_NAME);
+        }
+        return null;
+    }
+    
+    /**
+     * @generated NOT
+     */
+    @Override
+    public void setDatasourceName(String value) {
+        this.getProperties().put(KEY_DATASOURCE_NAME, value);
+    }
+    
+    /**
+     * @generated NOT
+     */
+    @Override
+    public String getAuthenticationType() {
+        if (this.getProperties().containsKey(KEY_AUTHENTICATION_TYPE)) {
+            return (String) this.getProperties().get(KEY_AUTHENTICATION_TYPE);
+        }
+        return null;
+    }
+
+    /**
+     * @generated NOT
+     */
+    @Override
+    public boolean useAutoCommit() {
+        if (this.getProperties().containsKey(KEY_USE_AUTO_COMMIT)) {
+            return (boolean) this.getProperties().get(KEY_USE_AUTO_COMMIT);
+        }
+        return false;
+    }
+
+    /**
+     * @generated NOT
+     */
+    @Override
+    public boolean autoCommit() {
+        if (this.getProperties().containsKey(KEY_AUTO_COMMIT)) {
+            return (boolean) this.getProperties().get(KEY_AUTO_COMMIT);
+        }
+        return false;
+    }
+
+    @Override
+    public String getHost() {
+        if (this.getProperties().containsKey(KEY_HOST)) {
+            return (String) this.getProperties().get(KEY_HOST);
+        }
+        return null;
+    }
     
 } //TacokitDatabaseConnectionImpl

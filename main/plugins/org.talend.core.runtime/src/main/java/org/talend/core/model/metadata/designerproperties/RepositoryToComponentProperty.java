@@ -74,6 +74,7 @@ import org.talend.core.model.metadata.builder.connection.SAPFunctionUnit;
 import org.talend.core.model.metadata.builder.connection.SalesforceModuleUnit;
 import org.talend.core.model.metadata.builder.connection.SalesforceSchemaConnection;
 import org.talend.core.model.metadata.builder.connection.SchemaTarget;
+import org.talend.core.model.metadata.builder.connection.TacokitDatabaseConnection;
 import org.talend.core.model.metadata.builder.connection.WSDLParameter;
 import org.talend.core.model.metadata.builder.connection.WSDLSchemaConnection;
 import org.talend.core.model.metadata.builder.connection.XMLFileNode;
@@ -947,6 +948,9 @@ public class RepositoryToComponentProperty {
     private static Object getDatabaseValue(DatabaseConnection connection, String value, IMetadataTable table,
             String targetComponent) {
 
+        if (connection instanceof TacokitDatabaseConnection) {
+            return getTacokitDatabaseConnectionValue((TacokitDatabaseConnection)connection, value, table, targetComponent);
+        }
         String databaseType = connection.getDatabaseType();
         if (value.equals("TYPE")) { //$NON-NLS-1$
             String typeByProduct = getStandardDbTypeFromConnection(databaseType);
@@ -1255,44 +1259,7 @@ public class RepositoryToComponentProperty {
             }
             return value2;
 
-        }
-        
-        if (value.equals("configuration.dataSet.dataStore.jdbcUrl")) {
-            return getAppropriateValue(connection, connection.getURL());
-        }
-
-        if (value.equals("configuration.dataSet.dataStore.host")) {
-            return getAppropriateValue(connection, connection.getServerName());
-        }
-
-        if (value.equals("configuration.dataSet.dataStore.port")) {
-            return getAppropriateValue(connection, connection.getPort());
-        }
-
-        if (value.equals("configuration.dataSet.dataStore.jdbcDriver")) {
-            return getAppropriateValue(connection, connection.getDriverJarPath());
-        }
-
-        if (value.equals("configuration.dataSet.dataStore.jdbcClass")) {
-            return getAppropriateValue(connection, connection.getDriverClass());
-        }
-
-        if (value.equals("configuration.dataSet.dataStore.userId")) {
-            return getAppropriateValue(connection, connection.getUsername());
-        }
-
-        if (value.equals("configuration.dataSet.dataStore.password")) {
-            return getAppropriateValue(connection, connection.getPassword());
-        }
-
-        // if(value.equals("configuration.dataSet.dataStore.dbMapping")) {
-        // return getAppropriateValue(connection, connection.GET);
-        // }
-        //
-        // if(value.equals("configuration.dataSet.dataStore.database")) {
-        // return getAppropriateValue(connection, connection.getDatasourceName()); //TODO --KK
-        // }
-        
+        }     
         
         if(value.equals("SUPPORT_NLS")) {
             return connection.isSupportNLS();
@@ -1864,6 +1831,59 @@ public class RepositoryToComponentProperty {
             String pathToCredentials = connection.getParameters()
                     .get(ConnParameterKeys.CONN_PARA_KEY_HIVE_AUTHENTICATION_PATH_TO_GOOGLE_CREDENTIALS);
             return getAppropriateValue(connection, pathToCredentials);
+        }
+        return null;
+    }
+    
+    private static Object getTacokitDatabaseConnectionValue(TacokitDatabaseConnection connection, String value,
+            IMetadataTable table, String targetComponent) {
+        if (value.equals(TacokitDatabaseConnection.KEY_URL)) {
+            return getAppropriateValue(connection, connection.getURL());
+        }
+        if (value.equals(TacokitDatabaseConnection.KEY_HOST)) {
+            return getAppropriateValue(connection, connection.getHost());
+        }
+        if (value.equals(TacokitDatabaseConnection.KEY_PORT)) {
+            return getAppropriateValue(connection, connection.getPort());
+        }
+        if (value.equals(TacokitDatabaseConnection.KEY_DRIVER)) {
+            return getAppropriateValue(connection, connection.getDriverJarPath());
+        }
+        if (value.equals(TacokitDatabaseConnection.KEY_DRIVER_CLASS)) {
+            return getAppropriateValue(connection, connection.getDriverClass());
+        }
+        if (value.equals(TacokitDatabaseConnection.KEY_USER_ID)) {
+            return getAppropriateValue(connection, connection.getUsername());
+        }
+        if (value.equals(TacokitDatabaseConnection.KEY_PASSWORD)) {
+            return getAppropriateValue(connection, connection.getPassword());
+        }
+        if (value.equals(TacokitDatabaseConnection.KEY_DATABASE_MAPPING)) {
+            return getAppropriateValue(connection, connection.getDatabaseMappingFile());
+        }
+        if (value.equals(TacokitDatabaseConnection.KEY_DATASOURCE_NAME)) {
+            return getAppropriateValue(connection, connection.getDatasourceName());
+        }
+        if (value.equals(TacokitDatabaseConnection.KEY_USE_SHARED_DB_CONNECTION)) {
+            return connection.useSharedDBConnection();
+        }
+        if (value.equals(TacokitDatabaseConnection.KEY_SHARED_DB_CONNECTION)) {
+            return getAppropriateValue(connection, connection.getSharedDBConnectionName());
+        }
+        if (value.equals(TacokitDatabaseConnection.KEY_USE_DATASOURCE_NAME)) {
+            return connection.useDatasourceName();
+        }
+        if (value.equals(TacokitDatabaseConnection.KEY_DATASOURCE_NAME)) {
+            return getAppropriateValue(connection, connection.getDatasourceName());
+        }
+        if (value.equals(TacokitDatabaseConnection.KEY_AUTHENTICATION_TYPE)) {
+            return getAppropriateValue(connection, connection.getAuthenticationType());
+        }
+        if (value.equals(TacokitDatabaseConnection.KEY_USE_AUTO_COMMIT)) {
+            return connection.useAutoCommit();
+        }
+        if (value.equals(TacokitDatabaseConnection.KEY_AUTO_COMMIT)) {
+            return connection.autoCommit();
         }
         return null;
     }
