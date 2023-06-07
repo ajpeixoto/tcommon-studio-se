@@ -137,6 +137,10 @@ public interface IStudioLiteP2Service extends IService {
 
     void setupTmcUpdate(IProgressMonitor monitor, IStudioUpdateConfig updateConfig) throws Exception;
 
+    void handleTmcUpdateObserve(boolean trunOn);
+
+    boolean isUpdateManagedByTmc(IProgressMonitor monitor);
+
     boolean removeM2() throws Exception;
     
     void saveRemoveM2(boolean remove) throws Exception;
