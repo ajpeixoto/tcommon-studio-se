@@ -791,7 +791,7 @@ public final class ConvertionHelper {
             String product = EDatabaseTypeName.getTypeFromDisplayName(trueDbType).getProduct();
             String mapping = MetadataTalendType.getDefaultDbmsFromProduct(product).getId();
             tacokitDatabaseConnection.setDbmsId(mapping);
-            tacokitDatabaseConnection.setDatasourceName(tacokitDatabaseConnection.getURL());
+            //tacokitDatabaseConnection.setDatasourceName(tacokitDatabaseConnection.getURL());
         }       
         return (DatabaseConnection)conn;
     }

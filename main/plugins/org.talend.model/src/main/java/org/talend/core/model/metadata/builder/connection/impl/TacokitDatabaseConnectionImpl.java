@@ -13,7 +13,6 @@
 package org.talend.core.model.metadata.builder.connection.impl;
 
 import org.eclipse.emf.ecore.EClass;
-
 import org.talend.core.model.metadata.builder.connection.ConnectionPackage;
 import org.talend.core.model.metadata.builder.connection.TacokitDatabaseConnection;
 
@@ -62,7 +61,7 @@ public class TacokitDatabaseConnectionImpl extends DatabaseConnectionImpl implem
             String[] arrays = jdbcDriverData.split(",");
             for (String array : arrays) {
                 String[] arrs = array.split("=");
-                if (arrs.length == 2 && "configuration.jdbcDriver[].path".equals(arrs[0])) {
+                if (arrs.length == 2 && "configuration.jdbcDriver[].path".equals(arrs[0].trim())) {
                     jdbcDriverPath = arrs[1];
                     break;
                 }
@@ -92,7 +91,7 @@ public class TacokitDatabaseConnectionImpl extends DatabaseConnectionImpl implem
             for (int i = 0; i < arrays.length; i++) {
                 String array = arrays[i];
                 String[] arrs = array.split("=");
-                if (arrs.length == 2 && "configuration.jdbcDriver[].path".equals(arrs[0])) {
+                if (arrs.length == 2 && "configuration.jdbcDriver[].path".equals(arrs[0].trim())) {
                     arrays[i] = "configuration.jdbcDriver[].path=" + value;
                     break;
                 }
@@ -232,7 +231,7 @@ public class TacokitDatabaseConnectionImpl extends DatabaseConnectionImpl implem
     @Override
     public boolean useSharedDBConnection() {
         if (this.getProperties().containsKey(KEY_USE_SHARED_DB_CONNECTION)) {
-            return (boolean) this.getProperties().get(KEY_USE_SHARED_DB_CONNECTION);
+            return Boolean.valueOf((String)this.getProperties().get(KEY_USE_SHARED_DB_CONNECTION));
         }
         return false;
     }
@@ -252,9 +251,9 @@ public class TacokitDatabaseConnectionImpl extends DatabaseConnectionImpl implem
      * @generated NOT
      */
     @Override
-    public boolean useDatasourceName() {
+    public boolean useDatasource() {
         if (this.getProperties().containsKey(KEY_USE_DATASOURCE_NAME)) {
-            return (boolean) this.getProperties().get(KEY_USE_DATASOURCE_NAME);
+            return Boolean.valueOf((String)this.getProperties().get(KEY_USE_DATASOURCE_NAME));
         }
         return false;
     }
@@ -263,21 +262,14 @@ public class TacokitDatabaseConnectionImpl extends DatabaseConnectionImpl implem
      * @generated NOT
      */
     @Override
-    public String getDatasourceName() {
+    public String getDatasourceAlias() {
         if (this.getProperties().containsKey(KEY_DATASOURCE_NAME)) {
             return (String) this.getProperties().get(KEY_DATASOURCE_NAME);
         }
         return null;
     }
     
-    /**
-     * @generated NOT
-     */
-    @Override
-    public void setDatasourceName(String value) {
-        this.getProperties().put(KEY_DATASOURCE_NAME, value);
-    }
-    
+
     /**
      * @generated NOT
      */
@@ -295,7 +287,7 @@ public class TacokitDatabaseConnectionImpl extends DatabaseConnectionImpl implem
     @Override
     public boolean useAutoCommit() {
         if (this.getProperties().containsKey(KEY_USE_AUTO_COMMIT)) {
-            return (boolean) this.getProperties().get(KEY_USE_AUTO_COMMIT);
+            return Boolean.valueOf((String)this.getProperties().get(KEY_USE_AUTO_COMMIT));
         }
         return false;
     }
@@ -306,17 +298,45 @@ public class TacokitDatabaseConnectionImpl extends DatabaseConnectionImpl implem
     @Override
     public boolean autoCommit() {
         if (this.getProperties().containsKey(KEY_AUTO_COMMIT)) {
-            return (boolean) this.getProperties().get(KEY_AUTO_COMMIT);
+            return Boolean.valueOf((String)this.getProperties().get(KEY_AUTO_COMMIT));
         }
         return false;
     }
 
     @Override
-    public String getHost() {
+    public String getServerName() {
         if (this.getProperties().containsKey(KEY_HOST)) {
             return (String) this.getProperties().get(KEY_HOST);
         }
         return null;
+    }
+
+    @Override
+    public void setServerName(String newServerName) {
+        this.getProperties().put(KEY_HOST, newServerName);
+    }
+    
+    public String getDatabaseType() {
+        if (this.getProperties().containsKey(KEY_DB_TYPE)) {
+            return (String) this.getProperties().get(KEY_DB_TYPE);
+        }
+        return null;
+    }
+
+    /**
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * @generated
+     */
+    public void setDatabaseType(String newDatabaseType) {
+        this.getProperties().put(KEY_DB_TYPE, newDatabaseType);
+    }
+
+    @Override
+    public boolean enableDBType() {
+        if (this.getProperties().containsKey(KEY_ENABLE_DB_TYPE)) {
+            return Boolean.valueOf((String)this.getProperties().get(KEY_ENABLE_DB_TYPE));
+        }
+        return false;
     }
     
 } //TacokitDatabaseConnectionImpl
