@@ -95,4 +95,6 @@ public interface IGITProviderService extends IService {
         }
         return register.getService(IGITProviderService.class);
     }
+
+    public void clearOldStorage(IProgressMonitor monitor, Project project) throws PersistenceException;
 }
