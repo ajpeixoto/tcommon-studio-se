@@ -110,4 +110,6 @@ public interface TacokitDatabaseConnection extends DatabaseConnection {
 
     public boolean enableDBType();
     
+    public Object getPropertyValue(String key);
+    
 } // TacokitDatabaseConnection

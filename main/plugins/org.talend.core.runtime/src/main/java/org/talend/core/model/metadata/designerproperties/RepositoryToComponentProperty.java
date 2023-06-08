@@ -1888,7 +1888,7 @@ public class RepositoryToComponentProperty {
         if (value.equals(TacokitDatabaseConnection.KEY_DATASTORE_DB_TYPE)) {
             return connection.getDatabaseType();
         }
-        return null;
+        return connection.getPropertyValue(value);
     }
 
     private static String getAppropriateValue(Connection connection, String rawValue) {

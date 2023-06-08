@@ -338,5 +338,10 @@ public class TacokitDatabaseConnectionImpl extends DatabaseConnectionImpl implem
         }
         return false;
     }
+
+    @Override
+    public Object getPropertyValue(String key) {
+       return this.getProperties().get(key);
+    }
     
 } //TacokitDatabaseConnectionImpl
