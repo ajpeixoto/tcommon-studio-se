@@ -222,7 +222,8 @@ public class CreateConnectionAction extends AbstractCreateAction {
         if(dbService != null){
             isExtraType = dbService.getExtraTypes().contains(nodeType);
         }
-        if ((!ERepositoryObjectType.METADATA_CONNECTIONS.equals(nodeType) && !isExtraType) || Optional.ofNullable(ITaCoKitService.getInstance()).map(s -> s.isTaCoKitRepositoryNode(node)).orElse(false)) {
+
+        if (!ERepositoryObjectType.METADATA_CONNECTIONS.equals(nodeType) && !isExtraType) {
             setEnabled(false);
             return;
         }
