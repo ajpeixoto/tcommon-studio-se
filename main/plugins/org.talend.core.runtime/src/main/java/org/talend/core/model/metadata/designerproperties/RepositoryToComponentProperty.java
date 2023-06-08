@@ -1870,8 +1870,8 @@ public class RepositoryToComponentProperty {
         if (value.equals(TacokitDatabaseConnection.KEY_DATASTORE_SHARED_DB_CONNECTION)) {
             return getAppropriateValue(connection, connection.getSharedDBConnectionName());
         }
-        if (value.equals(TacokitDatabaseConnection.KEY_DATASTORE_USE_DATASOURCE_ALIAS)) {
-            return connection.useDatasource();
+        if (value.equals(TacokitDatabaseConnection.KEY_DATASTORE_USE_DATASOURCE)) {
+            return connection.useDatasourceAlias();
         }
         if (value.equals(TacokitDatabaseConnection.KEY_DATASTORE_AUTHENTICATION_TYPE)) {
             return getAppropriateValue(connection, connection.getAuthenticationType());

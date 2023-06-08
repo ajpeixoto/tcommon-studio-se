@@ -251,9 +251,9 @@ public class TacokitDatabaseConnectionImpl extends DatabaseConnectionImpl implem
      * @generated NOT
      */
     @Override
-    public boolean useDatasource() {
-        if (this.getProperties().containsKey(KEY_USE_DATASOURCE_NAME)) {
-            return Boolean.valueOf((String)this.getProperties().get(KEY_USE_DATASOURCE_NAME));
+    public boolean useDatasourceAlias() {
+        if (this.getProperties().containsKey(KEY_USE_DATASOURCE)) {
+            return Boolean.valueOf((String)this.getProperties().get(KEY_USE_DATASOURCE));
         }
         return false;
     }
@@ -263,8 +263,8 @@ public class TacokitDatabaseConnectionImpl extends DatabaseConnectionImpl implem
      */
     @Override
     public String getDatasourceAlias() {
-        if (this.getProperties().containsKey(KEY_DATASOURCE_NAME)) {
-            return (String) this.getProperties().get(KEY_DATASOURCE_NAME);
+        if (this.getProperties().containsKey(KEY_DATASOURCE_ALIAS)) {
+            return (String) this.getProperties().get(KEY_DATASOURCE_ALIAS);
         }
         return null;
     }

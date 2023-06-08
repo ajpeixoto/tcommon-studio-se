@@ -44,9 +44,9 @@ public interface TacokitDatabaseConnection extends DatabaseConnection {
     
     String KEY_SHARED_DB_CONNECTION = "configuration.sharedDBConnectionName";
     
-    String KEY_USE_DATASOURCE_NAME = "configuration.useDataSource";
+    String KEY_USE_DATASOURCE = "configuration.useDataSource";
     
-    String KEY_DATASOURCE_NAME = "configuration.dataSourceAlias"; 
+    String KEY_DATASOURCE_ALIAS = "configuration.dataSourceAlias"; 
     
     String KEY_AUTHENTICATION_TYPE = "configuration.authenticationType";
     
@@ -78,7 +78,7 @@ public interface TacokitDatabaseConnection extends DatabaseConnection {
     
     String KEY_DATASTORE_SHARED_DB_CONNECTION = "configuration.dataSet.dataStore.sharedDBConnectionName";
     
-    String KEY_DATASTORE_USE_DATASOURCE_ALIAS = "configuration.dataSet.dataStore.useDataSource";
+    String KEY_DATASTORE_USE_DATASOURCE = "configuration.dataSet.dataStore.useDataSource";
     
     String KEY_DATASTORE_DATASOURCE_ALIAS = "configuration.dataSet.dataStore.dataSourceAlias"; 
     
@@ -98,7 +98,7 @@ public interface TacokitDatabaseConnection extends DatabaseConnection {
     
     public String getSharedDBConnectionName();
     
-    public boolean useDatasource();
+    public boolean useDatasourceAlias();
     
     public String getDatasourceAlias();
     
