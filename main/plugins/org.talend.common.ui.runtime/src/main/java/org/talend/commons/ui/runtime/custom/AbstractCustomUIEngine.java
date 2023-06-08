@@ -70,10 +70,21 @@ public abstract class AbstractCustomUIEngine implements ICustomUIEngine {
 
     @Override
     public Object provideUIData(IUIData uiData) {
-        String uiId = uiData.getUIId();
-        IUIEventHandler handler = uiEventHandlers.get(uiId);
-        if (handler != null) {
-            return handler.provideUIData(uiData);
+        if (StringUtils.equals(uiData.getType(), IUIEvent.TYPE_GLOBAL)) {
+            Set<IUIEventHandler> handlers = globalUIEventHandlers.get(uiData.getKey());
+            if (handlers != null) {
+                for (IUIEventHandler handler : handlers) {
+                    if (handler.canHandle(uiData)) {
+                        return handler.provideUIData(uiData);
+                    }
+                }
+            }
+        } else {
+            String uiId = uiData.getUIId();
+            IUIEventHandler handler = uiEventHandlers.get(uiId);
+            if (handler != null) {
+                return handler.provideUIData(uiData);
+            }
         }
         return null;
     }
