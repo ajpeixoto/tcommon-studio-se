@@ -15,8 +15,10 @@ package org.talend.core.hadoop;
 import java.util.Collection;
 import java.util.HashSet;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.EMap;
 import org.talend.commons.exception.CommonExceptionHandler;
 import org.talend.commons.exception.ExceptionHandler;
@@ -25,6 +27,9 @@ import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.Property;
 import org.talend.core.runtime.hd.IDynamicDistributionManager;
 import org.talend.core.runtime.i18n.Messages;
+import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
+import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
+import org.talend.designer.core.model.utils.emf.talendfile.TalendFileFactory;
 
 /**
  * created by cmeng on Jul 20, 2015 Detailled comment
@@ -145,4 +150,58 @@ public class BigDataBasicUtil {
         return null;
     }
 
+
+    public static String getDistributionByVersion(String version) {
+        if (StringUtils.isEmpty(version))
+            return null;
+        if (version.startsWith("EMR")) {
+            return "AMAZON_EMR";
+        } else if (version.equals("SYNAPSE")) {
+            return "AZURE_SYNAPSE";
+        } else if (version.contains("CDH") || version.contains("CDP")) {
+            return "CLOUDERA";
+        } else if (version.startsWith("Databricks")) {
+            return "DATABRICKS";
+        } else if (version.contains("HDP")) {
+            return "HORTONWORKS";
+        } else if (version.startsWith("MICROSOFT_HD_INSIGHT")) {
+            return "MICROSOFT_HD_INSIGHT";
+        } else if (version.startsWith("SPARK")) {
+            return "SPARK";
+        }
+        return null;
+    }
+
+    public static void setDistribution(NodeType node, String dbVersionName) {
+        if (node == null || dbVersionName == null) {
+            return;
+        }
+        EList<ElementParameterType> elementParameters = node.getElementParameter();
+        String distribution = null;
+        String dbVersion = null;
+        // Iterate over the item elementParameters in order to find the "DISTRIBUTION" and "SPARK_VERSION"
+        // parameters values.
+        for (int i = 0; i < elementParameters.size(); i++) {
+            ElementParameterType param = elementParameters.get(i);
+            if (dbVersionName.equals(param.getName())) {
+                dbVersion = param.getValue();
+                break;
+            }
+        }
+        try {
+            ElementParameterType property = TalendFileFactory.eINSTANCE.createElementParameterType();
+            distribution = BigDataBasicUtil.getDistributionByVersion(dbVersion);
+            if (distribution != null) {
+                property.setName("DISTRIBUTION"); //$NON-NLS-1$
+                property.setField("CLOSED_LIST"); //$NON-NLS-1$
+                property.setValue(distribution);
+                elementParameters.add(property);
+            } else {
+                ExceptionHandler.log("no matched distribution for version " + dbVersion);//$NON-NLS-1$
+            }
+
+        } catch (Exception e) {
+            ExceptionHandler.log(e.getMessage());
+        }
+    }
 }
