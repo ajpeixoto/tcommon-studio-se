@@ -691,8 +691,11 @@ public class DatabaseForm extends AbstractForm {
             urlConnectionStringText.setText(getConnection().getURL());
 
         }
-        usernameText.setText(getConnection().getUsername());
-        passwordText.setText(getConnection().getRawPassword());
+        if (!isDBTypeSelected(EDatabaseConnTemplate.IMPALA)) {
+            usernameText.setText(getConnection().getUsername());
+            passwordText.setText(getConnection().getRawPassword());
+        }
+
         serverText.setText(getConnection().getServerName());
         portText.setText(getConnection().getPort());
         datasourceText.setText(getConnection().getDatasourceName());
@@ -4035,6 +4038,9 @@ public class DatabaseForm extends AbstractForm {
                 keytabForImpalaTxt.setText(StringUtils.trimToEmpty(keytab));
             }
             impalaPrincipalTxt.setText(StringUtils.trimToEmpty(masterPrincipal));
+        } else {
+            usernameText.setText(getConnection().getUsername());
+            passwordText.setText(getConnection().getRawPassword());
         }
         hideControl(keyTabCompoisteForImpala, !useKeytab);
         hideControl(authenticationComForImpala, !useKrb);
