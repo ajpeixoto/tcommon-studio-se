@@ -368,6 +368,9 @@ public class ERepositoryObjectType extends DynaEnum<ERepositoryObjectType> {
             "repository.metadataCalculationView", "METADATA_CON_CALCULATION_VIEW", 106, true, true, new String[] { PROD_DI },
             new String[] {}, false);
 
+    public final static ERepositoryObjectType METADATA_SAP_CDS_VIEW = new ERepositoryObjectType("repository.SAPTable", //$NON-NLS-1$
+            "METADATA_SAP_CDS_VIEW", 107, true, true, new String[] { PROD_DI }, new String[] {}, false);
+
     private String label;
 
     private String alias;
