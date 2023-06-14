@@ -92,6 +92,10 @@ public interface TacokitDatabaseConnection extends DatabaseConnection {
     
     String KEY_DATASTORE_DB_TYPE = "configuration.dataSet.dataStore.dbType";
     
+    String KEY_DATASET_SQL_QUERY="configuration.dataSet.sqlQuery";
+    
+    String KEY_DATASET_TABLE_NAME="configuration.dataSet.tableName";
+      
     public String getDatabaseMappingFile();
     
     public boolean useSharedDBConnection();
