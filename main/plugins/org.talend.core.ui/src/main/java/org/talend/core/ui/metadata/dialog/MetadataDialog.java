@@ -192,7 +192,9 @@ public class MetadataDialog extends Dialog {
     @Override
     public int open() {
         int openResult = super.open();
-        businessHandler.setOpenResult(openResult);
+        if (businessHandler != null) {
+            businessHandler.setOpenResult(openResult);
+        }
         return openResult;
     }
 
