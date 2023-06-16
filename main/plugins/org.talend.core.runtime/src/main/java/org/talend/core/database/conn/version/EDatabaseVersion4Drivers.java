@@ -71,7 +71,7 @@ public enum EDatabaseVersion4Drivers {
     // MYSQL, add for 9594
     MYSQL_8(new DbVersion4Drivers(EDatabaseTypeName.MYSQL, "MySQL 8", "MYSQL_8", "mysql-connector-j-8.0.33.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     MYSQL_5(new DbVersion4Drivers(EDatabaseTypeName.MYSQL, "MySQL 5", "MYSQL_5", "mysql-connector-java-5.1.49.jar")), //$NON-NLS-1$  //$NON-NLS-2$ //$NON-NLS-3$
-    MARIADB(new DbVersion4Drivers(EDatabaseTypeName.MYSQL, "MariaDB", "MARIADB", "mariadb-java-client-2.5.3.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    MARIADB(new DbVersion4Drivers(EDatabaseTypeName.MYSQL, "MariaDB", "MARIADB", "mariadb-java-client-3.1.4.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     // add for 9594
     MSSQL(new DbVersion4Drivers(EDatabaseTypeName.MSSQL,"Open source JTDS", "JTDS", "jtds-1.3.1-patch-20190523.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     MSSQL_2012(new DbVersion4Drivers(EDatabaseTypeName.MSSQL,
