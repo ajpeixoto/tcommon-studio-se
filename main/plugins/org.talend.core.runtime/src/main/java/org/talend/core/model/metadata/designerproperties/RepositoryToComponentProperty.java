@@ -1837,55 +1837,55 @@ public class RepositoryToComponentProperty {
     
     private static Object getTacokitDatabaseConnectionValue(TacokitDatabaseConnection connection, String value,
             IMetadataTable table, String targetComponent) {
-        if (value.equals(TacokitDatabaseConnection.KEY_DATASTORE_URL)) {
+        if (TacokitDatabaseConnection.KEY_DATASTORE_URL.equals(value) || TacokitDatabaseConnection.KEY_URL.equals(value)) {
             return getAppropriateValue(connection, connection.getURL());
         }
-        if (value.equals(TacokitDatabaseConnection.KEY_DATASTORE_HOST)) {
+        if (TacokitDatabaseConnection.KEY_DATASTORE_HOST.equals(value) || TacokitDatabaseConnection.KEY_HOST.equals(value)) {
             return getAppropriateValue(connection, connection.getServerName());
         }
-        if (value.equals(TacokitDatabaseConnection.KEY_DATASTORE_PORT)) {
+        if (TacokitDatabaseConnection.KEY_DATASTORE_PORT.equals(value) || TacokitDatabaseConnection.KEY_PORT.equals(value)) {
             return getAppropriateValue(connection, connection.getPort());
         }
-        if (value.equals(TacokitDatabaseConnection.KEY_DATASTORE_DRIVER)) {
+        if (TacokitDatabaseConnection.KEY_DATASTORE_DRIVER.equals(value) || TacokitDatabaseConnection.KEY_DRIVER.equals(value)) {
             return getAppropriateValue(connection, connection.getDriverJarPath());
         }
-        if (value.equals(TacokitDatabaseConnection.KEY_DATASTORE_DRIVER_CLASS)) {
+        if (TacokitDatabaseConnection.KEY_DATASTORE_DRIVER_CLASS.equals(value) || TacokitDatabaseConnection.KEY_DRIVER_CLASS.equals(value)) {
             return getAppropriateValue(connection, connection.getDriverClass());
         }
-        if (value.equals(TacokitDatabaseConnection.KEY_DATASTORE_USER_ID)) {
+        if (TacokitDatabaseConnection.KEY_DATASTORE_USER_ID.equals(value) || TacokitDatabaseConnection.KEY_USER_ID.equals(value)) {
             return getAppropriateValue(connection, connection.getUsername());
         }
-        if (value.equals(TacokitDatabaseConnection.KEY_DATASTORE_PASSWORD)) {
-            return getAppropriateValue(connection, connection.getPassword());
+        if (TacokitDatabaseConnection.KEY_DATASTORE_PASSWORD.equals(value) || TacokitDatabaseConnection.KEY_PASSWORD.equals(value)) {
+            return getAppropriateValue(connection, connection.getValue(connection.getPassword(), false));
         }
-        if (value.equals(TacokitDatabaseConnection.KEY_DATASTORE_DATABASE_MAPPING)) {
+        if (TacokitDatabaseConnection.KEY_DATASTORE_DATABASE_MAPPING.equals(value) || TacokitDatabaseConnection.KEY_DATABASE_MAPPING.equals(value)) {
             return getAppropriateValue(connection, connection.getDatabaseMappingFile());
         }
-        if (value.equals(TacokitDatabaseConnection.KEY_DATASTORE_DATASOURCE_ALIAS)) {
+        if (TacokitDatabaseConnection.KEY_DATASTORE_DATASOURCE_ALIAS.equals(value) || TacokitDatabaseConnection.KEY_DATASOURCE_ALIAS.equals(value)) {
             return getAppropriateValue(connection, connection.getDatasourceAlias());
         }
-        if (value.equals(TacokitDatabaseConnection.KEY_DATASTORE_USE_SHARED_DB_CONNECTION)) {
+        if (TacokitDatabaseConnection.KEY_DATASTORE_USE_SHARED_DB_CONNECTION.equals(value) || TacokitDatabaseConnection.KEY_USE_SHARED_DB_CONNECTION.equals(value)) {
             return connection.useSharedDBConnection();
         }
-        if (value.equals(TacokitDatabaseConnection.KEY_DATASTORE_SHARED_DB_CONNECTION)) {
+        if (TacokitDatabaseConnection.KEY_DATASTORE_SHARED_DB_CONNECTION.equals(value) || TacokitDatabaseConnection.KEY_SHARED_DB_CONNECTION.equals(value)) {
             return getAppropriateValue(connection, connection.getSharedDBConnectionName());
         }
-        if (value.equals(TacokitDatabaseConnection.KEY_DATASTORE_USE_DATASOURCE)) {
+        if (TacokitDatabaseConnection.KEY_DATASTORE_USE_DATASOURCE.equals(value) || TacokitDatabaseConnection.KEY_USE_DATASOURCE.equals(value)) {
             return connection.useDatasourceAlias();
         }
-        if (value.equals(TacokitDatabaseConnection.KEY_DATASTORE_AUTHENTICATION_TYPE)) {
+        if (TacokitDatabaseConnection.KEY_DATASTORE_AUTHENTICATION_TYPE.equals(value) || TacokitDatabaseConnection.KEY_AUTHENTICATION_TYPE.equals(value)) {
             return getAppropriateValue(connection, connection.getAuthenticationType());
         }
-        if (value.equals(TacokitDatabaseConnection.KEY_DATASTORE_USE_AUTO_COMMIT)) {
+        if (TacokitDatabaseConnection.KEY_DATASTORE_USE_AUTO_COMMIT.equals(value) || TacokitDatabaseConnection.KEY_USE_AUTO_COMMIT.equals(value)) {
             return connection.useAutoCommit();
         }
-        if (value.equals(TacokitDatabaseConnection.KEY_DATASTORE_AUTO_COMMIT)) {
+        if (TacokitDatabaseConnection.KEY_DATASTORE_AUTO_COMMIT.equals(value) || TacokitDatabaseConnection.KEY_AUTO_COMMIT.equals(value)) {
             return connection.autoCommit();
         }
-        if (value.equals(TacokitDatabaseConnection.KEY_DATASTORE_ENABLE_DB_TYPE)) {
+        if (TacokitDatabaseConnection.KEY_DATASTORE_ENABLE_DB_TYPE.equals(value) || TacokitDatabaseConnection.KEY_ENABLE_DB_TYPE.equals(value)) {
             return connection.enableDBType();
         }
-        if (value.equals(TacokitDatabaseConnection.KEY_DATASTORE_DB_TYPE)) {
+        if (TacokitDatabaseConnection.KEY_DATASTORE_DB_TYPE.equals(value) || TacokitDatabaseConnection.KEY_DB_TYPE.equals(value)) {
             return connection.getDatabaseType();
         }
         return connection.getPropertyValue(value);
