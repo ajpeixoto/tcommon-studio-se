@@ -1094,7 +1094,8 @@ public class DBConnectionFillerImpl extends MetadataFillerImpl<DatabaseConnectio
                         || ETableTypes.MANAGED_TABLE.getName().equals(temptableType)
                         || ETableTypes.INDEX_TABLE.getName().equals(temptableType)
                         || ETableTypes.TABLETYPE_BASE_TABLE.getName().equals(temptableType)
-                        || ETableTypes.SYSTEM_TABLE.getName().equals(temptableType)) {
+                        || ETableTypes.SYSTEM_TABLE.getName().equals(temptableType)
+                        || ETableTypes.FOREIGN_TABLE.getName().equals(temptableType)) {
                     metadatatable.setTableType(ETableTypes.TABLETYPE_TABLE.getName());
                 } else if (ETableTypes.VIRTUAL_VIEW.getName().equals(temptableType)
                         || ETableTypes.SYSTEM_VIEW.getName().equals(temptableType)) {
