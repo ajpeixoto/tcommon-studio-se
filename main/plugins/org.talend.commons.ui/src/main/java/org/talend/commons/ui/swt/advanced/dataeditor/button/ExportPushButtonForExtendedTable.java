@@ -130,11 +130,10 @@ public abstract class ExportPushButtonForExtendedTable extends ExportPushButton 
         AbstractExtendedTableViewer extendedTableViewer = (AbstractExtendedTableViewer) extendedControlViewer;
         ExtendedTableModel extendedTableModel = extendedTableViewer.getExtendedTableModel();
         boolean enabled = false;
-        if (extendedTableModel != null && extendedTableModel.isDataRegistered()
-                && extendedTableModel.getBeansList().size() > 0) {
+        if (extendedTableModel != null && extendedTableModel.isDataRegistered() && extendedTableModel.getBeansList().size() > 0) {
             enabled = true;
         }
-        return super.getEnabledState() && enabled;
+        return extendedTableModel != null || enabled;
     }
 
 }
