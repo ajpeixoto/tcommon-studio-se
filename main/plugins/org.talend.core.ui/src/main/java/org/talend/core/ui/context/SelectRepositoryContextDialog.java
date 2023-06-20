@@ -522,6 +522,7 @@ public class SelectRepositoryContextDialog extends SelectionDialog {
             // remove the params which is unchecked
             Set<String> jobletIds = new HashSet<String>();
             Set<String> chekedIds = new HashSet<String>();
+            ContextUtils.clearMissingContextCache();
             for (IContextParameter param : existParas) {
                 if (param.isBuiltIn()) {
                     continue;

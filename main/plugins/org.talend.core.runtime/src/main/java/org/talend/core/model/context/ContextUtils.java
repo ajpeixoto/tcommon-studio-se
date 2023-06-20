@@ -495,16 +495,24 @@ public class ContextUtils {
         }
         return itemMap;
     }
+    
+    private static Set<String> missingContexts = new HashSet<>();
+
+    public static void clearMissingContextCache() {
+        missingContexts.clear();
+    }
 
     /**
-     *
-     * get the repository context item,now contextId can be either joblet node or context node.
-     */
+    * get the repository context item, now contextId can be either joblet node or context node.
+    */
     public static Item getRepositoryContextItemById(String contextId) {
         if (IContextParameter.BUILT_IN.equals(contextId)) {
             return null;
         }
         if (checkObject(contextId)) {
+            return null;
+        }
+        if (missingContexts.contains(contextId)) {
             return null;
         }
 
@@ -521,6 +529,8 @@ public class ContextUtils {
                     return item;
                 }
             }
+            missingContexts.add(contextId);
+            ExceptionHandler.log("Can't find Context item[id=" + contextId + "].");
         } catch (PersistenceException e) {
             ExceptionHandler.process(e);
         }
@@ -831,6 +841,7 @@ public class ContextUtils {
             ItemContextLink itemContextLink) {
         Map<String, String> renamedMap = new HashMap<String, String>();
         Map<String, Item> tempItemMap = new HashMap<String, Item>();
+        clearMissingContextCache();
         for (ContextType contextType : contextTypeList) {
             for (Object obj : contextType.getContextParameter()) {
                 if (obj instanceof ContextParameterType) {
@@ -893,6 +904,7 @@ public class ContextUtils {
      */
     public static Map<String, String> calculateRenamedMapFromLinkFile(String projectLabel, String itemId,
             List<IContext> contextList) {
+        clearMissingContextCache();
         Map<String, String> renamedMap = new HashMap<String, String>();
         Map<String, Item> idToItemMap = new HashMap<String, Item>();
         try {

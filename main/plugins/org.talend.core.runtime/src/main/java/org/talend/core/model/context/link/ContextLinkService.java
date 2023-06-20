@@ -206,6 +206,7 @@ public class ContextLinkService {
             Map<String, Map<String, String>> changedContextParameterId) throws PersistenceException {
         List<Relation> relationList = RelationshipItemBuilder.getInstance()
                 .getItemsHaveRelationWith(sourceId, RelationshipItemBuilder.LATEST_VERSION, false);
+        ContextUtils.clearMissingContextCache();
         for (Relation relation : relationList) {
             String id = relation.getId();
             IFile linkFile = calContextLinkFile(ProjectManager.getInstance().getCurrentProject().getTechnicalLabel(), id);
