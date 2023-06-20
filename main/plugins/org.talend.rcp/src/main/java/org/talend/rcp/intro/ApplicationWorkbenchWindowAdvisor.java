@@ -214,6 +214,9 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
         // TDQ-11355 avoid "java.nio.channels.ClosedChannelException" .If the current perspective is DQ, delay this
         // commit at here,it will be committed with DQ side(see DQRespositoryView Constructor).
         IWorkbenchPage activePage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+        if (activePage != null) {
+            activePage.hideActionSet("org.eclipse.search.searchActionSet");
+        }
         if (activePage != null && !(activePage.getPerspective().getId().equals(ProductUtils.PERSPECTIVE_DQ_ID))) {
 
             Job myJob = new Job("Remote project update and commit on startup") {
@@ -360,6 +363,9 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
             if ("navigate".equals(menuItem.getId())) { //$NON-NLS-1$
                 menuItem.setVisible(false);
             } else if ("org.eclipse.ui.run".equals(menuItem.getId())) { //$NON-NLS-1$
+                menuManager.remove(menuItem);
+            }
+            if ("org.eclipse.search.menu".equals(menuItem.getId())) {
                 menuManager.remove(menuItem);
             }
         }

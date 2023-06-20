@@ -13,7 +13,9 @@
 package org.talend.rcp.intro;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.jface.action.ActionContributionItem;
@@ -408,13 +410,25 @@ public class ActionBarBuildHelper implements IActionBarHelper {
         String[] removeIds = {
                 "org.eclipse.equinox.p2.ui.sdk.update", "group.assist", //$NON-NLS-1$ //$NON-NLS-2$
                 "org.eclipse.ui.actions.showKeyAssistHandler", "additions", "group.tutorials", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                "org.eclipse.ui.cheatsheets.actions.CheatSheetHelpMenuAction", "subversive", "subversive.help", "org.eclipse.equinox.p2.ui.sdk.install" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                "org.eclipse.ui.cheatsheets.actions.CheatSheetHelpMenuAction", "subversive", "subversive.help" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         for (String id : removeIds) {
             helpMenu.remove(id);
         }
+        String p2InstallId = "org.eclipse.equinox.p2.ui.sdk.install";
+        IContributionItem[] items = helpMenu.getItems();
+        Map<String, IContributionItem> map = new HashMap<String, IContributionItem>();
+        for (IContributionItem item : items) {
+            if (p2InstallId.equals(item.getId())) {
+                map.put(p2InstallId, item);
+            }
+        }
+
+        helpMenu.remove(map.get(p2InstallId));
+
         // Remove unsupported action on shared mode
         if (SharedStudioUtils.isSharedStudioMode()) {
-            helpMenu.remove("org.eclipse.equinox.p2.ui.sdk.install"); //$NON-NLS-1$ 
+            helpMenu.remove(p2InstallId); // $NON-NLS-1$
+
         }
     }
 
