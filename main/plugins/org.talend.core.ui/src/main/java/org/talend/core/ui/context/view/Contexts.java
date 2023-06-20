@@ -21,6 +21,7 @@ import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
+import org.talend.core.model.context.ContextUtils;
 import org.talend.core.ui.branding.IBrandingConfiguration;
 
 /**
@@ -51,6 +52,7 @@ public class Contexts {
             public void run() {
                 if (cxtView != null) {
                     updateTitle(cxtView);
+                    ContextUtils.clearMissingContextCache();
                     cxtView.refresh(part);
                 }
             }

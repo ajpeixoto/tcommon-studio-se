@@ -184,6 +184,7 @@ public class AddRepositoryContextGroupCommand extends Command {
         // remove the params which is unchecked
         Set<String> nonContextIds = new HashSet<String>();
         Set<String> chekedIds = new HashSet<String>();
+        ContextUtils.clearMissingContextCache();
         for (IContextParameter param : existParas) {
             if (param.isBuiltIn()) {
                 continue;

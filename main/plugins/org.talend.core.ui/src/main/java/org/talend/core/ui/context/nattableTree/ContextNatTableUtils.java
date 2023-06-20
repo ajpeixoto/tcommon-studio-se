@@ -92,6 +92,7 @@ public class ContextNatTableUtils {
         List<ContextTableTabParentModel> output = new ArrayList<ContextTableTabParentModel>();
         if (!contextDatas.isEmpty()) {
             int i = 0;
+            ContextUtils.clearMissingContextCache();
             for (IContextParameter para : contextDatas) {
                 String sourceId = para.getSource();
                 if (IContextParameter.BUILT_IN.equals(sourceId)) {
