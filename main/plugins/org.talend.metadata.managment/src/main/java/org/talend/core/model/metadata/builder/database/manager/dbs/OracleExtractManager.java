@@ -183,7 +183,9 @@ public class OracleExtractManager extends ExtractManager {
             } else if (table.eContainer() instanceof Schema) {
                 synSQL += "and all_synonyms.OWNER =?";
             }
-            synSQL += " ORDER BY all_tab_columns.COLUMN_NAME"; //$NON-NLS-1$
+            
+            //TUP-39239, caused not same ordering of the columns between table schema and synonym schema
+//            synSQL += " ORDER BY all_tab_columns.COLUMN_NAME"; //$NON-NLS-1$
             PreparedStatement sta = extractMeta.getConn().prepareStatement(synSQL);
             sta.setString(1, synonymName);
             int idx = 2;
