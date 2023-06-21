@@ -419,17 +419,6 @@ public class QueryUtil {
         return null;
     }
 
-    private static String getDbName(Element node) {
-        String dbName = null;
-        if (node != null) { // for job settings extra.(feature 2710)
-            IElementParameter param = node.getElementParameter("DBNAME");
-            if (param != null && param.isShow(node.getElementParameters())) {
-                dbName = TalendTextUtils.removeQuotes((String) param.getValue());
-            }
-        }
-        return dbName;
-    }
-
     private static String checkAndConcatString(String str1, String str2) {
         if (str1 == null) {
             str1 = ""; //$NON-NLS-1$

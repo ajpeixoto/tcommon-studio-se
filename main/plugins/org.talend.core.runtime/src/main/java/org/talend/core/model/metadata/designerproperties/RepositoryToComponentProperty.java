@@ -3113,7 +3113,7 @@ public class RepositoryToComponentProperty {
             String paramName) {
         for (IDragAndDropServiceHandler handler : DragAndDropManager.getHandlers()) {
             if (handler.canHandle(connection)) {
-                return handler.isGenericRepositoryValue(componentProperties, paramName);
+                return handler.isGenericRepositoryValue(connection, componentProperties, paramName);
             }
         }
         return false;
@@ -3123,7 +3123,7 @@ public class RepositoryToComponentProperty {
             String paramName) {
         for (IDragAndDropServiceHandler handler : DragAndDropManager.getHandlers()) {
             if (handler.canHandle(connection)) {
-                return handler.getGenericRepositoryValue(componentProperties, paramName);
+                return handler.getGenericRepositoryValue(connection, componentProperties, paramName);
             }
         }
         return null;
