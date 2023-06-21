@@ -21,7 +21,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.junit.Before;
 import org.junit.Test;
-import org.talend.commons.exception.SystemException;
 import org.talend.commons.utils.generation.JavaUtils;
 import org.talend.commons.utils.workbench.resources.ResourceUtils;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
@@ -42,8 +41,8 @@ public class MetadataTalendTypeTest {
     }
 
     @Test
-    public void testGetProjectForderURLOfMappingsFile() throws SystemException {
-        URL url = MetadataTalendType.getProjectFolderURLOfMappingsFile();
+    public void testGetProjectForderURLOfMappingsFile() throws Exception {
+        URL url = MetadataTalendType.getProjectFolderURLOfMappingsFile().toURI().toURL();
         String projectLabel = ProjectManager.getInstance().getCurrentProject().getTechnicalLabel();
         assertTrue(StringUtils.removeEnd(url.getFile(), "/").endsWith(projectLabel + "/.settings/mappings"));
     }
@@ -73,7 +72,7 @@ public class MetadataTalendTypeTest {
                 restore.delete(true, null);
             }
             restore.create(new ByteArrayInputStream(Files.readAllBytes(
-                    new File(MetadataTalendType.getSystemFolderURLOfMappingsFile().getFile(), restore.getName()).toPath())), true,
+                    new File(MetadataTalendType.getSystemFolderURLOfMappingsFile(), restore.getName()).toPath())), true,
                     null);
 
             externalKeep = projectMappingFolder.getFile("mapping_ExternalTest.xml");
