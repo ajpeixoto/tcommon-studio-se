@@ -463,29 +463,31 @@ public final class MetadataTalendType {
         return list;
     }
 
-    public static URL getSystemFolderURLOfMappingsFile() throws SystemException {
+    public static File getSystemFolderURLOfMappingsFile() throws SystemException {
         String dirPath = "/" + INTERNAL_MAPPINGS_FOLDER; //$NON-NLS-1$
-        URL url = null;
         Path filePath = new Path(dirPath);
         Bundle b = Platform.getBundle(CoreRuntimePlugin.PLUGIN_ID);
         if (b != null) {
             try {
                 // Enumeration<URL> entries = b.findEntries(dirPath, "mapping_*.xml", false);
-                url = FileLocator.toFileURL(FileLocator.find(b, filePath, null));
+                return new File(FileLocator.toFileURL(FileLocator.find(b, filePath, null)).getFile());
             } catch (IOException e) {
                 throw new SystemException(e);
             }
         }
-        return url;
+        return null;
     }
 
-    public static URL getProjectFolderURLOfMappingsFile() throws SystemException {
+    public static File getProjectFolderURLOfMappingsFile() throws SystemException {
         try {
             String dirPath = "/" + INTERNAL_MAPPINGS_FOLDER; //$NON-NLS-1$
             IProject project = ResourceUtils.getProject(ProjectManager.getInstance().getCurrentProject());
             IPath settingPath = new ProjectScope(project).getLocation();
             File mappingFolder = settingPath.append(dirPath).toFile();
-            return mappingFolder.toURI().toURL();
+            if (!mappingFolder.exists()) {
+                mappingFolder.mkdirs();
+            }
+            return mappingFolder;
         } catch (Exception e) {
             throw new SystemException(e);
         }
@@ -592,8 +594,7 @@ public final class MetadataTalendType {
 
     public static JSONObject getRevisionObject() {
         try {
-            File revisonFile = new File(MetadataTalendType.getSystemFolderURLOfMappingsFile().getFile(),
-                    MetadataTalendType.FILE_MAPPING_REVISION);
+            File revisonFile = new File(getSystemFolderURLOfMappingsFile(), FILE_MAPPING_REVISION);
             String jsonStr = new String(Files.readAllBytes(revisonFile.toPath()));
             return new JSONObject(jsonStr);
         } catch (Exception e) {
@@ -605,13 +606,13 @@ public final class MetadataTalendType {
     public static boolean restoreMappingFiles() throws Exception {
         List<File> toDelete = new ArrayList<>();
         JSONObject revision = getRevisionObject();
-        File projectMappingFolder = new File(getProjectFolderURLOfMappingsFile().getFile());
+        File projectMappingFolder = getProjectFolderURLOfMappingsFile();
         if (projectMappingFolder.exists()) {
             File[] projectMappingFiles = projectMappingFolder.listFiles(f -> f.getName().matches(MAPPING_FILE_PATTERN));
             if (projectMappingFiles != null) {
                 for (File file : projectMappingFiles) {
                     if (revision.has(file.getName())) {
-                        String sha1 = MetadataTalendType.getSha1OfFile(file);
+                        String sha1 = getSha1OfFile(file);
                         if (revision.getJSONObject(file.getName()).has(sha1)) {
                             toDelete.add(file);
                         }
@@ -668,9 +669,9 @@ public final class MetadataTalendType {
     }
 
     public static List<File> getWorkingMappingFiles() throws SystemException {
-        File projectMappingFolder = new File(getProjectFolderURLOfMappingsFile().getFile());
+        File projectMappingFolder = getProjectFolderURLOfMappingsFile();
         File[] projectMappingFiles = projectMappingFolder.listFiles(f -> f.getName().matches(MAPPING_FILE_PATTERN));
-        File systemMappingFolder = new File(getSystemFolderURLOfMappingsFile().getFile());
+        File systemMappingFolder = getSystemFolderURLOfMappingsFile();
         File[] systemMappingFiles = systemMappingFolder.listFiles(f -> f.getName().matches(MAPPING_FILE_PATTERN));
         if (projectMappingFiles == null || projectMappingFiles.length == 0) {
             return Arrays.asList(systemMappingFiles);
@@ -686,7 +687,7 @@ public final class MetadataTalendType {
 
     public static String getSha1OfSystemMappingFile(String fileName) {
         try {
-            return getSha1OfFile(new File(getSystemFolderURLOfMappingsFile().getFile(), fileName));
+            return getSha1OfFile(new File(getSystemFolderURLOfMappingsFile(), fileName));
         } catch (SystemException e) {
             ExceptionHandler.process(e);
             return null;
