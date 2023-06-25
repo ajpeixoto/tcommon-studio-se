@@ -37,8 +37,6 @@ public class FunctionManager {
 
     public static final String PURE_PERL_DESC = Messages.getString("FunctionManager.PurePerl.Desc"); //$NON-NLS-1$
 
-    public static final String PURE_PERL_PARAM = Messages.getString("FunctionManager.PurePerl.ParaName"); //$NON-NLS-1$
-
     private List<TalendType> talendTypes = null;
 
     public static final String PERL_FUN_PREFIX = "sub{"; //$NON-NLS-1$
@@ -55,6 +53,37 @@ public class FunctionManager {
 
     public static final String EMPTY_STRING = " "; //$NON-NLS-1$
 
+    public static enum EFunctionParameter {
+
+        CUSTOMIZE_PARAM("customize parameter", Messages.getString("FunctionManager.PurePerl.ParaName")); //$NON-NLS-1$ //$NON-NLS-2$
+
+        private String paramName;
+
+        private String paramDisplayName;
+
+        EFunctionParameter(String paramName, String paramDisplayName) {
+            this.paramName = paramName;
+            this.paramDisplayName = paramDisplayName;
+        }
+
+        public String getParamName() {
+            return paramName;
+        }
+
+        public String getParamDisplayName() {
+            return paramDisplayName;
+        }
+
+        public static String getDisplayNameByName(String name) {
+            for (EFunctionParameter eParameter : values()) {
+                if (eParameter.getParamName().equals(name)) {
+                    return eParameter.getParamDisplayName();
+                }
+            }
+            return null;
+        }
+
+    }
     /**
      * qzhang Comment method "getFunctionByName".
      *
@@ -80,7 +109,7 @@ public class FunctionManager {
         function.setDescription(PURE_PERL_DESC);
         StringParameter param = new StringParameter();
         List<Parameter> params = new ArrayList<Parameter>();
-        param.setName(PURE_PERL_PARAM);
+        param.setName(EFunctionParameter.CUSTOMIZE_PARAM.getParamName());
         params.add(param);
         function.setParameters(params);
         return function;
