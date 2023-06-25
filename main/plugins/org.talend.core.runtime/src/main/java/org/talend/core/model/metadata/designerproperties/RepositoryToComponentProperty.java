@@ -1899,17 +1899,6 @@ public class RepositoryToComponentProperty {
         }
     }
 
-    /**
-     * DOC nrousseau Comment method "getDatabaseValue".
-     *
-     * @param connection
-     * @param value
-     * @return
-     */
-    private static Object getDatabaseValue(DatabaseConnection connection, String value) {
-        return getDatabaseValue(connection, value, null, null);
-    }
-
     private static boolean isContextMode(Connection connection, String value) {
         IMetadataManagmentUiService mmService = null;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IMetadataManagmentUiService.class)) {
