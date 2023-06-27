@@ -5848,7 +5848,7 @@ public class DatabaseForm extends AbstractForm {
         boolean isOracle = oracleVersionEnable();
         boolean isAS400 = as400VersionEnable();
         boolean isMySQL = asMySQLVersionEnable();
-        boolean isVertica = asVerticaVersionEnable();
+        boolean isVertica = false && asVerticaVersionEnable(); // hide db version for vertica db, because it only has vertica 12 now, align to tdi, won't show db version
         boolean isSAS = asSASVersionEnable();
         boolean isImpala = ImpalaVersionEnable();
         boolean isMsSQL = asMsSQLVersionEnable();

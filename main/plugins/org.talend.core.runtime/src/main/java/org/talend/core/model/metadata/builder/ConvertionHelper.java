@@ -33,6 +33,7 @@ import org.talend.core.database.EDatabaseTypeName;
 import org.talend.core.database.ERedshiftDriver;
 import org.talend.core.database.conn.ConnParameterKeys;
 import org.talend.core.database.conn.template.EDatabaseConnTemplate;
+import org.talend.core.database.conn.version.EDatabaseVersion4Drivers;
 import org.talend.core.model.metadata.Dbms;
 import org.talend.core.model.metadata.DiSchemaConstants;
 import org.talend.core.model.metadata.IConvertionConstants;
@@ -285,6 +286,9 @@ public final class ConvertionHelper {
                     dbVersionString = ERedshiftDriver.DRIVER_V1.name();
                 }
             }
+        }
+        if (EDatabaseTypeName.VERTICA.getDisplayName().equals(dbConn.getDatabaseType())) {
+            dbVersionString = EDatabaseVersion4Drivers.VERTICA_12.getVersionValue();
         }
         return dbVersionString;
     }

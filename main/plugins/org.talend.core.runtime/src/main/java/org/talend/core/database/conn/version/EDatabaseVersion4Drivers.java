@@ -84,7 +84,10 @@ public enum EDatabaseVersion4Drivers {
                     "json-smart-2.4.11.jar", "nimbus-jose-jwt-9.22.jar", "accessors-smart-2.4.11.jar", "asm-9.5.jar",
                     "content-type-2.1.jar", "lang-tag-1.5.jar" })),
 
-    VERTICA_9(new DbVersion4Drivers(EDatabaseTypeName.VERTICA, "VERTICA 9.X", "VERTICA_9_0", "vertica-jdbc-9.3.1-0.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+//    VERTICA_9(new DbVersion4Drivers(EDatabaseTypeName.VERTICA, "VERTICA 9.X  (Deprecated)", "VERTICA_9_0", "vertica-jdbc-9.3.1-0.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    
+    //https://mvnrepository.com/artifact/com.vertica.jdbc/vertica-jdbc/12.0.4-0
+    VERTICA_12(new DbVersion4Drivers(EDatabaseTypeName.VERTICA, "VERTICA 12.X", "VERTICA_12_0", "vertica-jdbc-12.0.4-0.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
     // for bug 0017930
     GREENPLUM_PSQL(new DbVersion4Drivers(EDatabaseTypeName.GREENPLUM,"PostgreSQL", "POSTGRESQL", "postgresql-8.4-703.jdbc4.jar")), //$NON-NLS-1$
