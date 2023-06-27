@@ -490,9 +490,8 @@ public class DatabaseWizard extends CheckLastVersionRepositoryWizard implements 
                 DatabaseConnection dbConnection = (DatabaseConnection) connectionItem.getConnection();
                 String dbVersion = dbConnection.getDbVersionString();
                 // feature TDI-22108
-                if (EDatabaseTypeName.VERTICA.equals(dbType)
-                        && EDatabaseVersion4Drivers.VERTICA_9.getVersionValue().equals(dbVersion)) {
-                    driverClass = EDatabase4DriverClassName.VERTICA2.getDriverClass();
+                if (EDatabaseTypeName.VERTICA.equals(dbType)) {
+                    driverClass = EDatabase4DriverClassName.VERTICA.getDriverClass();
                 } else if (EDatabaseTypeName.IMPALA.equals(dbType)) {
                     IHadoopDistributionService hadoopService = getHadoopDistributionService();
                     if (hadoopService != null) {

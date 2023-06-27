@@ -88,8 +88,8 @@ public enum EDatabase4DriverClassName {
     // MOD klliu 2010-06-04 bug 12819: upgrade jdbc driver class used in sql explorer
     TERADATA(EDatabaseTypeName.TERADATA, "com.teradata.jdbc.TeraDriver"), //$NON-NLS-1$
 
-    VERTICA(EDatabaseTypeName.VERTICA, "com.vertica.Driver"), //$NON-NLS-1$
-    VERTICA2(EDatabaseTypeName.VERTICA, "com.vertica.jdbc.Driver"), //$NON-NLS-1$
+//    VERTICA(EDatabaseTypeName.VERTICA, "com.vertica.Driver"), //$NON-NLS-1$
+    VERTICA(EDatabaseTypeName.VERTICA, "com.vertica.jdbc.Driver"), //$NON-NLS-1$
 
     HIVE(EDatabaseTypeName.HIVE, "org.apache.hadoop.hive.jdbc.HiveDriver"), //$NON-NLS-1$
 

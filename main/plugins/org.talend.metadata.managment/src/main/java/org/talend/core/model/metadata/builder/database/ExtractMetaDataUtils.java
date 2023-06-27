@@ -985,9 +985,8 @@ public class ExtractMetaDataUtils {
                         driverClassName = getDriverClassByDbType(dbType);
                     }
                     // feature TDI-22108
-                    if (EDatabaseTypeName.VERTICA.getXmlName().equals(dbType)
-                            && EDatabaseVersion4Drivers.VERTICA_9.getVersionValue().equals(dbVersion)) {
-                        driverClassName = EDatabase4DriverClassName.VERTICA2.getDriverClass();
+                    if (EDatabaseTypeName.VERTICA.getXmlName().equals(dbType)) {
+                        driverClassName = EDatabase4DriverClassName.VERTICA.getDriverClass();
                     } else if (EDatabaseTypeName.MYSQL.getXmlName().equals(dbType)) {
                         if (EDatabaseVersion4Drivers.MYSQL_8.getVersionValue().equals(dbVersion)) {
                             driverClassName = EDatabase4DriverClassName.MYSQL8.getDriverClass();
