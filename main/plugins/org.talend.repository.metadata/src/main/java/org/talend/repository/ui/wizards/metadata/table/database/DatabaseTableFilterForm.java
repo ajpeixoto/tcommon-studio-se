@@ -111,6 +111,7 @@ public class DatabaseTableFilterForm extends AbstractForm {
         getTableInfoParameters().setSqlFiter(sqlFilter.getText());
         getTableInfoParameters().changeType(ETableTypes.TABLETYPE_TABLE, tableCheck.getSelection());
         getTableInfoParameters().changeType(ETableTypes.EXTERNAL_TABLE, tableCheck.getSelection());
+        getTableInfoParameters().changeType(ETableTypes.EXTERNAL_TABLE_SPACE, synonymCheck.getSelection());
         getTableInfoParameters().changeType(ETableTypes.TABLETYPE_VIEW, viewCheck.getSelection());
         getTableInfoParameters().changeType(ETableTypes.TABLETYPE_SYNONYM, synonymCheck.getSelection());
         getTableInfoParameters().changeType(ETableTypes.FOREIGN_TABLE, synonymCheck.getSelection());
@@ -427,6 +428,7 @@ public class DatabaseTableFilterForm extends AbstractForm {
                 // types are reqired, it could invoke like
                 // "DatabaseTableWizardPage.getTableInfoParameters().getTypes()".
                 getTableInfoParameters().changeType(ETableTypes.EXTERNAL_TABLE, tableCheck.getSelection());
+                getTableInfoParameters().changeType(ETableTypes.EXTERNAL_TABLE_SPACE, synonymCheck.getSelection());
                 getTableInfoParameters().changeType(ETableTypes.FOREIGN_TABLE, tableCheck.getSelection());
                 if (EDatabaseTypeName.HIVE.getDisplayName().equals(metadataconnection.getDbType()) ||
                         isHive()) {

@@ -272,7 +272,7 @@ public final class ConvertionHelper {
 
     }
 
-    private static String getDriverVersionString(DatabaseConnection dbConn) {
+    public static String getDriverVersionString(DatabaseConnection dbConn) {
         String dbVersionString = dbConn.getDbVersionString();
         if (EDatabaseTypeName.REDSHIFT.getDisplayName().equals(dbConn.getDatabaseType())
                 || EDatabaseTypeName.REDSHIFT_SSO.getDisplayName().equals(dbConn.getDatabaseType())) {

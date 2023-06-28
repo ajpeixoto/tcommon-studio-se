@@ -91,6 +91,7 @@ public class ExtractMetaDataFromDataBase {
         TABLETYPE_ALL_SYNONYM("ALL_SYNONYM"), //$NON-NLS-1$
         TABLETYPE_ALIAS("ALIAS"), //$NON-NLS-1$
         EXTERNAL_TABLE("EXTERNAL_TABLE"), //$NON-NLS-1$
+        EXTERNAL_TABLE_SPACE("EXTERNAL TABLE"), //$NON-NLS-1$ for redshift tabel
         MANAGED_TABLE("MANAGED_TABLE"), //$NON-NLS-1$ // for hive
         INDEX_TABLE("INDEX_TABLE"), //$NON-NLS-1$ // for hive
         VIRTUAL_VIEW("VIRTUAL_VIEW"), //$NON-NLS-1$ // for hive
