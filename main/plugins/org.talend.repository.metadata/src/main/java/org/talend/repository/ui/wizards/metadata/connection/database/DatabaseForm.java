@@ -3482,10 +3482,14 @@ public class DatabaseForm extends AbstractForm {
     }
 
     private void adaptHadoopLinkedPartToReadOnly() {
-        boolean fromRepository = hcPropertyTypeCombo.getSelectionIndex() == 1;
+        boolean fromRepository = false;
 
-        hcSelectBtn.setVisible(fromRepository);
-        hcRepositoryText.setVisible(fromRepository);
+        if (canLinkToHadoopCluster()) {
+            fromRepository = hcPropertyTypeCombo.getSelectionIndex() == 1;
+            hcSelectBtn.setVisible(fromRepository);
+            hcRepositoryText.setVisible(fromRepository);
+            hcPropertyTypeCombo.setReadOnly(isContextMode());
+        }
 
         hbaseDistributionCombo.setReadOnly(fromRepository || isContextMode());
         
@@ -3514,7 +3518,6 @@ public class DatabaseForm extends AbstractForm {
         jobTrackerURLTxt.setReadOnly(fromRepository || isContextMode());
         hiveCustomButton.setEnabled(!fromRepository && !isContextMode());
 
-        hcPropertyTypeCombo.setReadOnly(isContextMode());
         hiveModeCombo.setReadOnly(isContextMode());
         hiveServerVersionCombo.setReadOnly(isContextMode());
         impalaDriverCombo.setReadOnly(isContextMode());
