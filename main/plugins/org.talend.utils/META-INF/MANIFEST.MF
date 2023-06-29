@@ -2,6 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Utils Plug-in
 Bundle-SymbolicName: org.talend.utils
+Automatic-Module-Name: org.talend.utils
 Bundle-Version: 8.8.8.qualifier
 Bundle-Vendor: .Talend SA.
 Export-Package: 
@@ -21,11 +22,11 @@ Export-Package:
  org.talend.utils.xml
 Bundle-ClassPath: .
 Require-Bundle: org.apache.commons.lang,
- org.talend.libraries.apache;visibility:=reexport,
+ org.talend.libraries.apache,
  org.apache.commons.io,
- org.talend.daikon;visibility:=reexport,
- org.talend.daikon.crypto.utils;visibility:=reexport,
+ org.talend.daikon,
+ org.talend.daikon.crypto.utils,
  org.slf4j.api,
- org.talend.studio.studio-utils;visibility:=reexport
+ org.talend.studio.studio-utils
 Eclipse-BuddyPolicy: registered
 Eclipse-RegisterBuddy: org.apache.log4j, org.talend.testutils

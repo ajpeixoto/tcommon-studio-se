@@ -2,6 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Example plugin for Repository usage
 Bundle-SymbolicName: org.talend.repository.view.example;singleton:=true
+Automatic-Module-Name: org.talend.repository.view.example
 Bundle-Version: 8.8.8.qualifier
 Bundle-ClassPath: .
 Bundle-Vendor: %providerName
@@ -16,11 +17,11 @@ Require-Bundle: org.talend.core.runtime,
  org.eclipse.ui,
  org.eclipse.ui.navigator,
  org.eclipse.core.runtime,
- org.eclipse.emf.ecore;visibility:=reexport,
+ org.eclipse.emf.ecore,
  org.eclipse.emf.ecore.xmi,
  org.talend.model,
- org.talend.cwm.mip;visibility:=reexport,
- org.eclipse.gmf.runtime.notation;visibility:=reexport,
+ org.talend.cwm.mip,
+ org.eclipse.gmf.runtime.notation,
  org.talend.commons.ui,
  org.talend.common.ui.runtime,
  org.talend.commons.runtime,
@@ -32,7 +33,9 @@ Require-Bundle: org.talend.core.runtime,
  org.talend.core,
  org.talend.repository.items.importexport,
  org.talend.core.ui,
- org.talend.components.api
+ org.talend.components.api,
+ org.apache.log4j,
+ org.eclipse.core.resources
 Bundle-Activator: org.talend.repository.example.Activator
 Bundle-ActivationPolicy: lazy
 Bundle-Localization: plugin

@@ -6,4 +6,5 @@ Bundle-Version: 8.8.8.qualifier
 Fragment-Host: org.talend.librariesmanager
 Require-Bundle: org.talend.testutils,
  org.apache.commons.io,
- org.eclipse.m2e.maven.runtime
+ org.eclipse.m2e.maven.runtime,
+ org.junit

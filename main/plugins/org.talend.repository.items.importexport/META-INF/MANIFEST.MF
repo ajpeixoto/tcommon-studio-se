@@ -12,7 +12,14 @@ Require-Bundle: org.eclipse.core.runtime,
  org.talend.core.runtime,
  org.talend.core.repository,
  org.talend.designer.maven,
- org.talend.core
+ org.talend.core,
+ org.apache.commons.lang3,
+ org.eclipse.emf.common,
+ org.eclipse.emf.ecore,
+ org.apache.log4j,
+ org.talend.studio.studio-utils,
+ org.talend.cwm.mip,
+ org.eclipse.emf.ecore.xmi
 Bundle-Localization: plugin
 Bundle-ActivationPolicy: lazy
 Eclipse-RegisterBuddy: org.talend.testutils

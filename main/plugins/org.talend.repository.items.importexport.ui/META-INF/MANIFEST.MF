@@ -15,7 +15,13 @@ Require-Bundle: org.eclipse.ui,
  org.talend.core.repository,
  org.talend.core.ui,
  org.talend.repository.items.importexport,
- org.talend.designer.maven
+ org.talend.designer.maven,
+ org.eclipse.emf.ecore,
+ org.apache.log4j,
+ org.talend.common.ui.runtime,
+ org.talend.commons.runtime,
+ org.talend.studio.studio-utils,
+ org.eclipse.core.resources
 Bundle-ActivationPolicy: lazy
 Bundle-Localization: plugin
 Export-Package: org.talend.repository.items.importexport.ui.actions,

@@ -2,6 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Common UI Plug-in
 Bundle-SymbolicName: org.talend.commons.ui;singleton:=true
+Automatic-Module-Name: org.talend.commons.ui
 Bundle-Version: 8.8.8.qualifier
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources,
@@ -10,7 +11,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui.intro,
  org.eclipse.ui.ide,
  org.eclipse.gef,
- org.eclipse.jface;visibility:=reexport,
+ org.eclipse.jface,
  org.apache.log4j,
  org.apache.xalan,
  org.apache.commons.lang,
@@ -18,9 +19,10 @@ Require-Bundle: org.eclipse.core.runtime,
  org.talend.libraries.dom4j-jaxen,
  org.talend.utils,
  org.talend.commons.runtime,
- org.talend.common.ui.runtime;visibility:=reexport,
- org.talend.libraries.ui;visibility:=reexport,
- org.eclipse.ui.workbench
+ org.talend.common.ui.runtime,
+ org.talend.libraries.ui,
+ org.eclipse.ui.workbench,
+ org.talend.studio.studio-utils
 Eclipse-LazyStart: true
 Bundle-Vendor: .Talend SA.
 Export-Package: org.talend.commons.ui.command,

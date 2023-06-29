@@ -16,7 +16,11 @@ Require-Bundle: org.eclipse.core.runtime,
  org.apache.log4j,
  org.talend.libraries.apache,
  org.eclipse.osgi.services,
- org.talend.repository
+ org.talend.repository,
+ org.eclipse.core.resources,
+ org.talend.commons.runtime,
+ org.apache.commons.lang,
+ org.talend.cwm.mip
 Eclipse-LazyStart: true
 Bundle-Vendor: .Talend SA.
 Export-Package: org.talend.repository.localprovider.model

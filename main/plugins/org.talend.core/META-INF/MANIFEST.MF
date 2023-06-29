@@ -22,7 +22,12 @@ Require-Bundle: org.eclipse.debug.core,
  org.talend.libraries.apache,
  org.talend.core.runtime,
  org.talend.utils,
- org.talend.libraries.dom4j-jaxen
+ org.talend.libraries.dom4j-jaxen,
+ org.eclipse.core.runtime,
+ org.talend.commons.runtime,
+ org.talend.studio.studio-utils,
+ org.eclipse.emf.ecore,
+ org.talend.cwm.mip
 Bundle-Vendor: .Talend SA.
 Export-Package: org.talend.core,
  org.talend.core.branding,

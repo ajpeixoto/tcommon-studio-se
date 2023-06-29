@@ -16,7 +16,17 @@ Require-Bundle: org.eclipse.ui,
  org.apache.log4j,
  javax.xml.rpc,
  org.eclipse.xsd,
- javax.xml.ws
+ javax.xml.ws,
+ org.talend.cwm.mip,
+ org.apache.commons.codec,
+ org.apache.commons.lang3,
+ org.eclipse.core.resources,
+ org.talend.commons.runtime,
+ org.talend.studio.studio-utils,
+ org.eclipse.equinox.common,
+ org.eclipse.equinox.registry,
+ org.eclipse.core.jobs,
+ org.eclipse.core.runtime
 Bundle-ActivationPolicy: lazy
 Eclipse-RegisterBuddy: org.talend.testutils
 Export-Package: metadata.managment.i18n,

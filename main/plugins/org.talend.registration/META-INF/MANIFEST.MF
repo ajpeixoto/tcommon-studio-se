@@ -15,7 +15,9 @@ Require-Bundle: javax.xml.rpc,
  org.talend.common.ui.runtime,
  org.eclipse.ui.intro,
  org.talend.commons.ui,
- org.talend.libraries.apache.axis2
+ org.talend.libraries.apache.axis2,
+ org.apache.log4j,
+ org.talend.commons.runtime
 Export-Package: org.talend.registration,
  org.talend.registration.license,
  org.talend.registration.register,

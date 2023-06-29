@@ -5,4 +5,5 @@ Bundle-SymbolicName: org.talend.libraries.javacsv.test
 Bundle-Version: 8.8.8.qualifier
 Bundle-Vendor: .Talend SA.
 Fragment-Host: org.talend.libraries.javacsv
-Require-Bundle: org.talend.testutils
+Require-Bundle: org.talend.testutils,
+ org.junit

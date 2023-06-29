@@ -17,4 +17,6 @@ Require-Bundle: org.talend.utils,
  org.apache.log4j,
  org.eclipse.osgi,
  org.eclipse.equinox.common,
- org.eclipse.core.runtime
+ org.eclipse.core.runtime,
+ org.apache.commons.lang3,
+ org.talend.studio.studio-utils

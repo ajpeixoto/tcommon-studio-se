@@ -2,6 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Mockito
 Bundle-SymbolicName: org.talend.testutils
+Automatic-Module-Name: org.talend.testutils
 Bundle-Version: 8.8.8.qualifier
 Bundle-ClassPath: .,
  lib/assertj-core-3.5.2.jar,
@@ -70,6 +71,6 @@ Export-Package: com.javamex.classmexer,
  org.powermock.utils,
  org.talend.test.utils,
  org.talend.testutils.threading
-Require-Bundle: org.junit;visibility:=reexport
+Require-Bundle: org.junit
 Eclipse-BuddyPolicy: registered
 

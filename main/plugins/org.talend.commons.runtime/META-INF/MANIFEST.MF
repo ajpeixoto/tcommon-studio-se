@@ -2,12 +2,13 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Common Runtime Plug-in
 Bundle-SymbolicName: org.talend.commons.runtime;singleton:=true
+Automatic-Module-Name: org.talend.commons.runtime
 Bundle-Version: 8.8.8.qualifier
-Require-Bundle: org.apache.log4j;visibility:=reexport,
+Require-Bundle: org.apache.log4j,
  org.apache.commons.commons-beanutils,
  org.apache.commons.collections,
  org.apache.commons.httpclient,
- org.apache.commons.lang;visibility:=reexport,
+ org.apache.commons.lang,
  org.eclipse.core.runtime,
  org.eclipse.emf.ecore.xmi,
  org.talend.libraries.apache,
@@ -17,7 +18,9 @@ Require-Bundle: org.apache.log4j;visibility:=reexport,
  org.eclipse.core.net,
  org.eclipse.m2e.core,
  org.eclipse.m2e.maven.runtime,
- org.eclipse.core.resources
+ org.eclipse.core.resources,
+ org.talend.studio.studio-utils,
+ org.talend.daikon
 Export-Package: org.talend.commons,
  org.talend.commons.exception,
  org.talend.commons.i18n,

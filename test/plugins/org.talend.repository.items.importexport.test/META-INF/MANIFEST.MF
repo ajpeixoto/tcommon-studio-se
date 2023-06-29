@@ -5,4 +5,5 @@ Bundle-SymbolicName: org.talend.repository.items.importexport.test
 Bundle-Version: 8.8.8.qualifier
 Bundle-Vendor: .Talend SA.
 Fragment-Host: org.talend.repository.items.importexport
-Require-Bundle: org.talend.testutils
+Require-Bundle: org.talend.testutils,
+ org.junit

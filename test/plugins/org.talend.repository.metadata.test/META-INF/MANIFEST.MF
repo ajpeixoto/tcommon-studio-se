@@ -4,4 +4,5 @@ Bundle-Name: Test
 Bundle-SymbolicName: org.talend.repository.metadata.test
 Bundle-Version: 8.8.8.qualifier
 Fragment-Host: org.talend.repository.metadata
-Require-Bundle: org.talend.testutils
+Require-Bundle: org.talend.testutils,
+ org.junit

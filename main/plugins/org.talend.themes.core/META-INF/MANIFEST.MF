@@ -20,7 +20,9 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.e4.ui.css.swt.theme,
  org.eclipse.osgi.services,
  org.apache.batik.css,
- org.talend.common.ui.runtime
+ org.talend.common.ui.runtime,
+ org.apache.log4j,
+ org.apache.commons.lang
 Service-Component: OSGI-INF/core.xml
 Bundle-ActivationPolicy: lazy
 Export-Package: org.talend.themes.core.elements.constants,

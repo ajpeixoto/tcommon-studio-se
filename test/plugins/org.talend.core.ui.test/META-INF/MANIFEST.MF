@@ -4,7 +4,8 @@ Bundle-Name: Core UI Test
 Bundle-SymbolicName: org.talend.core.ui.test
 Bundle-Version: 8.8.8.qualifier
 Fragment-Host: org.talend.core.ui
-Require-Bundle: org.talend.testutils
+Require-Bundle: org.talend.testutils,
+ org.junit
 Import-Package: org.talend.repository.items.importexport.handlers,
  org.talend.repository.items.importexport.handlers.model,
  org.talend.repository.items.importexport.manager,

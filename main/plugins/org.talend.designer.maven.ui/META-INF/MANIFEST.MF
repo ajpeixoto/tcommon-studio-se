@@ -15,7 +15,16 @@ Require-Bundle: org.eclipse.ui,
  org.talend.core.runtime,
  org.talend.designer.maven,
  org.talend.repository.view,
- org.talend.core
+ org.talend.core,
+ org.talend.commons.runtime,
+ org.talend.studio.studio-utils,
+ org.talend.common.ui.runtime,
+ org.eclipse.emf.ecore,
+ org.eclipse.ui.navigator,
+ org.eclipse.ui.views.properties.tabbed,
+ org.apache.log4j,
+ org.apache.commons.lang3,
+ org.talend.utils
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: .Talend SA.
 Bundle-Localization: plugin

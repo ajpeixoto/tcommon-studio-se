@@ -2,14 +2,15 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Repository View Plug-in
 Bundle-SymbolicName: org.talend.repository.view;singleton:=true
+Automatic-Module-Name: org.talend.repository.view
 Bundle-Version: 8.8.8.qualifier
 Bundle-Vendor: .Talend SA.
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
- org.eclipse.ui.navigator;visibility:=reexport,
- org.eclipse.ui.views.properties.tabbed;visibility:=reexport,
- org.eclipse.core.expressions;visibility:=reexport,
+ org.eclipse.ui.navigator,
+ org.eclipse.ui.views.properties.tabbed,
+ org.eclipse.core.expressions,
  org.eclipse.e4.core.contexts,
  org.eclipse.e4.ui.model.workbench,
  org.eclipse.e4.ui.workbench,
@@ -18,7 +19,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.jdt.ui,
  org.apache.log4j,
  org.apache.commons.collections,
- org.talend.model;visibility:=reexport,
+ org.talend.model,
  org.talend.core.runtime,
  org.talend.common.ui.runtime,
  org.talend.commons.ui,
@@ -27,7 +28,12 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.osgi.services,
  org.talend.libraries.apache,
  org.talend.core,
- javax.inject
+ javax.inject,
+ org.eclipse.core.resources,
+ org.eclipse.emf.ecore,
+ org.talend.cwm.mip,
+ org.apache.commons.lang,
+ org.talend.studio.studio-utils
 Export-Package: org.talend.repository,
  org.talend.repository.navigator,
  org.talend.repository.tester,
