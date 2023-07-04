@@ -94,7 +94,8 @@ public final class DqRepositoryViewService {
 
     public static final String[] TABLE_TYPES = new String[] { ETableTypes.TABLETYPE_TABLE.getName(),
             ETableTypes.EXTERNAL_TABLE.getName(), ETableTypes.MANAGED_TABLE.getName(), ETableTypes.INDEX_TABLE.getName(),
-            ETableTypes.SYSTEM_TABLE.getName() };
+            ETableTypes.SYSTEM_TABLE.getName(), ETableTypes.FOREIGN_TABLE.getName(),
+            ETableTypes.EXTERNAL_TABLE_SPACE.getName() };
 
     public static final String[] VIEW_TYPES = new String[] { ETableTypes.TABLETYPE_VIEW.getName(),
             ETableTypes.VIRTUAL_VIEW.getName() };

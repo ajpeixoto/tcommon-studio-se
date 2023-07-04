@@ -194,7 +194,8 @@ public class ExtractManager {
         ResultSet rsTableTypes = dbMetaData.getTableTypes();
         Set<String> availableTableTypes = new HashSet<String>();
         String[] neededTableTypes = { ETableTypes.TABLETYPE_TABLE.getName(), ETableTypes.TABLETYPE_VIEW.getName(),
-                ETableTypes.TABLETYPE_SYNONYM.getName(), ETableTypes.EXTERNAL_TABLE.getName()};
+                ETableTypes.TABLETYPE_SYNONYM.getName(), ETableTypes.EXTERNAL_TABLE.getName(),
+                ETableTypes.EXTERNAL_TABLE_SPACE.getName(), ETableTypes.FOREIGN_TABLE.getName() };
 
         try {
             while (rsTableTypes.next()) {

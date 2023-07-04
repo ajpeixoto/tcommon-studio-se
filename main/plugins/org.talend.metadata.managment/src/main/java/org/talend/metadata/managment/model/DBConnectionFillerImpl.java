@@ -1091,6 +1091,8 @@ public class DBConnectionFillerImpl extends MetadataFillerImpl<DatabaseConnectio
                 metadatatable.setName(tableName);
                 // Added by Marvin Wang on Feb. 6, 2012 for bug TDI-24413, it is just for hive external table.
                 if (ETableTypes.EXTERNAL_TABLE.getName().equals(temptableType)
+                        || ETableTypes.EXTERNAL_TABLE_SPACE.getName().equals(temptableType)
+                        || ETableTypes.FOREIGN_TABLE.getName().equals(temptableType)
                         || ETableTypes.MANAGED_TABLE.getName().equals(temptableType)
                         || ETableTypes.INDEX_TABLE.getName().equals(temptableType)
                         || ETableTypes.TABLETYPE_BASE_TABLE.getName().equals(temptableType)
