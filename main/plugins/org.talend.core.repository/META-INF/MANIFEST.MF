@@ -30,7 +30,11 @@ Require-Bundle: org.eclipse.ui,
  org.talend.studio.studio-utils,
  org.eclipse.core.runtime,
  org.eclipse.gmf.runtime.notation,
- org.talend.utils
+ org.talend.utils,
+ org.apache.commons.lang3,
+ com.fasterxml.jackson.core.jackson-annotations,
+ com.fasterxml.jackson.core.jackson-core,
+ com.fasterxml.jackson.core.jackson-databind
 Export-Package: org.talend.core.repository,
  org.talend.core.repository.constants,
  org.talend.core.repository.document,

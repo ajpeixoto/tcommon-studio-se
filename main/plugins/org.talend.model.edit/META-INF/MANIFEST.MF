@@ -16,5 +16,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.talend.cwm.mip.edit,
  org.talend.model,
  org.talend.common.ui.runtime,
- org.eclipse.jface
+ org.eclipse.jface,
+ org.eclipse.emf.common,
+ org.eclipse.emf.edit,
+ org.talend.cwm.mip
 Eclipse-LazyStart: true

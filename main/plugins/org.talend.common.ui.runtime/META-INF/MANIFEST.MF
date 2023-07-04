@@ -12,7 +12,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.talend.commons.runtime,
  org.talend.libraries.ui,
  org.apache.ant,
- org.eclipse.jface
+ org.eclipse.jface,
+ org.apache.commons.lang3
 Export-Package: 
  org.talend.commons.ui.runtime,
  org.talend.commons.ui.runtime.custom,

@@ -43,7 +43,10 @@ Require-Bundle: org.apache.commons.lang,
  org.eclipse.core.resources,
  org.talend.common.ui.runtime,
  org.talend.studio.studio-utils,
- org.talend.daikon
+ org.talend.daikon,
+ com.fasterxml.jackson.core.jackson-databind,
+ com.fasterxml.jackson.core.jackson-core,
+ org.talend.libraries.apache.common
 Bundle-ActivationPolicy: lazy
 Bundle-Localization: plugin
 Export-Package: org.talend.repository.metadata,

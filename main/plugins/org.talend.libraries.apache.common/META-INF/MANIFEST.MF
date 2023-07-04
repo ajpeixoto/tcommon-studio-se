@@ -60,8 +60,8 @@ Export-Package: org.apache.commons.cli2,
  org.apache.commons.io.monitor;version="2.10.0",
  org.apache.commons.io.output;version="2.10.0",
  org.apache.commons.io.serialization;version="2.10.0"
-Require-Bundle: org.apache.commons.commons-beanutils;visibility:=reexport,
- org.apache.commons.logging;bundle-version="1.2.0";visibility:=reexport,
- org.apache.commons.lang3;bundle-version="3.4.0";visibility:=reexport
+Require-Bundle: org.apache.commons.commons-beanutils,
+ org.apache.commons.logging,
+ org.apache.commons.lang3
 Bundle-ActivationPolicy: lazy
 Eclipse-BundleShape: dir

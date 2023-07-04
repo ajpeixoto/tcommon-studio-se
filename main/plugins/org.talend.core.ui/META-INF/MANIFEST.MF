@@ -49,7 +49,10 @@ Require-Bundle: org.apache.commons.lang,
  org.talend.cwm.mip,
  org.talend.libraries.apache,
  org.talend.studio.studio-utils,
- org.talend.daikon
+ org.talend.daikon,
+ org.apache.commons.logging,
+ org.apache.commons.lang3,
+ org.apache.commons.codec
 Import-Package: org.eclipse.jdt.internal.ui.workingsets
 Export-Package: org.talend.core.ui,
  org.talend.core.ui.actions,

@@ -33,10 +33,10 @@ Require-Bundle: org.apache.commons.lang,
  org.apache.commons.logging,
  org.apache.commons.collections,
  org.apache.commons.commons-beanutils,
- jackson-core-asl;bundle-version="1.9.13";visibility:=reexport,
- jackson-mapper-asl;bundle-version="1.9.13";visibility:=reexport,
- com.fasterxml.jackson.core.jackson-annotations;bundle-version="2.9.0";visibility:=reexport,
- com.fasterxml.jackson.core.jackson-core;bundle-version="2.9.5";visibility:=reexport,
- com.fasterxml.jackson.core.jackson-databind;bundle-version="2.9.5";visibility:=reexport
+ jackson-core-asl,
+ jackson-mapper-asl,
+ com.fasterxml.jackson.core.jackson-annotations,
+ com.fasterxml.jackson.core.jackson-core,
+ com.fasterxml.jackson.core.jackson-databind
 Bundle-ActivationPolicy: lazy
 Eclipse-BundleShape: dir

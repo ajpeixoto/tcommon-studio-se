@@ -9,7 +9,7 @@ Bundle-ClassPath: .,
  lib/jakarta-oro-2.0.8.jar
 Bundle-Vendor: .Talend SA.
 Require-Bundle: org.apache.log4j;resolution:=optional,
- org.talend.libraries.apache.common;visibility:=reexport,
+ org.talend.libraries.apache.common,
  jackson-core-asl;bundle-version="1.9.13",
  jackson-mapper-asl;bundle-version="1.9.13",
  org.apache.xerces
