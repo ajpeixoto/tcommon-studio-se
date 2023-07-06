@@ -216,7 +216,7 @@ public abstract class AbstractMavenProcessorPom extends CreateMavenBundleTemplat
                 Dependency guavaDep = new Dependency();
                 guavaDep.setGroupId("com.google.guava");
                 guavaDep.setArtifactId("guava");
-                guavaDep.setVersion("30.0-jre");
+                guavaDep.setVersion("32.0.1-jre");
                 
                 Dependency ioDep = new Dependency();
                 ioDep.setGroupId("commons-io");
