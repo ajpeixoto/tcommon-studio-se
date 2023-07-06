@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -80,6 +81,7 @@ import org.talend.core.runtime.util.ModuleAccessHelper;
 import org.talend.core.services.IGITProviderService;
 import org.talend.core.ui.ITestContainerProviderService;
 import org.talend.core.utils.TemplateFileUtils;
+import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.maven.template.ETalendMavenVariables;
@@ -92,6 +94,8 @@ import org.talend.designer.runprocess.IProcessor;
 import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.repository.ProjectManager;
+import org.talend.repository.model.IProxyRepositoryFactory;
+import org.talend.repository.model.IRepositoryService;
 import org.talend.utils.io.FilesUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -107,6 +111,9 @@ public class CreateMavenJobPom extends AbstractMavenProcessorPom {
     private String windowsScriptAddition, unixScriptAddition;
 
     private IFile assemblyFile;
+    
+    //data service components used in DI jobs
+    private static final List<String> dsComponentsInDIJobs = Arrays.asList("tESBProviderRequest","tRESTRequest", "tRESTResponse", "tRESTClient");
 
     public CreateMavenJobPom(IProcessor jobProcessor, IFile pomFile) {
         super(jobProcessor, pomFile, IProjectSettingTemplateConstants.POM_JOB_TEMPLATE_FILE_NAME);
@@ -199,6 +206,8 @@ public class CreateMavenJobPom extends AbstractMavenProcessorPom {
         IProcess process = jProcessor.getProcess();
         final IContext context = jProcessor.getContext();
         Property property = jProcessor.getProperty();
+
+        checkForMissingBuildType(property);
 
         if (ITestContainerProviderService.get() != null) {
             ITestContainerProviderService testService = ITestContainerProviderService.get();
@@ -357,6 +366,46 @@ public class CreateMavenJobPom extends AbstractMavenProcessorPom {
             }
         }
     }
+
+	@SuppressWarnings("unchecked")
+	private void checkForMissingBuildType(Property property) {
+		String buildType = (String) property.getAdditionalProperties().get("BUILD_TYPE");
+		boolean esbComponentPresent = false;
+
+		if(null == buildType || buildType.isEmpty()) {
+
+			Set<String> componentNamesList = new HashSet<String>();
+			Item processItem = property.getItem();
+			ProcessType processType = ((ProcessItem) processItem).getProcess();
+			List<NodeType> nodeTypeList = (List<NodeType>) processType.getNode();
+
+			for (NodeType node : nodeTypeList) {
+				String componentName = node.getComponentName();
+				componentNamesList.add(componentName);
+			}
+
+			for(String esbComponent : dsComponentsInDIJobs) {
+				if(componentNamesList.contains(esbComponent)) {
+					esbComponentPresent = true;
+					break;
+				}
+			}
+
+			if(esbComponentPresent) {
+				// add missing build type
+				property.getAdditionalProperties().put("BUILD_TYPE", "OSGI");
+
+				IRepositoryService service = (IRepositoryService) GlobalServiceRegister.getDefault().getService(IRepositoryService.class);
+				IProxyRepositoryFactory factory = service.getProxyRepositoryFactory();
+
+				try {
+					factory.save(processItem, true);
+				} catch (PersistenceException e) {
+					ExceptionHandler.process(e);
+				}
+			}
+		}
+	}
     private void addScriptAddition(StringBuffer scripts, String value) {
         if (StringUtils.isNotEmpty(value)) {
             scripts.append(' '); // separator
