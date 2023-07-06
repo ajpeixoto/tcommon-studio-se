@@ -411,6 +411,7 @@ public class ExtendedContextColumnPropertyAccessor<R> implements IColumnProperty
 
             if (modified) {
                 updateRelation();
+                modelManager.refresh();
             }
         }
 
@@ -425,7 +426,6 @@ public class ExtendedContextColumnPropertyAccessor<R> implements IColumnProperty
                             && jobContextManager.isOriginalParameter(param.getName())) {
                         jobContextManager.setModified(true);
                         manager.fireContextsChangedEvent();
-                        modelManager.refresh();
                     }
                 }
             }
@@ -494,6 +494,7 @@ public class ExtendedContextColumnPropertyAccessor<R> implements IColumnProperty
             }
             if (modified) {
                 updateRelation();
+                modelManager.refresh();
             }
         }
 
@@ -508,7 +509,6 @@ public class ExtendedContextColumnPropertyAccessor<R> implements IColumnProperty
                             && jobContextManager.isOriginalParameter(param.getName())) {
                         jobContextManager.setModified(true);
                         manager.fireContextsChangedEvent();
-                        modelManager.refresh();
                     }
                 }
             }
@@ -576,6 +576,7 @@ public class ExtendedContextColumnPropertyAccessor<R> implements IColumnProperty
             }
             if (modified) {
                 updateRelation();
+                modelManager.refresh();
             }
         }
 
@@ -590,7 +591,6 @@ public class ExtendedContextColumnPropertyAccessor<R> implements IColumnProperty
                             && jobContextManager.isOriginalParameter(param.getName())) {
                         jobContextManager.setModified(true);
                         manager.fireContextsChangedEvent();
-                        modelManager.refresh();
                     }
                 }
             }
@@ -673,6 +673,7 @@ public class ExtendedContextColumnPropertyAccessor<R> implements IColumnProperty
             if (modified) {
                 // it is undo, so the order changed
                 updateRelation(newName, originalName);
+                modelManager.refresh();
             }
         }
 
@@ -687,7 +688,6 @@ public class ExtendedContextColumnPropertyAccessor<R> implements IColumnProperty
                             && jobContextManager.isOriginalParameter(param.getName())) {
                         jobContextManager.setModified(true);
                         manager.fireContextsChangedEvent();
-                        modelManager.refresh();
                     }
                 }
             }
