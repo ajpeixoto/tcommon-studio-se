@@ -37,7 +37,7 @@
    <menuContribution
          allPopups="false"
          locationURI="menu:help?after=talend">
-         <menu label="%Onboarding" icon="icons/guided_tour.png">
+         <menu label="%GuidedTourTalend" icon="icons/guided_tour.png">
 		   <command 
 		      commandId="org.talend.presentation.onboarding.show.command" 
 			  label="%Onboarding" 
