@@ -17,7 +17,7 @@ import org.eclipse.jface.dialogs.Dialog;
 /**
  * DOC cmeng  class global comment. Detailled comment
  */
-public abstract class AbsBusinessHandler<T extends IBusinessHandler<?>> implements IBusinessHandler<T> {
+public abstract class AbsBusinessHandler implements IBusinessHandler {
 
     private Object openResult = Dialog.CANCEL;
 

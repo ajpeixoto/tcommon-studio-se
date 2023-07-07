@@ -19,7 +19,7 @@ import java.util.Map;
 /**
  * DOC cmeng  class global comment. Detailled comment
  */
-public class UnsupportedCustomUI<T extends IBusinessHandler<?>> extends AbstractCustomUI<T> {
+public class UnsupportedCustomUI<T extends IBusinessHandler> extends AbstractCustomUI<T> {
 
     UnsupportedBusinessHandler realHandler;
 
@@ -47,7 +47,7 @@ public class UnsupportedCustomUI<T extends IBusinessHandler<?>> extends Abstract
         return getBusinessHandler();
     }
 
-    public static class UnsupportedBusinessHandler extends AbsBusinessHandler<UnsupportedBusinessHandler> {
+    public static class UnsupportedBusinessHandler extends AbsBusinessHandler {
 
         private static final String UI_KEY = "UnsupportedDialog";
 

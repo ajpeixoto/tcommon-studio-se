@@ -22,10 +22,6 @@ import org.talend.commons.exception.ExceptionHandler;
  */
 public class MessageDialogCustomUI extends AbstractCustomUI<MessageDialogBusinessHandler> {
 
-    private static final String OK = "ok";
-
-    private static final String CANCEL = "cancel";
-
     public MessageDialogCustomUI(MessageDialogBusinessHandler businessHandler) {
         super(businessHandler);
     }
@@ -62,46 +58,45 @@ public class MessageDialogCustomUI extends AbstractCustomUI<MessageDialogBusines
 
     @Override
     protected MessageDialogBusinessHandler collectDialogData() {
-        DefaultUIData uiData = createUIDataEvent("openResult");
         MessageDialogBusinessHandler businessHandler = getBusinessHandler();
         try {
-            Object openResult = requestUIData(uiData).get();
-            openResult = mapOpenResult(openResult);
-            businessHandler.setOpenResult(openResult);
+            businessHandler.setOpenResult(getDialogOpenResult());
         } catch (Exception e) {
             ExceptionHandler.process(e);
         }
         return businessHandler;
     }
 
-    private Object mapOpenResult(Object data) {
-        Object result = data;
+    private Object getDialogOpenResult() {
+        Object result = null;
+        boolean isCancelled = isCancelled();
         switch (getBusinessHandler().getDialogType()) {
         case MessageDialog.CONFIRM:
         case MessageDialog.ERROR:
         case MessageDialog.INFORMATION:
         case MessageDialog.WARNING:
-            if (OK.equals(data)) {
-                result = Boolean.TRUE;
-            } else {
+            if (isCancelled) {
                 result = Boolean.FALSE;
+            } else {
+                result = Boolean.TRUE;
             }
             break;
         case MessageDialog.QUESTION:
-            if (OK.equals(data)) {
-                result = Boolean.TRUE;
-            } else {
+            if (isCancelled) {
                 result = Boolean.FALSE;
+            } else {
+                result = Boolean.TRUE;
             }
             break;
         case MessageDialog.QUESTION_WITH_CANCEL:
-            if (OK.equals(data)) {
-                result = Boolean.TRUE;
-            } else {
+            if (isCancelled) {
                 result = Boolean.FALSE;
+            } else {
+                result = Boolean.TRUE;
             }
             break;
         default:
+            result = getOpenResult();
             break;
         }
         return result;

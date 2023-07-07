@@ -16,10 +16,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import org.apache.commons.lang3.StringUtils;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.custom.AbstractCustomUI;
-import org.talend.commons.ui.runtime.custom.IBusinessHandler;
+import org.talend.commons.ui.runtime.custom.ICustomUI;
 import org.talend.commons.ui.runtime.custom.IUIEvent;
 import org.talend.core.model.metadata.IMetadataColumn;
 import org.talend.core.model.metadata.IMetadataTable;
@@ -51,17 +50,15 @@ public class MetadataDialogCustomUI extends AbstractCustomUI<MetadataDialogBusin
 
     @Override
     protected MetadataDialogBusinessHandler collectDialogData() {
-        CompletableFuture<Object> openResultRequest = requestUIData(createUIDataEvent("openResult"));
         CompletableFuture<Object> outputMetaDataRequest = requestUIData(createUIDataEvent("output"));
         CompletableFuture<Object> inputMetaDataRequest = requestUIData(createUIDataEvent("input"));
         MetadataDialogBusinessHandler bh = getBusinessHandler();
         try {
-            Object openResult = openResultRequest.get();
-            if (StringUtils.equals("cancel", openResult.toString())) {
-                bh.setOpenResult(IBusinessHandler.CANCEL);
+            if (isCancelled()) {
+                bh.setOpenResult(ICustomUI.CANCEL);
                 return bh;
             }
-            bh.setOpenResult(IBusinessHandler.OK);
+            bh.setOpenResult(ICustomUI.OK);
             List<Object> output = (List<Object>) outputMetaDataRequest.get();
             IMetadataTable outputMetaTable = bh.getOutputMetaTable();
             if (outputMetaTable != null) {

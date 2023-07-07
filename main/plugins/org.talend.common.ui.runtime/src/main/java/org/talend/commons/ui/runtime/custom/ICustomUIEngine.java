@@ -19,7 +19,9 @@ import java.util.concurrent.CompletableFuture;
  */
 public interface ICustomUIEngine {
 
-    <T extends IBusinessHandler<?>> T run(ICustomUI<T> ui);
+    static final String CONTEXT_PROCESS = "PROCESS";
+
+    <T extends IBusinessHandler> T run(ICustomUI<T> ui);
 
     /**
      * Handle event from stigma
@@ -34,18 +36,20 @@ public interface ICustomUIEngine {
     /**
      * Send event to stigma
      */
-    <T extends IBusinessHandler<?>> void dispatchUIEvent(ICustomUI<T> ui, IUIEvent event);
+    <T extends IBusinessHandler> void dispatchUIEvent(ICustomUI<T> ui, IUIEvent event);
 
     /**
      * Request data from stigma
      */
-    <T extends IBusinessHandler<?>> CompletableFuture<Object> requestUIData(ICustomUI<T> ui, IUIData uiData);
+    <T extends IBusinessHandler> CompletableFuture<Object> requestUIData(ICustomUI<T> ui, IUIData uiData);
 
     <M> M convertValue(Object value, Class<M> clz);
 
     Object readJson(String value) throws Exception;
 
     void registerThreadLocalContext(String key, Object value);
+
+    Object getThreadLocalContext(String key);
 
     void registerUIEventHandler(String uiId, IUIEventHandler handler);
 

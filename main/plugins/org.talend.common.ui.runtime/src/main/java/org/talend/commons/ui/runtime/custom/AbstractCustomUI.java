@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.commons.ui.runtime.custom;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -25,7 +26,17 @@ import org.talend.commons.ui.runtime.TalendUI;
 /**
  * DOC cmeng class global comment. Detailled comment
  */
-public abstract class AbstractCustomUI<T extends IBusinessHandler<?>> implements ICustomUI<T> {
+public abstract class AbstractCustomUI<T extends IBusinessHandler> implements ICustomUI<T> {
+
+    public static final String NONE = "none";
+
+    public static final String UI_OK = "ok";
+
+    public static final String UI_APPLY = "apply";
+
+    public static final String UI_CANCEL = "cancel";
+
+    public static final String UI_CLOSE = "close";
 
     private Semaphore modalLock = new Semaphore(1);
 
@@ -40,6 +51,8 @@ public abstract class AbstractCustomUI<T extends IBusinessHandler<?>> implements
     private T businessHandler;
 
     private Map<String, IUIEventHandler> eventMap = new HashMap<>();
+
+    private String selectedButton = NONE;
 
     public AbstractCustomUI(T businessHandler) {
         this.businessHandler = businessHandler;
@@ -76,12 +89,16 @@ public abstract class AbstractCustomUI<T extends IBusinessHandler<?>> implements
         String eventKey = event.getKey();
         boolean closeDialog = false;
         if (BuiltinEvent.ok.name().equals(eventKey)) {
+            setSelectedButton(UI_OK);
             closeDialog = onOk(event);
         } else if (BuiltinEvent.apply.name().equals(eventKey)) {
+            setSelectedButton(UI_APPLY);
             closeDialog = onApply(event);
         } else if (BuiltinEvent.close.name().equals(eventKey)) {
+            setSelectedButton(UI_CLOSE);
             closeDialog = onClose(event);
         } else if (BuiltinEvent.cancel.name().equals(eventKey)) {
+            setSelectedButton(UI_CANCEL);
             closeDialog = onCancel(event);
         } else {
             IUIEventHandler eventListener = eventMap.get(eventKey);
@@ -93,6 +110,16 @@ public abstract class AbstractCustomUI<T extends IBusinessHandler<?>> implements
         }
         if (closeDialog) {
             closeDialog();
+        } else {
+            setSelectedButton(NONE);
+        }
+    }
+
+    protected int getOpenResult() {
+        if (isCancelled()) {
+            return CANCEL;
+        } else {
+            return OK;
         }
     }
 
@@ -200,8 +227,20 @@ public abstract class AbstractCustomUI<T extends IBusinessHandler<?>> implements
     protected void registerEventHandlers() {
     }
 
+    public String getSelectedButton() {
+        return selectedButton;
+    }
+
+    public void setSelectedButton(String selectedButton) {
+        this.selectedButton = selectedButton;
+    }
+
+    public boolean isCancelled() {
+        return Arrays.asList(UI_CANCEL, UI_CLOSE).contains(getSelectedButton());
+    }
+
     protected boolean onOk(IUIEvent event) {
-        return true;
+        return onApply(event);
     }
 
     protected boolean onApply(IUIEvent event) {
@@ -209,7 +248,7 @@ public abstract class AbstractCustomUI<T extends IBusinessHandler<?>> implements
     }
 
     protected boolean onClose(IUIEvent event) {
-        return true;
+        return onCancel(event);
     }
 
     protected boolean onCancel(IUIEvent event) {

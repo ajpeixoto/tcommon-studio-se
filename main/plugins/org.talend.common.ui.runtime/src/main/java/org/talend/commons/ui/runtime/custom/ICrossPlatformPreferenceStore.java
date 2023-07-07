@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2022 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2023 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -12,15 +12,17 @@
 // ============================================================================
 package org.talend.commons.ui.runtime.custom;
 
-/**
- * DOC cmeng  class global comment. Detailled comment
- */
-public interface IBusinessHandler {
 
-    String getUiKey();
+public interface ICrossPlatformPreferenceStore {
 
-    boolean isModalDialog();
+    boolean getBoolean(String key);
 
-    Object getOpenResult();
+    boolean getDefaultBoolean(String key);
+
+    void setValue(String key, boolean value);
+
+    void setValue(String key, String value);
+
+    Object getOriginStore();
 
 }

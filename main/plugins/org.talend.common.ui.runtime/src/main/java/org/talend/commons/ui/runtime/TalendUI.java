@@ -63,7 +63,7 @@ public class TalendUI {
      * should try to refactor them to different fragment
      */
     @Deprecated
-    public <T extends IBusinessHandler<?>> T run(IStudioRunnable<T> studioRun, ICustomUI<T> stigmaRun) {
+    public <T extends IBusinessHandler> T run(IStudioRunnable<T> studioRun, ICustomUI<T> stigmaRun) {
         if (isStudio()) {
             return run(studioRun);
         } else {
@@ -75,11 +75,11 @@ public class TalendUI {
      * should try to refactor them to different fragment
      */
     @Deprecated
-    public <T extends IBusinessHandler<?>> T run(IStudioRunnable<T> run) {
+    public <T extends IBusinessHandler> T run(IStudioRunnable<T> run) {
         return run.run();
     }
 
-    public <T extends IBusinessHandler<?>> T run(ICustomUI<T> ui) {
+    public <T extends IBusinessHandler> T run(ICustomUI<T> ui) {
         if (ui == null) {
             throw new RuntimeException("Custom ui is not defined!");
         }
@@ -87,14 +87,14 @@ public class TalendUI {
     }
 
     @Deprecated
-    public static interface IStudioRunnable<T extends IBusinessHandler<?>> {
+    public static interface IStudioRunnable<T extends IBusinessHandler> {
 
         T run();
 
     }
 
     @Deprecated
-    public static abstract class AbsStudioRunnable<T extends IBusinessHandler<?>> implements IStudioRunnable<T> {
+    public static abstract class AbsStudioRunnable<T extends IBusinessHandler> implements IStudioRunnable<T> {
 
         @Override
         public T run() {

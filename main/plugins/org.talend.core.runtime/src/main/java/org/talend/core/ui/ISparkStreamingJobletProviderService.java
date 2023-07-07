@@ -46,6 +46,8 @@ public interface ISparkStreamingJobletProviderService extends IService{
 
     public IAdaptable createEditorPart(Object model);
 
+    public Object createCrossPlatformEditorPart(Object model);
+
     public IRepositoryEditorInput createJobletEditor(JobletProcessItem processItem, Boolean load, Boolean lastVersion, Boolean readonly,Boolean openedInJob) throws PersistenceException;
 
 }

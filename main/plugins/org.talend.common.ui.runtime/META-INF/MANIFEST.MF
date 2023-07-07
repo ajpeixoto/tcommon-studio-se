@@ -37,7 +37,8 @@ Export-Package:
  org.talend.commons.ui.runtime.update,
  org.talend.commons.ui.runtime.utils,
  org.talend.commons.ui.runtime.ws
-Import-Package: org.eclipse.jface.bindings.keys,
+Import-Package: org.eclipse.gef.commands,
+ org.eclipse.jface.bindings.keys,
  org.eclipse.jface.dialogs,
  org.eclipse.jface.fieldassist,
  org.eclipse.jface.resource,

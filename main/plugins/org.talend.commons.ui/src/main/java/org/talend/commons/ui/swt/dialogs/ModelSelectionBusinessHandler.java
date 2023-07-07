@@ -19,7 +19,7 @@ import org.talend.commons.ui.swt.dialogs.ModelSelectionDialog.ESelectionType;
 /**
  * DOC cmeng  class global comment. Detailled comment
  */
-public class ModelSelectionBusinessHandler extends AbsBusinessHandler<ModelSelectionBusinessHandler> {
+public class ModelSelectionBusinessHandler extends AbsBusinessHandler {
 
     private static final String UI_KEY = "ModelSelectionDialog";
 

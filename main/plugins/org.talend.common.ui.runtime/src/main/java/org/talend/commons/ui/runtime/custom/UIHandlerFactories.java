@@ -66,4 +66,8 @@ public class UIHandlerFactories implements IUIHandlerFactory {
         return null;
     }
 
+    public ICommonUIHandler getCommonUIHandler() {
+        return getUIHandler(ICommonUIHandler.class);
+    }
+
 }

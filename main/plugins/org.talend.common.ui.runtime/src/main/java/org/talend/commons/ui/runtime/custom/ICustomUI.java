@@ -19,7 +19,11 @@ import org.talend.commons.ui.runtime.TalendUI;
 /**
  * DOC cmeng  class global comment. Detailled comment
  */
-public interface ICustomUI<T extends IBusinessHandler<?>> extends IUIEventHandler {
+public interface ICustomUI<T extends IBusinessHandler> extends IUIEventHandler {
+
+    public static final int OK = 0;
+
+    public static final int CANCEL = 1;
 
     String getId();
 

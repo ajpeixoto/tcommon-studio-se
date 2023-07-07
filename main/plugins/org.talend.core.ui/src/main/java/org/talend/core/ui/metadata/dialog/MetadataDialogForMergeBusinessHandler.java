@@ -22,7 +22,7 @@ import org.talend.core.model.process.INode;
 /**
  * DOC cmeng  class global comment. Detailled comment
  */
-public class MetadataDialogForMergeBusinessHandler extends AbsBusinessHandler<MetadataDialogForMergeBusinessHandler> {
+public class MetadataDialogForMergeBusinessHandler extends AbsBusinessHandler {
 
     private static final String UI_KEY = "MetadataDialogForMerge";
 
