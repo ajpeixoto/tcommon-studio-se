@@ -385,6 +385,8 @@ public final class MetadataToolAvroHelper {
                 builder.prop(DiSchemaConstants.TALEND6_IS_READ_ONLY, tv.getValue());
             }else if(DiSchemaConstants.AVRO_TECHNICAL_KEY.equals(additionalTag)){
                 builder.prop(DiSchemaConstants.AVRO_TECHNICAL_KEY, tv.getValue());
+            }else if(DiSchemaConstants.LOGICAL_TIME_TYPE_AS.equals(additionalTag)) {
+            	builder.prop(DiSchemaConstants.LOGICAL_TIME_TYPE_AS, tv.getValue());
             }else if (tv.getValue() != null) {
                 builder.prop(DiSchemaConstants.TALEND6_ADDITIONAL_PROPERTIES + additionalTag, tv.getValue());
             }
@@ -637,6 +639,8 @@ public final class MetadataToolAvroHelper {
           	    String logical_time_type_as = field.getProp(DiSchemaConstants.LOGICAL_TIME_TYPE_AS);
           	    if(DiSchemaConstants.AS_TALEND_DATE.equals(logical_time_type_as)) {
                 	  col.setTalendType(JavaTypesManager.DATE.getId());
+                	  TaggedValue tv2 = TaggedValueHelper.createTaggedValue(DiSchemaConstants.LOGICAL_TIME_TYPE_AS, DiSchemaConstants.AS_TALEND_DATE);
+                      col.getTaggedValue().add(tv2);
           	    } else {
           	        col.setTalendType(JavaTypesManager.INTEGER.getId());
           	    }
