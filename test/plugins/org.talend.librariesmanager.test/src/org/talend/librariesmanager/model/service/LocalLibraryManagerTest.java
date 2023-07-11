@@ -139,8 +139,7 @@ public class LocalLibraryManagerTest {
                 FilesUtils.copyFile(file, target);
             }
         } else {
-            if ("org.talend.designer.components.model.UserComponentsProvider".contains(contributeID)
-                    || "org.talend.designer.components.exchange.ExchangeComponentsProvider".contains(contributeID)) {
+            if ("org.talend.designer.components.model.UserComponentsProvider".contains(contributeID)) {
                 if (file.isDirectory()) {
                     FilesUtils.copyFolder(new File(jarFileUri), storageDir, false, FilesUtils.getExcludeSystemFilesFilter(),
                             FilesUtils.getAcceptJARFilesFilter(), false, new NullProgressMonitor());

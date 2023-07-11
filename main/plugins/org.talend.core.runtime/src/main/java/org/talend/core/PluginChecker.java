@@ -268,7 +268,7 @@ public class PluginChecker {
     }
 
     public static boolean isExchangeSystemLoaded() {
-        return isPluginLoaded(EXCHANGE_SYSTEM_PLUGIN_ID);
+        return false;
     }
 
     public static boolean isRulesPluginLoaded() { // added by hyWang
