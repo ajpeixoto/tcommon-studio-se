@@ -491,7 +491,18 @@
          id="org.talend.rcp.perspective">
    </perspective>
 </extension>
-
+<extension
+      id="org.talend.resoruses.toolbar"
+      point="org.eclipse.ui.commands">
+				<command 
+			name="%Learn" 
+			id="org.talend.resoruses.toolbar.Learn">
+		</command>		
+		<command 
+			name="%AskCommunity" 			
+			id="org.talend.resoruses.toolbar.Ask">
+		</command>
+	</extension>
 <extension
       id="org.talend.resourse.handler"
       point="org.eclipse.ui.handlers">
