@@ -320,7 +320,7 @@ public class MetadataConnectionUtils {
             }// ~
             additionalParams = ConvertionHelper.convertAdditionalParameters(databaseConnection);
             metadataConnection.setAdditionalParams(additionalParams);
-            metadataConnection.setDbVersionString(dbVersionString);
+            metadataConnection.setDbVersionString(ConvertionHelper.getDriverVersionString(databaseConnection));
             metadataConnection.setDatabase(dataBase);
             metadataConnection.setDbType(dbType);
             metadataConnection.setDriverJarPath(driverJarPath);

@@ -13,10 +13,11 @@
 package org.talend.rcp.intro;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.program.Program;
-import org.eclipse.ui.internal.IWorkbenchGraphicConstants;
-import org.eclipse.ui.internal.WorkbenchImages;
-import org.eclipse.ui.internal.WorkbenchMessages;
+import org.talend.rcp.action.toolbar.ResourceImageTextAction;
 import org.talend.rcp.i18n.Messages;
 
 /**
@@ -26,10 +27,18 @@ public class TalendHelpDocAction extends Action {
 
     private static final String TALEND_DOC_LINK = Messages.getString("TalendHelpDocAction.documentationLink"); //$NON-NLS-1$
 
+    private static final String HELP_IMAGE = "/icons/help_center.png";
     public TalendHelpDocAction() {
-        setText(WorkbenchMessages.HelpContentsAction_text);
-        setToolTipText(WorkbenchMessages.HelpContentsAction_toolTip);
-        setImageDescriptor(WorkbenchImages.getImageDescriptor(IWorkbenchGraphicConstants.IMG_ETOOL_HELP_CONTENTS));
+        setText(Messages.getString("TalendHelpDocAction.helpCenter"));
+        setToolTipText(Messages.getString("TalendHelpDocAction.helpCenter"));
+        ImageRegistry imageRegistry = JFaceResources.getImageRegistry();
+        if (imageRegistry.get(HELP_IMAGE) == null) {
+            ImageDescriptor imageDescriptor = ImageDescriptor.createFromFile(ResourceImageTextAction.class, HELP_IMAGE);
+            if (imageDescriptor != null) {
+                imageRegistry.put(HELP_IMAGE, imageDescriptor);
+            }
+        }
+        setImageDescriptor(imageRegistry.getDescriptor(HELP_IMAGE));
     }
 
     @Override

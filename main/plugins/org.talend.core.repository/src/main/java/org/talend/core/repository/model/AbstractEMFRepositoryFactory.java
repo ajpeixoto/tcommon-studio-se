@@ -67,7 +67,6 @@ import org.talend.core.model.repository.Folder;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.repository.LockInfo;
 import org.talend.core.model.repository.RepositoryViewObject;
-import org.talend.core.model.routines.RoutinesUtil;
 import org.talend.core.repository.i18n.Messages;
 import org.talend.core.repository.utils.XmiResourceManager;
 import org.talend.core.runtime.CoreRuntimePlugin;
@@ -874,25 +873,38 @@ public abstract class AbstractEMFRepositoryFactory extends AbstractRepositoryFac
     @Override
     public IRepositoryViewObject getLastVersion(Project project, String id, String relativeFolder, ERepositoryObjectType type)
             throws PersistenceException {
-        List<IRepositoryViewObject> serializableAllVersion = null;
-        Object fullFolder = getFullFolder(project, type, relativeFolder);
-        serializableAllVersion = getSerializableFromFolder(project, fullFolder, id, type, false, false, true, true);
+        List<IRepositoryViewObject> serializableAllVersion = new ArrayList<>();
+        if (lastFolderForItemMap.containsKey(id)) {
+            ERepositoryObjectType itemType = lastRepositoryTypeForItemMap.get(id);
+            String currentPath = lastFolderForItemMap.get(id);
+            Object fullFolder = getFullFolder(project, itemType, currentPath);
+            try {
+                if (fullFolder != null && (fullFolder instanceof FolderItem || ((IFolder) fullFolder).exists())) {
+                    serializableAllVersion.addAll(getSerializableFromFolder(project, fullFolder, id, itemType, false, false, true, true));
+                }
+            } catch (PersistenceException e) {
+                // do nothing.
+                // if any exception happen or can't find the item, just try to look for it everywhere.
+            }
+        }
         if (serializableAllVersion.isEmpty()) {
-            // look in all folders for this item type
-            serializableAllVersion = getSerializableFromFolder(project, fullFolder, id, type, false, true, true, true, true);
+            Object fullFolder = getFullFolder(project, type, relativeFolder);
+            serializableAllVersion = getSerializableFromFolder(project, fullFolder, id, type, false, false, true, true);
+            if (serializableAllVersion.isEmpty()) {
+                // look in all folders for this item type
+                serializableAllVersion = getSerializableFromFolder(project, fullFolder, id, type, false, true, true, true, true);
+            }
         }
         int size = serializableAllVersion.size();
-
         if (size > 1) {
             String message = getItemsMessages(serializableAllVersion, size);
-
             throw new PersistenceException(Messages.getString(
                     "AbstractEMFRepositoryFactory.presistenceException.OnlyOneOccurenceMustbeFound", message)); //$NON-NLS-1$
-        } else if (size == 1) {
-            return serializableAllVersion.get(0);
-        } else {
-            return null;
         }
+        if (size == 1) {
+            return serializableAllVersion.get(0);
+        }
+        return null;
     }
 
     protected void computePropertyMaxInformationLevel(Property property) {

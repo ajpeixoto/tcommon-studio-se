@@ -71,7 +71,7 @@ public enum EDatabaseVersion4Drivers {
     // MYSQL, add for 9594
     MYSQL_8(new DbVersion4Drivers(EDatabaseTypeName.MYSQL, "MySQL 8", "MYSQL_8", "mysql-connector-j-8.0.33.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     MYSQL_5(new DbVersion4Drivers(EDatabaseTypeName.MYSQL, "MySQL 5", "MYSQL_5", "mysql-connector-java-5.1.49.jar")), //$NON-NLS-1$  //$NON-NLS-2$ //$NON-NLS-3$
-    MARIADB(new DbVersion4Drivers(EDatabaseTypeName.MYSQL, "MariaDB", "MARIADB", "mariadb-java-client-2.5.3.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    MARIADB(new DbVersion4Drivers(EDatabaseTypeName.MYSQL, "MariaDB", "MARIADB", "mariadb-java-client-3.1.4.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     // add for 9594
     MSSQL(new DbVersion4Drivers(EDatabaseTypeName.MSSQL,"Open source JTDS", "JTDS", "jtds-1.3.1-patch-20190523.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     MSSQL_2012(new DbVersion4Drivers(EDatabaseTypeName.MSSQL,
@@ -81,10 +81,13 @@ public enum EDatabaseVersion4Drivers {
             new String[] { "mssql-jdbc.jar", "slf4j-api-1.7.34.jar", "slf4j-reload4j-1.7.34.jar", "msal4j-1.11.0.jar", //$NON-NLS-1$
                     "oauth2-oidc-sdk-9.7.jar", "reload4j-1.2.22.jar", "jackson-core-2.13.4.jar",
                     "jackson-databind-2.13.4.2.jar", "jackson-annotations-2.13.4.jar", "jcip-annotations-1.0-1.jar",
-                    "json-smart-2.4.9.jar", "nimbus-jose-jwt-9.22.jar", "accessors-smart-2.4.9.jar", "asm-9.5.jar",
+                    "json-smart-2.4.11.jar", "nimbus-jose-jwt-9.22.jar", "accessors-smart-2.4.11.jar", "asm-9.5.jar",
                     "content-type-2.1.jar", "lang-tag-1.5.jar" })),
 
-    VERTICA_9(new DbVersion4Drivers(EDatabaseTypeName.VERTICA, "VERTICA 9.X", "VERTICA_9_0", "vertica-jdbc-9.3.1-0.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+//    VERTICA_9(new DbVersion4Drivers(EDatabaseTypeName.VERTICA, "VERTICA 9.X  (Deprecated)", "VERTICA_9_0", "vertica-jdbc-9.3.1-0.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    
+    //https://mvnrepository.com/artifact/com.vertica.jdbc/vertica-jdbc/12.0.4-0
+    VERTICA_12(new DbVersion4Drivers(EDatabaseTypeName.VERTICA, "VERTICA 12.X", "VERTICA_12_0", "vertica-jdbc-12.0.4-0.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
     // for bug 0017930
     GREENPLUM_PSQL(new DbVersion4Drivers(EDatabaseTypeName.GREENPLUM,"PostgreSQL", "POSTGRESQL", "postgresql-8.4-703.jdbc4.jar")), //$NON-NLS-1$

@@ -300,6 +300,7 @@ public class JobContextManager implements IContextManager {
         }
         List<ContextItem> contextItemList = ContextUtils.getAllContextItem();
         boolean setDefault = false;
+        ContextUtils.clearMissingContextCache();
         for (int i = 0; i < contextTypeList.size(); i++) {
             contextType = (ContextType) contextTypeList.get(i);
             String name = contextType.getName();
@@ -529,6 +530,7 @@ public class JobContextManager implements IContextManager {
 
         EList newcontextTypeList = new BasicEList();
         Map<String, Item> idToItemMap = new HashMap<String, Item>();
+        ContextUtils.clearMissingContextCache();
         for (int i = 0; i < listContext.size(); i++) {
             IContext context = listContext.get(i);
             String contextGroupName = renameGroupContext.get(context);

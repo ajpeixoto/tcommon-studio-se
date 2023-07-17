@@ -51,6 +51,7 @@ public abstract class AbstractItemContextLinkService implements IItemContextLink
         itemContextLink.setItemId(itemId);
         Map<String, Item> tempCache = new HashMap<String, Item>();
         if (contextTypeList != null && contextTypeList.size() > 0) {
+            ContextUtils.clearMissingContextCache();
             for (Object object : contextTypeList) {
                 if (object instanceof ContextType) {
                     ContextType jobContextType = (ContextType) object;

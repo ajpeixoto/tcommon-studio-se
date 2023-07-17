@@ -1476,9 +1476,7 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
     
    private boolean isExtComponentProvider(String id) {
        if ("org.talend.designer.components.model.UserComponentsProvider".equals(id)
-               || "org.talend.designer.codegen.components.model.SharedStudioUserComponentProvider".equals(id)
-               || "org.talend.designer.components.exchange.ExchangeComponentsProvider".equals(id)
-               || "org.talend.designer.components.exchange.SharedStudioExchangeComponentsProvider".equals(id)) {
+               || "org.talend.designer.codegen.components.model.SharedStudioUserComponentProvider".equals(id)) {
            return true;
        }
        return false;

@@ -3482,10 +3482,14 @@ public class DatabaseForm extends AbstractForm {
     }
 
     private void adaptHadoopLinkedPartToReadOnly() {
-        boolean fromRepository = hcPropertyTypeCombo.getSelectionIndex() == 1;
+        boolean fromRepository = false;
 
-        hcSelectBtn.setVisible(fromRepository);
-        hcRepositoryText.setVisible(fromRepository);
+        if (canLinkToHadoopCluster()) {
+            fromRepository = hcPropertyTypeCombo.getSelectionIndex() == 1;
+            hcSelectBtn.setVisible(fromRepository);
+            hcRepositoryText.setVisible(fromRepository);
+            hcPropertyTypeCombo.setReadOnly(isContextMode());
+        }
 
         hbaseDistributionCombo.setReadOnly(fromRepository || isContextMode());
         
@@ -3514,7 +3518,6 @@ public class DatabaseForm extends AbstractForm {
         jobTrackerURLTxt.setReadOnly(fromRepository || isContextMode());
         hiveCustomButton.setEnabled(!fromRepository && !isContextMode());
 
-        hcPropertyTypeCombo.setReadOnly(isContextMode());
         hiveModeCombo.setReadOnly(isContextMode());
         hiveServerVersionCombo.setReadOnly(isContextMode());
         impalaDriverCombo.setReadOnly(isContextMode());
@@ -5848,7 +5851,7 @@ public class DatabaseForm extends AbstractForm {
         boolean isOracle = oracleVersionEnable();
         boolean isAS400 = as400VersionEnable();
         boolean isMySQL = asMySQLVersionEnable();
-        boolean isVertica = asVerticaVersionEnable();
+        boolean isVertica = false && asVerticaVersionEnable(); // hide db version for vertica db, because it only has vertica 12 now, align to tdi, won't show db version
         boolean isSAS = asSASVersionEnable();
         boolean isImpala = ImpalaVersionEnable();
         boolean isMsSQL = asMsSQLVersionEnable();

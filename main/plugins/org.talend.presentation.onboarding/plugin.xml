@@ -8,6 +8,10 @@
             id="org.talend.presentation.onboarding.show.command"
             name="%Onboarding">
       </command>
+      <command
+            id="org.talend.presentation.walkthrough.command"
+            name="%4BasicsWalkthrough">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
@@ -15,18 +19,39 @@
             class="org.talend.presentation.onboarding.handlers.OnBoardingHandler"
             commandId="org.talend.presentation.onboarding.show.command">
       </handler>
+      <handler
+            class="org.talend.presentation.onboarding.handlers.WalkthroughHandler"
+            commandId="org.talend.presentation.walkthrough.command">
+      </handler>
    </extension>
    <extension
          point="org.eclipse.ui.menus">
-      <menuContribution
-            allPopups="false"
-            locationURI="menu:help?after=talend">
-         <command
-               commandId="org.talend.presentation.onboarding.show.command"
-               id="org.talend.presentation.onboarding.show.command"
-               style="push">
-         </command>
-      </menuContribution>
+         <menuContribution
+         allPopups="false"
+         locationURI="menu:help?after=additions">
+      <menu
+            id="Guided"
+            label="Guided">
+      </menu>
+   </menuContribution>
+   <menuContribution
+         allPopups="false"
+         locationURI="menu:help?after=talend">
+         <menu label="%GuidedTourTalend" icon="icons/guided_tour.png">
+		   <command 
+		      commandId="org.talend.presentation.onboarding.show.command" 
+			  label="%Onboarding" 
+			  icon="icons/guided_tour.png" 
+			  style="push">
+		   </command>
+		   <command 
+		      commandId="org.talend.presentation.walkthrough.command" 
+			  label="%4BasicsWalkthrough"
+			  icon="icons/walkthrough.png"  
+		      style="push">
+		   </command>
+	    </menu>
+   </menuContribution>
    </extension>
    <extension
          point="org.eclipse.ui.startup">

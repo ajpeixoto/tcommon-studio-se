@@ -39,9 +39,20 @@ public class ResourceToolbarHandler extends AbstractHandler {
 
     public static final String CLOUD_ORIG_URL = "https://www.talend.com/free-trial";//$NON-NLS-1$
 
+    public static final String WHATS_NEW_URL = "https://help.talend.com/r/en-US/8.0/release-notes";//$NON-NLS-1$
+
+    public static final String PLANS_URL = "https://www.talend.com/pricing/";//$NON-NLS-1$
+
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
         String id = event.getCommand().getId();
+
+        if (StringUtils.equals(id, "org.talend.rcp.plans.command")) {//$NON-NLS-1$
+            openBrower(PLANS_URL);
+        }
+        if (StringUtils.equals(id, "org.talend.rcp.whats.new.command")) {//$NON-NLS-1$
+            openBrower(WHATS_NEW_URL);
+        }
         if (StringUtils.equals(id, "org.talend.resoruses.toolbar.Learn")) {//$NON-NLS-1$
             openBrower(LEARN_ORIG_URL);
         }

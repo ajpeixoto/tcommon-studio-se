@@ -30,6 +30,7 @@ import org.talend.core.database.conn.ConnParameterKeys;
 import org.talend.core.database.conn.DatabaseConnStrUtil;
 import org.talend.core.database.conn.template.DbConnStrForHive;
 import org.talend.core.database.conn.template.EDatabaseConnTemplate;
+import org.talend.core.database.conn.version.EDatabaseVersion4Drivers;
 import org.talend.core.hadoop.IHadoopClusterService;
 import org.talend.core.hadoop.repository.HadoopRepositoryUtil;
 import org.talend.core.language.ECodeLanguage;
@@ -53,7 +54,6 @@ import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.cwm.helper.CatalogHelper;
 import org.talend.cwm.helper.ConnectionHelper;
 import org.talend.cwm.helper.SchemaHelper;
-import org.talend.cwm.helper.StudioEncryptionHelper;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
 import org.talend.metadata.managment.repository.ManagerConnection;
 import org.talend.metadata.managment.ui.model.IConnParamName;
@@ -869,6 +869,11 @@ public final class DBConnectionContextUtils {
 
         filePath = TalendQuoteUtils.removeQuotes(filePath);
         dbRootPath = TalendQuoteUtils.removeQuotes(dbRootPath);
+        
+        //
+        if (EDatabaseTypeName.VERTICA.getDisplayName().equals(dbConn.getDatabaseType())) {
+            dbVersionString = EDatabaseVersion4Drivers.VERTICA_12.getVersionValue();
+        }
         // url
 
         String urlConnection;
