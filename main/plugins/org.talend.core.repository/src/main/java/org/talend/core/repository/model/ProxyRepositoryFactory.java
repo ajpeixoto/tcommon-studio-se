@@ -54,9 +54,7 @@ import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.osgi.internal.serviceregistry.ServiceReferenceImpl;
 import org.eclipse.osgi.internal.serviceregistry.ServiceRegistrationImpl;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.navigator.CommonViewer;
@@ -153,6 +151,7 @@ import org.talend.core.runtime.services.IMavenUIService;
 import org.talend.core.runtime.util.ItemDateParser;
 import org.talend.core.runtime.util.JavaHomeUtil;
 import org.talend.core.runtime.util.SharedStudioUtils;
+import org.talend.core.service.IComponentJsonformGeneratorService;
 import org.talend.core.service.ICoreUIService;
 import org.talend.core.service.IDetectCVEService;
 import org.talend.core.utils.CodesJarResourceCache;
@@ -239,14 +238,14 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
         return singleton;
     }
 
-    private ICoreService getCoreService() {
+    public ICoreService getCoreService() {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ICoreService.class)) {
             return GlobalServiceRegister.getDefault().getService(ICoreService.class);
         }
         return null;
     }
 
-    private IRunProcessService getRunProcessService() {
+    public IRunProcessService getRunProcessService() {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
             return GlobalServiceRegister.getDefault().getService(IRunProcessService.class);
         }
@@ -351,7 +350,7 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
      * @param project
      * @throws LoginException
      */
-    private void checkProjectCompatibility(Project project) throws LoginException {
+    public void checkProjectCompatibility(Project project) throws LoginException {
         IMigrationToolService migrationToolService = GlobalServiceRegister.getDefault().getService(
                 IMigrationToolService.class);
         // update migration system.
@@ -446,12 +445,10 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
                             if (currentShell == null) {
                                 currentShell = DisplayUtils.getDefaultShell(false);
                             }
-                            MessageBox box = new MessageBox(currentShell, SWT.ICON_WARNING | SWT.OK | SWT.CANCEL);
-                            box.setText(Messages.getString("ProxyRepositoryFactory.JobNameErroe")); //$NON-NLS-1$
-                            box.setMessage(Messages.getString("ProxyRepositoryFactory.Label") + " " + name + " " + Messages.getString("ProxyRepositoryFactory.ReplaceJob")); //$NON-NLS-1$ //$NON-NLS-2$//$NON-NLS-3$//$NON-NLS-4$
-
-                            if (box.open() == SWT.OK) {
-
+                            if (MessageDialog.openQuestion(currentShell,
+                                    Messages.getString("ProxyRepositoryFactory.JobNameErroe"), //$NON-NLS-1$
+                                    Messages.getString("ProxyRepositoryFactory.Label") + " " + name + " " //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                                            + Messages.getString("ProxyRepositoryFactory.ReplaceJob"))) { //$NON-NLS-1$
                                 ok[0] = true;
                             }
                         }
@@ -1848,7 +1845,7 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
      * @param project
      * @throws PersistenceException
      */
-    private void emptyTempFolder(Project project) throws PersistenceException {
+    public void emptyTempFolder(Project project) throws PersistenceException {
     	try {
             String str = SharedStudioUtils.getTempFolderPath().toPortableString();
             FilesUtils.deleteFolder(new File(str), false);
@@ -2379,11 +2376,22 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
             }
             String str[] = new String[] { getRepositoryContext().getUser() + "", projectManager.getCurrentProject() + "" }; //$NON-NLS-1$ //$NON-NLS-2$
             log.info(Messages.getString("ProxyRepositoryFactory.log.loggedOn", str)); //$NON-NLS-1$
+            
+            // no performance impact for studio or commandline
+            if (GlobalServiceRegister.getDefault().isServiceRegistered(IComponentJsonformGeneratorService.class)) {
+                IComponentJsonformGeneratorService jsonformSvc = GlobalServiceRegister.getDefault().getService(IComponentJsonformGeneratorService.class);
+                if (jsonformSvc != null && IComponentJsonformGeneratorService.isEnabled()) {
+                    jsonformSvc.generate(null);
+                }
+            }
+            
         } catch (LoginException e) {
-            try {
-                logOffProject();
-            } catch (Exception e1) {
-                ExceptionHandler.process(e1);
+            if (!LoginException.RESTART.equals(e.getKey())) {
+                try {
+                    logOffProject();
+                } catch (Exception e1) {
+                    ExceptionHandler.process(e1);
+                }
             }
             throw e;
         } catch (PersistenceException e) {
@@ -2516,7 +2524,7 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
         }
     }
 
-    private void checkReferenceProjectsProblems(Project project) throws BusinessException, PersistenceException {
+    public void checkReferenceProjectsProblems(Project project) throws BusinessException, PersistenceException {
         if (ReferenceProjectProblemManager.getInstance().getAllInvalidProjectReferenceSet().size() > 0) {
             StringBuffer sb = new StringBuffer();
             for (String technicalLabel : ReferenceProjectProblemManager.getInstance().getAllInvalidProjectReferenceSet()) {
@@ -2561,7 +2569,6 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
 
     public void logOffProject() {
         // getRepositoryContext().setProject(null);
-        repositoryFactoryFromProvider.logOffProject();
         if (!CommonsPlugin.isHeadless()) {
             ProjectRepositoryNode root = ProjectRepositoryNode.getInstance();
             if (root != null) {
@@ -2617,6 +2624,7 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
 
         ReferenceProjectProvider.clearTacReferenceList();
         ReferenceProjectProblemManager.getInstance().clearAll();
+        repositoryFactoryFromProvider.logOffProject();
         fullLogonFinished = false;
     }
 
@@ -3014,4 +3022,11 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
         this.repositoryFactoryFromProvider.saveProject(project);
     }
     
+    public void setCancelled(boolean cancelled) {
+        this.isCancelled = cancelled;
+    }
+
+    public boolean isCancelled() {
+        return this.isCancelled;
+    }
 }

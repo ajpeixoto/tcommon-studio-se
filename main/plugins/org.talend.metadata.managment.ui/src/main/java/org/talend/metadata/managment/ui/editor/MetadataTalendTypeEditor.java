@@ -166,8 +166,7 @@ public class MetadataTalendTypeEditor extends FieldEditor {
         private void init() {
             try {
                 tmpFiles.clear();
-                java.nio.file.Path systemMappingPath = new File(MetadataTalendType.getSystemFolderURLOfMappingsFile().getFile())
-                        .toPath();
+                java.nio.file.Path systemMappingPath = MetadataTalendType.getSystemFolderURLOfMappingsFile().toPath();
                 Map<String, File> systemFileMap = Stream
                         .of(systemMappingPath.toFile()
                                 .listFiles(f -> f.getName().matches(MetadataTalendType.MAPPING_FILE_PATTERN)))
@@ -323,8 +322,7 @@ public class MetadataTalendTypeEditor extends FieldEditor {
         if (sourceViewerDialog.open() == IDialogConstants.OK_ID) {
             System.out.println(sourceViewerDialog.getResult());
             try {
-                File systemFile = new File(MetadataTalendType.getSystemFolderURLOfMappingsFile().getFile(),
-                        fileSelected.fileName);
+                File systemFile = new File(MetadataTalendType.getSystemFolderURLOfMappingsFile(), fileSelected.fileName);
                 if (systemFile.exists()) {
                     String currentSha1 = MetadataTalendType.getSha1OfText(sourceViewerDialog.getDocument().get());
                     String systemSha1 = MetadataTalendType.getSha1OfFile(systemFile);
@@ -334,7 +332,7 @@ public class MetadataTalendTypeEditor extends FieldEditor {
                         setControlEnable(removeButton, false);
                     } else {
                         fileSelected.type = FileType.USER_DEFINED;
-                        fileSelected.file = new File(MetadataTalendType.getProjectFolderURLOfMappingsFile().getFile(),
+                        fileSelected.file = new File(MetadataTalendType.getProjectFolderURLOfMappingsFile(),
                                 fileSelected.fileName);
                         setControlEnable(removeButton, true);
                     }
@@ -431,7 +429,7 @@ public class MetadataTalendTypeEditor extends FieldEditor {
         if (FileType.USER_DEFINED == info.type) {
             try {
                 info.type = FileType.SYSTEM_DEFAULT;
-                info.file = new File(MetadataTalendType.getSystemFolderURLOfMappingsFile().getFile(), info.fileName);
+                info.file = new File(MetadataTalendType.getSystemFolderURLOfMappingsFile(), info.fileName);
                 info.fileContent = null;
             } catch (SystemException e) {
                 ExceptionHandler.process(e);
@@ -664,11 +662,10 @@ public class MetadataTalendTypeEditor extends FieldEditor {
                 @Override
                 protected void run() throws LoginException, PersistenceException {
                     try {
-                        File[] projectMappingFiles = new File(MetadataTalendType.getProjectFolderURLOfMappingsFile().getFile())
-                                .listFiles();
+                        File[] projectMappingFiles = MetadataTalendType.getProjectFolderURLOfMappingsFile().listFiles();
                         if (projectMappingFiles != null) {
                             Set<String> systemFileNames = Stream
-                                    .of(new File(MetadataTalendType.getSystemFolderURLOfMappingsFile().getFile())
+                                    .of(MetadataTalendType.getSystemFolderURLOfMappingsFile()
                                             .listFiles(f -> f.getName().matches(MetadataTalendType.MAPPING_FILE_PATTERN)))
                                     .map(File::getName).collect(Collectors.toSet());
                             Stream.of(projectMappingFiles).filter(f -> systemFileNames.contains(f.getName()))

@@ -18,6 +18,11 @@
 	<dependencies>
 
 		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.34</version>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.felix</groupId>
 			<artifactId>maven-bundle-plugin</artifactId>
 			<version>5.1.1</version>
@@ -54,7 +59,16 @@
 					<groupId>org.apache.commons</groupId>
 					<artifactId>commons-compress</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>org.apache.velocity</groupId>
+					<artifactId>velocity</artifactId>
+				</exclusion>
 			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.velocity</groupId>
+			<artifactId>velocity-engine-core</artifactId>
+			<version>2.3</version>
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.plexus</groupId>
@@ -94,7 +108,7 @@
 		<dependency>
 		    <groupId>com.thoughtworks.xstream</groupId>
 		    <artifactId>xstream</artifactId>
-		    <version>1.4.16</version>
+		    <version>1.4.20</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.maven</groupId>

@@ -43,6 +43,7 @@ import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
+import org.talend.commons.ui.runtime.ColorConstants;
 import org.talend.core.PluginChecker;
 import org.talend.core.model.metadata.types.ContextParameterJavaTypeManager;
 import org.talend.core.model.metadata.types.JavaTypesManager;
@@ -115,7 +116,7 @@ public class ContextNatTableConfiguration extends AbstractRegistryConfiguration 
     private void registerStyleRules(IConfigRegistry configRegistry) {
         // register the default cell fg/bg colour for the natTable
         Style cellStyleDefault = new Style();
-        cellStyleDefault.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, GUIHelper.COLOR_WHITE);
+        cellStyleDefault.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, ColorConstants.getTableBackgroundColor());
         configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, cellStyleDefault, DisplayMode.NORMAL,
                 ContextTableConstants.COLUMN_TYPE_PROPERTY);
 
@@ -136,7 +137,6 @@ public class ContextNatTableConfiguration extends AbstractRegistryConfiguration 
 
         Style cellStyleSelect = new Style();
         cellStyleSelect.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, GUIHelper.COLOR_TITLE_INACTIVE_BACKGROUND);
-        cellStyleSelect.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, GUIHelper.COLOR_RED);
         cellStyleSelect.setAttributeValue(CellStyleAttributes.FONT, GUIHelper.DEFAULT_FONT);
         configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, cellStyleSelect, DisplayMode.SELECT,
                 ContextTableConstants.COLUMN_TYPE_PROPERTY);
@@ -160,11 +160,15 @@ public class ContextNatTableConfiguration extends AbstractRegistryConfiguration 
     private void registerValidateRules(IConfigRegistry configRegistry) {
         configRegistry.registerConfigAttribute(EditConfigAttributes.DATA_VALIDATOR,
                 new EventDataValidator(dataProvider, manager), DisplayMode.EDIT, ContextTableConstants.COLUMN_NAME_PROPERTY);
+        configRegistry.registerConfigAttribute(EditConfigAttributes.DATA_VALIDATOR,
+                new EventDataValueValidator(dataProvider, manager, columnGroupModel), DisplayMode.EDIT, ContextTableConstants.COLUMN_CONTEXT_VALUE);
     }
 
     private void registerErrorHandlingStrategies(IConfigRegistry configRegistry) {
         configRegistry.registerConfigAttribute(EditConfigAttributes.VALIDATION_ERROR_HANDLER, new DialogErrorHandling(),
                 DisplayMode.EDIT, ContextTableConstants.COLUMN_NAME_PROPERTY);
+        configRegistry.registerConfigAttribute(EditConfigAttributes.VALIDATION_ERROR_HANDLER, new DialogErrorHandling(),
+                DisplayMode.EDIT, ContextTableConstants.COLUMN_CONTEXT_VALUE);
     }
 
     private IEditableRule getEditRule() {

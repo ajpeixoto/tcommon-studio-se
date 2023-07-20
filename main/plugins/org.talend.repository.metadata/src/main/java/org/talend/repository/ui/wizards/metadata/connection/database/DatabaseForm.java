@@ -3482,10 +3482,14 @@ public class DatabaseForm extends AbstractForm {
     }
 
     private void adaptHadoopLinkedPartToReadOnly() {
-        boolean fromRepository = hcPropertyTypeCombo.getSelectionIndex() == 1;
+        boolean fromRepository = false;
 
-        hcSelectBtn.setVisible(fromRepository);
-        hcRepositoryText.setVisible(fromRepository);
+        if (canLinkToHadoopCluster()) {
+            fromRepository = hcPropertyTypeCombo.getSelectionIndex() == 1;
+            hcSelectBtn.setVisible(fromRepository);
+            hcRepositoryText.setVisible(fromRepository);
+            hcPropertyTypeCombo.setReadOnly(isContextMode());
+        }
 
         hbaseDistributionCombo.setReadOnly(fromRepository || isContextMode());
         
@@ -3514,7 +3518,6 @@ public class DatabaseForm extends AbstractForm {
         jobTrackerURLTxt.setReadOnly(fromRepository || isContextMode());
         hiveCustomButton.setEnabled(!fromRepository && !isContextMode());
 
-        hcPropertyTypeCombo.setReadOnly(isContextMode());
         hiveModeCombo.setReadOnly(isContextMode());
         hiveServerVersionCombo.setReadOnly(isContextMode());
         impalaDriverCombo.setReadOnly(isContextMode());
@@ -4358,6 +4361,8 @@ public class DatabaseForm extends AbstractForm {
             return getSybaseVersionDrivers(dbType);
         }else if(asGreenplumVersionEnable()) {
             return getGreenplumVersionDrivers(dbType);
+        } else if (asAmazonAuroraVersionEnable()) {
+            return getAmazonAuroraVersionDrivers(dbType);
         }
         List<String> result = new ArrayList<String>();
         List<EDatabaseVersion4Drivers> v4dList = EDatabaseVersion4Drivers.indexOfByDbType(dbType);
@@ -4391,6 +4396,14 @@ public class DatabaseForm extends AbstractForm {
         result.add(EDatabaseVersion4Drivers.GREENPLUM_PSQL.getVersionDisplay());
         return result;
     }
+
+    private List<String> getAmazonAuroraVersionDrivers(String dbType) {
+        List<String> result = new ArrayList<String>();
+        result.add(EDatabaseVersion4Drivers.AMAZON_AURORA_3.getVersionDisplay());
+        result.add(EDatabaseVersion4Drivers.AMAZON_AURORA.getVersionDisplay());
+        return result;
+    }
+
     private void addFieldsForGeneralDB(Composite parent) {
 
         generalDbCompositeParent = new Composite(parent, SWT.NULL);
@@ -4947,6 +4960,7 @@ public class DatabaseForm extends AbstractForm {
         return oracleVersionEnable() || as400VersionEnable()
                 || EDatabaseConnTemplate.ACCESS.getDBDisplayName().equals(getConnectionDBType())
                 || EDatabaseConnTemplate.MYSQL.getDBDisplayName().equals(getConnectionDBType())
+                || EDatabaseConnTemplate.AMAZON_AURORA.getDBDisplayName().equals(getConnectionDBType())
                 || EDatabaseConnTemplate.HIVE.getDBDisplayName().equals(getConnectionDBType())
                 || EDatabaseConnTemplate.PLUSPSQL.getDBDisplayName().equals(getConnectionDBType())
                 || EDatabaseConnTemplate.VERTICA.getDBDisplayName().equals(getConnectionDBType())
@@ -5188,7 +5202,11 @@ public class DatabaseForm extends AbstractForm {
                     boolean b = true;
                     String databaseType = getConnection().getDatabaseType();
                     if (databaseType != null) {
-                        b = Pattern.matches(Messages.getString("DatabaseForm.otherDBRegex"), portText.getText()); //$NON-NLS-1$
+                        if (databaseType.equals("Ingres")) { //$NON-NLS-1$
+                            b = Pattern.matches(Messages.getString("DatabaseForm.ingresDBRegex"), portText.getText()); //$NON-NLS-1$
+                        } else {
+                            b = Pattern.matches(Messages.getString("DatabaseForm.otherDBRegex"), portText.getText()); //$NON-NLS-1$
+                        }
                     }
                     if (b) {
                         b = portText.getText().length() <= 5;
@@ -5833,10 +5851,11 @@ public class DatabaseForm extends AbstractForm {
         boolean isOracle = oracleVersionEnable();
         boolean isAS400 = as400VersionEnable();
         boolean isMySQL = asMySQLVersionEnable();
-        boolean isVertica = asVerticaVersionEnable();
+        boolean isVertica = false && asVerticaVersionEnable(); // hide db version for vertica db, because it only has vertica 12 now, align to tdi, won't show db version
         boolean isSAS = asSASVersionEnable();
         boolean isImpala = ImpalaVersionEnable();
         boolean isMsSQL = asMsSQLVersionEnable();
+        boolean isAmazonAurora = asAmazonAuroraVersionEnable();
         boolean isSybase = asSybaseVersionEnable();
         boolean isGreenplum = asGreenplumVersionEnable();
 
@@ -5858,6 +5877,9 @@ public class DatabaseForm extends AbstractForm {
         } else if (dbType.equals(EDatabaseConnTemplate.MYSQL.getDBDisplayName())) {
             dbVersionCombo.getCombo().setItems(versions);
             dbVersionCombo.setHideWidgets(!isMySQL);
+        } else if (dbType.equals(EDatabaseConnTemplate.AMAZON_AURORA.getDBDisplayName())) {
+            dbVersionCombo.getCombo().setItems(versions);
+            dbVersionCombo.setHideWidgets(!isAmazonAurora);
         } else if (dbType.equals(EDatabaseConnTemplate.VERTICA.getDBDisplayName())) {
             dbVersionCombo.getCombo().setItems(versions);
             dbVersionCombo.setHideWidgets(!isVertica);
@@ -6317,7 +6339,7 @@ public class DatabaseForm extends AbstractForm {
                 if (GlobalServiceRegister.getDefault().isServiceRegistered(ILibraryManagerUIService.class)) {
                     ILibraryManagerUIService libUiService = GlobalServiceRegister.getDefault()
                             .getService(ILibraryManagerUIService.class);
-                    IConfigModuleDialog dialog = libUiService.getConfigModuleDialog(getShell(), null);
+                    IConfigModuleDialog dialog = libUiService.getConfigModuleDialog(getShell(), null ,false);
                     if (dialog.open() == IDialogConstants.OK_ID) {
                         // TOS_DQ only
                         String selecteModule = dialog.getMavenURI();
@@ -6869,6 +6891,7 @@ public class DatabaseForm extends AbstractForm {
         boolean isOracle = visible && oracleVersionEnable();
         boolean isAS400 = visible && as400VersionEnable();
         boolean isMySQL = visible && asMySQLVersionEnable();
+        boolean isAmazonAurora = visible && asAmazonAuroraVersionEnable();
         boolean isVertica = visible && asVerticaVersionEnable();
         boolean isSAS = visible && asSASVersionEnable();
         boolean isHbase = visible && asHbaseVersionEnable();
@@ -6882,7 +6905,8 @@ public class DatabaseForm extends AbstractForm {
 
         dbVersionCombo
                 .setEnabled(!isReadOnly()
-                        && (isOracle || isAS400 || isMySQL || isVertica || isSAS || isImpala || isMsSQL || isSybase||isGreenplum
+                        && (isOracle || isAS400 || isMySQL || isAmazonAurora || isVertica || isSAS || isImpala || isMsSQL
+                                || isSybase || isGreenplum
                                 || EDatabaseConnTemplate.PSQL.getDBTypeName().equals(getConnectionDBType())
                                 || EDatabaseConnTemplate.PLUSPSQL.getDBTypeName().equals(getConnectionDBType())
                                 || EDatabaseConnTemplate.ACCESS.getDBTypeName().equals(getConnectionDBType()) || EDatabaseConnTemplate.MSSQL05_08
@@ -7299,15 +7323,11 @@ public class DatabaseForm extends AbstractForm {
     }
     
     private boolean isSupportNLSOracleVersion(String dbVersionString) {
-        if (!EDatabaseVersion4Drivers.ORACLE_8.getVersionDisplay().equals(dbVersionString) 
-                && !EDatabaseVersion4Drivers.ORACLE_9.getVersionDisplay().equals(dbVersionString) 
-                && !EDatabaseVersion4Drivers.ORACLE_10.getVersionDisplay().equals(dbVersionString)
-                && !EDatabaseVersion4Drivers.ORACLE_11.getVersionDisplay().equals(dbVersionString)
-                && !EDatabaseVersion4Drivers.ORACLE_12.getVersionDisplay().equals(dbVersionString)
-                ) {
+        if (!EDatabaseVersion4Drivers.ORACLE_11.getVersionDisplay().equals(dbVersionString)
+                && !EDatabaseVersion4Drivers.ORACLE_12.getVersionDisplay().equals(dbVersionString)) {
             return true;
         }
-        
+
         return false;
     }
 
@@ -7572,6 +7592,15 @@ public class DatabaseForm extends AbstractForm {
                 && LanguageManager.getCurrentLanguage().equals(ECodeLanguage.JAVA);
     }
     
+    private boolean asAmazonAuroraVersionEnable() {
+        if (getConnectionDBType().length() <= 0) {
+            return false;
+        }
+        EDatabaseConnTemplate template = EDatabaseConnTemplate.indexOfTemplate(getConnectionDBType());
+        return template != null && template == EDatabaseConnTemplate.AMAZON_AURORA
+                && LanguageManager.getCurrentLanguage().equals(ECodeLanguage.JAVA);
+    }
+
     private boolean asGreenplumVersionEnable() {
         if (getConnectionDBType().length() <= 0) {
             return false;

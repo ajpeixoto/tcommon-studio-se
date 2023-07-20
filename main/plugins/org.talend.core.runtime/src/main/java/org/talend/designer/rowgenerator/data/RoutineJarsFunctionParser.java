@@ -86,43 +86,47 @@ public class RoutineJarsFunctionParser extends AbstractTalendFunctionParser {
             Set<RoutinesParameterType> rps = new HashSet<RoutinesParameterType>();
             if (processItem instanceof ProcessItem) {
                 ProcessType pt = ((ProcessItem) processItem).getProcess();
+                if (pt != null) {
+                    if (pt.getParameters() != null) {
+                        rps.addAll(pt.getParameters().getRoutinesParameter());
+                    }
+                    // if it is test process
+                    int pidFeature = TalendFilePackage.PROCESS_TYPE_FEATURE_COUNT + 2;
+                    int versionFeature = TalendFilePackage.PROCESS_TYPE_FEATURE_COUNT + 4;
+                    ProcessTypeImpl pi = (ProcessTypeImpl) pt;
+                    if (pi.eClass() != null && StringUtils.equals(pi.eClass().getName(), "TestContainer")) {
 
-                rps.addAll(pt.getParameters().getRoutinesParameter());
-
-                // if it is test process
-                int pidFeature = TalendFilePackage.PROCESS_TYPE_FEATURE_COUNT + 2;
-                int versionFeature = TalendFilePackage.PROCESS_TYPE_FEATURE_COUNT + 4;
-                ProcessTypeImpl pi = (ProcessTypeImpl) pt;
-                if (pi.eClass() != null && StringUtils.equals(pi.eClass().getName(), "TestContainer")) {
-
-                    try {
-                        Object pid = pi.eGet(pidFeature, true, false);
-                        Object version = pi.eGet(versionFeature, true, false);
-                        if (pid != null) {
-                            IProxyRepositoryService svc = IProxyRepositoryService.get();
-                            try {
-                                List<IRepositoryViewObject> vos = svc.getProxyRepositoryFactory().getAllVersion(pid.toString());
-                                for (IRepositoryViewObject vo : vos) {
-                                    if (StringUtils.equals(vo.getVersion(), String.valueOf(version))) {
-                                        Item parentProcessItem = vo.getProperty().getItem();
-                                        if (parentProcessItem instanceof ProcessItem) {
-                                            pt = ((ProcessItem) parentProcessItem).getProcess();
-                                            rps.addAll(pt.getParameters().getRoutinesParameter());
+                        try {
+                            Object pid = pi.eGet(pidFeature, true, false);
+                            Object version = pi.eGet(versionFeature, true, false);
+                            if (pid != null) {
+                                IProxyRepositoryService svc = IProxyRepositoryService.get();
+                                try {
+                                    List<IRepositoryViewObject> vos = svc.getProxyRepositoryFactory().getAllVersion(pid.toString());
+                                    for (IRepositoryViewObject vo : vos) {
+                                        if (StringUtils.equals(vo.getVersion(), String.valueOf(version))) {
+                                            Item parentProcessItem = vo.getProperty().getItem();
+                                            if (parentProcessItem instanceof ProcessItem) {
+                                                pt = ((ProcessItem) parentProcessItem).getProcess();
+                                                rps.addAll(pt.getParameters().getRoutinesParameter());
+                                            }
                                         }
                                     }
+                                } catch (PersistenceException e) {
+                                    // ignore
                                 }
-                            } catch (PersistenceException e) {
-                                // ignore
                             }
+                        } catch (Exception e) {
+                            // ignore
                         }
-                    } catch (Exception e) {
-                        // ignore
                     }
                 }
 
             } else if (processItem instanceof JobletProcessItem) {
                 ProcessType pt = ((JobletProcessItem) processItem).getJobletProcess();
-                rps.addAll(pt.getParameters().getRoutinesParameter());
+                if (pt != null && pt.getParameters() != null) {
+                    rps.addAll(pt.getParameters().getRoutinesParameter());
+                }
             }
 
             if (!rps.isEmpty()) {

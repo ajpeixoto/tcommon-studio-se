@@ -23,6 +23,8 @@ import org.talend.commons.ui.runtime.exception.ExceptionServiceImpl;
 
 public class CommonUIPlugin implements BundleActivator {
 
+    public static String BUNDLE_ID = "org.talend.common.ui.runtime";
+
     private static Boolean fullyHeadless = null;
 
     /*

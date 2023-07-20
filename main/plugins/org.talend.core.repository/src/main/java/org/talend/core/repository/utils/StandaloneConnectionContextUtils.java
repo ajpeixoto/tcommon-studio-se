@@ -40,6 +40,7 @@ import org.talend.core.model.utils.CloneConnectionUtils;
 import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.cwm.helper.ConnectionHelper;
+import org.talend.cwm.helper.StudioEncryptionHelper;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
 import org.talend.model.bridge.ReponsitoryContextBridge;
 
@@ -67,6 +68,7 @@ public class StandaloneConnectionContextUtils {
         String server = getOriginalValue(contextProperties, dbConn.getServerName());
         String username = getOriginalValue(contextProperties, dbConn.getUsername());
         String password = getOriginalValue(contextProperties, dbConn.getRawPassword());
+        String originEncryptedPassword = getOriginalValue(contextProperties, dbConn.getPassword());
         String port = getOriginalValue(contextProperties, dbConn.getPort());
         String sidOrDatabase = getOriginalValue(contextProperties, dbConn.getSID());
         String datasource = getOriginalValue(contextProperties, dbConn.getDatasourceName());
@@ -87,6 +89,8 @@ public class StandaloneConnectionContextUtils {
         cloneConn.setDatasourceName(datasource);
         cloneConn.setDBRootPath(dbRootPath);
         cloneConn.setFileFieldName(filePath);
+        //To avoid encrypt the same value
+        cloneConn.setPassword(originEncryptedPassword);
         cloneConn.setRawPassword(password); // the password is raw.
         cloneConn.setPort(port);
         cloneConn.setUiSchema(schemaOracle);

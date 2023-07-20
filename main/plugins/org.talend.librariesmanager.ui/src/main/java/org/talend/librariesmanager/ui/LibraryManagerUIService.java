@@ -185,7 +185,7 @@ public class LibraryManagerUIService implements ILibraryManagerUIService {
                                 "ArtifactsDeployer.uploadJarEncounterMvnRepositroySameName.MessageContent", originalJarFileName, mvnUrlForJarName));//$NON-NLS-1$
     }
 
-    public IConfigModuleDialog getConfigModuleDialog(Shell parentShell, String initValue) {
-        return new ConfigModuleDialog(parentShell, initValue);
+    public IConfigModuleDialog getConfigModuleDialog(Shell parentShell, String initValue, boolean allowDetectDependencies) {
+        return new ConfigModuleDialog(parentShell, initValue, allowDetectDependencies);
     }
 }

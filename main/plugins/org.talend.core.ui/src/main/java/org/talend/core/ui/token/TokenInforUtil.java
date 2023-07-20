@@ -134,7 +134,7 @@ public final class TokenInforUtil {
                     targetArray = new JSONArray();
                     Map<String,List<JSONObject>> objectMap = new HashMap<String,List<JSONObject>>();
                     for (Object obj : data) {
-                        if((obj instanceof JSONObject) && ((JSONObject)obj).get("component_name")!=null){//$NON-NLS-1$
+                        if((obj instanceof JSONObject) && ((JSONObject)obj).has("component_name") && ((JSONObject)obj).get("component_name")!=null){//$NON-NLS-1$
                             List<JSONObject> dataList = new ArrayList<JSONObject>();
                             String componentName = (String) ((JSONObject)obj).get("component_name");//$NON-NLS-1$
                             if(objectMap.containsKey(componentName)){

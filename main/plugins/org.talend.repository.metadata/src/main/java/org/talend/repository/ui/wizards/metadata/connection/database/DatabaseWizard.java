@@ -490,9 +490,8 @@ public class DatabaseWizard extends CheckLastVersionRepositoryWizard implements 
                 DatabaseConnection dbConnection = (DatabaseConnection) connectionItem.getConnection();
                 String dbVersion = dbConnection.getDbVersionString();
                 // feature TDI-22108
-                if (EDatabaseTypeName.VERTICA.equals(dbType)
-                        && EDatabaseVersion4Drivers.VERTICA_9.getVersionValue().equals(dbVersion)) {
-                    driverClass = EDatabase4DriverClassName.VERTICA2.getDriverClass();
+                if (EDatabaseTypeName.VERTICA.equals(dbType)) {
+                    driverClass = EDatabase4DriverClassName.VERTICA.getDriverClass();
                 } else if (EDatabaseTypeName.IMPALA.equals(dbType)) {
                     IHadoopDistributionService hadoopService = getHadoopDistributionService();
                     if (hadoopService != null) {
@@ -510,6 +509,12 @@ public class DatabaseWizard extends CheckLastVersionRepositoryWizard implements 
                         driverClass = EDatabase4DriverClassName.MYSQL8.getDriverClass();
                     } else if (EDatabaseVersion4Drivers.MARIADB.getVersionValue().equals(dbVersion)) {
                         driverClass = EDatabase4DriverClassName.MARIADB.getDriverClass();
+                    }
+                } else if (EDatabaseTypeName.AMAZON_AURORA.equals(dbType)) {
+                    if (EDatabaseVersion4Drivers.AMAZON_AURORA.getVersionValue().equals(dbVersion)) {
+                        driverClass = EDatabase4DriverClassName.AMAZON_AURORA.getDriverClass();
+                    } else if (EDatabaseVersion4Drivers.AMAZON_AURORA_3.getVersionValue().equals(dbVersion)) {
+                        driverClass = EDatabase4DriverClassName.AMAZON_AURORA_3.getDriverClass();
                     }
                 } else if (EDatabaseTypeName.MSSQL.equals(dbType)
                         && EDatabaseVersion4Drivers.MSSQL_PROP.getVersionValue().equals(dbVersion)) {

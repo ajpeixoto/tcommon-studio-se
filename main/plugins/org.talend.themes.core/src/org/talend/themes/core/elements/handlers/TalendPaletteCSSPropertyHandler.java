@@ -115,10 +115,10 @@ public class TalendPaletteCSSPropertyHandler implements ICSSPropertyHandler {
             }
         } else if ("tPalette-list-background-color".equalsIgnoreCase(property)) {
             RGB rgb = ((Color) engine.convert(value, Color.class, paletteComposite.getDisplay())).getRGB();
-            Color oldColor = paletteSetting.getCollapsedBackgroundColor();
+            Color oldColor = paletteSetting.getListBackgroundColor();
             if (oldColor == null || !oldColor.getRGB().equals(rgb)) {
                 changed = true;
-                paletteSetting.setCollapsedBackgroundColor(CommonCSSStyleSetting.getColorByRGB(rgb));
+                paletteSetting.setListBackgroundColor(CommonCSSStyleSetting.getColorByRGB(rgb));
             }
         } else if ("tPalette-color-increment".equalsIgnoreCase(property)) {
             Integer colorIncrement = null;

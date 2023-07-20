@@ -116,4 +116,98 @@ public class ModuleMavenURIUtilsTest {
         Assert.assertFalse(match);
     }
 
+    @Test
+    public void testValidateMvnURI4Version() throws MalformedPatternException {
+
+        String mvnURI = "mvn:org.slf4j/slf4j-api/1.8.0-beta1/jar";
+        boolean isValid = ModuleMavenURIUtils.validateMvnURI(mvnURI);
+        Assert.assertTrue(isValid);
+
+        String input1 = "mvn:net.sf.json-lib/json-lib/20230525/jar/jdk15";
+        String input2 = "mvn:net.sf.json-lib/json-lib/20230525/jar";
+        String input3 = "mvn:net.sf.json-lib/json-lib/20230525";
+        // expression1: match mvn:group-id/artifact-id/version/type/classifier
+        Perl5Matcher matcher = new Perl5Matcher();
+        matcher.setMultiline(false);
+        Perl5Compiler compiler = new Perl5Compiler();
+        Pattern pattern = compiler.compile(ModuleMavenURIUtils.expression1);
+        boolean match = matcher.matches(input1, pattern);
+        Assert.assertTrue(match);
+
+        match = matcher.matches(input2, pattern);
+        Assert.assertFalse(match);
+
+        match = matcher.matches(input3, pattern);
+        Assert.assertFalse(match);
+
+        // expression2: match mvn:group-id/artifact-id/version/type
+        pattern = compiler.compile(ModuleMavenURIUtils.expression2);
+        match = matcher.matches(input2, pattern);
+        Assert.assertTrue(match);
+
+        match = matcher.matches(input1, pattern);
+        Assert.assertFalse(match);
+
+        match = matcher.matches(input3, pattern);
+        Assert.assertFalse(match);
+
+        // expression3: match mvn:group-id/artifact-id/version
+        pattern = compiler.compile(ModuleMavenURIUtils.expression3);
+        match = matcher.matches(input3, pattern);
+        Assert.assertTrue(match);
+
+        match = matcher.matches(input1, pattern);
+        Assert.assertFalse(match);
+
+        match = matcher.matches(input2, pattern);
+        Assert.assertFalse(match);
+    }
+
+    @Test
+    public void testValidateMvnURI4VersionWithDot() throws MalformedPatternException {
+
+        String mvnURI = "mvn:org.slf4j/slf4j-api/1.8.0-beta1/jar";
+        boolean isValid = ModuleMavenURIUtils.validateMvnURI(mvnURI);
+        Assert.assertTrue(isValid);
+
+        String input1 = "mvn:net.sf.json-lib/json-lib/2023.0525/jar/jdk15";
+        String input2 = "mvn:net.sf.json-lib/json-lib/2023.0525/jar";
+        String input3 = "mvn:net.sf.json-lib/json-lib/2023.0525";
+        // expression1: match mvn:group-id/artifact-id/version/type/classifier
+        Perl5Matcher matcher = new Perl5Matcher();
+        matcher.setMultiline(false);
+        Perl5Compiler compiler = new Perl5Compiler();
+        Pattern pattern = compiler.compile(ModuleMavenURIUtils.expression1);
+        boolean match = matcher.matches(input1, pattern);
+        Assert.assertTrue(match);
+
+        match = matcher.matches(input2, pattern);
+        Assert.assertFalse(match);
+
+        match = matcher.matches(input3, pattern);
+        Assert.assertFalse(match);
+
+        // expression2: match mvn:group-id/artifact-id/version/type
+        pattern = compiler.compile(ModuleMavenURIUtils.expression2);
+        match = matcher.matches(input2, pattern);
+        Assert.assertTrue(match);
+
+        match = matcher.matches(input1, pattern);
+        Assert.assertFalse(match);
+
+        match = matcher.matches(input3, pattern);
+        Assert.assertFalse(match);
+
+        // expression3: match mvn:group-id/artifact-id/version
+        pattern = compiler.compile(ModuleMavenURIUtils.expression3);
+        match = matcher.matches(input3, pattern);
+        Assert.assertTrue(match);
+
+        match = matcher.matches(input1, pattern);
+        Assert.assertFalse(match);
+
+        match = matcher.matches(input2, pattern);
+        Assert.assertFalse(match);
+    }
+
 }

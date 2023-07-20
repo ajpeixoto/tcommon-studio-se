@@ -27,20 +27,18 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.model.properties.Property;
+import org.talend.core.pendo.AbstractPendoTrackManager;
+import org.talend.core.pendo.PendoDataTrackFactory;
 import org.talend.core.pendo.PendoItemSignatureUtil;
 import org.talend.core.pendo.PendoItemSignatureUtil.SignatureStatus;
 import org.talend.core.pendo.PendoItemSignatureUtil.TOSProdNameEnum;
 import org.talend.core.pendo.PendoItemSignatureUtil.ValueEnum;
 import org.talend.core.pendo.PendoTrackDataUtil;
-import org.talend.core.pendo.PendoTrackDataUtil.TrackEvent;
-import org.talend.core.pendo.PendoTrackSender;
+import org.talend.core.pendo.TrackEvent;
+import org.talend.core.pendo.properties.IPendoDataProperties;
 import org.talend.core.pendo.properties.PendoSignImportProperties;
 import org.talend.core.services.ICoreTisService;
 import org.talend.repository.items.importexport.handlers.model.ImportItem;
@@ -49,7 +47,7 @@ import org.talend.utils.migration.MigrationTokenUtil;
 /**
  * DOC jding  class global comment. Detailled comment
  */
-public class PendoImportManager {
+public class PendoImportManager extends AbstractPendoTrackManager {
 
     private static final String seperator = "@";
 
@@ -57,7 +55,7 @@ public class PendoImportManager {
 
     static {
         try {
-            isTrackAvailable = PendoTrackSender.getInstance().isTrackSendAvailable();
+            isTrackAvailable = PendoDataTrackFactory.getInstance().isTrackSendAvailable();
         } catch (Exception e) {
             ExceptionHandler.process(e, Level.WARN);
         }
@@ -142,9 +140,9 @@ public class PendoImportManager {
         }
     }
 
-    protected void collectProperties() {
+    public IPendoDataProperties collectProperties() {
         if (!isTrackRequired()) {
-            return;
+            return null;
         }
 
         importProperties.setUnsignSEItems(getSortTOSUnsignItems(tosUnsignItemMap));
@@ -184,6 +182,7 @@ public class PendoImportManager {
                 importProperties.setValidMigrationToken(ValueEnum.NO.getDisplayValue());
             }
         }
+        return importProperties;
     }
 
     private String getSortTOSUnsignItems(Map<String, Integer> tosUnsignItemMap) {
@@ -240,27 +239,13 @@ public class PendoImportManager {
         if (!isTrackRequired()) {
             return;
         }
-        Job job = new Job("send pendo track") {
-
-            @Override
-            protected IStatus run(IProgressMonitor monitor) {
-                try {
-                    if (isTrackAvailable) {
-                        collectProperties();
-                        PendoTrackSender.getInstance().sendTrackData(TrackEvent.ITEM_IMPORT, importProperties);
-                    }
-                } catch (Exception e) {
-                    // warning only
-                    ExceptionHandler.process(e, Level.WARN);
-                }
-                return Status.OK_STATUS;
-            }
-        };
-        job.setUser(false);
-        job.setPriority(Job.INTERACTIVE);
-        job.schedule();
+        super.sendTrackToPendo();
     }
 
+    @Override
+    public TrackEvent getTrackEvent() {
+        return TrackEvent.ITEM_IMPORT;
+    }
 
 
 }

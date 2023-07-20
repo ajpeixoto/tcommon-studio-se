@@ -35,10 +35,6 @@ public interface IRemoteService extends IService {
             LoginException, JSONException;
 
     boolean isAuthorized(String value);
-
-    boolean isTokenUsed(String adminUrl) throws Exception;
-
-    String getPendoKeyFromLicense() throws Exception;
     
     public boolean isCloudConnection();
     

@@ -12,7 +12,12 @@
 // ============================================================================
 package org.talend.librariesmanager.model.service;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -139,8 +144,7 @@ public class LocalLibraryManagerTest {
                 FilesUtils.copyFile(file, target);
             }
         } else {
-            if ("org.talend.designer.components.model.UserComponentsProvider".contains(contributeID)
-                    || "org.talend.designer.components.exchange.ExchangeComponentsProvider".contains(contributeID)) {
+            if ("org.talend.designer.components.model.UserComponentsProvider".contains(contributeID)) {
                 if (file.isDirectory()) {
                     FilesUtils.copyFolder(new File(jarFileUri), storageDir, false, FilesUtils.getExcludeSystemFilesFilter(),
                             FilesUtils.getAcceptJARFilesFilter(), false, new NullProgressMonitor());
@@ -756,9 +760,9 @@ public class LocalLibraryManagerTest {
     @Test
     public void testCheckModuleStatus() throws URISyntaxException, IOException {
         // test a existing apach jar
-        String urlPath = "platform:/plugin/org.talend.libraries.apache.common/lib/commons-text-1.1.jar";
-        String mvnURI = "mvn:org.talend.libraries/commons-text-1.1/6.0.0/jar";
-        ModuleNeeded module = new ModuleNeeded("test", "commons-text-1.1.jar", "test", true, null, null, mvnURI);
+        String urlPath = "platform:/plugin/org.talend.libraries.apache.common/lib/commons-text-1.10.0.jar";
+        String mvnURI = "mvn:org.talend.libraries/commons-text-1.10.0/6.0.0/jar";
+        ModuleNeeded module = new ModuleNeeded("test", "commons-text-1.10.0.jar", "test", true, null, null, mvnURI);
         module.setModuleLocaion(urlPath);
         localLibraryManager.checkModuleStatus(module);
         Assert.assertEquals(module.getStatus(), ELibraryInstallStatus.INSTALLED);

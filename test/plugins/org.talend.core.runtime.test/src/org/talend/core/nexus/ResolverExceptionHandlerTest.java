@@ -24,7 +24,7 @@ public class ResolverExceptionHandlerTest {
     public void testHideCredential() {
         String credencialStr1 = "talend-custom-libs-admin:talend-custom-libs-admin@";
         String credencialStr2 = "studio-dl-client:studio-dl-client@";
-        String message = "Error resolving artifact org.slf4j:jcl-over-slf4j:pom:1.7.25: [Could not find artifact org.slf4j:jcl-over-slf4j:pom:1.7.25 in talend-custom-libs-release (http://talend-custom-libs-admin:talend-custom-libs-admin@localhost:8083/repository/talend-custom-libs-release/), Could not transfer artifact org.slf4j:jcl-over-slf4j:pom:1.7.25 from/to repo_-1349825302 (https://studio-dl-client:studio-dl-client@talend-update.talend.com/nexus/content/groups/dynamicdistribution/): No such host is known (talend-update.talend.com)]";
+        String message = "Error resolving artifact org.slf4j:jcl-over-slf4j:pom:1.7.34: [Could not find artifact org.slf4j:jcl-over-slf4j:pom:1.7.34 in talend-custom-libs-release (http://talend-custom-libs-admin:talend-custom-libs-admin@localhost:8083/repository/talend-custom-libs-release/), Could not transfer artifact org.slf4j:jcl-over-slf4j:pom:1.7.34 from/to repo_-1349825302 (https://studio-dl-client:studio-dl-client@talend-update.talend.com/nexus/content/groups/dynamicdistribution/): No such host is known (talend-update.talend.com)]";
         IOException cause = new IOException(message);
         IOException e = new IOException(message, cause);
         IOException cleanException = ResolverExceptionHandler.hideCredential(e);

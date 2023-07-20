@@ -27,10 +27,6 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.ICoreService;
 import org.talend.core.PluginChecker;
@@ -39,22 +35,22 @@ import org.talend.core.model.properties.RoutineItem;
 import org.talend.core.model.properties.SQLPatternItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
+import org.talend.core.pendo.AbstractPendoTrackManager;
+import org.talend.core.pendo.PendoDataTrackFactory;
 import org.talend.core.pendo.PendoItemSignatureUtil;
 import org.talend.core.pendo.PendoItemSignatureUtil.SignatureStatus;
 import org.talend.core.pendo.PendoItemSignatureUtil.TOSProdNameEnum;
 import org.talend.core.pendo.PendoItemSignatureUtil.ValueEnum;
 import org.talend.core.pendo.PendoTrackDataUtil;
-import org.talend.core.pendo.PendoTrackDataUtil.TrackEvent;
-import org.talend.core.pendo.PendoTrackSender;
+import org.talend.core.pendo.TrackEvent;
+import org.talend.core.pendo.properties.IPendoDataProperties;
 import org.talend.core.pendo.properties.PendoSignLogonProperties;
 import org.talend.utils.migration.MigrationTokenUtil;
 
 /**
  * DOC jding  class global comment. Detailled comment
  */
-public class PendoItemSignatureManager {
-
-    private PendoSignLogonProperties itemSignProperties = new PendoSignLogonProperties();
+public class PendoItemSignatureManager extends AbstractPendoTrackManager {
 
     private static PendoItemSignatureManager manager;
 
@@ -63,7 +59,7 @@ public class PendoItemSignatureManager {
     static {
         manager = new PendoItemSignatureManager();
         try {
-            isTrackAvailable = PluginChecker.isTIS() && PendoTrackSender.getInstance().isTrackSendAvailable();
+            isTrackAvailable = PluginChecker.isTIS() && PendoDataTrackFactory.getInstance().isTrackSendAvailable();
         } catch (Exception e) {
             ExceptionHandler.process(e, Level.WARN);
         }
@@ -87,11 +83,12 @@ public class PendoItemSignatureManager {
         }
     }
 
-    public void collectProperties() {
+    public IPendoDataProperties collectProperties() {
         ICoreService coreService = ICoreService.get();
         if (coreService == null || !isTrackAvailable) {
-            return;
+            return null;
         }
+        PendoSignLogonProperties itemSignProperties = new PendoSignLogonProperties();
         try {
             itemSignProperties.setSignByMigration(signByLoginMigrationItems.size());
 
@@ -188,6 +185,7 @@ public class PendoItemSignatureManager {
         } catch (Exception e) {
             ExceptionHandler.process(e, Level.WARN);
         }
+        return itemSignProperties;
 
     }
 
@@ -258,23 +256,12 @@ public class PendoItemSignatureManager {
         if (!isTrackAvailable) {
             return;
         }
-        Job job = new Job("send pendo track") {
+        super.sendTrackToPendo();
+    }
 
-            @Override
-            protected IStatus run(IProgressMonitor monitor) {
-                try {
-                    collectProperties();
-                    PendoTrackSender.getInstance().sendTrackData(TrackEvent.ITEM_SIGNATURE, itemSignProperties);
-                } catch (Exception e) {
-                    // warning only
-                    ExceptionHandler.process(e, Level.WARN);
-                }
-                return Status.OK_STATUS;
-            }
-        };
-        job.setUser(false);
-        job.setPriority(Job.INTERACTIVE);
-        job.schedule();
+    @Override
+    public TrackEvent getTrackEvent() {
+        return TrackEvent.ITEM_SIGNATURE;
     }
 
 }

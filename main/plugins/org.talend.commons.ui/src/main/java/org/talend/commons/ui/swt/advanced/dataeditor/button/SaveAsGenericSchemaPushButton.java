@@ -19,6 +19,7 @@ import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.commons.ui.swt.advanced.dataeditor.control.ExtendedPushButton;
 import org.talend.commons.ui.swt.extended.table.AbstractExtendedTableViewer;
+import org.talend.commons.ui.swt.extended.table.ExtendedTableModel;
 
 /**
  * DOC Administrator class global comment. Detailled comment <br/>
@@ -33,4 +34,11 @@ public abstract class SaveAsGenericSchemaPushButton extends ExtendedPushButton {
 
     @Override
     protected abstract Command getCommandToExecute();
+
+    @Override
+    public boolean getEnabledState() {
+        AbstractExtendedTableViewer extendedTableViewer = (AbstractExtendedTableViewer) extendedControlViewer;
+        ExtendedTableModel extendedTableModel = extendedTableViewer.getExtendedTableModel();
+        return extendedTableModel != null;
+    }
 }

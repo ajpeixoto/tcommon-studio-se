@@ -129,7 +129,7 @@ public class MetadataService implements IMetadataService {
             } else {
                 objectType = realNode.getObjectType();
             }
-            if (objectType.equals(ERepositoryObjectType.METADATA_CONNECTIONS)) {
+            if (objectType.equals(ERepositoryObjectType.METADATA_CONNECTIONS) || (null!=objectType.getLabel() && objectType.getLabel().equals("JDBC"))) {
                 relatedWizard = new DatabaseWizard(PlatformUI.getWorkbench(), creation, realNode, null);
             } else if (objectType.equals(ERepositoryObjectType.METADATA_FILE_DELIMITED)) {
                 relatedWizard = new DelimitedFileWizard(PlatformUI.getWorkbench(), creation, realNode, null);

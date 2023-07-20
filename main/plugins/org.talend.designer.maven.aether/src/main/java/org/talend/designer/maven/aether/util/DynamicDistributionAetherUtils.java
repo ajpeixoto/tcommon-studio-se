@@ -63,6 +63,7 @@ import org.eclipse.m2e.core.MavenPlugin;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.designer.maven.aether.DummyDynamicMonitor;
 import org.talend.designer.maven.aether.IDynamicMonitor;
+import org.talend.designer.maven.aether.RepositorySystemFactory;
 import org.talend.designer.maven.aether.node.DependencyNode;
 import org.talend.designer.maven.aether.node.ExclusionNode;
 import org.talend.designer.maven.aether.selector.DynamicDependencySelector;
@@ -513,6 +514,7 @@ public class DynamicDistributionAetherUtils {
         LocalRepository localRepo = new LocalRepository(repositoryPath);
         session.setLocalRepositoryManager(system.newLocalRepositoryManager(session, localRepo));
         session.setProxySelector(new TalendAetherProxySelector());
+        session.setIgnoreArtifactDescriptorRepositories(RepositorySystemFactory.isIgnoreArtifactDescriptorRepositories());
 
         updateDependencySelector(session, monitor);
 

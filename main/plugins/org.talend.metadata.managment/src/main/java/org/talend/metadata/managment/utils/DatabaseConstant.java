@@ -38,6 +38,10 @@ public final class DatabaseConstant {
 
     public static final String ODBC_DRIVER_NAME = "jdbc-odbc";
 
+    public static final String INGRES_PRODUCT_NAME = "ingres";
+
+    public static final String JDBC_INGRES_DEIVER_NAME = "Ingres Corporation - JDBC Driver";
+    
     // feature 0010630 zshen: Tables are not found when using Excel with ODBC connection
     public static final String ODBC_EXCEL_PRODUCT_NAME = "EXCEL";
 

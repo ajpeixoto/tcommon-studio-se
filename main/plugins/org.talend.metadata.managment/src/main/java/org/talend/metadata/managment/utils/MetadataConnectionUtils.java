@@ -320,7 +320,7 @@ public class MetadataConnectionUtils {
             }// ~
             additionalParams = ConvertionHelper.convertAdditionalParameters(databaseConnection);
             metadataConnection.setAdditionalParams(additionalParams);
-            metadataConnection.setDbVersionString(dbVersionString);
+            metadataConnection.setDbVersionString(ConvertionHelper.getDriverVersionString(databaseConnection));
             metadataConnection.setDatabase(dataBase);
             metadataConnection.setDbType(dbType);
             metadataConnection.setDriverJarPath(driverJarPath);
@@ -810,6 +810,33 @@ public class MetadataConnectionUtils {
             break;
         case MySQL:
             sqlStr = "SELECT TABLE_COMMENT FROM information_schema.TABLES WHERE TABLE_NAME='" + tableName + "'"; //$NON-NLS-1$ //$NON-NLS-2$
+            break;
+        default:
+            sqlStr = null;
+
+        }
+        return sqlStr;
+
+    }
+
+    public static String getCommonQueryStr(String productName) {
+        if (productName == null) {
+            return null;
+        }
+        productName = productName.replaceAll(" ", "_"); //$NON-NLS-1$ //$NON-NLS-2$
+        EDataBaseType eDataBaseType = null;
+        try {
+            eDataBaseType = EDataBaseType.valueOf(productName);
+        } catch (Exception e) {
+            eDataBaseType = EDataBaseType.Microsoft_SQL_Server;
+        }
+        String sqlStr = ""; //$NON-NLS-1$
+        switch (eDataBaseType) {
+        case Oracle:
+            sqlStr = "SELECT COMMENTS FROM USER_TAB_COMMENTS WHERE TABLE_NAME= ? "; //$NON-NLS-1$
+            break;
+        case MySQL:
+            sqlStr = "SELECT TABLE_COMMENT FROM information_schema.TABLES WHERE TABLE_NAME= ? "; //$NON-NLS-1$
             break;
         default:
             sqlStr = null;

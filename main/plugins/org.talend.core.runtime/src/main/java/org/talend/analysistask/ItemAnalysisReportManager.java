@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -50,7 +51,9 @@ import org.talend.core.model.general.Project;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
+import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.runtime.i18n.Messages;
+import org.talend.designer.core.IDesignerCoreService;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.model.IRepositoryService;
@@ -73,7 +76,7 @@ public class ItemAnalysisReportManager {
     private AtomicBoolean inGenerating = new AtomicBoolean(false);
 
     public List<AnalysisReportRecorder> executeAnalysisTask(Project project) {
-        IRepositoryService service = (IRepositoryService) GlobalServiceRegister.getDefault().getService(IRepositoryService.class);
+        IRepositoryService service = GlobalServiceRegister.getDefault().getService(IRepositoryService.class);
         IProxyRepositoryFactory repFactory = service.getProxyRepositoryFactory();
         List<AnalysisReportRecorder> analysisResultList = new ArrayList<AnalysisReportRecorder>();
         List<IItemAnalysisTask> analysisTasks = ItemAnalysisTaskRegistryReader.getInstance().getItemAnalysisTasks();
@@ -103,6 +106,16 @@ public class ItemAnalysisReportManager {
                             ExceptionHandler.process(e);
                         }
                     }
+                }
+            }
+            //
+            ItemAnalysisTaskRegistryReader.getInstance().getAllItemURIsMap().clear();
+            ItemAnalysisTaskRegistryReader.getInstance().getDuplicatedItemURIsMap().clear();
+            IDesignerCoreService designerCoreService = CoreRuntimePlugin.getInstance().getDesignerCoreService();
+            if (designerCoreService != null) {
+                List<AnalysisReportRecorder> recorder = designerCoreService.analysis(project);
+                if (recorder != null && !recorder.isEmpty()) {
+                    analysisResultList.addAll(recorder);
                 }
             }
         } catch (Exception e) {
@@ -188,6 +201,42 @@ public class ItemAnalysisReportManager {
 
     private void setAnalysisReportGenerating(boolean newValue) {
         inGenerating.set(newValue);
+    }
+
+    public String getCompleteObjectTypePath(ERepositoryObjectType itemType) {
+        ERepositoryObjectType rootItemType = itemType;
+        if (ERepositoryObjectType.JDBC != null && ERepositoryObjectType.JDBC.equals(rootItemType)) {
+            rootItemType = ERepositoryObjectType.METADATA_CONNECTIONS;
+        }
+        List<String> typeLabels = new ArrayList<String>();
+        findOutCompleteTypePath(rootItemType, typeLabels);
+        if (ERepositoryObjectType.PROCESS != null && ERepositoryObjectType.PROCESS.equals(rootItemType)) {
+            IRepositoryService repositoryService = IRepositoryService.get();
+            if (repositoryService != null) {
+                String standardNodeLabel = repositoryService.getStandardNodeLabel();
+                if (StringUtils.isNotBlank(standardNodeLabel)) {
+                    typeLabels.add(standardNodeLabel);
+                }
+            }
+        }
+        StringBuffer buffer = new StringBuffer();
+        if (!typeLabels.isEmpty()) {
+            for (int i = 0; i < typeLabels.size(); i++) {
+                if (i != 0) {
+                    buffer.append("/");
+                }
+                buffer.append(typeLabels.get(i));
+            }
+        }
+        return buffer.toString();
+    }
+
+    public void findOutCompleteTypePath(ERepositoryObjectType type, List<String> typeLabels) {
+        ERepositoryObjectType parentType = ERepositoryObjectType.findParentType(type);
+        if (parentType != null) {
+            findOutCompleteTypePath(parentType, typeLabels);
+        }
+        typeLabels.add(type.getLabel());
     }
 
 }

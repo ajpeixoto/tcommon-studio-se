@@ -16,6 +16,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.Driver;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.Collator;
 import java.util.ArrayList;
@@ -80,6 +82,7 @@ import org.talend.commons.ui.swt.formtools.Form;
 import org.talend.commons.ui.swt.formtools.UtilsButton;
 import org.talend.commons.utils.data.text.IndiceHelper;
 import org.talend.commons.utils.threading.TalendCustomThreadPoolExecutor;
+import org.talend.core.database.EDatabase4DriverClassName;
 import org.talend.core.database.EDatabaseTypeName;
 import org.talend.core.database.conn.ConnParameterKeys;
 import org.talend.core.model.metadata.IMetadataConnection;
@@ -89,6 +92,7 @@ import org.talend.core.model.metadata.MetadataToolHelper;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
 import org.talend.core.model.metadata.builder.connection.MetadataColumn;
 import org.talend.core.model.metadata.builder.connection.MetadataTable;
+import org.talend.core.model.metadata.builder.database.DriverShim;
 import org.talend.core.model.metadata.builder.database.ExtractMetaDataFromDataBase;
 import org.talend.core.model.metadata.builder.database.ExtractMetaDataFromDataBase.ETableTypes;
 import org.talend.core.model.metadata.builder.database.ExtractMetaDataUtils;
@@ -388,6 +392,7 @@ public class SelectorTableForm extends AbstractForm {
                 // TDI-28768 after add checkStateProvider, the catalog and schema checked status become true , then
                 // force them to false
                 if (parentNode.getType() == TableNode.CATALOG || parentNode.getType() == TableNode.SCHEMA) {
+                    retrieveSchema(parentNode);
                     needUpdate = false;
                 }
                 boolean firstExpand = false;
@@ -395,6 +400,9 @@ public class SelectorTableForm extends AbstractForm {
                     firstExpand = mapCheckState.get(itemText);
                 } else {
                     firstExpand = true;
+                }
+                if (treeItem.isDisposed()) {
+                    return;
                 }
                 for (TreeItem item : treeItem.getItems()) {
                     if (item.getData() != null) {
@@ -466,7 +474,7 @@ public class SelectorTableForm extends AbstractForm {
             viewProvider = provider.getMetadataViewProvider();
 
         } else {
-            viewProvider = new SelectorTreeViewerProvider();
+            viewProvider = new DefaultSelectorTreeViewerProvider();
         }
 
         viewer.setLabelProvider(viewProvider);
@@ -476,7 +484,237 @@ public class SelectorTableForm extends AbstractForm {
         scrolledCompositeFileViewer.setContent(tree);
         scrolledCompositeFileViewer.setMinSize(tree.computeSize(SWT.DEFAULT, SWT.DEFAULT));
     }
+    
+    private void retrieveSchema(TableNode tableNode) {
+        
+        IRunnableWithProgress runnable = new IRunnableWithProgress() {
 
+            @Override
+            public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                monitor.beginTask(Messages.getString("CreateTableAction.action.createTitle"), IProgressMonitor.UNKNOWN); //$NON-NLS-1$
+                
+                List<TableNode> child = tableNode.getChildren();
+                boolean extended = false;
+                if (!child.isEmpty()) {
+                    for (TableNode node : child) {
+                        if (node.getType() == TableNode.TABLE) {
+                            extended = true;
+                            break;
+                        }
+                    }
+                }
+                // if extended is true, means table already got,no need to get again.
+                if (extended) {
+                    return;
+                }
+                
+                List<MetadataTable> tableList = new ArrayList<MetadataTable>();
+                retrieveAllSubNodes(tableNode, tableList);
+
+                Display.getDefault().syncExec(() -> {
+                    viewer.setInput(tableNodeList);
+                    viewer.expandToLevel(tableNode, viewer.ALL_LEVELS);
+                });
+                monitor.done();
+            }
+
+        };
+
+        try {
+            this.parentWizardPage.getWizard().getContainer().run(true, true, runnable);
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        }
+    }
+
+    private void retrieveAllSubNodes(TableNode tableNode, List<MetadataTable> tableList) {
+        tableList.clear();
+        List<TableNode> child = tableNode.getChildren();
+        boolean extended = false;
+        if (!child.isEmpty()) {
+            for (TableNode node : child) {
+                if (node.getType() == TableNode.TABLE) {
+                    extended = true;
+                    break;
+                }
+            }
+        }
+        // if extended is true, means table already got,no need to get again.
+        if (extended) {
+            return;
+        }
+
+        IMetadataConnection metadataConn = tableNode.getMetadataConn();
+
+        Connection conn = null;
+        Driver driver = null;
+
+        DatabaseMetaData dbMetaData = null;
+        ExtractMetaDataUtils extractMeta = ExtractMetaDataUtils.getInstance();
+        // Added by Marvin Wang on Mar. 13, 2013 for loading hive jars dynamically, refer to TDI-25072.
+        if (EDatabaseTypeName.HIVE.getXmlName().equalsIgnoreCase(metadataConn.getDbType())) {
+            try {
+                dbMetaData = HiveConnectionManager.getInstance().extractDatabaseMetaData(metadataConn);
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
+            }
+        } else if (EDatabaseTypeName.IMPALA.getDisplayName().equalsIgnoreCase(metadataConn.getDbType())) {
+            try {
+                dbMetaData = ImpalaConnectionManager.getInstance().createConnection(metadataConn).getMetaData();
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
+            }
+        } else {
+            List list = extractMeta.getConnectionList(metadataConn);
+            if (list != null && !list.isEmpty()) {
+                for (int i = 0; i < list.size(); i++) {
+                    if (list.get(i) instanceof Connection) {
+                        conn = (Connection) list.get(i);
+                    }
+                    if (list.get(i) instanceof DriverShim) {
+                        driver = (DriverShim) list.get(i);
+                    }
+                }
+            }
+            dbMetaData = extractMeta.getDatabaseMetaData(conn, metadataConn.getDbType(), metadataConn.isSqlMode(),
+                    metadataConn.getDatabase());
+        }
+
+        int type = tableNode.getType();
+        orgomg.cwm.objectmodel.core.Package pack = null;
+
+        if (type == tableNode.CATALOG) {
+            if (tableNode.getChildren().isEmpty()) {
+                pack = tableNode.getCatalog();
+            } else {
+                for (TableNode n : tableNode.getChildren()) {
+                    retrieveAllSubNodes(n, tableList);
+                }
+            }
+        } else if (type == tableNode.SCHEMA) {
+            pack = tableNode.getSchema();
+        }
+        try {
+            if (pack != null) {
+                TableInfoParameters paras = tableNode.getParas();
+                List<ETableTypes> paraType = paras.getTypes();
+                Set<String> availableTableTypes = new HashSet<String>();
+                for (ETableTypes tableType : paraType) {
+                    availableTableTypes.add(tableType.getName());
+                }
+                // get all tables/views depending the filter selected
+
+                Set<String> tableNameFilter = null;
+
+                if (!paras.isUsedName()) {
+                    tableNameFilter = new HashSet<String>();
+                    if (paras.getSqlFiter() != null && !"".equals(paras.getSqlFiter())) { //$NON-NLS-1$
+                        PreparedStatement stmt = extractMeta.getConn().prepareStatement(paras.getSqlFiter());
+                        extractMeta.setQueryStatementTimeout(stmt);
+                        ResultSet rsTables = stmt.executeQuery();
+                        while (rsTables.next()) {
+                            String nameKey = rsTables.getString(1).trim();
+                            tableNameFilter.add(nameKey);
+                        }
+                        rsTables.close();
+                        stmt.close();
+                    }
+                } else {
+                    tableNameFilter = paras.getNameFilters();
+                }
+
+                List<MetadataTable> tempListTables = new ArrayList<MetadataTable>();
+                MetadataFillFactory dbInstance = MetadataFillFactory.getDBInstance(metadataConn);
+                for (String filter : tableNameFilter) {
+                    tempListTables = dbInstance.fillAll(pack, dbMetaData, metadataConn, null, filter,
+                            availableTableTypes.toArray(new String[] {}));
+                    for (MetadataTable table : tempListTables) {
+                        boolean contains = false;
+                        for (MetadataTable inListTable : tableList) {
+                            if (inListTable.getName().equals(table.getName())) {
+                                contains = true;
+                                break;
+                            }
+                        }
+                        if (!contains) {
+                            tableList.add(table);
+                        }
+                    }
+                }
+                if (tableNameFilter.isEmpty()) {
+                    tempListTables = dbInstance.fillAll(pack, dbMetaData, metadataConn, null, null,
+                            availableTableTypes.toArray(new String[] {}));
+                    for (MetadataTable table : tempListTables) {
+                        boolean contains = false;
+                        for (MetadataTable inListTable : tableList) {
+                            if (inListTable.getName().equals(table.getName())) {
+                                contains = true;
+                                break;
+                            }
+                        }
+                        if (!contains) {
+                            tableList.add(table);
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        } finally {
+            String dbType = metadataConn.getDbType();
+            // bug 22619
+            String driverClass = metadataConn.getDriverClass();
+            if (conn != null) {
+                ConnectionUtils.closeConnection(conn);
+            }
+            // for specific db such as derby
+            if (driver != null) {
+                if ((driverClass != null && driverClass.equals(EDatabase4DriverClassName.JAVADB_EMBEDED.getDriverClass()))
+                        || (dbType != null && (dbType.equals(EDatabaseTypeName.JAVADB_EMBEDED.getDisplayName())
+                                || dbType.equals(EDatabaseTypeName.JAVADB_DERBYCLIENT.getDisplayName())
+                                || dbType.equals(EDatabaseTypeName.JAVADB_JCCJDBC.getDisplayName())
+                                || dbType.equals(EDatabaseTypeName.HSQLDB_IN_PROGRESS.getDisplayName())))) {
+                    try {
+                        driver.connect("jdbc:derby:;shutdown=true", null); //$NON-NLS-1$
+                    } catch (SQLException e) {
+                        // exception of shutdown success. no need to catch.
+                    }
+                }
+            }
+        }
+
+        if (!(tableNode.getType() == TableNode.CATALOG && pack == null)) {
+            transferToTableNode(tableList, tableNode);
+        }
+
+    }
+
+    protected void transferToTableNode(List<MetadataTable> list, TableNode parentNode) {
+        if (list != null && !list.isEmpty()) {
+            for (MetadataTable table : list) {
+                if (table instanceof TdTable) {
+                    TdTable td = (TdTable) table;
+                    TableNode tableNode = new TableNode();
+                    tableNode.setType(TableNode.TABLE);
+                    tableNode.setValue(td.getLabel());
+                    tableNode.setItemType(td.getTableType());
+                    tableNode.setTable(td);
+                    tableNode.setParent(parentNode);
+                    parentNode.addChild(tableNode);
+                } else if (table instanceof TdView) {
+                    TdView tv = (TdView) table;
+                    TableNode tableNode = new TableNode();
+                    tableNode.setType(TableNode.TABLE);
+                    tableNode.setValue(tv.getLabel());
+                    tableNode.setItemType(tv.getTableType());
+                    tableNode.setView(tv);
+                    tableNode.setParent(parentNode);
+                    parentNode.addChild(tableNode);
+                }
+            }
+        }
+    }
+    
     private final Collator col = Collator.getInstance(Locale.getDefault());
 
     /**
@@ -943,6 +1181,10 @@ public class SelectorTableForm extends AbstractForm {
                         }
                         if (canAdd) {
                             tableNodes.add(schemaNode);
+                            if (schemaNode.getValue() != null && StringUtils.isEmpty(schemaNode.getValue().trim())) {
+                                List<MetadataTable> tableList = new ArrayList<MetadataTable>();
+                                retrieveAllSubNodes(schemaNode, tableList);
+                            }
                         }
                     }
                 }

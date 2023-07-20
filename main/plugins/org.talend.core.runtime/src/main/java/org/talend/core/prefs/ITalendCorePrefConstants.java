@@ -203,4 +203,12 @@ public interface ITalendCorePrefConstants {
 
     public static final boolean NEXUS_SHARE_LIBS_DEFAULT = false;
 
+    public static final String PERSPECTIVE_PERSIST_SCOPE = "PERSPECTIVE_PERSIST_SCOPE"; //$NON-NLS-1$
+
+    public static final String PERSPECTIVE_PERSIST_SCOPE_PROJECT_AND_BRANCH = "PROJECT_AND_BRANCH"; //$NON-NLS-1$
+
+    public static final String PERSPECTIVE_PERSIST_SCOPE_STUDIO = "STUDIO"; //$NON-NLS-1$
+
+    public static final String PERSPECTIVE_PERSIST_SCOPE_DEFAULT = PERSPECTIVE_PERSIST_SCOPE_PROJECT_AND_BRANCH;
+
 }

@@ -19,15 +19,20 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -36,6 +41,7 @@ import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.fieldassist.AutoCompleteField;
 import org.eclipse.jface.fieldassist.ComboContentAdapter;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.m2e.core.MavenPlugin;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -56,13 +62,19 @@ import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
+import org.talend.commons.ui.runtime.utils.ZipFileUtils;
 import org.talend.commons.ui.swt.dialogs.IConfigModuleDialog;
+import org.talend.core.language.ECodeLanguage;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.general.ModuleNeeded.ELibraryInstallStatus;
 import org.talend.core.model.general.ModuleToInstall;
 import org.talend.core.runtime.maven.MavenArtifact;
+import org.talend.core.runtime.maven.MavenConstants;
 import org.talend.core.runtime.maven.MavenUrlHelper;
+import org.talend.designer.maven.utils.PomUtil;
+import org.talend.librariesmanager.maven.MavenArtifactsHandler;
 import org.talend.librariesmanager.model.ModulesNeededProvider;
+import org.talend.librariesmanager.prefs.LibrariesManagerUtils;
 import org.talend.librariesmanager.ui.LibManagerUiPlugin;
 import org.talend.librariesmanager.ui.i18n.Messages;
 import org.talend.librariesmanager.utils.ConfigModuleHelper;
@@ -132,6 +144,13 @@ public class ConfigModuleDialog extends TitleAreaDialog implements IConfigModule
     
     private Composite warningComposite;
 
+    private Button detectDepBtn;
+
+    private String moduleFilePath;
+
+    private boolean allowDetectDependencies = false;
+    private boolean detectDependencies = false;
+
     /**
      * DOC wchen InstallModuleDialog constructor comment.
      *
@@ -141,6 +160,13 @@ public class ConfigModuleDialog extends TitleAreaDialog implements IConfigModule
         super(parentShell);
         setShellStyle(SWT.CLOSE | SWT.MAX | SWT.TITLE | SWT.BORDER | SWT.APPLICATION_MODAL | SWT.RESIZE | getDefaultOrientation());
         this.initValue = initValue;
+    }
+    
+    public ConfigModuleDialog(Shell parentShell, String initValue, boolean allowDetectDependencies) {
+        super(parentShell);
+        setShellStyle(SWT.CLOSE | SWT.MAX | SWT.TITLE | SWT.BORDER | SWT.APPLICATION_MODAL | SWT.RESIZE | getDefaultOrientation());
+        this.initValue = initValue;
+        this.allowDetectDependencies = allowDetectDependencies;
     }
 
     @Override
@@ -218,6 +244,11 @@ public class ConfigModuleDialog extends TitleAreaDialog implements IConfigModule
         GridData layoutData = new GridData(GridData.FILL_BOTH);
         mvnContainer.setLayoutData(layoutData);
         createMavenURIComposite(mvnContainer);
+        detectDepBtn = new Button(mvnContainer, SWT.CHECK);
+        detectDepBtn.setLayoutData(new GridData());
+        detectDepBtn.setText(Messages.getString("ConfigModuleDialog.btn.detectDependencies"));
+        detectDepBtn.setToolTipText(Messages.getString("ConfigModuleDialog.btn.detectDependenciesTip"));
+        detectDepBtn.setVisible(allowDetectDependencies());
     }
 
     @Override
@@ -257,6 +288,7 @@ public class ConfigModuleDialog extends TitleAreaDialog implements IConfigModule
                 setPlatformGroupEnabled(true);
                 setInstallNewGroupEnabled(false);
                 setRepositoryGroupEnabled(false);
+                setDetectBtnEnabled();
                 if (validateInputFields()) {
                     setupMavenURIforPlatform();
                 }
@@ -312,6 +344,7 @@ public class ConfigModuleDialog extends TitleAreaDialog implements IConfigModule
                 setPlatformGroupEnabled(false);
                 setInstallNewGroupEnabled(false);
                 setRepositoryGroupEnabled(true);
+                setDetectBtnEnabled();
             }
         });
 
@@ -649,6 +682,12 @@ public class ConfigModuleDialog extends TitleAreaDialog implements IConfigModule
             setMessage(Messages.getString("InstallModuleDialog.error.jarPath"), IMessageProvider.ERROR);
             return false;
         }
+        
+        boolean validPomFile = PomUtil.isValidPomFile(jarPathTxt.getText());
+        if(!(validPomFile || ZipFileUtils.isValidJarFile(jarPathTxt.getText()))) {
+            return false;
+        }
+        
         String originalText = defaultUriTxt.getText().trim();
         String customURIWithType = MavenUrlHelper.addTypeForMavenUri(customUriText.getText(), moduleName);
         if (useCustomBtn.getSelection()) {
@@ -663,7 +702,9 @@ public class ConfigModuleDialog extends TitleAreaDialog implements IConfigModule
                 return false;
             }
         } else if (StringUtils.isEmpty(originalText)) {
-            return false;
+            if(!validPomFile) {
+                return false;
+            }
         }
 
         setMessage(Messages.getString("InstallModuleDialog.message"), IMessageProvider.INFORMATION);
@@ -739,83 +780,98 @@ public class ConfigModuleDialog extends TitleAreaDialog implements IConfigModule
             customURI = MavenUrlHelper.addTypeForMavenUri(customUriText.getText().trim(), moduleName);
             urlToUse = !StringUtils.isEmpty(customURI) ? customURI : defaultURI;
         }
-        if (installRadioBtn.getSelection()) {
+        detectDependencies  = allowDetectDependencies() && detectDepBtn.getSelection();
+        Map<String, File> mvnurl2Files =  null;
+        if (platfromRadioBtn.getSelection()) {
+            moduleName2MVNUrls.put(moduleName, urlToUse);
+            moduleFilePath = calculatePath(urlToUse);// for platform jar
+            mvnurl2Files = detectDependencies();
+        } else if (installRadioBtn.getSelection()) {
             File jarFile = new File(jarPathTxt.getText().trim());
-            MavenArtifact art = MavenUrlHelper.parseMvnUrl(urlToUse);
-            moduleName = art.getFileName();
-            String sha1New = ConfigModuleHelper.getSHA1(jarFile);
-            art.setSha1(sha1New);
-            // resolve jar locally
-            File localFile = ConfigModuleHelper.resolveLocal(urlToUse);
-            boolean install = false;
-            if (localFile != null && localFile.exists()) {
-                String sha1Local = ConfigModuleHelper.getSHA1(localFile);
-                // already installed with different jar
-                if (!sha1Local.equals(sha1New)) {
+            moduleFilePath = jarFile.getAbsolutePath();
+            mvnurl2Files = detectDependencies();
+            if(ZipFileUtils.isValidJarFile(moduleFilePath)) {
+                MavenArtifact art = MavenUrlHelper.parseMvnUrl(urlToUse);
+                moduleName = art.getFileName();
+                moduleName2MVNUrls.put(moduleName, urlToUse);
+                String sha1New = ConfigModuleHelper.getSHA1(jarFile);
+                art.setSha1(sha1New);
+                // resolve jar locally
+                File localFile = ConfigModuleHelper.resolveLocal(urlToUse);
+                boolean install = false;
+                if (localFile != null && localFile.exists()) {
+                    String sha1Local = ConfigModuleHelper.getSHA1(localFile);
+                    // already installed with different jar
+                    if (!sha1Local.equals(sha1New)) {
+                        install = true;
+                    }
+                } else {
+                    // just install
                     install = true;
                 }
-            } else {
-                // just install
-                install = true;
-            }
-
-            if (install) {
-                final IRunnableWithProgress progress = new IRunnableWithProgress() {
-                    @Override
-                    public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                        monitor.beginTask("Install and share " + jarFile, 100);
-                        monitor.worked(10);
-                        DisplayUtils.getDisplay().syncExec(new Runnable() {
-
-                            @Override
-                            public void run() {
-                                try {
-                                    boolean deploy = true;
-                                    // check remote
-                                    List<MavenArtifact> remoteArtifacts = null;
+                if (install) {
+                    final IRunnableWithProgress progress = new IRunnableWithProgress() {
+                        @Override
+                        public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                            monitor.beginTask("Install and share " + jarFile, 100);
+                            monitor.worked(10);
+                            DisplayUtils.getDisplay().syncExec(new Runnable() {
+                                
+                                @Override
+                                public void run() {
                                     try {
-                                        remoteArtifacts = ConfigModuleHelper.searchRemoteArtifacts(art.getGroupId(),
-                                                art.getArtifactId(), null);
+                                        boolean deploy = true;
+                                        // check remote
+                                        List<MavenArtifact> remoteArtifacts = null;
+                                        try {
+                                            remoteArtifacts = ConfigModuleHelper.searchRemoteArtifacts(art.getGroupId(),
+                                                    art.getArtifactId(), null);
+                                        } catch (Exception e) {
+                                            ExceptionHandler.process(e);
+                                        }
+                                        
+                                        if (remoteArtifacts != null && !remoteArtifacts.isEmpty()) {
+                                            if (ConfigModuleHelper.canFind(new HashSet<MavenArtifact>(remoteArtifacts), art)) {
+                                                deploy = false;
+                                            } else {
+                                                if (art.getVersion() != null
+                                                        && art.getVersion().endsWith(MavenUrlHelper.VERSION_SNAPSHOT)) {
+                                                    // snapshot
+                                                    deploy = true;
+                                                } else {
+                                                    // popup and ask, reinstall?
+                                                    deploy = MessageDialog.open(MessageDialog.CONFIRM, getShell(), "",
+                                                            Messages.getString("ConfigModuleDialog.shareInfo"), SWT.NONE);
+                                                }
+                                            }
+                                        }
+                                        ConfigModuleHelper.install(jarFile, urlToUse, deploy);
+                                        updateIndex(urlToUse, moduleName);
                                     } catch (Exception e) {
                                         ExceptionHandler.process(e);
                                     }
-
-                                    if (remoteArtifacts != null && !remoteArtifacts.isEmpty()) {
-                                        if (ConfigModuleHelper.canFind(new HashSet<MavenArtifact>(remoteArtifacts), art)) {
-                                            deploy = false;
-                                        } else {
-                                            if (art.getVersion() != null
-                                                    && art.getVersion().endsWith(MavenUrlHelper.VERSION_SNAPSHOT)) {
-                                                // snapshot
-                                                deploy = true;
-                                            } else {
-                                                // popup and ask, reinstall?
-                                                deploy = MessageDialog.open(MessageDialog.CONFIRM, getShell(), "",
-                                                        Messages.getString("ConfigModuleDialog.shareInfo"), SWT.NONE);
-                                            }
-                                        }
-                                    }
-
-                                    ConfigModuleHelper.install(jarFile, urlToUse, deploy);
-                                    updateIndex(urlToUse);
-                                } catch (Exception e) {
-                                    ExceptionHandler.process(e);
                                 }
-                            }
-                        });
-                        monitor.done();
-                    }
-                };
-
-                runProgress(progress);
-
+                            });
+                            monitor.done();
+                        }
+                    };
+                    
+                    runProgress(progress);
+                    
+                }
             }
-
         } else if (repositoryRadioBtn.getSelection()) {
+            // resolve jar locally
+            File localFile = ConfigModuleHelper.resolveLocal(urlToUse);
+            if (localFile != null && localFile.exists()) {
+                moduleFilePath = localFile.getAbsolutePath();
+                moduleName2MVNUrls.put(moduleName, urlToUse);
+                mvnurl2Files = detectDependencies();
+            }
+                
             if (!isLocalSearch) {
                 boolean download = true;
                 // resolve jar locally
-                File localFile = ConfigModuleHelper.resolveLocal(urlToUse);
                 if (localFile != null && localFile.exists()) {
                     // check sha1
                     String sha1Local = ConfigModuleHelper.getSHA1(localFile);
@@ -845,13 +901,75 @@ public class ConfigModuleDialog extends TitleAreaDialog implements IConfigModule
                     DownloadModuleRunnableWithLicenseDialog downloadModuleRunnable = new DownloadModuleRunnableWithLicenseDialog(
                             toInstall, getShell());
                     runProgress(downloadModuleRunnable);
-                    this.updateIndex(defaultURI);
+                    this.updateIndex(defaultURI, moduleName);
+                    localFile = ConfigModuleHelper.resolveLocal(urlToUse);
+                    moduleFilePath = localFile.getAbsolutePath();
+                    
+                    moduleName2MVNUrls.put(moduleName, urlToUse);
+                    mvnurl2Files = detectDependencies();
                 }
             }
         }
-
+        
+        shareLibs(mvnurl2Files);
+        
         setReturnCode(OK);
         close();
+    }
+
+    private void shareLibs(Map<String, File> mvnurl2Files) {
+        if(mvnurl2Files != null && mvnurl2Files.size() > 0) {
+            Job shareLibJob = new Job("") {
+
+                @Override
+                protected IStatus run(IProgressMonitor arg0) {
+                    Iterator<Entry<String, File>> iterator = mvnurl2Files.entrySet().iterator();
+                    MavenArtifactsHandler mavenArtifactsHandler = new MavenArtifactsHandler();
+                    while(iterator.hasNext()) {
+                        Entry<String, File> entry = iterator.next();
+                        String mvnurl = entry.getKey();
+                        MavenArtifact art = MavenUrlHelper.parseMvnUrl(mvnurl);
+                        List<MavenArtifact> remoteArtifacts = null;
+                        try {
+                            remoteArtifacts = ConfigModuleHelper.searchRemoteArtifacts(art.getGroupId(),
+                                    art.getArtifactId(), null);
+                        } catch (Exception e) {
+                            ExceptionHandler.process(e);
+                        }
+                        
+                        if (remoteArtifacts != null && !remoteArtifacts.isEmpty()) {
+                            if (ConfigModuleHelper.canFind(new HashSet<MavenArtifact>(remoteArtifacts), art)) {
+                                continue;
+                            }
+                        }
+                        
+                        try {
+                            mavenArtifactsHandler.deploy(entry.getValue(), art);
+                        } catch (Exception e) {
+                            ExceptionHandler.process(e);
+                        }
+                        String generatedModuleName = MavenUrlHelper.generateModuleNameByMavenURI(mvnurl);
+                        updateIndex(mvnurl, generatedModuleName);
+                    }
+                    return Status.OK_STATUS;
+                }
+                
+            };
+            shareLibJob.schedule();
+        }
+    }
+
+    private Map<String, File> detectDependencies() {
+        Map<String, File> mvnurl2Files = new HashMap<String, File>();
+        if(detectDependencies) {
+            mvnurl2Files = ModuleMavenURIUtils.getDependencyModules(moduleFilePath, urlToUse);
+            mvnurl2Files.keySet().stream().forEach(mvnUrl-> {
+                String moduleName = MavenUrlHelper.generateModuleNameByMavenURI(mvnUrl);
+                moduleName2MVNUrls.put(moduleName, mvnUrl);
+            });
+        }
+        
+        return mvnurl2Files;
     }
 
     @Override
@@ -919,6 +1037,10 @@ public class ConfigModuleDialog extends TitleAreaDialog implements IConfigModule
         }
         useCustomBtn.setSelection(false);
     }
+    
+    private void setDetectBtnEnabled() {
+        detectDepBtn.setEnabled(true);
+    }
 
     private void setupMavenURIforInstall() throws Exception {
         if (validateInputForInstallPre()) {
@@ -932,18 +1054,32 @@ public class ConfigModuleDialog extends TitleAreaDialog implements IConfigModule
                     defaultUri = detectUri;
                 }
             }
-            defaultUriTxt.setText(defaultUri);
-            customUriText.setText(defaultUri);
-            if (!org.apache.commons.lang3.StringUtils.isEmpty(detectUri)
-                    && !ConfigModuleHelper.isSameUri(defaultUri, detectUri)) {
-                customUriText.setText(detectUri);
+            if(filePath.trim().endsWith("xml") || filePath.trim().endsWith("pom")) {
+                defaultUriTxt.setText("");
+                customUriText.setText("");
+                useCustomBtn.setEnabled(false);
+                if(allowDetectDependencies()) {
+                    detectDepBtn.setSelection(true);
+                    detectDepBtn.setEnabled(false);
+                }
+            } else {
+                defaultUriTxt.setText(defaultUri);
+                customUriText.setText(defaultUri);
+                if (!org.apache.commons.lang3.StringUtils.isEmpty(detectUri)
+                        && !ConfigModuleHelper.isSameUri(defaultUri, detectUri)) {
+                    customUriText.setText(detectUri);
+                }
+                useCustomBtn.setEnabled(true);
+                if(allowDetectDependencies()) {
+                    detectDepBtn.setEnabled(true);
+                }
             }
             customUriText.setEnabled(false);
         }
         validateInputFields();
     }
 
-    private void updateIndex(String urlToUse) {
+    private void updateIndex(String urlToUse, String moduleName) {
 
         Set<String> modulesNeededNames = ModulesNeededProvider.getAllManagedModuleNames();
         if (!modulesNeededNames.contains(moduleName)) {
@@ -1003,4 +1139,84 @@ public class ConfigModuleDialog extends TitleAreaDialog implements IConfigModule
         platformComboField.setProposals(moduleValueArray);
     }
 
+    private boolean allowDetectDependencies() {
+        return allowDetectDependencies;
+    }
+    
+    private Map<String, String> moduleName2MVNUrls = new HashMap<String, String>();
+    @Override
+    public Map<String, String> getModulesMVNUrls() {
+        return moduleName2MVNUrls;
+    }
+
+    private String calculatePath(String mvnUrl) {
+        String moduleName = MavenUrlHelper.generateModuleNameByMavenURI(mvnUrl);
+        String filePath = null;
+        
+        String librariesPath = LibrariesManagerUtils.getLibrariesPath(ECodeLanguage.JAVA);
+        File file = new File(librariesPath);
+        if(file.exists()) {
+            File[] list = file.listFiles((dir, name)->name.equals(moduleName));
+            if(list != null && list.length > 0) {
+                filePath = list[0].getAbsolutePath();
+            }
+        }
+        
+        if(filePath == null) {
+            filePath = searchLocalM2(mvnUrl);
+        }
+        
+        return filePath;
+    }
+
+    private String searchLocalM2(String mvnUrl) {
+        MavenArtifact parsedMvnArtifact = MavenUrlHelper.parseMvnUrl(mvnUrl);
+        String artifactPath = MavenUrlHelper.getArtifactPath(parsedMvnArtifact);
+        if (artifactPath == null) {
+            return null;
+        }
+        
+        String filePath = null;
+        String LOCAL_M2 = MavenPlugin.getMaven().getLocalRepositoryPath();
+        if(MavenConstants.DEFAULT_LIB_GROUP_ID.equals(parsedMvnArtifact.getGroupId())) {
+            File m2Dir = new File(LOCAL_M2);
+            if (m2Dir.exists()) {
+                try {
+                    String moduleName = MavenUrlHelper.generateModuleNameByMavenURI(mvnUrl);
+                    filePath = searchWithFilename(m2Dir, moduleName);
+                } catch (Exception e) {
+                    ExceptionHandler.process(e);
+                }
+            }
+        }
+        
+        if(filePath == null && new File(LOCAL_M2 + "/" + artifactPath).exists()) {
+            filePath = LOCAL_M2 + "/" + artifactPath;
+        }
+        
+        return filePath;
+    }
+    
+    private String searchWithFilename(File dir, String filename) throws Exception {
+        String file = null;
+        
+        File[] fs = dir.listFiles();
+        if(fs != null) {
+            for (File f : fs) {
+                if (f.isDirectory()) {
+                    file = searchWithFilename(f, filename);
+                    if(file != null) {
+                        break;
+                    }
+                } else {
+                    if (f.isFile() && f.getName().equals(filename)) {
+                        file =  f.getAbsolutePath();
+                        break;
+                    }
+                }
+            }
+        }
+        
+        return file;
+    }
 }

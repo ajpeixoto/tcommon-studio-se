@@ -26,5 +26,4 @@
             serviceId="IDesignerMavenService">
       </Service>
    </extension>
-
 </plugin>

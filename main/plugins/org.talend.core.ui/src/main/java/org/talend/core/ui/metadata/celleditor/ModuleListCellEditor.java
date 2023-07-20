@@ -167,7 +167,7 @@ public class ModuleListCellEditor extends DialogCellEditor {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ILibraryManagerUIService.class)) {
             ILibraryManagerUIService libUiService = (ILibraryManagerUIService) GlobalServiceRegister.getDefault().getService(
                    ILibraryManagerUIService.class);
-            IConfigModuleDialog dialog = libUiService.getConfigModuleDialog(cellEditorWindow.getShell(), "\"newLine\"".equals(value) ? "" : value);
+            IConfigModuleDialog dialog = libUiService.getConfigModuleDialog(cellEditorWindow.getShell(), "\"newLine\"".equals(value) ? "" : value, false);
             if (dialog.open() == IDialogConstants.OK_ID) {
                 String selecteModule = dialog.getMavenURI();
                 if (selecteModule != null && (value == null || !value.equals(selecteModule))) {

@@ -368,6 +368,9 @@ public class ERepositoryObjectType extends DynaEnum<ERepositoryObjectType> {
             "repository.metadataCalculationView", "METADATA_CON_CALCULATION_VIEW", 106, true, true, new String[] { PROD_DI },
             new String[] {}, false);
 
+    public final static ERepositoryObjectType METADATA_SAP_CDS_VIEW = new ERepositoryObjectType("repository.SAPTable", //$NON-NLS-1$
+            "METADATA_SAP_CDS_VIEW", 107, true, true, new String[] { PROD_DI }, new String[] {}, false);
+
     private String label;
 
     private String alias;
@@ -1477,17 +1480,22 @@ public class ERepositoryObjectType extends DynaEnum<ERepositoryObjectType> {
         return allTypes;
     }
 
-    public static List<ERepositoryObjectType> getAllTypesOfJoblet() {
+    public static List<ERepositoryObjectType> getAllBigDataTypesOfJoblet(){
         List<ERepositoryObjectType> allTypes = new ArrayList<ERepositoryObjectType>();
-
-        if (ERepositoryObjectType.JOBLET != null) {
-            allTypes.add(ERepositoryObjectType.JOBLET);
-        }
         if (ERepositoryObjectType.SPARK_JOBLET != null) {
             allTypes.add(ERepositoryObjectType.SPARK_JOBLET);
         }
         if (ERepositoryObjectType.SPARK_STREAMING_JOBLET != null) {
             allTypes.add(ERepositoryObjectType.SPARK_STREAMING_JOBLET);
+        }
+        return allTypes;
+    }
+
+    public static List<ERepositoryObjectType> getAllTypesOfJoblet() {
+        List<ERepositoryObjectType> allTypes = new ArrayList<ERepositoryObjectType>();
+        allTypes.addAll(getAllBigDataTypesOfJoblet());
+        if (ERepositoryObjectType.JOBLET != null) {
+            allTypes.add(ERepositoryObjectType.JOBLET);
         }
         return allTypes;
     }

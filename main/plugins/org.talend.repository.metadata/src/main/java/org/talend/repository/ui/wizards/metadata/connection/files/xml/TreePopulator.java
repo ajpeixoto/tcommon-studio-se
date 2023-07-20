@@ -13,6 +13,9 @@
 package org.talend.repository.ui.wizards.metadata.connection.files.xml;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -20,6 +23,7 @@ import java.util.List;
 
 import org.apache.commons.collections.BidiMap;
 import org.apache.commons.collections.bidimap.DualHashBidiMap;
+import org.apache.commons.io.IOUtils;
 import org.apache.xerces.xs.XSModel;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -161,6 +165,28 @@ public class TreePopulator extends AbstractTreePopulator {
                     treeViewer.setInput(new Object[] { selected });
                     treeViewer.expandToLevel(3);
                 } else {
+                    String originalJsonFilePath = getOriginfilePath();
+                    if(null != originalJsonFilePath && !"".equals(originalJsonFilePath.trim())) {
+                        File file = new File(originalJsonFilePath);
+                        if (file.exists()) {
+                            if (!file.isDirectory()) {
+                                try(InputStream input = new FileInputStream(file);) {
+                                    String jsonStr = IOUtils.toString(input, getEncoding());
+                                    if(barceType(jsonStr) == 0 && childs.length == 1) {
+                                        if(isNeedAddRoot(jsonStr)) {
+                                            childs = ((ATreeNode)childs[0]).getChildren();
+                                        }
+                                    } else if(barceType(jsonStr) == 1 && childs.length == 1) {
+                                        ATreeNode objectNode = (ATreeNode) ((ATreeNode)childs[0]).getChildren()[0];
+                                        childs = objectNode.getChildren();
+                                    }
+                                } catch (IOException e) {
+                                    ExceptionHandler.process(e);
+                                }
+                            }
+                        }
+                    }
+                    
                 	treeViewer.setInput(childs);
                 	treeViewer.expandToLevel(3);
                 }
@@ -170,7 +196,35 @@ public class TreePopulator extends AbstractTreePopulator {
         }
         return false;
     }
-
+    
+    private int barceType(String originalJsonString) {
+        for (int c = 0; c < originalJsonString.length(); ++c) {
+            if (originalJsonString.charAt(c) == '{') {
+                return 0; //brace
+            } else if (originalJsonString.charAt(c) == '[') {
+                return 1; //bracket
+            }
+        }
+        
+        return -1;
+    }
+    private boolean isNeedAddRoot(String originalJsonString) {
+        boolean isNeedAddRoot = false;
+        net.sf.json.JSONObject jso = net.sf.json.JSONObject.fromObject(originalJsonString);
+        String jsonKey = "";
+        Object firstObject = null;
+        if (jso.names().size() == 1) {
+            jsonKey = jso.names().get(0).toString();
+            firstObject = jso.get(jsonKey);
+        }
+        if (jso.size() > 1
+                || (firstObject != null && firstObject instanceof net.sf.json.JSONArray && ((net.sf.json.JSONArray) firstObject)
+                        .size() > 1)) {
+            isNeedAddRoot = true;
+        }
+        return isNeedAddRoot;
+    }
+    
     public boolean populateTree(XSModel xsModel, ATreeNode selectedNode, List<ATreeNode> treeNodes) {
         xPathToTreeItem.clear();
         ATreeNode treeNode = null;

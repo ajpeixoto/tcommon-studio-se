@@ -12,8 +12,9 @@
 // ============================================================================
 package org.talend.core.pendo.mapper;
 
-import org.talend.core.pendo.PendoTrackDataUtil.TrackEvent;
-import org.talend.core.pendo.PendoTrackSender;
+import org.talend.core.pendo.AbstractPendoTrackManager;
+import org.talend.core.pendo.TrackEvent;
+import org.talend.core.pendo.properties.IPendoDataProperties;
 import org.talend.core.pendo.properties.PendoAutoMapProperties;
 
 /**
@@ -21,7 +22,7 @@ import org.talend.core.pendo.properties.PendoAutoMapProperties;
  * 
  * DOC jding class global comment. Detailled comment
  */
-public class PendoAutoMapManager {
+public class PendoAutoMapManager extends AbstractPendoTrackManager {
     
     private int mappingChangeCount = 0;
 
@@ -45,9 +46,18 @@ public class PendoAutoMapManager {
         if (mappingChangeCount < 1) {
             return;
         }
-        PendoAutoMapProperties properties = new PendoAutoMapProperties();
-        properties.setAutoMappings(mappingChangeCount);
-        PendoTrackSender.getInstance().sendToPendo(TrackEvent.AUTOMAP, properties);
+        super.sendTrackToPendo();
     }
 
+    @Override
+    public TrackEvent getTrackEvent() {
+        return TrackEvent.AUTOMAP;
+    }
+
+    @Override
+    public IPendoDataProperties collectProperties() {
+        PendoAutoMapProperties properties = new PendoAutoMapProperties();
+        properties.setAutoMappings(mappingChangeCount);
+        return properties;
+    }
 }

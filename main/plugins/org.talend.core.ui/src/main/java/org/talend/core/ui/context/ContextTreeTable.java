@@ -59,6 +59,7 @@ import org.eclipse.nebula.widgets.nattable.hideshow.RowHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnHideCommand;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.config.DefaultColumnHeaderStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.painter.cell.TextPainter;
 import org.eclipse.nebula.widgets.nattable.painter.layer.NatGridLayerPainter;
@@ -82,6 +83,7 @@ import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
@@ -89,6 +91,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.talend.commons.exception.PersistenceException;
+import org.talend.commons.ui.runtime.ColorConstants;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IContextManager;
@@ -109,6 +112,7 @@ import org.talend.core.ui.context.nattableTree.ContextNatTableStyleConfiguration
 import org.talend.core.ui.context.nattableTree.ContextNatTableUtils;
 import org.talend.core.ui.context.nattableTree.ContextParaModeChangeMenuConfiguration;
 import org.talend.core.ui.context.nattableTree.ContextRowDataListFixture;
+import org.talend.core.ui.context.nattableTree.ContextValueLabelAccumulator;
 import org.talend.core.ui.context.nattableTree.ExtendedContextColumnPropertyAccessor;
 import org.talend.core.ui.i18n.Messages;
 import org.talend.repository.ProjectManager;
@@ -128,7 +132,7 @@ public class ContextTreeTable {
 
     private NatTable natTable;
 
-    // for bug TDI-32821， use LinkedList to keep the original order of context parameter list.
+    // for bug TDI-32821锛� use LinkedList to keep the original order of context parameter list.
     private List<ContextTreeNode> treeNodes = new LinkedList<ContextTreeNode>();
 
     private static Map<String, Boolean> expandMap = new HashMap<>();
@@ -270,7 +274,7 @@ public class ContextTreeTable {
             final GridLayer gridLayer = new GridLayer(viewportLayer, sortHeaderLayer, rowHeaderLayer, cornerLayer);
 
             // config the column edit configuration
-            ColumnOverrideLabelAccumulator labelAccumulator = new ColumnOverrideLabelAccumulator(bodyDataLayer);
+            ContextValueLabelAccumulator labelAccumulator = new ContextValueLabelAccumulator(bodyDataLayer, bodyDataProvider, manager.getContextManager(), columnGroupModel);
             bodyDataLayer.setConfigLabelAccumulator(labelAccumulator);
             registerColumnLabels(labelAccumulator, ContextRowDataListFixture.getContexts(manager.getContextManager()));
 
@@ -306,14 +310,15 @@ public class ContextTreeTable {
 
             attachCheckColumnTip(natTable);
 
+            final Color backgroundColor = ColorConstants.getTableBackgroundColor();
             // global settings only effect on body and default region, so should set other regions' color separately.
-            natTable.setBackground(GUIHelper.COLOR_WHITE);
+            natTable.setBackground(backgroundColor);
             natTable.addConfiguration(new AbstractRegistryConfiguration() {
 
                 @Override
                 public void configureRegistry(IConfigRegistry configRegistry) {
                     Style cellStyle = new Style();
-                    cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, GUIHelper.COLOR_WHITE);
+                    cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, backgroundColor);
                     configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, cellStyle, DisplayMode.NORMAL,
                             GridRegion.COLUMN_HEADER);
                     configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, cellStyle, DisplayMode.NORMAL,
@@ -550,8 +555,8 @@ public class ContextTreeTable {
     private void addCustomSelectionBehaviour(SelectionLayer layer) {
         // need control the selection style when select the rows.
         DefaultSelectionStyleConfiguration selectStyleConfig = new DefaultSelectionStyleConfiguration();
-        selectStyleConfig.selectedHeaderBgColor = GUIHelper.COLOR_WIDGET_BACKGROUND;
-        selectStyleConfig.selectedHeaderFgColor = GUIHelper.COLOR_BLACK;
+        selectStyleConfig.selectedHeaderBgColor = ColorConstants.getTableBackgroundColor();
+        selectStyleConfig.selectedHeaderFgColor = ColorConstants.getTableForegroundColor();
         selectStyleConfig.selectedHeaderFont = GUIHelper.DEFAULT_FONT;
         layer.addConfiguration(selectStyleConfig);
     }
@@ -801,12 +806,32 @@ public class ContextTreeTable {
             if (cellValue instanceof Boolean) {
                 return new Point(col, row);
             }
+            ILayerCell cell = this.nt.getCellByPosition(col, row);
+            if (cell != null && cell.getConfigLabels() != null
+                    && cell.getConfigLabels().contains(ContextTableConstants.LABEL_VALUE_NOT_MATCH_TYPE)
+                    && cell.getConfigLabels().contains(ContextTableConstants.COLUMN_CONTEXT_VALUE)) {
+                return new Point(col, row);
+            }
             return null;
         }
 
         @Override
         protected String getText(Event event) {
-            return Messages.getString("ContextTreeTable.PromptToolTips"); //$NON-NLS-1$
+            int col = this.nt.getColumnPositionByX(event.x);
+            int row = this.nt.getRowPositionByY(event.y);
+
+            Object cellValue = this.nt.getDataValueByPosition(col, row);
+
+            if (cellValue instanceof Boolean) {
+                return Messages.getString("ContextTreeTable.PromptToolTips");
+            }
+            ILayerCell cell = this.nt.getCellByPosition(col, row);
+            if (cell != null && cell.getConfigLabels() != null
+                    && cell.getConfigLabels().contains(ContextTableConstants.LABEL_VALUE_NOT_MATCH_TYPE)
+                    && cell.getConfigLabels().contains(ContextTableConstants.COLUMN_CONTEXT_VALUE)) {
+                return Messages.getString("ContextValidator.ParameterValueNotMatch");
+            }
+            return null;
         }
 
         @Override

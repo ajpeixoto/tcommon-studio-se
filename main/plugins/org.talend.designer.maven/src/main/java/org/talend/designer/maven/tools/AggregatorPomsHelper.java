@@ -668,7 +668,10 @@ public class AggregatorPomsHelper {
                 Set<JobInfo> allJobInfos = ProcessorUtilities.getChildrenJobInfo(item, false, true);
                 allJobInfos.add(new JobInfo(item, item.getProcess().getDefaultContext()));
                 return allJobInfos.stream();
-            }).map(info -> info.getJobletProperty() != null ? info.getJobletProperty().getItem() : info.getProcessItem())
+            }).filter(info -> !info.isTestContainer() && ProjectManager.getInstance()
+                    .isInCurrentMainProject(info.getJobletProperty() != null ? info.getJobletProperty() : info.getProcessItem()))
+                    .distinct()
+                    .map(info -> info.getJobletProperty() != null ? info.getJobletProperty().getItem() : info.getProcessItem())
                     .collect(Collectors.toSet());
         } else {
             allItems = objects.stream().map(object -> object.getProperty().getItem()).collect(Collectors.toSet());

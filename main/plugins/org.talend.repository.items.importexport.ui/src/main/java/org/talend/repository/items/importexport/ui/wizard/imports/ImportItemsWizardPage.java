@@ -48,6 +48,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -63,7 +64,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeItem;
@@ -151,7 +151,7 @@ public class ImportItemsWizardPage extends WizardPage {
     private final List<String> errors = new ArrayList<String>();
 
     protected Button overwriteButton;
-
+                                                                                                       
     /*
      *
      */
@@ -191,16 +191,26 @@ public class ImportItemsWizardPage extends WizardPage {
 
     @Override
     public void createControl(Composite parent) {
-        Composite composite = new Composite(parent, SWT.NONE);
-        setControl(composite);
+        ScrolledComposite scrolledComposite = new ScrolledComposite(parent, SWT.V_SCROLL);
+        setControl(scrolledComposite);
+        scrolledComposite.setLayout(new GridLayout());
+        scrolledComposite.setLayoutData( new GridData(GridData.FILL_BOTH));
+        
+        Composite composite = new Composite(scrolledComposite, SWT.NONE);
         composite.setLayout(new GridLayout());
         composite.setLayoutData(new GridData(GridData.FILL_BOTH | GridData.GRAB_HORIZONTAL | GridData.GRAB_VERTICAL));
-
+        scrolledComposite.setContent(composite);
+        
         createSelectionArea(composite);
         createImportDependenciesArea(composite);
         createItemListArea(composite);
         createErrorsListArea(composite);
         createAdditionArea(composite);
+        
+        scrolledComposite.setContent(composite);
+        scrolledComposite.setExpandHorizontal(true);
+        scrolledComposite.setExpandVertical(true);
+        scrolledComposite.setMinSize(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 
         Dialog.applyDialogFont(composite);
     }
@@ -658,21 +668,41 @@ public class ImportItemsWizardPage extends WizardPage {
         GridData gridData = new GridData(GridData.GRAB_HORIZONTAL | GridData.GRAB_VERTICAL | GridData.FILL_BOTH);
         optionsArea.setLayoutData(gridData);
 
-        Group internalIdGroup = new Group(optionsArea, SWT.NONE);
-        internalIdGroup.setText(Messages.getString("ImportItemsWizardPage_internalIdGroup"));
-        internalIdGroup.setLayout(new GridLayout(1, true));
-        FormData internalIdGroupLayoutData = new FormData();
-        internalIdGroupLayoutData.top = new FormAttachment(0);
-        internalIdGroupLayoutData.left = new FormAttachment(0);
-        internalIdGroup.setLayoutData(internalIdGroupLayoutData);
-
-        regenIdBtn = new Button(internalIdGroup, SWT.RADIO);
-        regenIdBtn.setText(Messages.getString("ImportItemsWizardPage_internalIdGroup_alwaysRegenId"));
-
-        Button keepOrigIdBtn = new Button(internalIdGroup, SWT.RADIO);
-        keepOrigIdBtn.setText(Messages.getString("ImportItemsWizardPage_internalIdGroup_keepOrigId"));
-        keepOrigIdBtn.setSelection(true);
-
+//        Group internalIdGroup = new Group(optionsArea, SWT.NONE);
+//        internalIdGroup.setText(Messages.getString("ImportItemsWizardPage_internalIdGroup"));
+//        internalIdGroup.setLayout(new GridLayout(1, true));
+//        FormData internalIdGroupLayoutData = new FormData();
+//        internalIdGroupLayoutData.top = new FormAttachment(0);
+//        internalIdGroupLayoutData.left = new FormAttachment(0);
+//        internalIdGroup.setLayoutData(internalIdGroupLayoutData);
+//
+//        regenIdBtn = new Button(internalIdGroup, SWT.RADIO);
+//        regenIdBtn.setText(Messages.getString("ImportItemsWizardPage_internalIdGroup_alwaysRegenId"));
+//
+//        Button keepOrigIdBtn = new Button(internalIdGroup, SWT.RADIO);
+//        keepOrigIdBtn.setText(Messages.getString("ImportItemsWizardPage_internalIdGroup_keepOrigId"));
+//        keepOrigIdBtn.setSelection(true);
+//
+//        // see feature 3949
+//        this.overwriteButton = new Button(optionsArea, SWT.CHECK);
+//        this.overwriteButton.setText(Messages.getString("ImportItemsWizardPage_overwriteItemsTxt")); //$NON-NLS-1$
+//        this.overwriteButton.addSelectionListener(new SelectionAdapter() {
+//
+//            @Override
+//            public void widgetSelected(SelectionEvent e) {
+//                if (StringUtils.isNotEmpty(directoryPathField.getText()) || StringUtils.isNotEmpty(archivePathField.getText())) {
+//                    populateItems(overwriteButton.getSelection(), true);
+//                }
+//            }
+//
+//        });
+//        FormData overwriteLayoutData = new FormData();
+//        overwriteLayoutData.top = new FormAttachment(internalIdGroup, 5, SWT.BOTTOM);
+//        overwriteLayoutData.left = new FormAttachment(internalIdGroup, 0, SWT.LEFT);
+//        this.overwriteButton.setLayoutData(overwriteLayoutData);
+//
+//        internalIdGroup.setVisible(false);
+        
         // see feature 3949
         this.overwriteButton = new Button(optionsArea, SWT.CHECK);
         this.overwriteButton.setText(Messages.getString("ImportItemsWizardPage_overwriteItemsTxt")); //$NON-NLS-1$
@@ -687,11 +717,9 @@ public class ImportItemsWizardPage extends WizardPage {
 
         });
         FormData overwriteLayoutData = new FormData();
-        overwriteLayoutData.top = new FormAttachment(internalIdGroup, 5, SWT.BOTTOM);
-        overwriteLayoutData.left = new FormAttachment(internalIdGroup, 0, SWT.LEFT);
+        overwriteLayoutData.top = new FormAttachment(optionsArea, 5, SWT.BOTTOM);
+        overwriteLayoutData.left = new FormAttachment(optionsArea, 0, SWT.LEFT);
         this.overwriteButton.setLayoutData(overwriteLayoutData);
-
-        internalIdGroup.setVisible(false);
     }
 
     protected boolean isEnableForExchange() {
@@ -854,6 +882,8 @@ public class ImportItemsWizardPage extends WizardPage {
 
             toSelectSet.addAll(parentNodetoSelectSet);
         }
+        // to make doCheckStateChanged execute from ContainerCheckedTreeViewer.setCheckedElements(Object[])
+        filteredCheckboxTree.getViewer().setCheckedElements(new Object[0]);
         filteredCheckboxTree.getViewer().setCheckedElements(toSelectSet.toArray());
     }
 

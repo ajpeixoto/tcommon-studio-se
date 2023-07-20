@@ -126,7 +126,7 @@ public class ExtractMetaDataUtils {
 
     public static final String SNOWFLAKE = "Snowflake"; //$NON-NLS-1$
 
-    public static final String SNOWFLAKE_DRIVER_JAR = "snowflake-jdbc-3.13.8.jar"; //$NON-NLS-1$
+    public static final String SNOWFLAKE_DRIVER_JAR = "snowflake-jdbc-3.13.29.jar"; //$NON-NLS-1$
 
     private ExtractMetaDataUtils() {
     }
@@ -985,9 +985,8 @@ public class ExtractMetaDataUtils {
                         driverClassName = getDriverClassByDbType(dbType);
                     }
                     // feature TDI-22108
-                    if (EDatabaseTypeName.VERTICA.getXmlName().equals(dbType)
-                            && EDatabaseVersion4Drivers.VERTICA_9.getVersionValue().equals(dbVersion)) {
-                        driverClassName = EDatabase4DriverClassName.VERTICA2.getDriverClass();
+                    if (EDatabaseTypeName.VERTICA.getXmlName().equals(dbType)) {
+                        driverClassName = EDatabase4DriverClassName.VERTICA.getDriverClass();
                     } else if (EDatabaseTypeName.MYSQL.getXmlName().equals(dbType)) {
                         if (EDatabaseVersion4Drivers.MYSQL_8.getVersionValue().equals(dbVersion)) {
                             driverClassName = EDatabase4DriverClassName.MYSQL8.getDriverClass();
@@ -1009,6 +1008,12 @@ public class ExtractMetaDataUtils {
                     }else if(EDatabaseTypeName.GREENPLUM.getDisplayName().equals(dbType)
                             && EDatabaseVersion4Drivers.GREENPLUM.getVersionValue().equals(dbVersion)){
                         driverClassName = EDatabase4DriverClassName.GREENPLUM.getDriverClass();
+                    } else if (EDatabaseTypeName.AMAZON_AURORA.getXmlName().equals(dbType)) {
+                        if (EDatabaseVersion4Drivers.AMAZON_AURORA.getVersionValue().equals(dbVersion)) {
+                            driverClassName = EDatabase4DriverClassName.AMAZON_AURORA.getDriverClass();
+                        } else if (EDatabaseVersion4Drivers.AMAZON_AURORA_3.getVersionValue().equals(dbVersion)) {
+                            driverClassName = EDatabase4DriverClassName.AMAZON_AURORA_3.getDriverClass();
+                        }
                     }
                 }
             } else {

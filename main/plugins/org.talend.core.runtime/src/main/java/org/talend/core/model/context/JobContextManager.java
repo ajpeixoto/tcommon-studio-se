@@ -33,6 +33,7 @@ import org.talend.core.model.properties.ContextItem;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.cwm.helper.ResourceHelper;
+import org.talend.cwm.helper.StudioEncryptionHelper;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
 import org.talend.designer.core.model.utils.emf.talendfile.TalendFileFactory;
@@ -299,6 +300,7 @@ public class JobContextManager implements IContextManager {
         }
         List<ContextItem> contextItemList = ContextUtils.getAllContextItem();
         boolean setDefault = false;
+        ContextUtils.clearMissingContextCache();
         for (int i = 0; i < contextTypeList.size(); i++) {
             contextType = (ContextType) contextTypeList.get(i);
             String name = contextType.getName();
@@ -335,6 +337,8 @@ public class JobContextManager implements IContextManager {
                 } else {
                     contextParam.setType(MetadataTalendType.getDefaultTalendType());
                 }
+                //To avoid encrypt the same value}
+                contextParam.setOriginEncryptedValue(contextParamType.getValue());
                 contextParam.setValue(contextParamType.getRawValue());
 
                 contextParam.setPromptNeeded(contextParamType.isPromptNeeded());
@@ -526,6 +530,7 @@ public class JobContextManager implements IContextManager {
 
         EList newcontextTypeList = new BasicEList();
         Map<String, Item> idToItemMap = new HashMap<String, Item>();
+        ContextUtils.clearMissingContextCache();
         for (int i = 0; i < listContext.size(); i++) {
             IContext context = listContext.get(i);
             String contextGroupName = renameGroupContext.get(context);
@@ -560,7 +565,10 @@ public class JobContextManager implements IContextManager {
                     contextParamType.setName(contextParam.getName());
                     contextParamType.setPrompt(contextParam.getPrompt());
                     contextParamType.setType(contextParam.getType());
+                    //To avoid encrypt the same value
+                    contextParamType.setValue(contextParam.getOriginEncryptedValue()); 
                     contextParamType.setRawValue(contextParam.getValue());
+                    contextParam.setOriginEncryptedValue(contextParamType.getValue()); // For origin encrypted value is null or encryption key upgrade
                     contextParamType.setPromptNeeded(contextParam.isPromptNeeded());
                     contextParamType.setComment(contextParam.getComment());
                     if (!contextParam.isBuiltIn()) {

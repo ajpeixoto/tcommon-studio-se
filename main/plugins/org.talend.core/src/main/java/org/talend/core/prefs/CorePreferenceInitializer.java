@@ -99,6 +99,8 @@ public class CorePreferenceInitializer extends AbstractPreferenceInitializer {
         CorePlugin.getDefault().getPreferenceStore()
                 .setDefault(ITalendCorePrefConstants.FORBIDDEN_MAPPING_LENGTH_PREC_LOGIC, false);
 
+        CorePlugin.getDefault().getPreferenceStore().setDefault(ITalendCorePrefConstants.PERSPECTIVE_PERSIST_SCOPE,
+                ITalendCorePrefConstants.PERSPECTIVE_PERSIST_SCOPE_DEFAULT);
     }
 
 }
