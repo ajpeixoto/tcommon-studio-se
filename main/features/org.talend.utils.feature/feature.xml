@@ -16,7 +16,7 @@
     <import plugin="org.apache.commons.lang" version="0.0.0" match="greaterOrEqual"/>
     <import plugin="org.apache.commons.lang3" version="0.0.0" match="greaterOrEqual"/>
     <import plugin="org.apache.log4j" version="0.0.0" match="greaterOrEqual"/>
-    <import plugin="org.apache.servicemix.bundles.avro" version="0.0.0" match="greaterOrEqual"/>
+    <import plugin="avro" version="0.0.0" match="greaterOrEqual"/>
     <import plugin="org.junit" version="4.13.2" match="greaterOrEqual"/>
     <import plugin="org.slf4j.api" version="0.0.0" match="greaterOrEqual"/>
     <import plugin="org.slf4j.binding.log4j12" version="0.0.0" match="greaterOrEqual"/>

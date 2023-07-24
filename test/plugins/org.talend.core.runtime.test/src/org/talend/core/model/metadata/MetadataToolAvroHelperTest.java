@@ -30,15 +30,11 @@ import org.apache.avro.SchemaBuilder;
 import org.apache.avro.SchemaBuilder.FieldAssembler;
 import org.apache.avro.SchemaBuilder.FieldBuilder;
 import org.apache.avro.SchemaBuilder.RecordBuilder;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.junit.Test;
 import org.talend.core.model.metadata.builder.connection.ConnectionFactory;
 import org.talend.core.model.metadata.builder.connection.MetadataColumn;
 import org.talend.core.model.metadata.builder.connection.MetadataTable;
 import org.talend.core.model.metadata.types.JavaTypesManager;
-import org.talend.core.model.repository.IRepositoryPrefConstants;
-import org.talend.core.prefs.ITalendCorePrefConstants;
 import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.cwm.helper.TaggedValueHelper;
 import org.talend.daikon.avro.AvroUtils;
@@ -228,7 +224,7 @@ public class MetadataToolAvroHelperTest {
     public void testConvertFromAvro_2() {
         String schemaObj = "{\"type\":\"record\",\"name\":\"AccountContactRole\",\"fields\":[{\"name\":\"long\",\"type\":\"string\",\"talend.field.length\":\"18\",\"talend.field.dbColumnName\":\"long\"},"
                 + "{\"name\":\"A\",\"type\":\"string\",\"talend.field.length\":\"18\",\"talend.field.dbColumnName\":\"A\"},{\"name\":\"B\",\"type\":\"string\",\"talend.field.length\":\"18\",\"talend.field.dbColumnName\":\"B\"},"
-                + "{\"name\":\"_234\",\"type\":\"string\",\"talend.field.length\":\"18\",\"talend.field.dbColumnName\":\"1234\"},{\"name\":\"中文\",\"type\":\"string\",\"talend.field.length\":\"18\",\"talend.field.dbColumnName\":\"中文\"},"
+                + "{\"name\":\"_234\",\"type\":\"string\",\"talend.field.length\":\"18\",\"talend.field.dbColumnName\":\"1234\"},{\"name\":\"ä¸­æ–‡\",\"type\":\"string\",\"talend.field.length\":\"18\",\"talend.field.dbColumnName\":\"ä¸­æ–‡\"},"
                 + "{\"name\":\"TEST\",\"type\":\"string\",\"talend.field.length\":\"18\",\"talend.field.dbColumnName\":\"TEST\"},{\"name\":\"TEST1\",\"type\":\"string\",\"talend.field.length\":\"18\",\"talend.field.dbColumnName\":\"TEST\"}]}";
 
         MetadataTable metadataTable = ConnectionFactory.eINSTANCE.createMetadataTable();
@@ -236,7 +232,7 @@ public class MetadataToolAvroHelperTest {
         metadataTable.setName("table1");
         metadataTable.setLabel("table1");
         metadataTable.setSourceName("table1");
-        Schema avroSchema = new Schema.Parser().parse((String) schemaObj);
+        Schema avroSchema = new Schema.Parser().setValidateDefaults(false).parse((String) schemaObj);
 
         CoreRuntimePlugin.getInstance().getProjectPreferenceManager().setAllowSpecificCharacters(true);
         for (Schema.Field field : avroSchema.getFields()) {
@@ -346,7 +342,7 @@ public class MetadataToolAvroHelperTest {
 
     @Test
     public void testConvertFromAvroJapanese() {
-        String schemaObj = "{\"type\":\"record\",\"name\":\"AccountContactRole\",\"fields\":[{\"name\":\"主鍵\",\"type\":\"string\",\"talend.field.length\":\"18\",\"talend.field.dbColumnName\":\"主鍵\"},"
+        String schemaObj = "{\"type\":\"record\",\"name\":\"AccountContactRole\",\"fields\":[{\"name\":\"ä¸»é�µ\",\"type\":\"string\",\"talend.field.length\":\"18\",\"talend.field.dbColumnName\":\"ä¸»é�µ\"},"
                 + "{\"name\":\"名前\",\"type\":\"string\",\"talend.field.length\":\"18\",\"talend.field.dbColumnName\":\"名前\"}]}";
 
         MetadataTable metadataTable = ConnectionFactory.eINSTANCE.createMetadataTable();
@@ -354,7 +350,7 @@ public class MetadataToolAvroHelperTest {
         metadataTable.setName("table1");
         metadataTable.setLabel("table1");
         metadataTable.setSourceName("table1");
-        Schema avroSchema = new Schema.Parser().parse((String) schemaObj);
+        Schema avroSchema = new Schema.Parser().setValidateDefaults(false).parse((String) schemaObj);
 
         CoreRuntimePlugin.getInstance().getProjectPreferenceManager().setAllowSpecificCharacters(true);
         for (Schema.Field field : avroSchema.getFields()) {
