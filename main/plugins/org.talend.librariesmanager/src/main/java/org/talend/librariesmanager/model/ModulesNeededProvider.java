@@ -812,8 +812,6 @@ public class ModulesNeededProvider {
         if (importNeedsListForBeans == null) {
             importNeedsListForBeans = getModulesNeededForRoutes(processItem);
 
-            importNeedsListForBeans.add(getComponentModuleById("CAMEL", "camel-cxf"));
-
             importNeedsListForBeans.add(getComponentModuleById("CAMEL", "cxf-core"));
             importNeedsListForBeans.add(getComponentModuleById("CAMEL", "javax.ws.rs-api"));
             for (ModuleNeeded need : importNeedsListForBeans) {
