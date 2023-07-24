@@ -17,17 +17,19 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.codehaus.plexus.util.FileUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.utils.resource.FileExtensions;
 import org.talend.core.nexus.ArtifactRepositoryBean;
 import org.talend.core.runtime.util.SharedStudioUtils;
 import org.talend.core.service.IUpdateService;
 import org.talend.updates.runtime.engine.component.InstallComponentMessages;
 import org.talend.updates.runtime.engine.factory.ComponentsLocalNexusInstallFactory;
+import org.talend.updates.runtime.maven.M2repoBaseInstaller;
 import org.talend.updates.runtime.maven.MavenRepoSynchronizer;
 import org.talend.updates.runtime.model.ExtraFeature;
 import org.talend.updates.runtime.model.FeatureCategory;
@@ -158,5 +160,17 @@ public class UpdateService implements IUpdateService {
     public boolean updateArtifactsFileSha256Hex(IProgressMonitor monitor, String studioArtifactsFileShaCodeHex) {
         return SharedStudioPatchInfoProvider.getInstance().updateArtifactsFileSha256Hex(studioArtifactsFileShaCodeHex);
     }
+    
+	/**
+	 * Check and install components
+	 */
+	public void installComponents(IProgressMonitor monitor) {
+		M2repoBaseInstaller installer = new M2repoBaseInstaller();
+		try {
+			installer.install(monitor);
+		} catch (Exception e) {
+			ExceptionHandler.process(e);
+		}
+	}
 }
 

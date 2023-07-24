@@ -26,5 +26,7 @@ public interface IUpdateService extends IService {
     public String getSharedStudioMissingPatchVersion();
     
     public boolean updateArtifactsFileSha256Hex(IProgressMonitor monitor, String studioArtifactsFileShaCodeHex);
+    
+    public void installComponents(IProgressMonitor monitor);
 
 }

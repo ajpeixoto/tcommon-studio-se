@@ -54,7 +54,9 @@ Export-Package: org.talend.core,
  org.talend.core.services.resource,
  org.talend.core.views,
  org.talend.designer.runprocess
-Import-Package: org.apache.commons.collections4.map
+Import-Package: org.apache.commons.collections4.map,
+ org.eclipse.m2e.core,
+ org.eclipse.m2e.core.embedder
 Bundle-ClassPath: .,
  lib/log4j-api-2.17.1.jar,
  lib/log4j-core-2.17.1.jar
