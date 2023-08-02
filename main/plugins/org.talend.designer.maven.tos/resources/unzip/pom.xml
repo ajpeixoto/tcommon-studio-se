@@ -53,7 +53,7 @@
 		<dependency>
         	<groupId>com.fasterxml.jackson</groupId>
         	<artifactId>jackson-bom</artifactId>
-        	<version>2.13.4.20221013</version>
+        	<version>2.14.3</version>
         	<type>pom</type>
       	</dependency>
 		<dependency>
@@ -319,7 +319,7 @@
 								<extraArtifact>org.junit:junit-bom:5.7.1:pom</extraArtifact>
 								<extraArtifact>org.junit:junit-bom:5.8.2:pom</extraArtifact>
 								<extraArtifact>org.junit:junit-bom:5.9.1:pom</extraArtifact>
-								<extraArtifact>com.fasterxml.jackson:jackson-bom:2.13.4.20221013:pom</extraArtifact>
+								<extraArtifact>com.fasterxml.jackson:jackson-bom:2.14.3:pom</extraArtifact>
 							</extraArtifacts>
 							<pomIncludes>
 								<pomInclude>*/*.pom</pomInclude>

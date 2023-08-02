@@ -79,8 +79,8 @@ public enum EDatabaseVersion4Drivers {
     MSSQL_PROP(new DbVersion4Drivers(EDatabaseTypeName.MSSQL,
             "Microsoft", "MSSQL_PROP", //$NON-NLS-1$ //$NON-NLS-2$
             new String[] { "mssql-jdbc-actual.jar", "slf4j-api-1.7.34.jar", "slf4j-reload4j-1.7.34.jar", "msal4j-1.11.0.jar", //$NON-NLS-1$
-                    "oauth2-oidc-sdk-9.7.jar", "reload4j-1.2.22.jar", "jackson-core-2.13.4.jar",
-                    "jackson-databind-2.13.4.2.jar", "jackson-annotations-2.13.4.jar", "jcip-annotations-1.0-1.jar",
+                    "oauth2-oidc-sdk-9.7.jar", "reload4j-1.2.22.jar", "jackson-core-2.14.3.jar",
+                    "jackson-databind-2.14.3.jar", "jackson-annotations-2.14.3.jar", "jcip-annotations-1.0-1.jar",
                     "json-smart-2.4.11.jar", "nimbus-jose-jwt-9.22.jar", "accessors-smart-2.4.11.jar", "asm-9.5.jar",
                     "content-type-2.1.jar", "lang-tag-1.5.jar" })),
 
@@ -153,8 +153,8 @@ public enum EDatabaseVersion4Drivers {
     REDSHIFT(new DbVersion4Drivers(EDatabaseTypeName.REDSHIFT, "redshift", "REDSHIFT", //$NON-NLS-1$ //$NON-NLS-2$
             new String[]{ "redshift-jdbc42-no-awssdk-1.2.55.1083.jar", "antlr4-runtime-4.8-1.jar" })), //$NON-NLS-1$ //$NON-NLS-2$
     REDSHIFT_SSO(new DbVersion4Drivers(EDatabaseTypeName.REDSHIFT_SSO, "redshift sso", "REDSHIFT_SSO", //$NON-NLS-1$ //$NON-NLS-2$
-            new String[] { "redshift-jdbc42-no-awssdk-1.2.55.1083.jar", "antlr4-runtime-4.8-1.jar", "jackson-core-2.13.4.jar", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                    "jackson-databind-2.13.4.2.jar", "jackson-annotations-2.13.4.jar", "httpcore-4.4.13.jar", "httpclient-4.5.13.jar", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$//$NON-NLS-4$
+            new String[] { "redshift-jdbc42-no-awssdk-1.2.55.1083.jar", "antlr4-runtime-4.8-1.jar", "jackson-core-2.14.3.jar", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    "jackson-databind-2.14.3.jar", "jackson-annotations-2.14.3.jar", "httpcore-4.4.13.jar", "httpclient-4.5.13.jar", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$//$NON-NLS-4$
                     "joda-time-2.8.1.jar", "commons-logging-1.2.jar", "commons-codec-1.14.jar", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                     "aws-java-sdk-redshift-internal-1.12.x.jar", "aws-java-sdk-core-1.12.315.jar", //$NON-NLS-1$ //$NON-NLS-2$
                     "aws-java-sdk-sts-1.12.315.jar", "aws-java-sdk-redshift-1.12.315.jar", "jmespath-java-1.12.315.jar" })), //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
