@@ -224,7 +224,7 @@ public class MetadataToolAvroHelperTest {
     public void testConvertFromAvro_2() {
         String schemaObj = "{\"type\":\"record\",\"name\":\"AccountContactRole\",\"fields\":[{\"name\":\"long\",\"type\":\"string\",\"talend.field.length\":\"18\",\"talend.field.dbColumnName\":\"long\"},"
                 + "{\"name\":\"A\",\"type\":\"string\",\"talend.field.length\":\"18\",\"talend.field.dbColumnName\":\"A\"},{\"name\":\"B\",\"type\":\"string\",\"talend.field.length\":\"18\",\"talend.field.dbColumnName\":\"B\"},"
-                + "{\"name\":\"_234\",\"type\":\"string\",\"talend.field.length\":\"18\",\"talend.field.dbColumnName\":\"1234\"},{\"name\":\"ä¸­æ–‡\",\"type\":\"string\",\"talend.field.length\":\"18\",\"talend.field.dbColumnName\":\"ä¸­æ–‡\"},"
+                + "{\"name\":\"_234\",\"type\":\"string\",\"talend.field.length\":\"18\",\"talend.field.dbColumnName\":\"1234\"},{\"name\":\"中文\",\"type\":\"string\",\"talend.field.length\":\"18\",\"talend.field.dbColumnName\":\"中文\"},"
                 + "{\"name\":\"TEST\",\"type\":\"string\",\"talend.field.length\":\"18\",\"talend.field.dbColumnName\":\"TEST\"},{\"name\":\"TEST1\",\"type\":\"string\",\"talend.field.length\":\"18\",\"talend.field.dbColumnName\":\"TEST\"}]}";
 
         MetadataTable metadataTable = ConnectionFactory.eINSTANCE.createMetadataTable();
@@ -342,7 +342,7 @@ public class MetadataToolAvroHelperTest {
 
     @Test
     public void testConvertFromAvroJapanese() {
-        String schemaObj = "{\"type\":\"record\",\"name\":\"AccountContactRole\",\"fields\":[{\"name\":\"ä¸»é�µ\",\"type\":\"string\",\"talend.field.length\":\"18\",\"talend.field.dbColumnName\":\"ä¸»é�µ\"},"
+        String schemaObj = "{\"type\":\"record\",\"name\":\"AccountContactRole\",\"fields\":[{\"name\":\"主鍵\",\"type\":\"string\",\"talend.field.length\":\"18\",\"talend.field.dbColumnName\":\"主鍵\"},"
                 + "{\"name\":\"名前\",\"type\":\"string\",\"talend.field.length\":\"18\",\"talend.field.dbColumnName\":\"名前\"}]}";
 
         MetadataTable metadataTable = ConnectionFactory.eINSTANCE.createMetadataTable();
