@@ -689,5 +689,6 @@
     <genClasses ecoreClass="properties.ecore#//RoutinesJarItem">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference properties.ecore#//RoutinesJarItem/routinesJarType"/>
     </genClasses>
+    <genClasses ecoreClass="properties.ecore#//BigQueryConnectionItem"/>
   </genPackages>
 </genmodel:GenModel>

@@ -2588,6 +2588,7 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
             case PropertiesPackage.SALESFORCE_SCHEMA_CONNECTION_ITEM:
             case PropertiesPackage.WSDL_SCHEMA_CONNECTION_ITEM:
             case PropertiesPackage.SAP_CONNECTION_ITEM:
+            case PropertiesPackage.BIG_QUERY_CONNECTION_ITEM:
             case PropertiesPackage.MDM_CONNECTION_ITEM:
             case PropertiesPackage.HL7_CONNECTION_ITEM:
             case PropertiesPackage.FTP_CONNECTION_ITEM:
@@ -2949,6 +2950,9 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
                 break;
             case PropertiesPackage.SAP_CONNECTION_ITEM:
                 itemResource = create(project2, (ConnectionItem) item, ERepositoryObjectType.METADATA_SAPCONNECTIONS, path);
+                break;
+            case PropertiesPackage.BIG_QUERY_CONNECTION_ITEM:
+                itemResource = create(project2, (ConnectionItem) item, ERepositoryObjectType.METADATA_BIGQUERYCONNECTIONS, path);
                 break;
             case PropertiesPackage.MDM_CONNECTION_ITEM:
                 itemResource = create(project2, (ConnectionItem) item, ERepositoryObjectType.METADATA_MDMCONNECTION, path);

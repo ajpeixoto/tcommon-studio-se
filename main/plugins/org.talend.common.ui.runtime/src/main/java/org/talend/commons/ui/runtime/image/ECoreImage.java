@@ -115,6 +115,8 @@ public enum ECoreImage implements IImage {
 
     METADATA_SAPCONNECTION_ICON("/icons1/sapconnection.png"), //$NON-NLS-1$
     METADATA_SAPCONNECTION_WIZ("/icons1/connection_wiz.gif"), //$NON-NLS-1$
+    
+    METADATA_BIGQUERYCONNECTION_ICON("/icons1/bigqueryconnection.png"), //$NON-NLS-1$
 
     METADATA_HEADERFOOTER_ICON("/icons1/headerfooter_icon32.png"), //$NON-NLS-1$
 

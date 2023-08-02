@@ -178,6 +178,13 @@ public class MetadataService implements IMetadataService {
                         relatedWizard = service.newWizard(PlatformUI.getWorkbench(), creation, realNode, null);
                     }
                 }
+            } else if (objectType.equals(ERepositoryObjectType.METADATA_BIGQUERYCONNECTIONS)) {
+                if (PluginChecker.isBigQueryWizardPluginLoaded()) {
+                    IProviderService service = GlobalServiceRegister.getDefault().findService("IBigQueryProviderService");
+                    if (service != null) {
+                        relatedWizard = service.newWizard(PlatformUI.getWorkbench(), creation, realNode, null);
+                    }
+                }
             } else if (objectType.equals(ERepositoryObjectType.METADATA_HEADER_FOOTER)) {
                 if (GlobalServiceRegister.getDefault().isServiceRegistered(IHeaderFooterProviderService.class)) {
                     IHeaderFooterProviderService service = (IHeaderFooterProviderService) GlobalServiceRegister.getDefault()
