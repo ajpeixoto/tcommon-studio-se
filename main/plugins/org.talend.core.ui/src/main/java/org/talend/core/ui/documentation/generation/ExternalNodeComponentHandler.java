@@ -175,9 +175,28 @@ public class ExternalNodeComponentHandler extends AbstractComponentHandler {
                 generateComponentSchemaInfo(externalNode, componentElement);
                 generateComponentElementParamInfo(parametersElement, elementParameterList);
             } else {
+                boolean isSCDComponent = externalNode.getComponent().getName().endsWith("SCD");
+                if (isSCDComponent) {
+                    Element parametersElement = componentElement.addElement("parameters"); //$NON-NLS-1$
+                    List elementParameterList = externalNode.getElementParameters();
+                    generateComponentSchemaInfo(externalNode, componentElement);
+                    generateComponentElementParamInfo(parametersElement, elementParameterList);
+                }
                 URL fileURL = componentDocumentation.getHTMLFile();
                 if (fileURL != null) {
                     this.externalNodeHTMLMap.put(componentName, fileURL);
+                    if (isSCDComponent) {
+                        // add extra check and uncheck icon for SCDComponent
+                        File picPath = new File(
+                                HTMLDocUtils.getTmpFolder() + File.separatorChar + IHTMLDocConstants.PICTUREFOLDERPATH);
+                        if (picPath.exists()) {
+                            for (File f : picPath.listFiles()) {
+                                if (!picFilePathMap.containsKey(f.getName())) {
+                                    picFilePathMap.put(f.getName(), f.getAbsolutePath());
+                                }
+                            }
+                        }
+                    }
                 }
             }
             componentElement.addComment(componentName);
