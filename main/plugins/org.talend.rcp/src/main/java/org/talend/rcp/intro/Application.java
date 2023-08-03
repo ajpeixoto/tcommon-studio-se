@@ -301,7 +301,9 @@ public class Application implements IApplication {
                 if (projectType != null) {
                     store.putValue("last_started_project_type", projectType);
                 }
-                System.setProperty("clearPersistedState", Boolean.TRUE.toString());
+                if (!PluginChecker.isStudioLite() || Boolean.getBoolean(IStudioLiteP2Service.PROP_CLEARPERSISTEDSTATE)) {
+                    System.setProperty("clearPersistedState", Boolean.TRUE.toString());
+                }
             }
 
             cleanupNonExistingProjects();
