@@ -39,6 +39,8 @@ import org.talend.core.model.update.IStudioUpdateConfig;
  */
 public interface IStudioLiteP2Service extends IService {
 
+    public static final String PROP_CLEARPERSISTEDSTATE = "talend.studio.switchProject.clearPersistedState";
+
     public static final String CONFIG_STORAGE_FOLDER = "talend/studioLite/";
 
     public static final String BUNDLES_INFOS_STORAGE_FOLDER = CONFIG_STORAGE_FOLDER + "bundlesInfo/";
