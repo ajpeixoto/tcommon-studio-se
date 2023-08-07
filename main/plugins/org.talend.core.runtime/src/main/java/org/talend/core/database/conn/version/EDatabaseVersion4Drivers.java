@@ -33,7 +33,7 @@ public enum EDatabaseVersion4Drivers {
     ACCESS_2007(new DbVersion4Drivers(EDatabaseTypeName.ACCESS, "Access 2007", "Access_2007")), //$NON-NLS-1$ //$NON-NLS-2$
     // oracle
     ORACLE_18(new DbVersion4Drivers(new EDatabaseTypeName[] { EDatabaseTypeName.ORACLEFORSID, EDatabaseTypeName.ORACLESN,
-            EDatabaseTypeName.ORACLE_OCI, EDatabaseTypeName.ORACLE_CUSTOM }, "Oracle 18 and above", "ORACLE_18", "ojdbc8-19.3.0.0.jar")),
+            EDatabaseTypeName.ORACLE_OCI, EDatabaseTypeName.ORACLE_CUSTOM }, "Oracle 18 and above", "ORACLE_18", "ojdbc8-19.19.0.0.jar")),
     ORACLE_12(new DbVersion4Drivers(new EDatabaseTypeName[] { EDatabaseTypeName.ORACLEFORSID, EDatabaseTypeName.ORACLESN,
             EDatabaseTypeName.ORACLE_OCI, EDatabaseTypeName.ORACLE_CUSTOM }, "Oracle 12 (Deprecated)", "ORACLE_12",
             "ojdbc7.jar")),

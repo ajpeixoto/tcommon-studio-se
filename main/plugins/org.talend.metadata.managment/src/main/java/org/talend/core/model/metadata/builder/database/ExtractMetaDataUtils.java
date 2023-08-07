@@ -122,7 +122,7 @@ public class ExtractMetaDataUtils {
     private String[] ORACLE_SSL_JARS = new String[] { "oraclepki-12.2.0.1.jar", "osdt_cert-12.2.0.1.jar", //$NON-NLS-1$//$NON-NLS-2$
             "osdt_core-12.2.0.1.jar" }; //$NON-NLS-1$
     
-    private String ORACLE_NLS_JARS = "orai18n-19.3.0.0.jar";
+    private String ORACLE_NLS_JARS = "orai18n-19.19.0.0.jar";
 
     public static final String SNOWFLAKE = "Snowflake"; //$NON-NLS-1$
 
