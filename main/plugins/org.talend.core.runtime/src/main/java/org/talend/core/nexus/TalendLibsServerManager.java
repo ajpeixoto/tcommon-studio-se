@@ -12,7 +12,9 @@
 // ============================================================================
 package org.talend.core.nexus;
 
+import java.net.URLEncoder;
 import java.util.Date;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.talend.commons.exception.ExceptionHandler;
@@ -25,9 +27,9 @@ import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.runtime.i18n.Messages;
 import org.talend.core.runtime.projectsetting.ProjectPreferenceManager;
 import org.talend.core.service.IRemoteService;
+import org.talend.core.utils.SecurityStorageUtil;
 import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.model.RepositoryConstants;
-import org.talend.utils.security.StudioEncryption;
 
 /**
  * created by wchen on 2015年6月16日 Detailled comment
@@ -80,6 +82,8 @@ public class TalendLibsServerManager {
     public static final String NEXUS_PROXY_REPOSITORY_ID = "nexus.proxy.repository.id";
 
     public static final String ENABLE_PROXY_SETTING = "nexus.proxy.enable";
+
+    public static final String NEXUS_PROXY_STORAGE_CATEGORY = "org.talend.artifact.proxy.setting";
 
     public static final String TALEND_LIB_USER = "";//$NON-NLS-1$
 
@@ -255,16 +259,103 @@ public class TalendLibsServerManager {
             boolean enableProxyFlag = prefManager.getBoolean(TalendLibsServerManager.ENABLE_PROXY_SETTING);
             if (enableProxyFlag) {
                 serverBean.setServer(prefManager.getValue(TalendLibsServerManager.NEXUS_PROXY_URL));
-                serverBean.setUserName(prefManager.getValue(TalendLibsServerManager.NEXUS_PROXY_USERNAME));
-                serverBean.setPassword(StudioEncryption.getStudioEncryption(StudioEncryption.EncryptionKeyName.SYSTEM).decrypt(prefManager.getValue(TalendLibsServerManager.NEXUS_PROXY_PASSWORD)));
                 serverBean.setRepositoryId(prefManager.getValue(TalendLibsServerManager.NEXUS_PROXY_REPOSITORY_ID));
                 serverBean.setType(prefManager.getValue(TalendLibsServerManager.NEXUS_PROXY_TYPE));
+                String[] credentials = getProxyArtifactCredentials(serverBean.getServer(), serverBean.getRepositoryId(),
+                        NEXUS_PROXY_USERNAME, NEXUS_PROXY_PASSWORD);
+                if (credentials != null) {
+                    serverBean.setUserName(credentials[0]);
+                    serverBean.setPassword(credentials[1]);
+                }
             }
         }
         if (StringUtils.isNotEmpty(serverBean.getServer())) {
             return serverBean;
         }
         return null;
+    }
+
+    public String[] getProxyArtifactCredentials(String url, String repositoryId, String usernameKey, String passwordKey) {
+        if (StringUtils.isBlank(url)) {
+            return null;
+        }
+        try {
+            String path = getStoragePath(url, repositoryId);
+            Map<String, String> storageNodePairs = SecurityStorageUtil.getSecurityStorageNodePairs(path);
+            if (storageNodePairs != null) {
+                String username = storageNodePairs.get(usernameKey);
+                String password = storageNodePairs.get(passwordKey);
+                if (username == null && password == null) {
+                    return null;
+                }
+                return new String[] { username, password };
+            }
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        }
+        return null;
+    }
+
+    public void saveProxyArtifactCredentials(String url, String repositoryId, String usernameKey, String username,
+            String passwordKey, String password) {
+        if (StringUtils.isBlank(url)) {
+            return;
+        }
+        try {
+            String path = getStoragePath(url, repositoryId);
+            SecurityStorageUtil.saveToSecurityStorage(path, usernameKey, username, false, false);
+            SecurityStorageUtil.saveToSecurityStorage(path, passwordKey, password, true, false);
+            SecurityStorageUtil.flushSecurityStorage();
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        }
+    }
+
+    public void saveProxyArtifactCredentialsUserName(String url, String repositoryId, String usernameKey, String username,
+            boolean flush) {
+        if (StringUtils.isBlank(url)) {
+            return;
+        }
+        try {
+            String path = getStoragePath(url, repositoryId);
+            SecurityStorageUtil.saveToSecurityStorage(path, usernameKey, username, false, flush);
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        }
+    }
+
+    public void saveProxyArtifactCredentialsPassword(String url, String repositoryId, String passwordKey, String password,
+            boolean flush) {
+        if (StringUtils.isBlank(url)) {
+            return;
+        }
+        try {
+            String path = getStoragePath(url, repositoryId);
+            SecurityStorageUtil.saveToSecurityStorage(path, passwordKey, password, true, flush);
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        }
+    }
+
+    public void flushSecurityStorage() {
+        try {
+            SecurityStorageUtil.flushSecurityStorage();
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        }
+    }
+
+    private String getStoragePath(String url, String repositoryId) throws Exception {
+        String node = url;
+        if (StringUtils.isNotBlank(repositoryId)) {
+            if (!url.endsWith("/")) {
+                node = node + "/";
+            }
+            node = node + repositoryId;
+        }
+        node = URLEncoder.encode(node, "UTF-8");
+        String path = NEXUS_PROXY_STORAGE_CATEGORY + "/" + node;
+        return path;
     }
 
     public ArtifactRepositoryBean getTalentArtifactServer() {

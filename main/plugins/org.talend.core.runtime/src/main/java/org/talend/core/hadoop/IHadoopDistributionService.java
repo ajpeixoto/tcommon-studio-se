@@ -16,6 +16,7 @@ import java.util.Map;
 
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.IService;
+import org.talend.core.model.general.Project;
 import org.talend.core.runtime.hd.IDistributionsManager;
 import org.talend.core.runtime.hd.IDynamicDistributionManager;
 import org.talend.core.runtime.hd.IHDistribution;
@@ -131,6 +132,8 @@ public interface IHadoopDistributionService extends IService {
     boolean doSupportMapRTicket(IHDistributionVersion distributionVersion);
 
     IDynamicDistributionManager getDynamicDistributionManager();
+
+    void checkAndMigrateDistributionProxyCredential(Project project) throws Exception;
 
     public static IHadoopDistributionService get() {
         GlobalServiceRegister gsr = GlobalServiceRegister.getDefault();
