@@ -214,7 +214,10 @@ public class ExtendedNodeConnectionContextUtils {
         StandaloneMaster,
         StandaloneConfigureExecutors,
         StandaloneExecutorMemory,
-        StandaloneExecutorCore
+        StandaloneExecutorCore,
+        
+        //spark submit script
+        SparkSubmitScriptHome
     }
 
     static List<IContextParameter> getContextVariables(final String prefixName, Connection conn, Set<IConnParamName> paramSet) {

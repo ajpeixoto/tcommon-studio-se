@@ -214,7 +214,9 @@ public enum EHadoopProperties {
     
     UNIV_STANDALONE_EXEC_MEMORY,
     
-    UNIV_STANDALONE_EXEC_CORE;
+    UNIV_STANDALONE_EXEC_CORE,
+    
+    UNIV_SPARK_SUBMIT_SCRIPT_HOME;
 
     public String getName() {
         return this.name();

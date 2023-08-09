@@ -455,6 +455,9 @@ public class ConnParameterKeys {
     public static final String CONN_PARA_KEY_UNIV_STANDALONE_EXEC_MEMORY="CONN_PARA_KEY_UNIV_STANDALONE_EXEC_MEMORY";
     public static final String CONN_PARA_KEY_UNIV_STANDALONE_EXEC_CORE="CONN_PARA_KEY_UNIV_STANDALONE_EXEC_CORE";
     
+    
+    // Spark Submit Scripts
+    public static final String CONN_PARA_KEY_UNIV_SPARK_SUBMIT_SCRIPT_HOME="CONN_PARA_KEY_UNIV_SPARK_SUBMIT_SCRIPT_HOME";
     /**
      * Redshift
      */
