@@ -1350,6 +1350,8 @@ public class ProjectRepositoryNode extends RepositoryNode implements IProjectRep
             connection = dbMetadataConnection;
         } else if (type == ERepositoryObjectType.METADATA_SAPCONNECTIONS) {
             connection = ((ConnectionItem) repositoryObject.getProperty().getItem()).getConnection();
+        } else if (type == ERepositoryObjectType.METADATA_BIGQUERYCONNECTIONS) {
+            connection = ((ConnectionItem) repositoryObject.getProperty().getItem()).getConnection();
         } else if (type == ERepositoryObjectType.METADATA_FILE_DELIMITED) {
             connection = ((ConnectionItem) repositoryObject.getProperty().getItem()).getConnection();
         } else if (type == ERepositoryObjectType.METADATA_FILE_POSITIONAL) {

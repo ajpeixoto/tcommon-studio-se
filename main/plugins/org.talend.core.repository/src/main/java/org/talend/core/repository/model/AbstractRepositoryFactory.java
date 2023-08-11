@@ -184,6 +184,7 @@ public abstract class AbstractRepositoryFactory implements IRepositoryFactory {
         collect(getMetadata(project, ERepositoryObjectType.METADATA_FILE_LDIF), result);
         collect(getMetadata(project, ERepositoryObjectType.METADATA_CONNECTIONS), result);
         collect(getMetadata(project, ERepositoryObjectType.METADATA_SAPCONNECTIONS), result);
+        collect(getMetadata(project, ERepositoryObjectType.METADATA_BIGQUERYCONNECTIONS), result);
         collect(getMetadata(project, ERepositoryObjectType.METADATA_HEADER_FOOTER), result);
         collect(getMetadata(project, ERepositoryObjectType.METADATA_LDAP_SCHEMA), result);
         collect(getMetadata(project, ERepositoryObjectType.METADATA_GENERIC_SCHEMA), result);

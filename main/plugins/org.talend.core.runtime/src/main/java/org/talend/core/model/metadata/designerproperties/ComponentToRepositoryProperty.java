@@ -36,6 +36,7 @@ import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.MetadataTalendType;
 import org.talend.core.model.metadata.builder.ConvertionHelper;
 import org.talend.core.model.metadata.builder.connection.BRMSConnection;
+import org.talend.core.model.metadata.builder.connection.BigQueryConnection;
 import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.metadata.builder.connection.ConnectionFactory;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
@@ -213,6 +214,8 @@ public class ComponentToRepositoryProperty {
             setFileExcelValue((FileExcelConnection) connection, node, param);
         } else if (connection instanceof SAPConnection) {
             setSAPValue((SAPConnection) connection, node, param);
+        } else if (connection instanceof BigQueryConnection) {
+            setBigQueryValue((BigQueryConnection) connection, node, param);
         } else if (connection instanceof SalesforceSchemaConnection) {
             setSalesforceSchema((SalesforceSchemaConnection) connection, node, param);
         } else if (connection instanceof MDMConnection) {
@@ -1790,6 +1793,30 @@ public class ComponentToRepositoryProperty {
             String value = getParameterValue(connection, node, param);
             if (value != null) {
                 connection.setSystemNumber(value);
+            }
+        }
+    }
+    
+    private static void setBigQueryValue(BigQueryConnection connection, INode node, IElementParameter param) {
+        if ("SERVICE_ACCOUNT_CREDENTIALS_FILE".equals(param.getRepositoryValue())) {
+            String value = getParameterValue(connection, node, param);
+            if (value != null) {
+                connection.setServiceAccountCredentialsFile(value);
+            }
+        } else if ("PROJECT_ID".equals(param.getRepositoryValue())) {
+            String value = getParameterValue(connection, node, param);
+            if (value != null) {
+                connection.setProjectId(value);
+            }
+        } else if ("USE_REGION_ENDPOINT".equals(param.getRepositoryValue())) {
+            String value = getParameterValue(connection, node, param);
+            if (value != null) {
+                connection.setUseRegionEndpoint(Boolean.valueOf(value));
+            }
+        } else if ("REGION_ENDPOINT_BQ".equals(param.getRepositoryValue())) {
+            String value = getParameterValue(connection, node, param);
+            if (value != null) {
+                connection.setRegionEndpoint(value);
             }
         }
     }

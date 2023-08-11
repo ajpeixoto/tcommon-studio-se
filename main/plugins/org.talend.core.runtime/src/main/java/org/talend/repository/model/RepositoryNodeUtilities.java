@@ -512,6 +512,7 @@ public class RepositoryNodeUtilities {
                     || curType == ERepositoryObjectType.METADATA_FILE_RULES
                     || curType == ERepositoryObjectType.METADATA_FILE_LINKRULES
                     || curType == ERepositoryObjectType.METADATA_SAPCONNECTIONS
+                    || curType == ERepositoryObjectType.METADATA_BIGQUERYCONNECTIONS
                     || curType == ERepositoryObjectType.METADATA_HEADER_FOOTER) {
                 tmpType = ERepositoryObjectType.METADATA;
             } else if (curType == ERepositoryObjectType.ROUTINES || curType == ERepositoryObjectType.SNIPPETS) {

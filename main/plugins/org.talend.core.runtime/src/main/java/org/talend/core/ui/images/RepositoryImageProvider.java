@@ -53,6 +53,8 @@ public class RepositoryImageProvider {
             return ECoreImage.METADATA_CONNECTION_ICON;
         } else if (type == ERepositoryObjectType.METADATA_SAPCONNECTIONS || type == ERepositoryObjectType.METADATA_SAP_FUNCTION) {
             return ECoreImage.METADATA_SAPCONNECTION_ICON;
+        } else if (type == ERepositoryObjectType.METADATA_BIGQUERYCONNECTIONS) {
+            return ECoreImage.METADATA_BIGQUERYCONNECTION_ICON;
         } else if (type == ERepositoryObjectType.SQLPATTERNS) {
             return ECoreImage.METADATA_SQLPATTERN_ICON;
         } else if (type == ERepositoryObjectType.METADATA_CON_TABLE || type == ERepositoryObjectType.METADATA_SAP_IDOC) {
