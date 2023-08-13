@@ -44,7 +44,17 @@
 		    <artifactId>plexus-component-annotations</artifactId>
 		    <version>1.7.1</version>
 		</dependency>
-		
+		<dependency>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-assembly-plugin</artifactId>
+			<version>3.6.0</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.sonatype.plexus</groupId>
+					<artifactId>plexus-archiver</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 	</dependencies>
   	<build>
 		<plugins>
