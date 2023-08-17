@@ -10,7 +10,7 @@
 			<dbType type="BOOL" ignoreLen="true" ignorePre="true" />
 			<dbType type="BOX" ignoreLen="true" ignorePre="true" />
 			<dbType type="BPCHAR" ignoreLen="true" ignorePre="true" />
-			<dbType type="BYTEA" ignoreLen="true" ignorePre="true" />	
+			<dbType type="BYTEA" ignoreLen="true" ignorePre="true" />
 			<dbType type="CHAR" defaultLength="50" ignorePre="true"/>
 			<dbType type="CHARACTER" defaultLength="50" ignorePre="true"/>
 			<dbType type="CID" ignoreLen="true" ignorePre="true" />
@@ -36,7 +36,7 @@
 			<dbType type="LINE" ignoreLen="true" ignorePre="true" />
 			<dbType type="LSEG" ignoreLen="true" ignorePre="true" />
 			<dbType type="MACADDR" ignoreLen="true" ignorePre="true" />
-			<dbType type="MONEY" ignoreLen="true" ignorePre="true" />	
+			<dbType type="MONEY" ignoreLen="true" ignorePre="true" />
 			<dbType type="NAME" ignoreLen="true" ignorePre="true" />
 			<dbType type="NUMERIC" defaultLength="20" defaultPrecision="10"/>
 			<dbType type="DECIMAL" defaultLength="20" defaultPrecision="10"/>
@@ -46,7 +46,7 @@
 			<dbType type="POINT" ignoreLen="true" ignorePre="true"  />
 			<dbType type="POLYGON" ignoreLen="true" ignorePre="true"/>
 			<dbType type="REFCURSOR" ignoreLen="true" ignorePre="true" />
-			<dbType type="RELTIME" ignoreLen="true" ignorePre="true" />			
+			<dbType type="RELTIME" ignoreLen="true" ignorePre="true" />
 			<dbType type="REGCLASS" ignoreLen="true" ignorePre="true" />
 			<dbType type="REGOPER" ignoreLen="true" ignorePre="true" />
 			<dbType type="REGOPERATOR" ignoreLen="true" ignorePre="true" />
@@ -60,12 +60,14 @@
 			<dbType type="TIME" ignorePre="true" />
 			<dbType type="TINTERVAL" ignoreLen="true" ignorePre="true"  />
 			<dbType type="TIMESTAMPTZ" ignoreLen="true" ignorePre="true"  />
+			<dbType type="TIMESTAMP WITH TIME ZONE" ignoreLen="true" ignorePre="true"  />
 			<dbType type="TIMESTAMP" ignorePre="true"  />
 			<dbType type="TIMETZ" ignoreLen="true" ignorePre="true"  />
-			<dbType type="VARBIT" ignoreLen="true" ignorePre="true"  />			
+			<dbType type="TIME WITH TIME ZONE" ignoreLen="true" ignorePre="true"  />
+			<dbType type="VARBIT" ignoreLen="true" ignorePre="true"  />
 			<dbType type="VARCHAR" defaultLength="200" ignorePre="true" />
 			<dbType type="XID" ignoreLen="true" ignorePre="true"  />
-			
+
 			<dbType type="_ABSTIME" ignoreLen="true" ignorePre="true" />
 			<dbType type="_ACLITEM" ignoreLen="true" ignorePre="true" />
 			<dbType type="_BIT" ignoreLen="true" ignorePre="true" />
@@ -119,38 +121,40 @@
 		<language name="java">
 			<talendToDbTypes><!-- Adviced mappings  -->
 				<talendType type="id_List"/>
-				<talendType type="id_Boolean">	
+				<talendType type="id_Boolean">
 					<dbType type="BOOL" default="true" />
-					<dbType type="BOOLEAN" />					
+					<dbType type="BOOLEAN" />
 				</talendType>
-				<talendType type="id_Byte">		
+				<talendType type="id_Byte">
 				</talendType>
 				<talendType type="id_byte[]">
 					<dbType type="BIT" default="true" />
 					<dbType type="VARBIT" />
-					<dbType type="BIT VARYING" />				
+					<dbType type="BIT VARYING" />
 				</talendType>
 				<talendType type="id_Character">
 					<dbType type="CHAR" default="true" />
 					<dbType type="CHARACTER" />
 					<dbType type="BPCHAR" />
 					<dbType type="VARCHAR" />
-					<dbType type="TEXT" />							
+					<dbType type="TEXT" />
 				</talendType>
 				<talendType type="id_Date">
-					<dbType type="DATE" default="true" />				
+					<dbType type="DATE" default="true" />
 					<dbType type="ABSTIME" />
 					<dbType type="TIMETZ" />
+					<dbType type="TIME WITH TIME ZONE" />
 					<dbType type="TIME" />
 					<dbType type="TIMESTAMPTZ" />
+					<dbType type="TIMESTAMP WITH TIME ZONE" />
 					<dbType type="TIMESTAMP" />
 					<dbType type="INTERVAL" />
 					<dbType type="TINTERVAL" />
-					<dbType type="RELTIME" />						
+					<dbType type="RELTIME" />
 				</talendType>
 				<talendType type="id_BigDecimal">
 					<dbType type="NUMERIC" default="true" />
-					<dbType type="DECIMAL" />							
+					<dbType type="DECIMAL" />
 					<dbType type="FLOAT4" />
 					<dbType type="REAL" />
 					<dbType type="FLOAT8"/>
@@ -161,8 +165,8 @@
 					<dbType type="REAL" />
 					<dbType type="FLOAT8" default="true" />
 					<dbType type="NUMERIC" />
-					<dbType type="DECIMAL" />	
-					<dbType type="DOUBLE PRECISION"/>						
+					<dbType type="DECIMAL" />
+					<dbType type="DOUBLE PRECISION"/>
 				</talendType>
 				<talendType type="id_Float">
 					<dbType type="FLOAT4" default="true" />
@@ -170,7 +174,7 @@
 					<dbType type="REAL" />
 					<dbType type="NUMERIC" />
 					<dbType type="DECIMAL" />
-					<dbType type="DOUBLE PRECISION"/>				
+					<dbType type="DOUBLE PRECISION"/>
 				</talendType>
 				<talendType type="id_Integer">
 					<dbType type="INT2" />
@@ -180,7 +184,7 @@
 					<dbType type="INT8" />
 					<dbType type="BIGINT" />
 					<dbType type="BIGSERIAL" />
-					<dbType type="INTEGER" />										
+					<dbType type="INTEGER" />
 				</talendType>
 				<talendType type="id_Long">
 					<dbType type="INT2" />
@@ -188,8 +192,8 @@
 					<dbType type="SERIAL" />
 					<dbType type="INT8"  default="true" />
 					<dbType type="BIGINT" />
-					<dbType type="BIGSERIAL" />	
-					<dbType type="SMALLINT" />						
+					<dbType type="BIGSERIAL" />
+					<dbType type="SMALLINT" />
 				</talendType>
 				<talendType type="id_Object">
 					<dbType type="_POINT" />
@@ -210,26 +214,26 @@
 					<dbType type="_TIMESTAMPTZ" />
 					<dbType type="_TIMESTAMP" />
 					<dbType type="_TINTERVAL" />
-					<dbType type="_XID" />						
-					<dbType type="ACLITEM" />			
-					<dbType type="BYTEA" />						
+					<dbType type="_XID" />
+					<dbType type="ACLITEM" />
+					<dbType type="BYTEA" />
 					<dbType type="CID" />
 					<dbType type="CIDR" />
-					<dbType type="CIRCLE" />						
-					<dbType type="INET" />			
+					<dbType type="CIRCLE" />
+					<dbType type="INET" />
 					<dbType type="MACADDR" />
-					<dbType type="MONEY" />			
+					<dbType type="MONEY" />
 					<dbType type="OID" />
 					<dbType type="PATH" />
-					<dbType type="POLYGON" />			
+					<dbType type="POLYGON" />
 					<dbType type="REFCURSOR" />
 					<dbType type="REGCLASS" />
 					<dbType type="REGOPER" />
 					<dbType type="REGOPERATOR" />
 					<dbType type="REGPROC" />
 					<dbType type="REGPROCEDURE" />
-					<dbType type="REGTYPE" />						
-					<dbType type="SMGR" />			
+					<dbType type="REGTYPE" />
+					<dbType type="SMGR" />
 					<dbType type="TID" />
 					<dbType type="XID" />
 					<dbType type="_CHAR" />
@@ -239,7 +243,7 @@
 					<dbType type="BIGINT" />
 					<dbType type="BIT VARYING" />
 					<dbType type="_VARBIT" />
-					<dbType type="_BIT" />			
+					<dbType type="_BIT" />
 					<dbType type="_BOOL" />
 					<dbType type="BOOLEAN" />
 					<dbType type="BOX" />
@@ -276,7 +280,7 @@
 					<dbType type="OIDVECTOR" />
 					<dbType type="_OIDVECTOR" />
 					<dbType type="_PATH" />
-					<dbType type="POINT" default="true" />				
+					<dbType type="POINT" default="true" />
 				</talendType>
 				<talendType type="id_Short">
 					<dbType type="INT2"   default="true" />
@@ -285,22 +289,22 @@
 					<dbType type="INT8" />
 					<dbType type="BIGINT" />
 					<dbType type="BIGSERIAL" />
-					<dbType type="SMALLINT" />					
+					<dbType type="SMALLINT" />
 				</talendType>
 				<talendType type="id_String">
 					<dbType type="BPCHAR" />
 					<dbType type="VARCHAR" default="true" />
 					<dbType type="CHARACTER VARYING" />
-					<dbType type="TEXT" />				
+					<dbType type="TEXT" />
 				</talendType>
 			</talendToDbTypes>
 			<dbToTalendTypes>
 				<dbType type="INT2" >
-					<talendType type="id_Short" default="true" />				
+					<talendType type="id_Short" default="true" />
 				</dbType>
 				<dbType type="SMALLINT" >
-					<talendType type="id_Short" default="true" />				
-				</dbType>				
+					<talendType type="id_Short" default="true" />
+				</dbType>
 				<dbType type="INT4" >
 					<talendType type="id_Integer" default="true" />
 				</dbType>
@@ -308,330 +312,336 @@
      				<talendType type="id_Integer" default="true" />
     			</dbType>
     			<dbType type="CHARACTER VARYING" >
-					<talendType type="id_String" default="true" />				
+					<talendType type="id_String" default="true" />
 				</dbType>
 				<dbType type="BOOLEAN" >
-					<talendType type="id_Boolean" default="true" />				
-				</dbType> 				
+					<talendType type="id_Boolean" default="true" />
+				</dbType>
 				<dbType type="SERIAL" >
-					<talendType type="id_Integer" default="true" />				
-				</dbType>				
+					<talendType type="id_Integer" default="true" />
+				</dbType>
 				<dbType type="INT8" >
-					<talendType type="id_Long" default="true" />				
+					<talendType type="id_Long" default="true" />
 				</dbType>
 				<dbType type="BIGINT" >
-					<talendType type="id_Long" default="true" />				
-				</dbType>				
+					<talendType type="id_Long" default="true" />
+				</dbType>
 				<dbType type="BIGSERIAL" >
-					<talendType type="id_Long" default="true" />				
-				</dbType>				
+					<talendType type="id_Long" default="true" />
+				</dbType>
 				<dbType type="FLOAT4" >
-					<talendType type="id_Float" default="true" />				
-					<talendType type="id_BigDecimal"/>			
+					<talendType type="id_Float" default="true" />
+					<talendType type="id_BigDecimal"/>
 				</dbType>
 				<dbType type="REAL" >
-					<talendType type="id_Float" default="true" />				
-					<talendType type="id_BigDecimal"/>			
-				</dbType>			
+					<talendType type="id_Float" default="true" />
+					<talendType type="id_BigDecimal"/>
+				</dbType>
 				<dbType type="FLOAT8" >
-					<talendType type="id_Double" default="true" />				
-					<talendType type="id_BigDecimal"/>			
+					<talendType type="id_Double" default="true" />
+					<talendType type="id_BigDecimal"/>
 				</dbType>
 				<dbType type="DOUBLE PRECISION" >
-					<talendType type="id_Double" default="true" />				
-					<talendType type="id_BigDecimal"/>			
+					<talendType type="id_Double" default="true" />
+					<talendType type="id_BigDecimal"/>
 				</dbType>
 				<dbType type="NUMERIC">
 					<talendType type="id_Double"/>
-					<talendType type="id_BigDecimal" default="true" />			
+					<talendType type="id_BigDecimal" default="true" />
 				</dbType>
 				<dbType type="DECIMAL">
 					<talendType type="id_Double"/>
-					<talendType type="id_BigDecimal" default="true" />			
-				</dbType>				
+					<talendType type="id_BigDecimal" default="true" />
+				</dbType>
 				<dbType type="BOOL" >
-					<talendType type="id_Boolean" default="true" />				
-				</dbType>				
+					<talendType type="id_Boolean" default="true" />
+				</dbType>
 				<dbType type="BIT" >
-					<talendType type="id_byte[]" default="true" />	
-				</dbType>				
+					<talendType type="id_byte[]" default="true" />
+				</dbType>
 				<dbType type="VARBIT" >
-					<talendType type="id_byte[]" default="true" />				
-				</dbType>	
+					<talendType type="id_byte[]" default="true" />
+				</dbType>
 				<dbType type="BIT VARYING" >
-					<talendType type="id_byte[]" default="true" />				
-				</dbType>						
+					<talendType type="id_byte[]" default="true" />
+				</dbType>
 				<dbType type="CHAR" >
-					<talendType type="id_String" default="true" />				
+					<talendType type="id_String" default="true" />
 				</dbType>
 				<dbType type="CHARACTER" >
-					<talendType type="id_String" default="true" />				
-				</dbType>				
+					<talendType type="id_String" default="true" />
+				</dbType>
 				<dbType type="BPCHAR" >
-					<talendType type="id_String" default="true" />				
-				</dbType>				
+					<talendType type="id_String" default="true" />
+				</dbType>
 				<dbType type="VARCHAR" >
-					<talendType type="id_String" default="true" />				
-				</dbType>				
+					<talendType type="id_String" default="true" />
+				</dbType>
 				<dbType type="TEXT" >
-					<talendType type="id_String" default="true" />				
-				</dbType>				
+					<talendType type="id_String" default="true" />
+				</dbType>
 				<dbType type="DATE" >
-					<talendType type="id_Date" default="true" />				
-				</dbType>				
+					<talendType type="id_Date" default="true" />
+				</dbType>
 				<dbType type="ABSTIME" >
-					<talendType type="id_Date" default="true" />				
-				</dbType>				
+					<talendType type="id_Date" default="true" />
+				</dbType>
 				<dbType type="TIMETZ" >
-					<talendType type="id_Date" default="true" />				
-				</dbType>				
+					<talendType type="id_Date" default="true" />
+				</dbType>
+				<dbType type="TIME WITH TIME ZONE" >
+					<talendType type="id_Date" default="true" />
+				</dbType>
 				<dbType type="TIME" >
-					<talendType type="id_Date" default="true" />				
-				</dbType>				
+					<talendType type="id_Date" default="true" />
+				</dbType>
 				<dbType type="TIMESTAMPTZ" >
-					<talendType type="id_Date" default="true" />				
-				</dbType>				
+					<talendType type="id_Date" default="true" />
+				</dbType>
+				<dbType type="TIMESTAMP WITH TIME ZONE" >
+					<talendType type="id_Date" default="true" />
+				</dbType>
 				<dbType type="TIMESTAMP" >
-					<talendType type="id_Date" default="true" />				
+					<talendType type="id_Date" default="true" />
 				</dbType>
 				<dbType type="INTERVAL" >
-					<talendType type="id_Date" default="true" />				
-				</dbType>								
+					<talendType type="id_Date" default="true" />
+				</dbType>
 				<dbType type="TINTERVAL" >
-					<talendType type="id_Date" default="true" />				
-				</dbType>				
+					<talendType type="id_Date" default="true" />
+				</dbType>
 				<dbType type="RELTIME" >
-					<talendType type="id_Date" default="true" />				
-				</dbType>							
+					<talendType type="id_Date" default="true" />
+				</dbType>
 				<dbType type="ACLITEM" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>							
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="BYTEA" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>										
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="CID" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="CIDR" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="CIRCLE" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>										
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="INET" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>							
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="MACADDR" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="MONEY" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>							
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="OID" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="PATH" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="POLYGON" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>							
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="REFCURSOR" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="REGCLASS" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="REGOPER" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="REGOPERATOR" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="REGPROC" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="REGPROCEDURE" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="REGTYPE" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>										
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="SMGR" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>							
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="TID" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="XID" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="BOX" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="INT2VECTOR" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="LINE" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="LSEG" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="NAME" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="OIDVECTOR" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="POINT" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>	
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<!-- object -->
 				<dbType type="_OIDVECTOR" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="_PATH" >
-					<talendType type="id_Object" default="true" />				
+					<talendType type="id_Object" default="true" />
 				</dbType>
 				<dbType type="_NAME" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="_NUMERIC" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="_OID" >
-					<talendType type="id_Object" default="true" />				
+					<talendType type="id_Object" default="true" />
 				</dbType>
 				<dbType type="_LSEG" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="_MACADDR" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="_MONEY" >
-					<talendType type="id_Object" default="true" />				
+					<talendType type="id_Object" default="true" />
 				</dbType>
 				<dbType type="_LINE" >
-					<talendType type="id_Object" default="true" />				
+					<talendType type="id_Object" default="true" />
 				</dbType>
 				<dbType type="_INT2VECTOR" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="_INT4" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="_INTERVAL" >
-					<talendType type="id_Object" default="true" />				
+					<talendType type="id_Object" default="true" />
 				</dbType>
 				<dbType type="_BOX" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="_BYTEA" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="_VARCHAR" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="_BPCHAR" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="_CID" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="_CIDR" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="_CIRCLE" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="_DATE" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="_FLOAT8" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="_INET" >
-					<talendType type="id_Object" default="true" />				
+					<talendType type="id_Object" default="true" />
 				</dbType>
 				<dbType type="_CHAR" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="_ABSTIME" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="_ACLITEM" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="_INT8" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="_VARBIT" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="_BIT" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>							
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="_BOOL" >
-					<talendType type="id_Object" default="true" />				
+					<talendType type="id_Object" default="true" />
 				</dbType>
 				<dbType type="_POINT" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="_POLYGON" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="_FLOAT4" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="_REFCURSOR" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="_REGCLASS" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="_REGOPER" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="_REGOPERATOR" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="_REGPROC" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="_REGPROCEDURE" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="_REGTYPE" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="_RELTIME" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="_TEXT" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="_TID" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="_TIMETZ" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="_TIME" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="_TIMESTAMPTZ" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="_TIMESTAMP" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="_TINTERVAL" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>				
+					<talendType type="id_Object" default="true" />
+				</dbType>
 				<dbType type="_XID" >
-					<talendType type="id_Object" default="true" />				
-				</dbType>									
+					<talendType type="id_Object" default="true" />
+				</dbType>
 			</dbToTalendTypes>
 		</language>
 	</dbms>

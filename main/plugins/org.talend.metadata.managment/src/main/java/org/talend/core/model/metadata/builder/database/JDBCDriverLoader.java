@@ -17,6 +17,7 @@ import java.nio.charset.Charset;
 import java.security.Provider;
 import java.sql.Connection;
 import java.sql.Driver;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -42,6 +43,8 @@ public class JDBCDriverLoader {
     private static MultiKeyMap classLoadersMap = new MultiKeyMap();
 
     private static Map<String, HotClassLoader> classLoadersMapBasedOnLibraries = new HashMap<String, HotClassLoader>();
+    
+    private static MultiKeyMap driverShimCacheMap = new MultiKeyMap();
 
     /**
      * Loads the jars for hive embedded mode required, I do not think it is the better method to do this here. Due to
@@ -145,8 +148,14 @@ public class JDBCDriverLoader {
         DriverShim wapperDriver = null;
         Connection connection = null;
         try {
-            HotClassLoader loader = getHotClassLoader(jarPath, dbType, dbVersion);
-            wapperDriver = new DriverShim((getDriver(loader, jarPath, driverClassName, dbType, dbVersion)));
+            HotClassLoader loader = (HotClassLoader) classLoadersMap.get(dbType, dbVersion);
+            if(driverShimCacheMap.containsKey(driverClassName, dbType, dbVersion)) {
+                wapperDriver = (DriverShim) driverShimCacheMap.get(driverClassName, dbType, dbVersion);
+            } else {
+                loader = getHotClassLoader(jarPath, dbType, dbVersion);
+                wapperDriver = new DriverShim((getDriver(loader, jarPath, driverClassName, dbType, dbVersion)));
+                driverShimCacheMap.put(driverClassName, dbType, dbVersion, wapperDriver);
+            }
             // Object driver = loader.loadClass(driverClassName).newInstance();
             // wapperDriver = new DriverShim((Driver) (driver));
             Properties info = new Properties();
@@ -165,6 +174,11 @@ public class JDBCDriverLoader {
                 if (systemCharset != null && systemCharset.displayName() != null) {
                     info.put("charSet", systemCharset.displayName()); //$NON-NLS-1$
                 }
+            }
+            
+            //TUP-37016:Upgrade hsqldb to 2.7.1
+            if (dbType.equals(EDatabaseTypeName.ACCESS.getXmlName()) || ConnectionUtils.isHsql(url)) {
+                System.setProperty("hsqldb.method_class_names", "net.ucanaccess.converters.*");
             }
 
             if (additionalParams != null && !"".equals(additionalParams)
@@ -200,10 +214,20 @@ public class JDBCDriverLoader {
                 }
                 connection = wapperDriver.connect(url, info);
             }
+            
+            try {
+                ResultSet schemas = connection.getMetaData().getSchemas();
+                if(schemas.next()) {
+                    schemas.getString(1);
+                }
+            } catch (Exception e) {
+            }
+            
             // }
             // DriverManager.deregisterDriver(wapperDriver);
             // bug 9162
             list.add(connection);
+            
             list.add(wapperDriver);
             return list;
         } catch (Throwable e) {

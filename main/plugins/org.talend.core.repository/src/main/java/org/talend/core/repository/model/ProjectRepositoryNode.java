@@ -102,6 +102,7 @@ import org.talend.cwm.helper.ConnectionHelper;
 import org.talend.cwm.helper.SAPBWTableHelper;
 import org.talend.cwm.helper.SubItemHelper;
 import org.talend.cwm.helper.TableHelper;
+import org.talend.cwm.helper.TaggedValueHelper;
 import org.talend.designer.core.IDesignerCoreService;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.model.BinRepositoryNode;
@@ -1349,6 +1350,8 @@ public class ProjectRepositoryNode extends RepositoryNode implements IProjectRep
             connection = dbMetadataConnection;
         } else if (type == ERepositoryObjectType.METADATA_SAPCONNECTIONS) {
             connection = ((ConnectionItem) repositoryObject.getProperty().getItem()).getConnection();
+        } else if (type == ERepositoryObjectType.METADATA_BIGQUERYCONNECTIONS) {
+            connection = ((ConnectionItem) repositoryObject.getProperty().getItem()).getConnection();
         } else if (type == ERepositoryObjectType.METADATA_FILE_DELIMITED) {
             connection = ((ConnectionItem) repositoryObject.getProperty().getItem()).getConnection();
         } else if (type == ERepositoryObjectType.METADATA_FILE_POSITIONAL) {
@@ -1700,11 +1703,11 @@ public class ProjectRepositoryNode extends RepositoryNode implements IProjectRep
                 DatabaseConnectionItem connectionItem = (DatabaseConnectionItem) item;
                 DatabaseConnection connection = (DatabaseConnection) connectionItem.getConnection();
                 if (PluginChecker.isCDCPluginLoaded()) {
-                    ICDCProviderService service = GlobalServiceRegister.getDefault()
-                            .getService(ICDCProviderService.class);
+                    ICDCProviderService service = GlobalServiceRegister.getDefault().getService(ICDCProviderService.class);
+
                     if (service != null && service.canCreateCDCConnection(connection)) {
                         RepositoryNode cdcNode = new StableRepositoryNode(node,
-                                Messages.getString("ProjectRepositoryNode.cdcFoundation"), //$NON-NLS-1$
+                                Messages.getString("ProjectRepositoryNode.cdcFoundation.deprecated"), //$NON-NLS-1$
                                 ECoreImage.FOLDER_CLOSE_ICON);
                         node.getChildren().add(cdcNode);
                         service.createCDCTypes(recBinNode, cdcNode, connection.getCdcConns());
@@ -1751,6 +1754,9 @@ public class ProjectRepositoryNode extends RepositoryNode implements IProjectRep
 
             // 10. BW Business Content Extractor:
             createSAPContentExtractorNodes(repObj, metadataConnection, node, validationRules);
+
+            // 11. CDS views:
+            createSAPCDSViewNodes(repObj, metadataConnection, node, validationRules);
         } else if (metadataConnection instanceof SalesforceSchemaConnection) {
             createSalesforceModuleNodes(repObj, metadataConnection, node, validationRules);
         } else {
@@ -1784,7 +1790,9 @@ public class ProjectRepositoryNode extends RepositoryNode implements IProjectRep
         for (MetadataTable tablesWithOrder : tablesWithOrders) {
             EMap<String, String> properties = tablesWithOrder.getAdditionalProperties();
             String partitionKey = properties.get(EProperties.CONTENT_TYPE.name());
-            if (!ERepositoryObjectType.METADATA_SAP_CONTENT_EXTRACTOR.name().equals(partitionKey)) {
+            String cdsType = TaggedValueHelper.getValueString(EProperties.CONTENT_TYPE.name(), tablesWithOrder);
+            if (!ERepositoryObjectType.METADATA_SAP_CONTENT_EXTRACTOR.name().equals(partitionKey)
+                    && !ERepositoryObjectType.METADATA_SAP_CDS_VIEW.name().equals(cdsType)) {
                 tables.add(tablesWithOrder);
             }
         }
@@ -1961,6 +1969,32 @@ public class ProjectRepositoryNode extends RepositoryNode implements IProjectRep
             EMap<String, String> properties = tablesWithOrder.getAdditionalProperties();
             String partitionKey = properties.get(EProperties.CONTENT_TYPE.name());
             if (ERepositoryObjectType.METADATA_SAP_CONTENT_EXTRACTOR.name().equals(partitionKey)) {
+                tables.add(tablesWithOrder);
+            }
+        }
+        createTables(tableContainer, repObj, tables, ERepositoryObjectType.METADATA_CON_TABLE, validationRules);
+    }
+
+    private void createSAPCDSViewNodes(IRepositoryViewObject repObj, Connection metadataConnection, RepositoryNode node,
+            List<IRepositoryViewObject> validationRules) {
+        StableRepositoryNode tableContainer = new StableRepositoryNode(node,
+                Messages.getString("ProjectRepositoryNode.sapCDSView"), ECoreImage.FOLDER_CLOSE_ICON); //$NON-NLS-1$
+        tableContainer.setChildrenObjectType(ERepositoryObjectType.METADATA_CON_TABLE);
+        tableContainer.setProperties(EProperties.CONTENT_TYPE, ERepositoryObjectType.METADATA_SAP_CDS_VIEW);
+        IRepositoryNode cacheNode = nodeCache.getCache(tableContainer);
+        if (cacheNode != null && cacheNode instanceof StableRepositoryNode) {
+            tableContainer = (StableRepositoryNode) cacheNode;
+            tableContainer.getChildren().clear();
+        } else {
+            nodeCache.addCache(tableContainer, true);
+        }
+
+        node.getChildren().add(tableContainer);
+        List<MetadataTable> tablesWithOrders = ConnectionHelper.getTablesWithOrders(metadataConnection);
+        EList<MetadataTable> tables = new BasicEList<>();
+        for (MetadataTable tablesWithOrder : tablesWithOrders) {
+            String cdsType = TaggedValueHelper.getValueString(EProperties.CONTENT_TYPE.name(), tablesWithOrder);
+            if (ERepositoryObjectType.METADATA_SAP_CDS_VIEW.name().equals(cdsType)) {
                 tables.add(tablesWithOrder);
             }
         }

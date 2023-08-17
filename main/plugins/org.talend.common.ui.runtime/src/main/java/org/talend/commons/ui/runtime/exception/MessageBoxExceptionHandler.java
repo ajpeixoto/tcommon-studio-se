@@ -72,12 +72,27 @@ public final class MessageBoxExceptionHandler {
         }
     }
 
+    public static void process(Throwable ex, Shell shell, boolean wrapMessage) {
+        CommonExceptionHandler.process(ex);
+
+        if (CommonsPlugin.isHeadless() || CommonsPlugin.isJUnitTest()) {
+            return;
+        }
+
+        if (shell != null) {
+            showMessage(ex, shell, wrapMessage);
+        }
+    }
+
+    public static void showMessage(Throwable ex, Shell shell) {
+        showMessage(ex, shell, true);
+    }
     /**
      * Open a message box showing a generic message and exception message.
      *
      * @param ex - exception to show
      */
-    public static void showMessage(Throwable ex, Shell shell) {
+    public static void showMessage(Throwable ex, Shell shell, boolean wrapMessage) {
         if (ex.equals(lastShowedAction)) {
             return;
         }
@@ -85,10 +100,14 @@ public final class MessageBoxExceptionHandler {
 
         // TODO smallet use ErrorDialogWidthDetailArea ?
         String title = Messages.getString("commons.error"); //$NON-NLS-1$
-        String msg = Messages.getString("exception.errorOccured", ex.getMessage()); //$NON-NLS-1$
+        String excepMsg = ex.getMessage();
         //add for tup-19726/19790, as for exception detailMessage will show more details on log area.
         if(ex.getCause()!=null) {
-        	msg = Messages.getString("exception.errorOccured", ex.getCause().getMessage()); //$NON-NLS-1$
+            excepMsg = ex.getCause().getMessage();
+        }
+        String msg = Messages.getString("exception.errorOccured", excepMsg); //$NON-NLS-1$
+        if (!wrapMessage) {
+            msg = Messages.getString("exception.message", excepMsg); //$NON-NLS-1$
         }
         Priority priority = CommonExceptionHandler.getPriority(ex);
 

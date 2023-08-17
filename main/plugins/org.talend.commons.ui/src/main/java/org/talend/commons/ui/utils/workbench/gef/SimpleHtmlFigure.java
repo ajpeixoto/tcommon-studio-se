@@ -31,6 +31,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 import org.talend.commons.ui.gmf.util.DisplayUtils;
+import org.talend.commons.ui.runtime.ITalendThemeService;
 
 /**
  * Figure managing some simple HTML styles. <br/>
@@ -77,6 +78,8 @@ public class SimpleHtmlFigure extends Figure {
     private static Font boldFont = null;
 
     private static Font boldItalicFont = null;
+    
+    private static final Color DEFAULT_LABEL_COLOR = ITalendThemeService.getColor("NODE_FIGURE_LABEL_FORCEGROUND").orElse(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
 
     /**
      * Constructs a new SimpleHtmlFigure.
@@ -262,6 +265,8 @@ public class SimpleHtmlFigure extends Figure {
             label.setFont(fontToUse);
             if (colorStack.size() > 0) {
                 label.setForegroundColor(colorStack.get(colorStack.size() - 1));
+            } else {
+                label.setForegroundColor(DEFAULT_LABEL_COLOR); // Set label default foreground color
             }
             horizContainer.add(label);
         }

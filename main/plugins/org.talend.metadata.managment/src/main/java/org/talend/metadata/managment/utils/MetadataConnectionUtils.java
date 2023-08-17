@@ -37,6 +37,7 @@ import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.talend.commons.exception.CommonExceptionHandler;
 import org.talend.commons.exception.ExceptionHandler;
@@ -201,7 +202,7 @@ public class MetadataConnectionUtils {
                 }
                 list = ExtractMetaDataUtils.getInstance().connect(metadataBean.getDbType(), metadataBean.getUrl(),
                         metadataBean.getUsername(), metadataBean.getPassword(), metadataBean.getDriverClass(),
-                        metadataBean.getDriverJarPath(), metadataBean.getDbVersionString(), metadataBean.getAdditionalParams());
+                        metadataBean.getDriverJarPath(), metadataBean.getDbVersionString(), metadataBean.getAdditionalParams(), metadataBean.isSupportNLS());
             } catch (Exception e) {
                 rc.setMessage("fail to connect database!"); //$NON-NLS-1$
                 CommonExceptionHandler.process(e);
@@ -287,6 +288,7 @@ public class MetadataConnectionUtils {
             String dataBase = databaseConnection.getSID();
             String dbVersionString = databaseConnection.getDbVersionString();
             String additionalParams = databaseConnection.getAdditionalParams();
+            boolean supportNLS = databaseConnection.isSupportNLS();
 
             // MOD qiongli 2011-9-6,TDQ 3317.handle context mode
             if (databaseConnection.isContextMode()) {
@@ -318,7 +320,7 @@ public class MetadataConnectionUtils {
             }// ~
             additionalParams = ConvertionHelper.convertAdditionalParameters(databaseConnection);
             metadataConnection.setAdditionalParams(additionalParams);
-            metadataConnection.setDbVersionString(dbVersionString);
+            metadataConnection.setDbVersionString(ConvertionHelper.getDriverVersionString(databaseConnection));
             metadataConnection.setDatabase(dataBase);
             metadataConnection.setDbType(dbType);
             metadataConnection.setDriverJarPath(driverJarPath);
@@ -326,6 +328,7 @@ public class MetadataConnectionUtils {
             metadataConnection.setUsername(userName);
             metadataConnection.setPassword(password);
             metadataConnection.setUrl(dbUrl);
+            metadataConnection.setSupportNLS(supportNLS);            
 
             // TDQ-12299: transfer the OtherParameters to metadataConnection, because create impala connection use that
             // values
@@ -807,6 +810,33 @@ public class MetadataConnectionUtils {
             break;
         case MySQL:
             sqlStr = "SELECT TABLE_COMMENT FROM information_schema.TABLES WHERE TABLE_NAME='" + tableName + "'"; //$NON-NLS-1$ //$NON-NLS-2$
+            break;
+        default:
+            sqlStr = null;
+
+        }
+        return sqlStr;
+
+    }
+
+    public static String getCommonQueryStr(String productName) {
+        if (productName == null) {
+            return null;
+        }
+        productName = productName.replaceAll(" ", "_"); //$NON-NLS-1$ //$NON-NLS-2$
+        EDataBaseType eDataBaseType = null;
+        try {
+            eDataBaseType = EDataBaseType.valueOf(productName);
+        } catch (Exception e) {
+            eDataBaseType = EDataBaseType.Microsoft_SQL_Server;
+        }
+        String sqlStr = ""; //$NON-NLS-1$
+        switch (eDataBaseType) {
+        case Oracle:
+            sqlStr = "SELECT COMMENTS FROM USER_TAB_COMMENTS WHERE TABLE_NAME= ? "; //$NON-NLS-1$
+            break;
+        case MySQL:
+            sqlStr = "SELECT TABLE_COMMENT FROM information_schema.TABLES WHERE TABLE_NAME= ? "; //$NON-NLS-1$
             break;
         default:
             sqlStr = null;
@@ -1325,7 +1355,7 @@ public class MetadataConnectionUtils {
         return ExtractMetaDataUtils.getInstance().getConnection(metadataBean.getDbType(), metadataBean.getUrl(),
                 metadataBean.getUsername(), metadataBean.getPassword(), metadataBean.getDatabase(), metadataBean.getSchema(),
                 metadataBean.getDriverClass(), metadataBean.getDriverJarPath(), metadataBean.getDbVersionString(),
-                metadataBean.getAdditionalParams());
+                metadataBean.getAdditionalParams(), metadataBean.isSupportNLS());
     }
 
     /**
@@ -1410,16 +1440,20 @@ public class MetadataConnectionUtils {
         return false;
     }
     
-    public static IContext promptConfirmLauch(List<IContext> contexts) {
+    public static IContext promptConfirmLauch(List<IContext> contexts, IContext defaultContext) {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IMetadataManagmentUiService.class)) {
             IMetadataManagmentUiService mmUIService = GlobalServiceRegister.getDefault()
                     .getService(IMetadataManagmentUiService.class);
-            return mmUIService.promptConfirmLauch(PlatformUI.getWorkbench().getDisplay().getActiveShell(), contexts);
+            return mmUIService.promptConfirmLauch(PlatformUI.getWorkbench().getDisplay().getActiveShell(), contexts, defaultContext);
         }
         return null;
     }
 
     public static Connection prepareConection(Connection connection) {
+        return prepareConection(connection, false);
+    }
+
+    public static Connection prepareConection(Connection connection, boolean isDefaultContext) {
         // TDQ-19889 msjian: check whether context confirmation needed popup,
         // Enabling the prompt to context variables
         if (!Platform.isRunning() || !connection.isContextMode()) {
@@ -1438,14 +1472,26 @@ public class MetadataConnectionUtils {
             if (GlobalServiceRegister.getDefault().isServiceRegistered(IMetadataManagmentUiService.class)) {
                 IMetadataManagmentUiService mmUIService = GlobalServiceRegister.getDefault()
                         .getService(IMetadataManagmentUiService.class);
-                promptConfirmLauch = mmUIService.promptConfirmLauch(PlatformUI.getWorkbench().getDisplay().getActiveShell(),
-                        copyConnection , contextItem);
+                Shell shell = PlatformUI.getWorkbench().getDisplay().getActiveShell();
+                if (isDefaultContext) {
+                    promptConfirmLauch = mmUIService.promptConfirmLauch(shell, jobContext);
+                } else {
+                    promptConfirmLauch = mmUIService.promptConfirmLauch(shell, copyConnection, contextItem);
+                }
             }
             if (!promptConfirmLauch) {
                 return null;
+            } else {
+                if (isDefaultContext) {
+                    // save the input prompt context values to cache
+                    for (IContextParameter param : jobContext.getContextParameterList()) {
+                        JavaSqlFactory.savePromptConVars2Cache(connection, param);
+                    }
+                    // set the input values to connection
+                    JavaSqlFactory.setPromptContextValues(copyConnection);
+                }
             }
         }
-
         JavaSqlFactory.haveSetPromptContextVars = true;
         return copyConnection;
     }

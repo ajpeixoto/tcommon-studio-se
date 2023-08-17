@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.metadata.managment.connection.manager;
 
+import java.security.PrivilegedExceptionAction;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.SQLException;
@@ -26,6 +27,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.talend.commons.exception.CommonExceptionHandler;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.classloader.ClassLoaderFactory;
 import org.talend.core.classloader.DynamicClassLoader;
@@ -58,37 +60,34 @@ public class ImpalaConnectionManager extends DataBaseConnectionManager {
         return manager;
     }
 
-    public void checkConnection(IMetadataConnection metadataConn) throws ClassNotFoundException, InstantiationException,
-            IllegalAccessException, SQLException {
+    public void checkConnection(IMetadataConnection metadataConn) throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
         createConnection(metadataConn);
     }
 
-    public Connection createConnection(final IMetadataConnection metadataConn) throws ClassNotFoundException,
-            InstantiationException, IllegalAccessException, SQLException {
+    public Connection createConnection(final IMetadataConnection metadataConn) throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
         FutureTask<Connection> futureTask = new FutureTask<Connection>(new Callable<Connection>() {
 
             @Override
             public Connection call() throws Exception {
                 Connection conn = null;
-                
+
                 if( !("".equals( metadataConn.getPassword() ) ||  "\"\"".equals( metadataConn.getPassword() )) ) {
                     String url = metadataConn.getUrl().replace(";auth=noSasl", "");
 
-                    
+
                     if (url.startsWith("jdbc:hive2") && !url.contains(";user=")) {
                         url = url + ";user=" + metadataConn.getUsername() + ";password=" + metadataConn.getPassword();
                     } else if (!url.contains(";AuthMech=3;UID=")) {
                         url = url + ";AuthMech=3;UID=" + metadataConn.getUsername() + ";PWD=" + metadataConn.getPassword();
                     }
-                    
+
                     metadataConn.setUrl(url);
                 }
-                
-                
+
                 String connURL = metadataConn.getUrl();
                 String username = metadataConn.getUsername();
-                String password = metadataConn.getPassword();                
-                
+                String password = metadataConn.getPassword();
+
                 // 1. Get class loader.
                 ClassLoader currClassLoader = Thread.currentThread().getContextClassLoader();
                 ClassLoader impalaClassLoader = getClassLoader(metadataConn);
@@ -98,35 +97,43 @@ public class ImpalaConnectionManager extends DataBaseConnectionManager {
                     String driverClass = EDatabase4DriverClassName.IMPALA.getDriverClass();
 
                     Map<String, Object> otherParametersMap = metadataConn.getOtherParameters();
+                    Object userGroupInformation = null;
+                    boolean useKerberos = false;
+                    boolean useKeytab = false;
                     if (otherParametersMap != null) {
-                        if (Boolean.valueOf((String) otherParametersMap.get(ConnParameterKeys.CONN_PARA_KEY_USE_KRB))) {
-                            if (Boolean.valueOf((String) metadataConn.getParameter(ConnParameterKeys.CONN_PARA_KEY_USEKEYTAB))) {
+
+                        // driver
+                        Object driverObj = otherParametersMap.get(ConnParameterKeys.IMPALA_DRIVER);
+                        String driverType = null;
+                        if (driverObj != null) {
+                            driverType = String.valueOf(driverObj);
+                        }
+
+                        useKerberos = Boolean.valueOf((String) otherParametersMap.get(ConnParameterKeys.CONN_PARA_KEY_USE_KRB));
+                        if (useKerberos) {
+                            // Set hadoop.security.authentication to Kerberos
+                            Object conf = Class.forName("org.apache.hadoop.conf.Configuration", true, impalaClassLoader) //$NON-NLS-1$
+                                    .newInstance();
+                            EHadoopConfProperties.AUTHENTICATION.set(conf, "KERBEROS"); //$NON-NLS-1$
+                            ReflectionUtils.invokeStaticMethod("org.apache.hadoop.security.UserGroupInformation", //$NON-NLS-1$
+                                    impalaClassLoader, "setConfiguration", new Object[] { conf }); //$NON-NLS-1$
+
+                            useKeytab = Boolean.valueOf((String) metadataConn.getParameter(ConnParameterKeys.CONN_PARA_KEY_USEKEYTAB));
+                            if (useKeytab) {
+                                // Login user using keytab
                                 String principal = (String) metadataConn
                                         .getParameter(ConnParameterKeys.CONN_PARA_KEY_KEYTAB_PRINCIPAL);
                                 String keytabPath = (String) metadataConn.getParameter(ConnParameterKeys.CONN_PARA_KEY_KEYTAB);
                                 try {
-                                    ReflectionUtils.invokeStaticMethod("org.apache.hadoop.security.UserGroupInformation", //$NON-NLS-1$
-                                            impalaClassLoader, "loginUserFromKeytab", new String[] { principal, keytabPath });
+                                    userGroupInformation = ReflectionUtils.invokeStaticMethod("org.apache.hadoop.security.UserGroupInformation", //$NON-NLS-1$
+                                            impalaClassLoader, "loginUserFromKeytabAndReturnUGI", new String[] { principal, keytabPath }); //$NON-NLS-1$
                                 } catch (Exception e) {
                                     throw new SQLException(e);
                                 }
-                            } else {
-                                Object conf = Class.forName("org.apache.hadoop.conf.Configuration", true, impalaClassLoader) //$NON-NLS-1$
-                                        .newInstance();
-                                EHadoopConfProperties.AUTHENTICATION.set(conf, "KERBEROS"); //$NON-NLS-1$
-                                ReflectionUtils.invokeStaticMethod("org.apache.hadoop.security.UserGroupInformation", //$NON-NLS-1$
-                                        impalaClassLoader, "setConfiguration", new Object[] { conf }); //$NON-NLS-1$
                             }
                         }
                         IHadoopDistributionService hadoopService = getHadoopDistributionService();
                         if ((hadoopService != null)) {
-                            // driver
-                            Object driverObj = otherParametersMap.get(ConnParameterKeys.IMPALA_DRIVER);
-                            String driverType = null;
-                            String impalaDriver = null;
-                            if (driverObj != null) {
-                                driverType = String.valueOf(driverObj);
-                            }
                             // distribution
                             Object distObj = otherParametersMap.get(ConnParameterKeys.CONN_PARA_KEY_IMPALA_DISTRIBUTION);
                             String distribution = null;
@@ -163,12 +170,25 @@ public class ImpalaConnectionManager extends DataBaseConnectionManager {
                     Properties info = new Properties();
                     username = username != null ? username : ""; //$NON-NLS-1$
                     password = password != null ? password : "";//$NON-NLS-1$
-                    
-                    
-//	                    info.setProperty("user", username);//$NON-NLS-1$
-//	                    info.setProperty("password", password);//$NON-NLS-1$
-                    
-                    conn = hiveDriver.connect(connURL, info);
+
+                    if (!useKeytab) {
+                        conn = hiveDriver.connect(connURL, info);
+                    } else {
+                        PrivilegedExceptionAction<Object> privilegedExceptionAction = new java.security.PrivilegedExceptionAction<Object>() {
+                            @Override
+                            public Object run() {
+                                java.sql.Connection con = null;
+
+                                try {
+                                    con = hiveDriver.connect(connURL, info);
+                                } catch (java.sql.SQLException e) {
+                                    CommonExceptionHandler.process(e);
+                                }
+                                return con;
+                            }
+                        };
+                        conn = (Connection) ReflectionUtils.invokeMethod(userGroupInformation, "doAs", new Object[] {privilegedExceptionAction}, PrivilegedExceptionAction.class ); //$NON-NLS-1$
+                    }
                 } finally {
                     Thread.currentThread().setContextClassLoader(currClassLoader);
                 }
@@ -240,7 +260,7 @@ public class ImpalaConnectionManager extends DataBaseConnectionManager {
 
     private IHadoopDistributionService getHadoopDistributionService() {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IHadoopDistributionService.class)) {
-            return (IHadoopDistributionService) GlobalServiceRegister.getDefault().getService(IHadoopDistributionService.class);
+            return GlobalServiceRegister.getDefault().getService(IHadoopDistributionService.class);
         }
         return null;
     }

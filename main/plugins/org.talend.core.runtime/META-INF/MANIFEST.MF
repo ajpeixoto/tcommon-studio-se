@@ -52,6 +52,7 @@ Export-Package: org.talend.analysistask,
  org.talend.core.model.xml,
  org.talend.core.nexus,
  org.talend.core.pendo,
+ org.talend.core.pendo.mapper,
  org.talend.core.pendo.properties,
  org.talend.core.prefs,
  org.talend.core.repository,
@@ -128,7 +129,8 @@ Require-Bundle: org.eclipse.jdt.core,
  jackson-core-asl,
  org.talend.libraries.jackson,
  org.eclipse.m2e.core,
- org.talend.libraries.apache.common
+ org.talend.libraries.apache.common,
+ org.talend.signon.util
 Bundle-Activator: org.talend.core.runtime.CoreRuntimePlugin
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
@@ -137,3 +139,5 @@ Bundle-ClassPath: .,
  lib/delight-rhino-sandbox-0.0.15.jar,
  lib/rhino-1.7.13.jar
 Eclipse-RegisterBuddy: org.talend.testutils
+Import-Package: org.eclipse.equinox.p2.repository,
+ org.eclipse.equinox.security.storage

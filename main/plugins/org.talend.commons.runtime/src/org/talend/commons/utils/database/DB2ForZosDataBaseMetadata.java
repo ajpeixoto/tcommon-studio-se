@@ -145,7 +145,30 @@ public class DB2ForZosDataBaseMetadata extends PackageFakeDatabaseMetadata {
      */
     @Override
     public ResultSet getPrimaryKeys(String catalog, String schema, String table) throws SQLException {
-        return new DB2ForZosResultSet();
+        ResultSet rs = super.getPrimaryKeys(catalog, schema, table);
+        if (rs == null) {
+            rs = new DB2ForZosResultSet();
+        }
+        return rs;
+    }
+    
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.talend.commons.utils.database.FakeDatabaseMetaData#getExportedKeys(java.lang.String, java.lang.String,
+     * java.lang.String)
+     */
+    @Override
+    public ResultSet getExportedKeys(String catalog, String schema, String table) throws SQLException {
+        ResultSet rs = super.getExportedKeys(catalog, schema, table);
+        if (rs == null) {
+            if (this.metaData != null) {
+                rs = this.metaData.getExportedKeys(catalog, schema, table);
+            } else {
+                rs = new DB2ForZosResultSet();
+            }
+        }
+        return rs;
     }
 
     /*
@@ -172,17 +195,6 @@ public class DB2ForZosDataBaseMetadata extends PackageFakeDatabaseMetadata {
         tableResultSet.setData(list);
 
         return tableResultSet;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.talend.commons.utils.database.FakeDatabaseMetaData#getExportedKeys(java.lang.String, java.lang.String,
-     * java.lang.String)
-     */
-    @Override
-    public ResultSet getExportedKeys(String catalog, String schema, String table) throws SQLException {
-        return new DB2ForZosResultSet();
     }
 
     /*

@@ -293,7 +293,8 @@ public final class MetadataToolHelper {
         boolean isKeyword = KeywordsValidator.isKeyword(originalColumnName);
 
         StringBuilder sb = new StringBuilder();
-        int[] charBit = new int[columnName.length()];
+        // keep charBit length align with the length of originalColumnName (StringBuilder)
+        int[] charBit = new int[originalColumnName.length()];
         if (!isKeyword) {
             boolean isAllowSpecific = isAllowSpecificCharacters();
 

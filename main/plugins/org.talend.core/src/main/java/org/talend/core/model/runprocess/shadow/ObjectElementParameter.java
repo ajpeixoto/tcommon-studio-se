@@ -47,6 +47,8 @@ public class ObjectElementParameter implements IElementParameter {
 
     private boolean enable = true;
 
+    private String originEncryptedValue;
+
     /**
      * Constructs a new TextElementParameter.
      */
@@ -1051,5 +1053,16 @@ public class ObjectElementParameter implements IElementParameter {
     public boolean isSelectedFromItemValue() {
         // TODO Auto-generated method stub
         return false;
+    }
+    
+    @Override
+    public String getOrignEncryptedValue() {
+        return originEncryptedValue;
+    }
+
+    @Override
+    public void setOrignEncryptedValue(String value) {
+        this.originEncryptedValue = value;
+        
     }
 }

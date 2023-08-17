@@ -16,7 +16,6 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Dictionary;
@@ -55,9 +54,7 @@ import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.osgi.internal.serviceregistry.ServiceReferenceImpl;
 import org.eclipse.osgi.internal.serviceregistry.ServiceRegistrationImpl;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.navigator.CommonViewer;
@@ -94,12 +91,12 @@ import org.talend.core.context.CommandLineContext;
 import org.talend.core.context.Context;
 import org.talend.core.context.RepositoryContext;
 import org.talend.core.exception.TalendInternalPersistenceException;
+import org.talend.core.hadoop.BigDataBasicUtil;
 import org.talend.core.hadoop.IHadoopDistributionService;
 import org.talend.core.model.components.IComponentsService;
 import org.talend.core.model.general.ILibrariesService;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.general.Project;
-import org.talend.core.model.metadata.MetadataTalendType;
 import org.talend.core.model.metadata.builder.connection.AbstractMetadataObject;
 import org.talend.core.model.metadata.builder.connection.MetadataTable;
 import org.talend.core.model.migration.IMigrationToolService;
@@ -154,6 +151,7 @@ import org.talend.core.runtime.services.IMavenUIService;
 import org.talend.core.runtime.util.ItemDateParser;
 import org.talend.core.runtime.util.JavaHomeUtil;
 import org.talend.core.runtime.util.SharedStudioUtils;
+import org.talend.core.service.IComponentJsonformGeneratorService;
 import org.talend.core.service.ICoreUIService;
 import org.talend.core.service.IDetectCVEService;
 import org.talend.core.utils.CodesJarResourceCache;
@@ -240,14 +238,14 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
         return singleton;
     }
 
-    private ICoreService getCoreService() {
+    public ICoreService getCoreService() {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ICoreService.class)) {
             return GlobalServiceRegister.getDefault().getService(ICoreService.class);
         }
         return null;
     }
 
-    private IRunProcessService getRunProcessService() {
+    public IRunProcessService getRunProcessService() {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
             return GlobalServiceRegister.getDefault().getService(IRunProcessService.class);
         }
@@ -352,7 +350,7 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
      * @param project
      * @throws LoginException
      */
-    private void checkProjectCompatibility(Project project) throws LoginException {
+    public void checkProjectCompatibility(Project project) throws LoginException {
         IMigrationToolService migrationToolService = GlobalServiceRegister.getDefault().getService(
                 IMigrationToolService.class);
         // update migration system.
@@ -447,12 +445,10 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
                             if (currentShell == null) {
                                 currentShell = DisplayUtils.getDefaultShell(false);
                             }
-                            MessageBox box = new MessageBox(currentShell, SWT.ICON_WARNING | SWT.OK | SWT.CANCEL);
-                            box.setText(Messages.getString("ProxyRepositoryFactory.JobNameErroe")); //$NON-NLS-1$
-                            box.setMessage(Messages.getString("ProxyRepositoryFactory.Label") + " " + name + " " + Messages.getString("ProxyRepositoryFactory.ReplaceJob")); //$NON-NLS-1$ //$NON-NLS-2$//$NON-NLS-3$//$NON-NLS-4$
-
-                            if (box.open() == SWT.OK) {
-
+                            if (MessageDialog.openQuestion(currentShell,
+                                    Messages.getString("ProxyRepositoryFactory.JobNameErroe"), //$NON-NLS-1$
+                                    Messages.getString("ProxyRepositoryFactory.Label") + " " + name + " " //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                                            + Messages.getString("ProxyRepositoryFactory.ReplaceJob"))) { //$NON-NLS-1$
                                 ok[0] = true;
                             }
                         }
@@ -1849,7 +1845,7 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
      * @param project
      * @throws PersistenceException
      */
-    private void emptyTempFolder(Project project) throws PersistenceException {
+    public void emptyTempFolder(Project project) throws PersistenceException {
     	try {
             String str = SharedStudioUtils.getTempFolderPath().toPortableString();
             FilesUtils.deleteFolder(new File(str), false);
@@ -2211,6 +2207,16 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
                     ExceptionHandler.process(e);
                 }
                 
+                if (IHadoopDistributionService.get() != null) {
+                    try {
+                        IHadoopDistributionService.get().checkAndMigrateDistributionProxyCredential(project);
+                    } catch (Exception e) {
+                        ExceptionHandler.process(e);
+                    }
+                }
+                // init dynamic distirbution after `beforeLogon`, before loading libraries.
+                initDynamicDistribution(monitor);
+                
                 // need to set m2
                 LoginTaskRegistryReader loginTaskRegistryReader = new LoginTaskRegistryReader();
                 ILoginTask[] allLoginTasks = loginTaskRegistryReader.getAllCommandlineTaskListInstance();
@@ -2278,14 +2284,6 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
                     
                 }
 
-                try {
-                    // for new added mapping file, sync to project mapping folder
-                    MetadataTalendType.syncNewMappingFileToProject();
-                } catch (SystemException e) {
-                    // ignore
-                    ExceptionHandler.process(e);
-                }
-
                 currentMonitor = subMonitor.newChild(1, SubMonitor.SUPPRESS_NONE);
                 currentMonitor.beginTask("Execute before logon migrations tasks", 1); //$NON-NLS-1$
                 ProjectManager.getInstance().getMigrationRecords().clear();
@@ -2325,6 +2323,7 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
                 if (monitor != null && monitor.isCanceled()) {
                     throw new OperationCanceledException(""); //$NON-NLS-1$
                 }
+                PendoItemSignatureManager.getInstance().sendTrackToPendo();
 
                 boolean isCommandLineLocalRefProject = false;
                 CommandLineContext commandLineContext = (CommandLineContext) CoreRuntimePlugin.getInstance().getContext()
@@ -2363,17 +2362,6 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
                     TimeMeasurePerformance.step("logOnProject", "sync log4j"); //$NON-NLS-1$ //$NON-NLS-2$
                 }
 
-                try {
-                    URL url = MetadataTalendType.getProjectForderURLOfMappingsFile();
-                    if (url != null) {
-                        // set the project mappings url
-                        System.setProperty("talend.mappings.url", url.toString()); // $NON-NLS-1$
-                    }
-                } catch (SystemException e) {
-                    // ignore
-                    ExceptionHandler.process(e);
-                }
-
                 if (GlobalServiceRegister.getDefault().isServiceRegistered(ITDQRepositoryService.class)) {
                     ITDQRepositoryService tdqRepositoryService = GlobalServiceRegister.getDefault()
                             .getService(ITDQRepositoryService.class);
@@ -2395,11 +2383,22 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
             }
             String str[] = new String[] { getRepositoryContext().getUser() + "", projectManager.getCurrentProject() + "" }; //$NON-NLS-1$ //$NON-NLS-2$
             log.info(Messages.getString("ProxyRepositoryFactory.log.loggedOn", str)); //$NON-NLS-1$
+            
+            // no performance impact for studio or commandline
+            if (GlobalServiceRegister.getDefault().isServiceRegistered(IComponentJsonformGeneratorService.class)) {
+                IComponentJsonformGeneratorService jsonformSvc = GlobalServiceRegister.getDefault().getService(IComponentJsonformGeneratorService.class);
+                if (jsonformSvc != null && IComponentJsonformGeneratorService.isEnabled()) {
+                    jsonformSvc.generate(null);
+                }
+            }
+            
         } catch (LoginException e) {
-            try {
-                logOffProject();
-            } catch (Exception e1) {
-                ExceptionHandler.process(e1);
+            if (!LoginException.RESTART.equals(e.getKey())) {
+                try {
+                    logOffProject();
+                } catch (Exception e1) {
+                    ExceptionHandler.process(e1);
+                }
             }
             throw e;
         } catch (PersistenceException e) {
@@ -2423,6 +2422,18 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
                 ExceptionHandler.process(e1);
             }
             throw e;
+        }
+    }
+    
+    private void initDynamicDistribution(IProgressMonitor monitor) {
+        try {
+            if (BigDataBasicUtil.isDynamicDistributionLoaded(monitor)) {
+                BigDataBasicUtil.reloadAllDynamicDistributions(monitor);
+            } else {
+                BigDataBasicUtil.loadDynamicDistribution(monitor);
+            }
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
         }
     }
 
@@ -2520,7 +2531,7 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
         }
     }
 
-    private void checkReferenceProjectsProblems(Project project) throws BusinessException, PersistenceException {
+    public void checkReferenceProjectsProblems(Project project) throws BusinessException, PersistenceException {
         if (ReferenceProjectProblemManager.getInstance().getAllInvalidProjectReferenceSet().size() > 0) {
             StringBuffer sb = new StringBuffer();
             for (String technicalLabel : ReferenceProjectProblemManager.getInstance().getAllInvalidProjectReferenceSet()) {
@@ -2565,7 +2576,6 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
 
     public void logOffProject() {
         // getRepositoryContext().setProject(null);
-        repositoryFactoryFromProvider.logOffProject();
         if (!CommonsPlugin.isHeadless()) {
             ProjectRepositoryNode root = ProjectRepositoryNode.getInstance();
             if (root != null) {
@@ -2621,6 +2631,7 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
 
         ReferenceProjectProvider.clearTacReferenceList();
         ReferenceProjectProblemManager.getInstance().clearAll();
+        repositoryFactoryFromProvider.logOffProject();
         fullLogonFinished = false;
     }
 
@@ -3018,4 +3029,11 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
         this.repositoryFactoryFromProvider.saveProject(project);
     }
     
+    public void setCancelled(boolean cancelled) {
+        this.isCancelled = cancelled;
+    }
+
+    public boolean isCancelled() {
+        return this.isCancelled;
+    }
 }

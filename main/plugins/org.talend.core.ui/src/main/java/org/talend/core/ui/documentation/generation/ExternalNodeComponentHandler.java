@@ -19,6 +19,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.dom4j.Element;
+import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.exception.PersistenceException;
+import org.talend.core.model.components.EComponentType;
 import org.talend.core.model.genhtml.HTMLDocUtils;
 import org.talend.core.model.genhtml.IHTMLDocConstants;
 import org.talend.core.model.process.EComponentCategory;
@@ -27,7 +30,9 @@ import org.talend.core.model.process.IComponentDocumentation;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.properties.ConnectionItem;
+import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.utils.ParameterValueUtil;
+import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.designer.core.IDesignerCoreService;
 
 /**
@@ -103,13 +108,64 @@ public class ExternalNodeComponentHandler extends AbstractComponentHandler {
 
         for (INode externalNode : this.componentsList) {
             Element componentElement = generateComponentDetailsInfo(true, externalNode, this.externalNodeElement,
-                    this.picFilePathMap, this.sourceConnectionMap, this.targetConnectionMap, this.repositoryDBIdAndNameMap);
+                    this.picFilePathMap, this.sourceConnectionMap, this.targetConnectionMap,
+                    this.repositoryDBIdAndNameMap);
 
             String componentName = externalNode.getUniqueName();
             IComponentDocumentation componentDocumentation = externalNode.getExternalNode().getComponentDocumentation(
                     componentName, HTMLDocUtils.getTmpFolder() /* checkExternalPathIsExists(tempFolderPath) */);
 
-            // Checks if generating html file for external node failed, generating the same information as internal node
+            if (EComponentType.JOBLET == externalNode.getComponent().getComponentType()) {
+                String jobletName = externalNode.getComponent().getProcess().getName();
+                String version = externalNode.getComponent().getProcess().getVersion();
+                componentElement.addAttribute("joblet", HTMLDocUtils.checkString(jobletName));
+                // ../b/b_0.1.html
+                String href = "../" + jobletName + "/" + jobletName + "_" + version + ".html";
+                componentElement.addAttribute("href", HTMLDocUtils.checkString(href));
+            }
+
+            if (EComponentType.EMF == externalNode.getComponent().getComponentType()
+                    && externalNode.getElementParameter("SELECTED_JOB_NAME") != null) {
+
+                IElementParameter elp = externalNode.getElementParameter("SELECTED_JOB_NAME");
+                String cjobName = (String) elp.getValue();
+                componentElement.addAttribute("joblet", HTMLDocUtils.checkString(cjobName));
+
+                Map<String, IElementParameter> childParameters = elp.getChildParameters();
+                String version = null;
+                String processId = null;
+                if (childParameters != null) {
+                    IElementParameter processElementId = childParameters.get("PROCESS_TYPE_PROCESS");
+                    if (processElementId != null) {
+                        processId = (String) processElementId.getValue();
+                    }
+                    IElementParameter versionElement = childParameters.get("PROCESS_TYPE_VERSION");
+                    if (versionElement != null) {
+                        version = (String) versionElement.getValue();
+                        if ("Latest".equals(version) && processId != null) {
+                            try {
+                                IRepositoryViewObject rep = ProxyRepositoryFactory.getInstance()
+                                        .getLastVersion(processId);
+                                if (rep != null) {
+                                    version = rep.getProperty().getVersion();
+                                }
+                            } catch (PersistenceException e) {
+                                ExceptionHandler.process(e);
+                            }
+                        }
+                    }
+                }
+                if (version == null) {
+                    version = "0.1";
+                    ExceptionHandler.log("The property of sbujob is missing");
+                }
+
+                String href = "../" + cjobName + "/" + cjobName + "_" + version + ".html";
+                componentElement.addAttribute("href", HTMLDocUtils.checkString(href));
+            }
+
+            // Checks if generating html file for external node failed, generating the same
+            // information as internal node
             // instead.
             if (componentDocumentation == null) {
                 Element parametersElement = componentElement.addElement("parameters"); //$NON-NLS-1$
@@ -119,9 +175,28 @@ public class ExternalNodeComponentHandler extends AbstractComponentHandler {
                 generateComponentSchemaInfo(externalNode, componentElement);
                 generateComponentElementParamInfo(parametersElement, elementParameterList);
             } else {
+                boolean isSCDComponent = externalNode.getComponent().getName().endsWith("SCD");
+                if (isSCDComponent) {
+                    Element parametersElement = componentElement.addElement("parameters"); //$NON-NLS-1$
+                    List elementParameterList = externalNode.getElementParameters();
+                    generateComponentSchemaInfo(externalNode, componentElement);
+                    generateComponentElementParamInfo(parametersElement, elementParameterList);
+                }
                 URL fileURL = componentDocumentation.getHTMLFile();
                 if (fileURL != null) {
                     this.externalNodeHTMLMap.put(componentName, fileURL);
+                    if (isSCDComponent) {
+                        // add extra check and uncheck icon for SCDComponent
+                        File picPath = new File(
+                                HTMLDocUtils.getTmpFolder() + File.separatorChar + IHTMLDocConstants.PICTUREFOLDERPATH);
+                        if (picPath.exists()) {
+                            for (File f : picPath.listFiles()) {
+                                if (!picFilePathMap.containsKey(f.getName())) {
+                                    picFilePathMap.put(f.getName(), f.getAbsolutePath());
+                                }
+                            }
+                        }
+                    }
                 }
             }
             componentElement.addComment(componentName);

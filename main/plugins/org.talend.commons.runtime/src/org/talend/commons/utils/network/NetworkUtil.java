@@ -33,6 +33,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.talend.commons.exception.CommonExceptionHandler;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.runtime.utils.io.FileCopyUtils;
 
@@ -55,6 +56,11 @@ public class NetworkUtil {
     private static final int DEFAULT_NEXUS_TIMEOUT = 20000;// same as preference value
 
     public static final String ORG_TALEND_DESIGNER_CORE = "org.talend.designer.core"; //$NON-NLS-1$
+    
+    /*
+     * see ITalendCorePrefConstants.PERFORMANCE_TAC_READ_TIMEOUT
+     */
+    private static final String PERFORMANCE_TAC_READ_TIMEOUT = "PERFORMANCE_TAC_READ_TIMEOUT"; //$NON-NLS-1$
 
     private static final String PROP_DISABLEDSCHEMES_USE_DEFAULT = "talend.studio.jdk.http.auth.tunneling.disabledSchemes.useDefault";
 
@@ -103,6 +109,7 @@ public class NetworkUtil {
                 return true;
             }
         } catch (Exception e) {
+            CommonExceptionHandler.process(e, getCheckUrl());
             return false;
         } finally {
             conn.disconnect();
@@ -115,7 +122,7 @@ public class NetworkUtil {
         if (StringUtils.isNotBlank(customUrl)) {
             return customUrl;
         } else {
-            return "https://talend-update.talend.com/nexus/content/repositories/libraries/";
+            return "https://talend-update.talend.com/nexus/content/groups/studio-libraries/";
         }
     }
 
@@ -139,6 +146,7 @@ public class NetworkUtil {
             conn.setRequestMethod("HEAD"); //$NON-NLS-1$
             conn.getResponseMessage();
         } catch (Exception e) {
+            CommonExceptionHandler.process(e, urlString);
             // if not reachable , will throw exception(time out/unknown host) .So if catched exception, make it a
             // invalid server
             return false;
@@ -149,10 +157,10 @@ public class NetworkUtil {
     }
 
     public static int getNexusTimeout() {
-        int timeout = DEFAULT_NEXUS_TIMEOUT;
+        int timeout = Integer.getInteger("nexus.timeout.min", DEFAULT_NEXUS_TIMEOUT);
         try {
             IEclipsePreferences node = InstanceScope.INSTANCE.getNode(ORG_TALEND_DESIGNER_CORE);
-            timeout = node.getInt(ITalendNexusPrefConstants.NEXUS_TIMEOUT, DEFAULT_NEXUS_TIMEOUT);
+            timeout = Math.max(timeout, node.getInt(PERFORMANCE_TAC_READ_TIMEOUT, 0) * 1000);
         } catch (Throwable e) {
             ExceptionHandler.process(e);
         }

@@ -4,7 +4,7 @@ Bundle-Name: Apache Plug-in
 Bundle-SymbolicName: org.talend.libraries.apache
 Bundle-Version: 8.0.1.qualifier
 Bundle-ClassPath: .,
- lib/apache-mime4j-0.6.jar,
+ lib/apache-mime4j-core-0.8.9.jar,
  lib/castor-1.0.3.jar,
  lib/jakarta-oro-2.0.8.jar
 Bundle-Vendor: .Talend SA.
@@ -16,21 +16,8 @@ Require-Bundle: org.apache.log4j;resolution:=optional,
 Export-Package: 
  org.apache.james.mime4j,
  org.apache.james.mime4j.codec,
- org.apache.james.mime4j.descriptor,
- org.apache.james.mime4j.field,
- org.apache.james.mime4j.field.address,
- org.apache.james.mime4j.field.address.parser,
- org.apache.james.mime4j.field.contentdisposition.parser,
- org.apache.james.mime4j.field.contenttype.parser,
- org.apache.james.mime4j.field.datetime,
- org.apache.james.mime4j.field.datetime.parser,
- org.apache.james.mime4j.field.language.parser,
- org.apache.james.mime4j.field.mimeversion.parser,
- org.apache.james.mime4j.field.structured.parser,
  org.apache.james.mime4j.io,
- org.apache.james.mime4j.message,
  org.apache.james.mime4j.parser,
- org.apache.james.mime4j.storage,
  org.apache.james.mime4j.util,
  org.apache.oro.io,
  org.apache.oro.text,

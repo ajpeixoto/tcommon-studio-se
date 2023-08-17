@@ -636,6 +636,7 @@ public class ContextNebulaGridComposite extends AbstractContextTabEditComposite 
             visibleItemCount = 20;
         }
         contextsCombo.setVisibleItemCount(visibleItemCount);
+        contextsCombo.getParent().getParent().pack();
     }
 
     private void checkContextGroupSource() {
@@ -647,6 +648,7 @@ public class ContextNebulaGridComposite extends AbstractContextTabEditComposite 
             helper.initHelper(contextManager);
             Map<String, Item> items = new HashMap<String, Item>();
             boolean needRefresh = false;
+            ContextUtils.clearMissingContextCache();
             for (IContextParameter param : contextManager.getDefaultContext().getContextParameterList()) {
                 if (!param.isBuiltIn()) {
                     String source = param.getSource();

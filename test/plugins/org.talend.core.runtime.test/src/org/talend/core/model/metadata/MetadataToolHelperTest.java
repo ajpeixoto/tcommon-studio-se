@@ -293,6 +293,20 @@ public class MetadataToolHelperTest {
         columnName = MetadataToolHelper.validateColumnName("_test_______________________t", 0);
         assertEquals("_test_______________________t", columnName);
 
+        char c = 230;
+        columnName = MetadataToolHelper.validateColumnName(String.valueOf(c), 0);
+        assertEquals("ae", columnName);
+
+        char c1 = 229;
+        columnName = MetadataToolHelper.validateColumnName(String.valueOf(c1), 0);
+        assertEquals("a", columnName);
+
+        columnName = MetadataToolHelper.validateColumnName(String.valueOf(c) + String.valueOf(c1), 0);
+        assertEquals("aea", columnName);
+
+        columnName = MetadataToolHelper.validateColumnName("----" + String.valueOf(c) + String.valueOf(c1) + "-----", 0);
+        assertEquals("_aea", columnName);
+
         CoreRuntimePlugin.getInstance().getProjectPreferenceManager().setAllowSpecificCharacters(true);
 
         columnName = MetadataToolHelper.validateColumnName("你好", 0);

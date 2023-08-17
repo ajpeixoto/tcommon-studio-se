@@ -40,6 +40,8 @@ public enum EImage implements IImage {
     READ_ICON("/icons/read_obj.gif"), //$NON-NLS-1$
 
     QUESTION_ICON("/icons/question.gif"), //$NON-NLS-1$
+    HELP_ICON("/icons/help.png"), //$NON-NLS-1$
+    MOREINFO_ICON("/icons/moreInfo.png"), //$NON-NLS-1$
 
     CREATE_CONNECTION_ICON("/icons/connection.gif"), //$NON-NLS-1$
 

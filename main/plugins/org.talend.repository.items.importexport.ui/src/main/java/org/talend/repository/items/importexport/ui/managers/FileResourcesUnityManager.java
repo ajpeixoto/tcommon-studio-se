@@ -132,7 +132,7 @@ public class FileResourcesUnityManager extends FilesManager {
                 TarFile tarFile = new TarFile(originalFile);
                 importProvider = new TarLeveledStructureProvider(tarFile);
                 archiveProviderManager = ResourcesManagerFactory.getInstance().createResourcesManager(importProvider);
-            } else if (ArchiveFileManipulations.isZipFile(absolutePath)) {
+            } else if (isZipFile(absolutePath)) {
                 // if is not real zip file, will throw exception.
                 ZipFile zipFile = new ZipFile(originalFile);
                 importProvider = new TalendZipLeveledStructureProvider(zipFile);
@@ -151,10 +151,37 @@ public class FileResourcesUnityManager extends FilesManager {
                     }
                 }
             }
-            this.getEmptyFolders().addAll(archiveProviderManager.getEmptyFolders());
+            if (archiveProviderManager != null) {
+
+                this.getEmptyFolders().addAll(archiveProviderManager.getEmptyFolders());
+            }
         }
         collectPath2Object(originalFile, tmpWorkFolder, tmpWorkFolder, interruptable);
         return this;
+    }
+
+    private static boolean isZipFile(String fileName) throws IOException {
+
+        if (fileName.length() == 0) {
+            return false;
+        }
+        ZipFile zipFile = null;
+        try {
+            zipFile = new ZipFile(fileName);
+        } catch (IOException ioException) {
+            throw ioException;
+
+        } finally {
+            if (zipFile != null) {
+                try {
+                    zipFile.close();
+                } catch (IOException e) {
+                    // ignore
+                }
+            }
+        }
+
+        return true;
     }
 
     private void decompress(ResourcesManager srcManager, File destRootFolder, boolean interrupable) throws IOException {

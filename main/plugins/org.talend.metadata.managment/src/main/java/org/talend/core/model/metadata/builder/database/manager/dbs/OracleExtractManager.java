@@ -26,7 +26,6 @@ import org.apache.log4j.Logger;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.ICoreService;
 import org.talend.core.database.EDatabaseTypeName;
-import org.talend.core.database.conn.version.EDatabaseVersion4Drivers;
 import org.talend.core.model.metadata.IMetadataConnection;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.MappingTypeRetriever;
@@ -184,7 +183,9 @@ public class OracleExtractManager extends ExtractManager {
             } else if (table.eContainer() instanceof Schema) {
                 synSQL += "and all_synonyms.OWNER =?";
             }
-            synSQL += " ORDER BY all_tab_columns.COLUMN_NAME"; //$NON-NLS-1$
+            
+            //TUP-39239, caused not same ordering of the columns between table schema and synonym schema
+//            synSQL += " ORDER BY all_tab_columns.COLUMN_NAME"; //$NON-NLS-1$
             PreparedStatement sta = extractMeta.getConn().prepareStatement(synSQL);
             sta.setString(1, synonymName);
             int idx = 2;
@@ -347,14 +348,15 @@ public class OracleExtractManager extends ExtractManager {
     @Override
     protected void filterTablesFromRecycleBin(IMetadataConnection metadataConnection, List<String> itemTablesName) {
         // filter tables or viewer from the recyclebin in the Oracle 10g.
-        if (metadataConnection.getDbVersionString() != null
-                && !metadataConnection.getDbVersionString().equals(EDatabaseVersion4Drivers.ORACLE_8.getVersionValue())) {
+        if (metadataConnection.getDbVersionString() != null) {
             ExtractMetaDataUtils extractMeta = ExtractMetaDataUtils.getInstance();
             try {
-                PreparedStatement stmt = extractMeta.getConn().prepareStatement(TableInfoParameters.ORACLE_10G_RECBIN_SQL);
+                PreparedStatement stmt =
+                        extractMeta.getConn().prepareStatement(TableInfoParameters.ORACLE_10G_RECBIN_SQL);
                 extractMeta.setQueryStatementTimeout(stmt);
                 ResultSet rsTables = stmt.executeQuery();
-                itemTablesName.removeAll(ExtractMetaDataFromDataBase.getTableNamesFromQuery(rsTables, extractMeta.getConn()));
+                itemTablesName
+                        .removeAll(ExtractMetaDataFromDataBase.getTableNamesFromQuery(rsTables, extractMeta.getConn()));
                 rsTables.close();
                 stmt.close();
             } catch (SQLException e) {
@@ -412,10 +414,6 @@ public class OracleExtractManager extends ExtractManager {
     @Override
     public String getTableComment(IMetadataConnection metadataConnection, ResultSet resultSet, String nameKey)
             throws SQLException {
-        if (EDatabaseVersion4Drivers.ORACLE_8.getVersionValue().equals(metadataConnection.getDbVersionString())) {
-            return ExtractMetaDataFromDataBase.getTableComment(nameKey, resultSet, false, ExtractMetaDataUtils.getInstance()
-                    .getConn());
-        }
         return super.getTableComment(metadataConnection, resultSet, nameKey);
     }
 

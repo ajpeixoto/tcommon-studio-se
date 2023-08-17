@@ -12,24 +12,15 @@
 // ============================================================================
 package org.talend.core.pendo;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.talend.commons.exception.ExceptionHandler;
-import org.talend.commons.utils.VersionUtils;
-import org.talend.core.model.general.Project;
-import org.talend.core.model.properties.ProjectReference;
 import org.talend.core.pendo.properties.IPendoDataProperties;
-import org.talend.core.pendo.properties.PendoLoginProperties;
-import org.talend.core.service.IStudioLiteP2Service;
 import org.talend.core.ui.IInstalledPatchService;
-import org.talend.repository.ProjectManager;
 import org.talend.utils.json.JSONObject;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -59,105 +50,26 @@ public class PendoTrackDataUtil {
         return content;
     }
 
-    public static IPendoDataProperties getLoginEventProperties() {
-        String studioPatch = null;
+    public static String getLatestPatchInstalledVersion() {
+        String studioPatch = "";
         IInstalledPatchService installedPatchService = IInstalledPatchService.get();
         if (installedPatchService != null) {
-            studioPatch = installedPatchService.getLatestInstalledPatchVersion();
+            studioPatch = installedPatchService.getLatestInstalledVersion(true);
         }
-        PendoLoginProperties loginEvent = new PendoLoginProperties();
-        IStudioLiteP2Service studioLiteP2Service = IStudioLiteP2Service.get();
+        return studioPatch;
+    }
+
+    public static String convertEntityJsonString(Object entity) {
+        ObjectMapper mapper = new ObjectMapper();
         try {
-            if (studioLiteP2Service != null) {
-                List<String> enabledFeatures = new ArrayList<String>();
-                List<String> enabledFeaturesList = studioLiteP2Service.getCurrentProjectEnabledFeatures();
-                enabledFeaturesList.stream().forEach(feature -> {
-                    String result = feature;
-                    if (result.startsWith(FEATURE_PREFIX)) {
-                        result = result.substring(FEATURE_PREFIX.toCharArray().length);
-                    }
-                    if (result.endsWith(FEATURE_TAIL)) {
-                        result = result.substring(0, result.lastIndexOf(FEATURE_TAIL));
-                    }
-                    enabledFeatures.add(result);
-                });
-                loginEvent.setEnabledFeatures(enabledFeatures);
+            String content = mapper.writeValueAsString(entity);
+            if (StringUtils.isNotBlank(content)) {
+                return content;
             }
-            setUpRefProjectsStructure(loginEvent);
-        } catch (Exception e) {
+        } catch (JsonProcessingException e) {
             ExceptionHandler.process(e);
         }
-        loginEvent.setStudioVersion(VersionUtils.getInternalMajorVersion());
-        loginEvent.setStudioPatch(studioPatch);
-        return loginEvent;
-    }
-
-    private static void setUpRefProjectsStructure(PendoLoginProperties loginEvent) {
-        ProjectManager projectManager = ProjectManager.getInstance();
-        Project currentProject = projectManager.getCurrentProject();
-        Map<String, Project> teclabelProjectMap = new HashMap<String, Project>();
-        List<Project> allReferencedProjects = projectManager.getAllReferencedProjects();
-        allReferencedProjects.forEach(refProject -> {
-            String technicalLabel = refProject.getTechnicalLabel();
-            if (StringUtils.isNotBlank(technicalLabel)) {
-                teclabelProjectMap.put(technicalLabel, refProject);
-            }
-        });
-
-        int[] refCount = new int[] {0};
-        List<String> resultList = new ArrayList<String>();
-        Map<String, String> desensitiveLabelMap = new HashMap<String, String>();
-        findReferencePorjectPath(currentProject, "Main", resultList, refCount, desensitiveLabelMap, teclabelProjectMap);
-        loginEvent.setRefProjectList(resultList);
-        loginEvent.setRefProjectCount(String.valueOf(desensitiveLabelMap.keySet().size()));
-    }
-
-    public static void findReferencePorjectPath(Project currentProject, String path, List<String> resultList, int[] refCount,
-            Map<String, String> desensitiveLabelMap, Map<String, Project> teclabelProjectMap) {
-        List<ProjectReference> projectReferenceList = currentProject.getProjectReferenceList();
-        for (ProjectReference projectReference : projectReferenceList) {
-            String structPath = path;
-            if (projectReference.getReferencedProject() == null) {
-                continue;
-            }
-            String technicalLabel = projectReference.getReferencedProject().getTechnicalLabel();
-            Project refProject = teclabelProjectMap.get(technicalLabel);
-            if (StringUtils.isBlank(technicalLabel) || refProject == null) {
-                continue;
-            }
-            String desensitiveLabel = desensitiveLabelMap.get(technicalLabel);
-            if (StringUtils.isBlank(desensitiveLabel)) {
-                refCount[0] = refCount[0] + 1;
-                desensitiveLabel = "Ref" + refCount[0];
-                desensitiveLabelMap.put(technicalLabel, desensitiveLabel);
-            }
-            structPath = structPath + "/" + desensitiveLabel;
-            resultList.add(structPath);
-            findReferencePorjectPath(refProject, structPath, resultList, refCount, desensitiveLabelMap, teclabelProjectMap);
-        }
-
-    }
-
-    public enum TrackEvent {
-
-        PROJECT_LOGIN("Project Login"),
-        IMPORT_API_DEF("Import API Definition"),
-        UPDATE_API_DEF("Update API Definition"),
-        USE_API_DEF("Use API Definition"),
-        OPEN_IN_APIDesigner("Open in API Designer"),
-        OPEN_IN_APITester("Open in API Tester"),
-        OPEN_API_DOCUMENTATION("Open API Documentation");
-
-        private String event;
-
-        TrackEvent(String event) {
-            this.event = event;
-        }
-
-        public String getEvent() {
-            return event;
-        }
-
+        return "";
     }
 
 }

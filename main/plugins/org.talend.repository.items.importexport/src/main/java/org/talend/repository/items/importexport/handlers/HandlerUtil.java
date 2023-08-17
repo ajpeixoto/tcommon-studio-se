@@ -12,17 +12,17 @@
 // ============================================================================
 package org.talend.repository.items.importexport.handlers;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -115,10 +115,17 @@ public final class HandlerUtil {
                 return;
             }
             // for migration task ,there is not .screeenshot file in preceding version - begin
-            os = new FileOutputStream(fileURL.getFile());
-            manager.getPaths().iterator().next();
-            is = manager.getStream(screenshotNeeded, itemRecord);
-            FileCopyUtils.copyStreams(is, os);
+            String protocol = fileURL.getProtocol();
+            String filePath = fileURL.toString();
+            if(StringUtils.isNoneEmpty(protocol) && protocol.equalsIgnoreCase("file")) {
+                filePath = filePath.replaceFirst("file://", "").replaceFirst("file:/", "").replaceFirst("file:", "");
+            }
+            if(new File(filePath).exists()) {
+                os = new FileOutputStream(filePath);
+                manager.getPaths().iterator().next();
+                is = manager.getStream(screenshotNeeded, itemRecord);
+                FileCopyUtils.copyStreams(is, os);
+            }
         } finally {
             if (os != null) {
                 os.close();

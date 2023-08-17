@@ -12,16 +12,23 @@
 // ============================================================================
 package org.talend.metadata.managment.ui.editor;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IStatus;
@@ -33,6 +40,7 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -61,19 +69,16 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.osgi.framework.Bundle;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.exception.LoginException;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.exception.SystemException;
 import org.talend.commons.utils.io.FilesUtils;
 import org.talend.commons.utils.workbench.resources.ResourceUtils;
-import org.talend.core.GlobalServiceRegister;
-import org.talend.core.ICoreService;
 import org.talend.core.model.metadata.Dbms;
 import org.talend.core.model.metadata.MetadataTalendType;
 import org.talend.core.model.utils.ResourceModelHelper;
 import org.talend.core.model.utils.XSDValidater;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
-import org.talend.core.runtime.CoreRuntimePlugin;
-import org.talend.core.runtime.projectsetting.ProjectPreferenceManager;
 import org.talend.metadata.managment.ui.MetadataManagmentUiPlugin;
 import org.talend.metadata.managment.ui.dialog.MappingFileCheckViewerDialog;
 import org.talend.metadata.managment.ui.i18n.Messages;
@@ -131,6 +136,16 @@ public class MetadataTalendTypeEditor extends FieldEditor {
 
         IDocument fileContent;
 
+        FileType type;
+
+        boolean isDeleted;
+
+    }
+
+    enum FileType {
+        USER_DEFINED,
+        SYSTEM_DEFAULT,
+        USER_EXTERNAL,
     }
 
     /**
@@ -141,7 +156,7 @@ public class MetadataTalendTypeEditor extends FieldEditor {
      */
     class TmpFilesManager {
 
-        // store the editing tempertory files
+        // store the editing temporary files
         private List<FileInfo> tmpFiles = new ArrayList<FileInfo>();
 
         TmpFilesManager() {
@@ -149,13 +164,29 @@ public class MetadataTalendTypeEditor extends FieldEditor {
         }
 
         private void init() {
-            List<File> files = MetadataTalendType.getMetadataMappingFiles();
-            tmpFiles.clear();
-            for (File file : files) {
-                FileInfo info = new FileInfo();
-                info.file = file;
-                info.fileName = file.getName();
-                this.addFile(info);
+            try {
+                tmpFiles.clear();
+                java.nio.file.Path systemMappingPath = MetadataTalendType.getSystemFolderURLOfMappingsFile().toPath();
+                Map<String, File> systemFileMap = Stream
+                        .of(systemMappingPath.toFile()
+                                .listFiles(f -> f.getName().matches(MetadataTalendType.MAPPING_FILE_PATTERN)))
+                        .collect(Collectors.toMap(File::getName, Function.identity()));
+                List<File> files = MetadataTalendType.getMetadataMappingFiles();
+                for (File file : files) {
+                    FileInfo info = new FileInfo();
+                    info.file = file;
+                    info.fileName = file.getName();
+                    if (file.toPath().startsWith(systemMappingPath)) {
+                        info.type = FileType.SYSTEM_DEFAULT;
+                    } else if (systemFileMap.containsKey(file.getName())) {
+                        info.type = FileType.USER_DEFINED;
+                    } else {
+                        info.type = FileType.USER_EXTERNAL;
+                    }
+                    this.addFile(info);
+                }
+            } catch (SystemException e) {
+                ExceptionHandler.process(e);
             }
         }
 
@@ -163,22 +194,14 @@ public class MetadataTalendTypeEditor extends FieldEditor {
             tmpFiles.add(file);
         }
 
-        List<FileInfo> getTempFiles() {
-            return tmpFiles;
+        List<FileInfo> getTempFiles(boolean includeDeleted) {
+            return tmpFiles.stream().filter(f -> includeDeleted || !f.isDeleted || FileType.SYSTEM_DEFAULT == f.type)
+                    .sorted((f1, f2) -> f1.fileName.compareTo(f2.fileName)).collect(Collectors.toList());
         }
 
         boolean contains(String fileName) {
             for (FileInfo info : tmpFiles) {
                 if (info.fileName.equals(fileName)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        boolean contains(File file) {
-            for (FileInfo info : tmpFiles) {
-                if (info.file.equals(file)) {
                     return true;
                 }
             }
@@ -297,8 +320,28 @@ public class MetadataTalendTypeEditor extends FieldEditor {
             sourceViewerDialog.setDocument(fileSelected.file);
         }
         if (sourceViewerDialog.open() == IDialogConstants.OK_ID) {
-            System.out.println(sourceViewerDialog.getDocument().get());
-            fileSelected.fileContent = sourceViewerDialog.getDocument();
+            System.out.println(sourceViewerDialog.getResult());
+            try {
+                File systemFile = new File(MetadataTalendType.getSystemFolderURLOfMappingsFile(), fileSelected.fileName);
+                if (systemFile.exists()) {
+                    String currentSha1 = MetadataTalendType.getSha1OfText(sourceViewerDialog.getDocument().get());
+                    String systemSha1 = MetadataTalendType.getSha1OfFile(systemFile);
+                    if (currentSha1 != null && currentSha1.equals(systemSha1)) {
+                        fileSelected.type = FileType.SYSTEM_DEFAULT;
+                        fileSelected.file = systemFile;
+                        setControlEnable(removeButton, false);
+                    } else {
+                        fileSelected.type = FileType.USER_DEFINED;
+                        fileSelected.file = new File(MetadataTalendType.getProjectFolderURLOfMappingsFile(),
+                                fileSelected.fileName);
+                        setControlEnable(removeButton, true);
+                    }
+                }
+                fileSelected.fileContent = sourceViewerDialog.getDocument();
+                fileSelected.isDeleted = false;
+            } catch (SystemException e) {
+                ExceptionHandler.process(e);
+            }
         }
     }
 
@@ -382,7 +425,16 @@ public class MetadataTalendTypeEditor extends FieldEditor {
      */
     protected void removeItem() {
         FileInfo info = getSelection();
-        tmpFileManager.remove(info);
+        info.isDeleted = true;
+        if (FileType.USER_DEFINED == info.type) {
+            try {
+                info.type = FileType.SYSTEM_DEFAULT;
+                info.file = new File(MetadataTalendType.getSystemFolderURLOfMappingsFile(), info.fileName);
+                info.fileContent = null;
+            } catch (SystemException e) {
+                ExceptionHandler.process(e);
+            }
+        }
         refreshViewer();
     }
 
@@ -413,16 +465,21 @@ public class MetadataTalendTypeEditor extends FieldEditor {
     }
 
     private void exportItem() {
-        File existing = getSelection().file;
+        FileInfo selectedFileInfo = getSelection();
         FileDialog dia = new FileDialog(getShell(), SWT.SAVE);
-        dia.setFileName(existing.getName());
+        dia.setFileName(selectedFileInfo.fileName);
         dia.setFilterExtensions(new String[] { "*.xml" }); //$NON-NLS-1$
         String destination = dia.open();
         if (destination == null) {
             return;
         }
+        File destinationFile = new File(destination);
         try {
-            FilesUtils.copyFile(existing, new File(destination));
+            if (selectedFileInfo.fileContent != null) {
+                Files.write(destinationFile.toPath(), selectedFileInfo.fileContent.get().getBytes());
+            } else {
+                FilesUtils.copyFile(selectedFileInfo.file, destinationFile);
+            }
         } catch (Exception e) {
             ExceptionHandler.process(e);
         }
@@ -472,17 +529,39 @@ public class MetadataTalendTypeEditor extends FieldEditor {
     private void importItem() {
         setPresentsDefaultValue(false);
         File input = getNewInputObject();
-
         if (input != null) {
-            FileInfo fileInfo = new FileInfo();
-            fileInfo.file = input;
-            fileInfo.fileName = input.getName();
-            tmpFileManager.addFile(fileInfo);
+            Optional<FileInfo> optional = tmpFileManager.getTempFiles(true).stream()
+                    .filter(f -> f.fileName.equals(input.getName())).findAny();
+            if (optional.isPresent()) {
+                FileInfo tmpFileInfo = optional.get();
+                try {
+                    String content = new String(Files.readAllBytes(input.toPath()));
+                    if (FileType.SYSTEM_DEFAULT == tmpFileInfo.type) {
+                        String systemSha1 = MetadataTalendType.getSha1OfSystemMappingFile(tmpFileInfo.fileName);
+                        String inputSha1 = MetadataTalendType.getSha1OfText(content);
+                        if (inputSha1.equals(systemSha1)) {
+                            return;
+                        }
+                        tmpFileInfo.type = FileType.USER_DEFINED;
+                    }
+                    tmpFileInfo.fileContent = new Document(content);
+                    tmpFileInfo.isDeleted = false;
+                } catch (IOException e) {
+                    ExceptionHandler.process(e);
+                }
+            } else {
+                FileInfo fileInfo = new FileInfo();
+                fileInfo.file = input;
+                fileInfo.fileName = input.getName();
+                fileInfo.type = FileType.USER_EXTERNAL;
+                tmpFileManager.addFile(fileInfo);
+            }
             refreshViewer();
         }
     }
 
     private void refreshViewer() {
+        viewer.setInput(tmpFileManager.getTempFiles(false));
         viewer.refresh();
         selectionChanged();
     }
@@ -497,11 +576,11 @@ public class MetadataTalendTypeEditor extends FieldEditor {
         }
         File xmlFile = new File(fileName);
         if (tmpFileManager.contains(xmlFile.getName())) {
-            MessageDialog
-                    .openWarning(
+            boolean confirm = MessageDialog.openConfirm(
                             shell,
-                            Messages.getString("MetadataTalendTypeEditor.error.message"), Messages.getString("MetadataTalendTypeEditor.fileIsImported")); //$NON-NLS-1$ //$NON-NLS-2$
-            return null;
+                    Messages.getString("MetadataTalendTypeEditor.confirmTitle"), //$NON-NLS-1$
+                    Messages.getString("MetadataTalendTypeEditor.fileOverwrite")); //$NON-NLS-1$
+            return confirm ? xmlFile : null;
         }
 
         if (!xmlFile.getName().startsWith("mapping_")) { //$NON-NLS-1$
@@ -536,13 +615,21 @@ public class MetadataTalendTypeEditor extends FieldEditor {
         boolean selected = !viewer.getSelection().isEmpty();
         setControlEnable(exportButton, selected);
         setControlEnable(editButton, selected);
-        setControlEnable(removeButton, selected);
 
+        boolean removeEnable = selected;
         StructuredSelection select = (StructuredSelection) viewer.getSelection();
 
         if (select != null) {
             FileInfo info = (FileInfo) select.getFirstElement();
             if (info != null) {
+                String buttonText = null;
+                if (FileType.USER_DEFINED == info.type || FileType.SYSTEM_DEFAULT == info.type) {
+                    buttonText = Messages.getString("MetadataTalendTypeEditor.button.restore"); //$NON-NLS-1$
+                } else if (FileType.USER_EXTERNAL == info.type) {
+                    buttonText = JFaceResources.getString("ListEditor.remove"); //$NON-NLS-1$
+                }
+                removeButton.setText(buttonText);
+                removeEnable = FileType.SYSTEM_DEFAULT != info.type;
                 String id = null;
                 String infoName = info.fileName;
                 for (Dbms allDbm : allDbms) {
@@ -553,6 +640,7 @@ public class MetadataTalendTypeEditor extends FieldEditor {
                 setSelectId(id); 
             }
         }
+        setControlEnable(removeButton, removeEnable);
     }
 
     protected void setControlEnable(Control control, boolean enable) {
@@ -569,13 +657,30 @@ public class MetadataTalendTypeEditor extends FieldEditor {
                 Messages.getString("MetadataTalendTypeEditor.confirmTitle"), //$NON-NLS-1$
                 Messages.getString("MetadataTalendTypeEditor.confirmMessage")); //$NON-NLS-1$
         if (confirm) {
-            ICoreService coreService = null;
-            if (GlobalServiceRegister.getDefault().isServiceRegistered(ICoreService.class)) {
-                coreService = GlobalServiceRegister.getDefault().getService(ICoreService.class);
-                coreService.syncMappingsFileFromSystemToProject();
-                tmpFileManager.reload();
-            }
+            RepositoryWorkUnit workUnit = new RepositoryWorkUnit("Restore mapping files") { //$NON-NLS-1$
+
+                @Override
+                protected void run() throws LoginException, PersistenceException {
+                    try {
+                        File[] projectMappingFiles = MetadataTalendType.getProjectFolderURLOfMappingsFile().listFiles();
+                        if (projectMappingFiles != null) {
+                            Set<String> systemFileNames = Stream
+                                    .of(MetadataTalendType.getSystemFolderURLOfMappingsFile()
+                                            .listFiles(f -> f.getName().matches(MetadataTalendType.MAPPING_FILE_PATTERN)))
+                                    .map(File::getName).collect(Collectors.toSet());
+                            Stream.of(projectMappingFiles).filter(f -> systemFileNames.contains(f.getName()))
+                                    .forEach(File::delete);
+                        }
+                    } catch (SystemException e) {
+                        ExceptionHandler.process(e);
+                    }
+                }
+            };
+            workUnit.setAvoidUnloadResources(true);
+            ProxyRepositoryFactory.getInstance().executeRepositoryWorkUnit(workUnit);
+            tmpFileManager.reload();
             super.load();
+            viewer.refresh();
         }
     }
 
@@ -586,7 +691,7 @@ public class MetadataTalendTypeEditor extends FieldEditor {
      */
     @Override
     protected void doLoad() {
-        viewer.setInput(tmpFileManager.getTempFiles());
+        viewer.setInput(tmpFileManager.getTempFiles(false));
     }
 
     /**
@@ -595,7 +700,7 @@ public class MetadataTalendTypeEditor extends FieldEditor {
      * DOC YeXiaowei Comment method "forceLoad".
      */
     public void forceLoad() {
-        viewer.setInput(tmpFileManager.getTempFiles());
+        viewer.setInput(tmpFileManager.getTempFiles(false));
     }
 
     /**
@@ -635,96 +740,42 @@ public class MetadataTalendTypeEditor extends FieldEditor {
         }
 
         boolean needReload = false;
-
-        List<FileInfo> tempFiles = tmpFileManager.getTempFiles();
-        List<File> realFiles = MetadataTalendType.getMetadataMappingFiles();
-
-        // delete the removed files
-        for (File file : realFiles) {
-            if (!tmpFileManager.contains(file.getName())) {
-                IFile iFile = mappingFolder.getFile(file.getName());
+        List<FileInfo> tmpFiles = tmpFileManager.getTempFiles(true);
+        for (FileInfo info : tmpFiles) {
+            IFile file = mappingFolder.getFile(info.fileName);
+            if (FileType.SYSTEM_DEFAULT == info.type || info.isDeleted) {
                 try {
-                    iFile.delete(true, null);
-                    needReload = true;
+                    if (file.exists()) {
+                        file.delete(true, null);
+                        needReload = true;
+                    }
                 } catch (CoreException e) {
                     ExceptionHandler.process(e);
                 }
+                continue;
             }
-        }
-
-        // add the new files;
-        for (FileInfo newFile : tempFiles) {
-            if (!realFiles.contains(newFile.file)) {
+            if (FileType.USER_DEFINED == info.type || FileType.USER_EXTERNAL == info.type) {
                 try {
-                    importFileIntoTalend(newFile.file);
+                    byte[] newContent = info.fileContent == null ? Files.readAllBytes(info.file.toPath())
+                            : info.fileContent.get().getBytes();
+                    InputStream inputStream = new ByteArrayInputStream(newContent);
+                    if (file.exists()) {
+                        file.setContents(inputStream, true, false, null);
+                    } else {
+                        if (!mappingFolder.exists()) {
+                            ResourceUtils.createFolder(mappingFolder);
+                        }
+                        file.create(inputStream, true, null);
+                    }
                     needReload = true;
                 } catch (Exception e) {
                     ExceptionHandler.process(e);
                 }
             }
         }
-
-        // for editing files
-        for (FileInfo tempFile : tempFiles) {
-            for (File realFile : realFiles) {
-                if (realFile.equals(tempFile.file)) {
-                    if (tempFile.fileContent != null) {
-                        try {
-                            updateFileContent(realFile, tempFile.fileContent.get());
-                            needReload = true;
-                            break;
-                        } catch (Exception e) {
-                            ExceptionHandler.process(e);
-                        }
-
-                    }
-                }
-            }
-        }
-        try {
-            mappingFolder.refreshLocal(IResource.DEPTH_ONE, null);
-        } catch (CoreException e) {
-            ExceptionHandler.process(e);
-        }
         if (needReload) {
             tmpFileManager.reload();
-            ProjectPreferenceManager manager = CoreRuntimePlugin.getInstance().getProjectPreferenceManager();
-            manager.setValue(MetadataTalendType.UPDATED_MAPPING_FILES, true);
-            manager.save();
         }
-    }
-
-    /**
-     * bqian Comment method "updateFileContent".
-     *
-     * @param realFile
-     * @param string
-     */
-    private void updateFileContent(File realFile, String string) throws Exception {
-        FileWriter fw = null;
-        try {
-            fw = new FileWriter(realFile);
-            fw.write(string);
-            fw.flush();
-        } finally {
-            fw.close();
-        }
-    }
-
-    /**
-     * Import the selected file into talend.
-     *
-     * @param xmlFile
-     * @throws SystemException
-     */
-    private File importFileIntoTalend(File xmlFile) throws IOException, SystemException {
-        String fileName = xmlFile.getName();
-
-        URL url = MetadataTalendType.getProjectForderURLOfMappingsFile();
-        File targetFile = new File(url.getPath(), fileName);
-
-        FilesUtils.copyFile(xmlFile, targetFile);
-        return targetFile;
     }
 
     /*

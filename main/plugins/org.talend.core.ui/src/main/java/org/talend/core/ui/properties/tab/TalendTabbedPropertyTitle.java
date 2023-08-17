@@ -12,11 +12,14 @@
 // ============================================================================
 package org.talend.core.ui.properties.tab;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
@@ -27,9 +30,17 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.forms.IFormColors;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetWidgetFactory;
+import org.talend.commons.ui.runtime.ITalendThemeService;
+import org.talend.commons.ui.runtime.image.EImage;
+import org.talend.commons.ui.runtime.image.ImageProvider;
+import org.talend.core.GlobalServiceRegister;
 import org.talend.core.ui.CoreUIPlugin;
+import org.talend.core.ui.i18n.Messages;
+import org.talend.designer.core.IDesignerCoreService;
 import org.talend.themes.core.elements.stylesettings.TalendTabbedPropertyColorHelper;
 import org.talend.themes.core.elements.widgets.ITalendTabbedPropertyTitleWidget;
 
@@ -44,6 +55,16 @@ public class TalendTabbedPropertyTitle extends Composite implements ITalendTabbe
     private Image image = null;
 
     private String text = null;
+    
+    private ToolItem helpLabel;
+
+    private String componentName;
+
+    private Composite titleLabelComp;
+
+    private Composite helpComp;
+
+    private boolean isComponentTitle;
 
     private static final String BLANK = ""; //$NON-NLS-1$
 
@@ -71,8 +92,10 @@ public class TalendTabbedPropertyTitle extends Composite implements ITalendTabbe
             public void paintControl(PaintEvent e) {
                 if (image == null && (text == null || text.equals(BLANK))) {
                     label.setVisible(false);
+                    helpComp.setVisible(false);
                 } else {
                     label.setVisible(true);
+                    helpComp.setVisible(isComponentTitle && StringUtils.isNotBlank(componentName));
                     drawTitleBackground(e);
                 }
             }
@@ -96,25 +119,80 @@ public class TalendTabbedPropertyTitle extends Composite implements ITalendTabbe
         }
         font = JFaceResources.getFont(TITLE_FONT);
 
-        label = factory.createCLabel(this, BLANK);
-        if (colorHelper.getTitleBackground() == null) {
-            label.setBackground(new Color[] { factory.getColors().getColor(IFormColors.H_GRADIENT_END),
-                    factory.getColors().getColor(IFormColors.H_GRADIENT_START) }, new int[] { 100 }, true);
-        } else {
-            label.setBackground(colorHelper.getTitleBackground());
-        }
+        titleLabelComp = new Composite(this, SWT.None);
+        FormData compData = new FormData();
+        compData.left = new FormAttachment(0, 0);
+        compData.top = new FormAttachment(0, 0);
+        compData.right = new FormAttachment(100, 0);
+        compData.bottom = new FormAttachment(100, 0);
+        titleLabelComp.setLayoutData(compData);
+        titleLabelComp.setLayout(new FormLayout());
+
+        label = factory.createCLabel(titleLabelComp, BLANK);
         label.setFont(font);
         label.setForeground(colorHelper.getTitleForeground());
         FormData data = new FormData();
         data.left = new FormAttachment(0, 0);
         data.top = new FormAttachment(0, 0);
-        data.right = new FormAttachment(100, 0);
+        data.right = new FormAttachment(100, -25);
         data.bottom = new FormAttachment(100, 0);
         label.setLayoutData(data);
 
-        /*
-         * setImage(PlatformUI.getWorkbench().getSharedImages().getImage( ISharedImages.IMG_OBJ_ELEMENT));
-         */
+        helpComp = new Composite(titleLabelComp, SWT.None);
+        FormData helpFormData = new FormData();
+        helpFormData.top = new FormAttachment(50, -12);
+        helpFormData.right = new FormAttachment(100, 0);
+        helpFormData.bottom = new FormAttachment(50, 12);
+        helpFormData.left = new FormAttachment(100, -25);
+        helpComp.setLayoutData(helpFormData);
+        helpComp.setLayout(new FormLayout());
+
+        ToolBar toolBar = new ToolBar(helpComp, SWT.CENTER | SWT.NO_FOCUS);
+        FormData toolBarData = new FormData();
+        toolBarData.left = new FormAttachment(0, 0);
+        toolBarData.top = new FormAttachment(0, 0);
+        toolBarData.right = new FormAttachment(100, 0);
+        toolBarData.bottom = new FormAttachment(100, 0);
+        helpLabel = new ToolItem(toolBar, SWT.CHECK | SWT.CENTER);
+        helpLabel.setImage(ImageProvider.getImage(EImage.HELP_ICON));
+        helpLabel.setToolTipText(Messages.getString("TalendTabbedPropertyTitle.componentHelpTooltip"));
+        helpLabel.setSelection(false);
+        helpLabel.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                if (StringUtils.isNotBlank(componentName)
+                        && GlobalServiceRegister.getDefault().isServiceRegistered(IDesignerCoreService.class)) {
+                    IDesignerCoreService service = GlobalServiceRegister.getDefault().getService(IDesignerCoreService.class);
+                    if (service != null) {
+                        service.openComponentOnlineHelp(componentName);
+                    }
+                }
+                helpLabel.setSelection(false);
+            }
+        });
+        helpComp.setVisible(false);
+
+        if (colorHelper.getTitleBackground() == null) {
+            label.setBackground(new Color[] { getStartColor(),
+                    getEndColor() }, new int[] { 100 }, true);
+            titleLabelComp.setBackground(getEndColor());
+            helpComp.setBackground(getEndColor());
+        } else {
+            label.setBackground(colorHelper.getTitleBackground());
+            titleLabelComp.setBackground(colorHelper.getTitleBackground());
+            helpComp.setBackground(colorHelper.getTitleBackground());
+        }
+    }
+
+    private Color getStartColor() {
+        return ITalendThemeService.getColor("org.talend.core.repository.TAB_START_COLOR")
+                .orElse(factory.getColors().getColor(IFormColors.H_GRADIENT_END));
+    }
+
+    private Color getEndColor() {
+        return ITalendThemeService.getColor("org.talend.core.repository.TAB_END_COLOR")
+                .orElse(factory.getColors().getColor(IFormColors.H_GRADIENT_START));
     }
 
     /**
@@ -123,13 +201,17 @@ public class TalendTabbedPropertyTitle extends Composite implements ITalendTabbe
     protected void drawTitleBackground(PaintEvent e) {
         Rectangle bounds = getClientArea();
         if (colorHelper.getTitleBackground() == null) {
-            label.setBackground(new Color[] { factory.getColors().getColor(IFormColors.H_GRADIENT_END),
-                    factory.getColors().getColor(IFormColors.H_GRADIENT_START) }, new int[] { 100 }, true);
+            label.setBackground(new Color[] { getStartColor(),
+                    getEndColor() }, new int[] { 100 }, true);
+            titleLabelComp.setBackground(getEndColor());
+            helpComp.setBackground(getEndColor());
         } else {
             label.setBackground(colorHelper.getTitleBackground());
+            titleLabelComp.setBackground(colorHelper.getTitleBackground());
+            helpComp.setBackground(colorHelper.getTitleBackground());
         }
-        Color bg = factory.getColors().getColor(IFormColors.H_GRADIENT_END);
-        Color gbg = factory.getColors().getColor(IFormColors.H_GRADIENT_START);
+        Color bg = getStartColor();
+        Color gbg = getEndColor();
         GC gc = e.gc;
         gc.setForeground(bg);
         gc.setBackground(gbg);
@@ -158,6 +240,7 @@ public class TalendTabbedPropertyTitle extends Composite implements ITalendTabbe
             label.setText(text);
         } else {
             label.setText(BLANK);
+            componentName = null;
         }
         label.setImage(image);
         redraw();
@@ -167,6 +250,14 @@ public class TalendTabbedPropertyTitle extends Composite implements ITalendTabbe
         this.image = image;
         label.setImage(image);
         redraw();
+    }
+
+    public void setComponentName(String componentName) {
+        this.componentName = componentName;
+    }
+
+    public void setIsComponentTitle(boolean isComponentTitle) {
+        this.isComponentTitle = isComponentTitle;
     }
 
     @Override

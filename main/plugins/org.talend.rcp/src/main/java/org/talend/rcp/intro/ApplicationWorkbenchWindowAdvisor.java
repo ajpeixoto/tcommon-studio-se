@@ -76,7 +76,6 @@ import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.LoginException;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.ui.utils.CheatSheetPerspectiveAdapter;
-import org.talend.commons.utils.VersionUtils;
 import org.talend.commons.utils.time.TimeMeasurePerformance;
 import org.talend.commons.utils.workbench.extensions.ExtensionImplementationProvider;
 import org.talend.commons.utils.workbench.extensions.ExtensionPointLimiterImpl;
@@ -86,17 +85,13 @@ import org.talend.core.GlobalServiceRegister;
 import org.talend.core.ITDQItemService;
 import org.talend.core.ITDQRepositoryService;
 import org.talend.core.PluginChecker;
-import org.talend.core.context.Context;
-import org.talend.core.context.RepositoryContext;
-import org.talend.core.model.general.Project;
 import org.talend.core.model.repository.RepositoryManager;
 import org.talend.core.model.utils.RepositoryManagerHelper;
-import org.talend.core.model.utils.TalendPropertiesUtil;
+import org.talend.core.model.utils.TalendWorkbenchUtil;
 import org.talend.core.prefs.IDEInternalPreferences;
 import org.talend.core.prefs.ITalendCorePrefConstants;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.ui.CoreUIPlugin;
-import org.talend.core.ui.IInstalledPatchService;
 import org.talend.core.ui.branding.IBrandingConfiguration;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.core.ui.perspective.RestoreAllRegisteredPerspectivesProvider;
@@ -114,7 +109,6 @@ import org.talend.rcp.i18n.Messages;
 import org.talend.rcp.util.ApplicationDeletionUtil;
 import org.talend.repository.RepositoryWorkUnit;
 import org.talend.repository.token.RepositoryActionLogger;
-import org.talend.repository.ui.login.connections.ConnectionUserPerReader;
 import org.talend.repository.ui.views.IRepositoryView;
 
 /**
@@ -175,49 +169,11 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
         configurer.setShowProgressIndicator(true);
         configurer.setShowPerspectiveBar(true);
         configurer.configureEditorAreaDropListener(new EditorAreaDropAdapter(configurer.getWindow()));
-        RepositoryContext repositoryContext = (RepositoryContext) CorePlugin.getContext().getProperty(
-                Context.REPOSITORY_CONTEXT_KEY);
-        Project project = repositoryContext.getProject();
 
         IBrandingService service = (IBrandingService) GlobalServiceRegister.getDefault().getService(IBrandingService.class);
         IBrandingConfiguration brandingConfiguration = service.getBrandingConfiguration();
-        String appName = service.getFullProductName();
-        // TDI-18644
-        ProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
-        boolean localProvider = false;
-        try {
-            localProvider = factory.isLocalConnectionProvider();
-        } catch (PersistenceException e) {
-            localProvider = true;
-        }
-        
-        String buildIdField = " (" + VersionUtils.getVersion() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
-        if (GlobalServiceRegister.getDefault().isServiceRegistered(IInstalledPatchService.class)) {
-        	IInstalledPatchService pachService = (IInstalledPatchService) GlobalServiceRegister
-                    .getDefault().getService(IInstalledPatchService.class);
-            if (pachService != null) {
-                String patchVersion = pachService.getLatestInstalledVersion(true);
-                if(patchVersion != null) {
-                	buildIdField = " (" + patchVersion + ")"; //$NON-NLS-1$ //$NON-NLS-2$;
-                }
-            }
-        }
-        if (TalendPropertiesUtil.isHideBuildNumber()) {
-            buildIdField = ""; //$NON-NLS-1$
-        }
-        if (localProvider) {
-            configurer
-                    .setTitle(appName
-                            + buildIdField
-                            + " | " + project.getLabel() + " (" //$NON-NLS-1$ //$NON-NLS-2$
-                            + Messages.getString("ApplicationWorkbenchWindowAdvisor.repositoryConnection") + ": " + ConnectionUserPerReader.getInstance().readLastConncetion() + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        } else {
-            configurer
-                    .setTitle(appName
-                            + buildIdField
-                            + " | " + repositoryContext.getUser() + " | " + project.getLabel() + " (" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                            + Messages.getString("ApplicationWorkbenchWindowAdvisor.repositoryConnection") + ": " + ConnectionUserPerReader.getInstance().readLastConncetion() + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        }
+
+        configurer.setTitle(TalendWorkbenchUtil.getWorkbenchWindowTitle());
         ActionBarBuildHelper helper = (ActionBarBuildHelper) brandingConfiguration.getHelper();
         if (helper == null) {
             helper = new ActionBarBuildHelper();
@@ -254,10 +210,13 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
         CommonsPlugin.setWorkbenchCreated(true);
         TimeMeasurePerformance.afterStartup();
         TokenCollectorFactory.getFactory().monitor();
-        
+
         // TDQ-11355 avoid "java.nio.channels.ClosedChannelException" .If the current perspective is DQ, delay this
         // commit at here,it will be committed with DQ side(see DQRespositoryView Constructor).
         IWorkbenchPage activePage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+        if (activePage != null) {
+            activePage.hideActionSet("org.eclipse.search.searchActionSet");
+        }
         if (activePage != null && !(activePage.getPerspective().getId().equals(ProductUtils.PERSPECTIVE_DQ_ID))) {
 
             Job myJob = new Job("Remote project update and commit on startup") {
@@ -323,6 +282,10 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
             if (path == null) {
                 return;
             }
+            /**
+             * FIXME: seems the correct name should be workbench.xmi, means the following logic never works in recent
+             * target platform
+             */
             final File stateFile = path.append("workbench.xml").toFile(); //$NON-NLS-1$
             if (stateFile.exists()) {
                 FileInputStream input;
@@ -400,6 +363,9 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
             if ("navigate".equals(menuItem.getId())) { //$NON-NLS-1$
                 menuItem.setVisible(false);
             } else if ("org.eclipse.ui.run".equals(menuItem.getId())) { //$NON-NLS-1$
+                menuManager.remove(menuItem);
+            }
+            if ("org.eclipse.search.menu".equals(menuItem.getId())) {
                 menuManager.remove(menuItem);
             }
         }

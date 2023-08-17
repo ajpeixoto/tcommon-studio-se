@@ -187,7 +187,7 @@ public class JavaLibrariesService extends AbstractLibrariesService {
         final boolean isLocalRepository = !"global".equalsIgnoreCase(configSetting); //$NON-NLS-1$
         String currentRepType = isLocalRepository ? "local" : "global";
         if (!currentRepType.equals(lastRepType)) {
-            repositoryBundleService.clearCache();
+            repositoryBundleService.clearCache(false);
         }
         if (lastRepType == null || !currentRepType.equals(lastRepType)) {
             try {

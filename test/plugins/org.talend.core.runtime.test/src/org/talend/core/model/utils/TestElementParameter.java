@@ -1171,4 +1171,16 @@ public class TestElementParameter implements IElementParameter {
         // TODO Auto-generated method stub
         return false;
     }
+
+    @Override
+    public String getOrignEncryptedValue() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void setOrignEncryptedValue(String value) {
+        // TODO Auto-generated method stub
+        
+    }
 }

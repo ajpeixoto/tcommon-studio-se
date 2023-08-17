@@ -32,6 +32,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.PlatformUI;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.model.general.ConnectionBean;
+import org.talend.core.service.ICloudSignOnService;
 import org.talend.utils.json.JSONArray;
 import org.talend.utils.json.JSONException;
 import org.talend.utils.json.JSONObject;
@@ -158,6 +159,8 @@ public class ConnectionUserPerReader {
         }
         if (cons == null || cons.size() == 0) {
             proper.remove("connection.users");//$NON-NLS-1$
+            proper.remove("connection.define");//$NON-NLS-1$
+            proper.remove("connection.lastConnection");//$NON-NLS-1$
         } else {
             JSONArray usersJsonArray = new JSONArray();
             for (ConnectionBean currentConnection : cons) {
@@ -207,7 +210,6 @@ public class ConnectionUserPerReader {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     public void createPropertyFile() {

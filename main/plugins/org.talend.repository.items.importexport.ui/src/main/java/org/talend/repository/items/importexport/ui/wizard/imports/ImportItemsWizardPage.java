@@ -48,6 +48,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -63,7 +64,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeItem;
@@ -77,6 +77,7 @@ import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.runtime.model.emf.provider.EmfResourcesFactoryReader;
 import org.talend.commons.runtime.model.emf.provider.ResourceOption;
 import org.talend.commons.runtime.model.repository.ERepositoryStatus;
+import org.talend.commons.runtime.service.ITaCoKitService;
 import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.core.GlobalServiceRegister;
@@ -99,6 +100,8 @@ import org.talend.designer.maven.tools.AggregatorPomsHelper;
 import org.talend.designer.maven.tools.MavenPomSynchronizer;
 import org.talend.migration.MigrationReportHelper;
 import org.talend.repository.items.importexport.handlers.ImportExportHandlersManager;
+import org.talend.repository.items.importexport.handlers.imports.IImportItemsHandler;
+import org.talend.repository.items.importexport.handlers.imports.ImportBasicHandler;
 import org.talend.repository.items.importexport.handlers.imports.ImportCacheHelper;
 import org.talend.repository.items.importexport.handlers.imports.ImportDependencyRelationsHelper;
 import org.talend.repository.items.importexport.handlers.model.EmptyFolderImportItem;
@@ -148,7 +151,7 @@ public class ImportItemsWizardPage extends WizardPage {
     private final List<String> errors = new ArrayList<String>();
 
     protected Button overwriteButton;
-
+                                                                                                       
     /*
      *
      */
@@ -188,16 +191,26 @@ public class ImportItemsWizardPage extends WizardPage {
 
     @Override
     public void createControl(Composite parent) {
-        Composite composite = new Composite(parent, SWT.NONE);
-        setControl(composite);
+        ScrolledComposite scrolledComposite = new ScrolledComposite(parent, SWT.V_SCROLL);
+        setControl(scrolledComposite);
+        scrolledComposite.setLayout(new GridLayout());
+        scrolledComposite.setLayoutData( new GridData(GridData.FILL_BOTH));
+        
+        Composite composite = new Composite(scrolledComposite, SWT.NONE);
         composite.setLayout(new GridLayout());
         composite.setLayoutData(new GridData(GridData.FILL_BOTH | GridData.GRAB_HORIZONTAL | GridData.GRAB_VERTICAL));
-
+        scrolledComposite.setContent(composite);
+        
         createSelectionArea(composite);
         createImportDependenciesArea(composite);
         createItemListArea(composite);
         createErrorsListArea(composite);
         createAdditionArea(composite);
+        
+        scrolledComposite.setContent(composite);
+        scrolledComposite.setExpandHorizontal(true);
+        scrolledComposite.setExpandVertical(true);
+        scrolledComposite.setMinSize(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 
         Dialog.applyDialogFont(composite);
     }
@@ -342,7 +355,7 @@ public class ImportItemsWizardPage extends WizardPage {
                     if (GlobalServiceRegister.getDefault().isServiceRegistered(IExchangeService.class)) {
                         archivePathField.setEditable(false);
 
-                        IExchangeService service = (IExchangeService) GlobalServiceRegister.getDefault().getService(
+                        IExchangeService service = GlobalServiceRegister.getDefault().getService(
                                 IExchangeService.class);
 
                         String selectedArchive = service.openExchangeDialog();
@@ -655,21 +668,41 @@ public class ImportItemsWizardPage extends WizardPage {
         GridData gridData = new GridData(GridData.GRAB_HORIZONTAL | GridData.GRAB_VERTICAL | GridData.FILL_BOTH);
         optionsArea.setLayoutData(gridData);
 
-        Group internalIdGroup = new Group(optionsArea, SWT.NONE);
-        internalIdGroup.setText(Messages.getString("ImportItemsWizardPage_internalIdGroup"));
-        internalIdGroup.setLayout(new GridLayout(1, true));
-        FormData internalIdGroupLayoutData = new FormData();
-        internalIdGroupLayoutData.top = new FormAttachment(0);
-        internalIdGroupLayoutData.left = new FormAttachment(0);
-        internalIdGroup.setLayoutData(internalIdGroupLayoutData);
-
-        regenIdBtn = new Button(internalIdGroup, SWT.RADIO);
-        regenIdBtn.setText(Messages.getString("ImportItemsWizardPage_internalIdGroup_alwaysRegenId"));
-
-        Button keepOrigIdBtn = new Button(internalIdGroup, SWT.RADIO);
-        keepOrigIdBtn.setText(Messages.getString("ImportItemsWizardPage_internalIdGroup_keepOrigId"));
-        keepOrigIdBtn.setSelection(true);
-
+//        Group internalIdGroup = new Group(optionsArea, SWT.NONE);
+//        internalIdGroup.setText(Messages.getString("ImportItemsWizardPage_internalIdGroup"));
+//        internalIdGroup.setLayout(new GridLayout(1, true));
+//        FormData internalIdGroupLayoutData = new FormData();
+//        internalIdGroupLayoutData.top = new FormAttachment(0);
+//        internalIdGroupLayoutData.left = new FormAttachment(0);
+//        internalIdGroup.setLayoutData(internalIdGroupLayoutData);
+//
+//        regenIdBtn = new Button(internalIdGroup, SWT.RADIO);
+//        regenIdBtn.setText(Messages.getString("ImportItemsWizardPage_internalIdGroup_alwaysRegenId"));
+//
+//        Button keepOrigIdBtn = new Button(internalIdGroup, SWT.RADIO);
+//        keepOrigIdBtn.setText(Messages.getString("ImportItemsWizardPage_internalIdGroup_keepOrigId"));
+//        keepOrigIdBtn.setSelection(true);
+//
+//        // see feature 3949
+//        this.overwriteButton = new Button(optionsArea, SWT.CHECK);
+//        this.overwriteButton.setText(Messages.getString("ImportItemsWizardPage_overwriteItemsTxt")); //$NON-NLS-1$
+//        this.overwriteButton.addSelectionListener(new SelectionAdapter() {
+//
+//            @Override
+//            public void widgetSelected(SelectionEvent e) {
+//                if (StringUtils.isNotEmpty(directoryPathField.getText()) || StringUtils.isNotEmpty(archivePathField.getText())) {
+//                    populateItems(overwriteButton.getSelection(), true);
+//                }
+//            }
+//
+//        });
+//        FormData overwriteLayoutData = new FormData();
+//        overwriteLayoutData.top = new FormAttachment(internalIdGroup, 5, SWT.BOTTOM);
+//        overwriteLayoutData.left = new FormAttachment(internalIdGroup, 0, SWT.LEFT);
+//        this.overwriteButton.setLayoutData(overwriteLayoutData);
+//
+//        internalIdGroup.setVisible(false);
+        
         // see feature 3949
         this.overwriteButton = new Button(optionsArea, SWT.CHECK);
         this.overwriteButton.setText(Messages.getString("ImportItemsWizardPage_overwriteItemsTxt")); //$NON-NLS-1$
@@ -684,11 +717,9 @@ public class ImportItemsWizardPage extends WizardPage {
 
         });
         FormData overwriteLayoutData = new FormData();
-        overwriteLayoutData.top = new FormAttachment(internalIdGroup, 5, SWT.BOTTOM);
-        overwriteLayoutData.left = new FormAttachment(internalIdGroup, 0, SWT.LEFT);
+        overwriteLayoutData.top = new FormAttachment(optionsArea, 5, SWT.BOTTOM);
+        overwriteLayoutData.left = new FormAttachment(optionsArea, 0, SWT.LEFT);
         this.overwriteButton.setLayoutData(overwriteLayoutData);
-
-        internalIdGroup.setVisible(false);
     }
 
     protected boolean isEnableForExchange() {
@@ -807,9 +838,52 @@ public class ImportItemsWizardPage extends WizardPage {
             // already checked all
             return;
         }
-
+        List<ItemImportNode> allImportItemNode = nodesBuilder.getAllImportItemNode();
         ImportDependencyRelationsHelper.getInstance().checkImportRelationDependency(checkedNodeList, toSelectSet,
-                nodesBuilder.getAllImportItemNode());
+                allImportItemNode);
+
+        ITaCoKitService coKitService = ITaCoKitService.getInstance();
+
+        Set<ItemImportNode> parentNodetoSelectSet = new HashSet<ItemImportNode>();
+
+        if (coKitService != null) {
+            for (ItemImportNode itemImportNode : toSelectSet) {
+
+                ImportItem itemRecord = itemImportNode.getItemRecord();
+
+                if (itemRecord != null) {
+                    ERepositoryObjectType repositoryType = itemRecord.getRepositoryType();
+
+                    boolean isTaCoKitType = coKitService.isTaCoKitType(repositoryType);
+
+                    if (isTaCoKitType) {
+                        IImportItemsHandler importHandler = itemRecord.getImportHandler();
+                        if (importHandler instanceof ImportBasicHandler) {
+                            ((ImportBasicHandler) importHandler).resolveItem(resManager, itemRecord);
+                            Item item = itemRecord.getProperty().getItem();
+                            String parentItemId = coKitService.getParentItemIdFromItem(item);
+                            if (StringUtils.isNotBlank(parentItemId)) {
+                                for (ItemImportNode importNode : allImportItemNode) {
+                                    ImportItem importItem = importNode.getItemRecord();
+                                    if (importItem != null && importItem.getProperty() != null
+                                            && StringUtils.equals(parentItemId, importItem.getProperty().getId())) {
+                                        parentNodetoSelectSet.add(importNode);
+                                        break;
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (parentNodetoSelectSet.size() > 0) {
+
+            toSelectSet.addAll(parentNodetoSelectSet);
+        }
+        // to make doCheckStateChanged execute from ContainerCheckedTreeViewer.setCheckedElements(Object[])
+        filteredCheckboxTree.getViewer().setCheckedElements(new Object[0]);
         filteredCheckboxTree.getViewer().setCheckedElements(toSelectSet.toArray());
     }
 
@@ -1163,6 +1237,7 @@ public class ImportItemsWizardPage extends WizardPage {
     public boolean performFinish() {
         final List<ImportItem> checkedItemRecords = getCheckedElements();
         final IProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
+        importManager.getPendoImportManager().cacheItemProperty(checkedItemRecords);
         
         /*
          * ?? prepare to do import, unlock the existed one, and make sure the overwrite to work well.
@@ -1216,11 +1291,12 @@ public class ImportItemsWizardPage extends WizardPage {
                     final ResourceOption importOption = ResourceOption.ITEM_IMPORTATION;
                     try {
                         EmfResourcesFactoryReader.INSTANCE.addOption(importOption, false);
-
+                        importManager.getPendoImportManager().setStudioImport(true);
                         importManager.importItemRecords(monitor, resManager, checkedItemRecords, overwrite,
                                 nodesBuilder.getAllImportItemRecords(), destinationPath, alwaysRegenId);
                     } finally {
                         EmfResourcesFactoryReader.INSTANCE.removOption(importOption, false);
+                        importManager.getPendoImportManager().sendTrackToPendo();
                     }
                     Display.getDefault().syncExec(new Runnable() {
 

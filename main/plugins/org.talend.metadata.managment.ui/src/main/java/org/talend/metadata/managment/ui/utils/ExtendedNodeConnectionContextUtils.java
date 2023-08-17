@@ -108,6 +108,8 @@ public class ExtendedNodeConnectionContextUtils {
         SynapseClientId,
         SynapseDirectoryId,
         SynapseSecretKey,
+        UseSynapseCertificate,
+        SynapseClientCertificate,
         SynapseDeployBlob,
         SynapseDriverMemory,
         SynapseDriverCores,
@@ -160,6 +162,36 @@ public class ExtendedNodeConnectionContextUtils {
         DataBricksClusterId,
         DataBricksToken,
         DataBricksDBFSDepFolder,
+        DataBricksClusterType,
+        DataBricksRuntimeVersion,
+        DataBricksDriverNodeType,
+        DataBricksNodeType,
+        
+        // Kubernetes
+        k8sSubmitMode,
+        k8sMaster,
+        k8sInstances,
+        k8sUseRegistrySecret,
+        k8sRegistrySecret,
+        k8sImage,
+        k8sNamespace,
+        k8sServiceAccount,
+        k8sDistUpload,
+        k8sS3Bucket,
+        k8sS3Folder,
+        k8sS3Credentials,
+        k8sS3AccessKey,
+        k8sS3SecretKey,
+        k8sBlobAccount,
+        k8sBlobContainer,
+        k8sBlobSecretKey,
+        k8sAzureAccount,
+        k8sAzureCredentials,
+        k8sAzureContainer,
+        k8sAzureSecretKey,
+        k8sAzureAADKey,
+        k8sAzureAADClientID,
+        k8sAzureAADDirectoryID,
         
         //Knox
         SparkMode,
@@ -168,6 +200,7 @@ public class ExtendedNodeConnectionContextUtils {
         KnoxUsername,
         KnoxPassword,
         KnoxDirectory,
+        KnoxTimeout,
         
         //Cde
         CdeApiEndPoint,
@@ -175,7 +208,16 @@ public class ExtendedNodeConnectionContextUtils {
         CdeToken,
         CdeTokenEndpoint,
         CdeWorkloadUser,
-        CdeWorkloadPassword
+        CdeWorkloadPassword,
+        
+        //Standalone
+        StandaloneMaster,
+        StandaloneConfigureExecutors,
+        StandaloneExecutorMemory,
+        StandaloneExecutorCore,
+        
+        //spark submit script
+        SparkSubmitScriptHome
     }
 
     static List<IContextParameter> getContextVariables(final String prefixName, Connection conn, Set<IConnParamName> paramSet) {

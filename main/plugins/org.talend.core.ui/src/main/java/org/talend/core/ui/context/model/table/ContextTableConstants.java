@@ -23,11 +23,15 @@ public class ContextTableConstants {
 
     public static final String COLUMN_COMMENT_PROPERTY = "Comment"; //$NON-NLS-1$
 
-    public static final String COLUMN_CHECK_PROPERTY = ""; //$NON-NLS-1$
+    public static final String COLUMN_CHECK_PROPERTY = "Enable prompt"; //$NON-NLS-1$
 
-    public static final String COLUMN_PROMPT_PROPERTY = "Prompt"; //$NON-NLS-1$
+    public static final String COLUMN_PROMPT_PROPERTY = "Prompt label"; //$NON-NLS-1$
 
     public static final String COLUMN_CONTEXT_VALUE = "Value"; //$NON-NLS-1$
+    
+    public static final String LABEL_CHANGED_FORCEGROUND = "LABEL_CHANGED_FORCEGROUND";
+    
+    public static final String LABEL_VALUE_NOT_MATCH_TYPE = "LABEL_VALUE_NOT_MATCH_TYPE";
 
     public static final int DEFAULT_COLUMN_COUNT = 8;
 }

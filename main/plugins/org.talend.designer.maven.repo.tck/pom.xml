@@ -10,9 +10,10 @@
 	<artifactId>org.talend.designer.maven.repo.tck</artifactId>
 	<packaging>eclipse-plugin</packaging>
 	<properties>
-		<jackson.version>2.12.1</jackson.version>
-		<slf4j.version>1.7.32</slf4j.version>
-        <tycho.buildtimestamp.format>${timestamp}</tycho.buildtimestamp.format>
+		<jackson.version>2.13.4</jackson.version>
+		<jackson-databind.version>2.13.4.2</jackson-databind.version>
+		<slf4j.version>1.7.34</slf4j.version>
+		<tycho.buildtimestamp.format>${timestamp}</tycho.buildtimestamp.format>
 	</properties>
 	<repositories>
 		<repository>
@@ -62,7 +63,7 @@
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-databind</artifactId>
-				<version>${jackson.version}</version>
+				<version>${jackson-databind.version}</version>
 				<scope>compile</scope>
 			</dependency>
 			<dependency>

@@ -102,6 +102,8 @@ public class ImportExportHandlersManager {
 
     private ChangeIdManager changeIdManager = new ChangeIdManager();
 
+    private PendoImportManager pendoImportManager = new PendoImportManager();
+
     public ImportExportHandlersManager() {
         registryReader = ImportExportHandlersRegistryReader.getInstance();
     }
@@ -796,7 +798,7 @@ public class ImportExportHandlersManager {
                                         if (monitor.isCanceled()) {
                                             return;
                                         }
-
+                                        pendoImportManager.countItem(itemRecord);
                                         // will import
                                         importHandler.doImport(monitor, manager, itemRecord, overwriting, destinationPath);
 
@@ -971,13 +973,20 @@ public class ImportExportHandlersManager {
                                                 String importingLabel = itemRecord.getProperty().getLabel();
                                                 String existLabel = lastVersionBackup.getProperty().getLabel();
                                                 // refer to ImportBasicHandler.isNeedDeleteOnRemote
-                                                if (importingLabel != null && importingLabel.equalsIgnoreCase(importingLabel)
-                                                        && !importingLabel.equals(existLabel)) {
-                                                    physicalDeleteHM.get(true).add(objectToDelete);
-                                                } else {
-                                                    physicalDeleteHM.get(false).add(objectToDelete);
-                                                }
+                                                boolean isDeleteOnRemote = (importingLabel != null  && !importingLabel.equals(existLabel));
+                                                physicalDeleteHM.get(isDeleteOnRemote).add(objectToDelete);
                                                 idDeletedBeforeImport.add(id);
+                                                if (ERepositoryObjectType.ROUTINESJAR.getType()
+                                                        .equals(objectToDelete.getRepositoryObjectType().getType())
+                                                        || ERepositoryObjectType.BEANSJAR.getType()
+                                                                .equals(objectToDelete.getRepositoryObjectType().getType())) {
+                                                    List<IRepositoryViewObject> innerRoutinesObj = ProxyRepositoryFactory.getInstance()
+                                                            .getAllInnerCodes(CodesJarInfo.create(objectToDelete.getProperty()));
+                                                    for (IRepositoryViewObject child : innerRoutinesObj) {
+                                                        physicalDeleteHM.get(isDeleteOnRemote).add(child);
+                                                        idDeletedBeforeImport.add(child.getId());
+                                                    }                 
+                                                }
                                             }
                                         }
                                     }
@@ -1169,4 +1178,9 @@ public class ImportExportHandlersManager {
         importItem.setProperty(null);
         importItem.clear();
     }
+
+    public PendoImportManager getPendoImportManager() {
+        return pendoImportManager;
+    }
+
 }

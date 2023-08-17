@@ -36,10 +36,6 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.eclipse.emf.common.util.BasicEList;
-import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -60,6 +56,7 @@ import org.talend.core.model.metadata.builder.database.manager.ExtractManagerFac
 import org.talend.cwm.relational.RelationalFactory;
 import org.talend.cwm.relational.TdColumn;
 import org.talend.cwm.relational.TdTable;
+
 import orgomg.cwm.objectmodel.core.Feature;
 
 /**
@@ -650,7 +647,7 @@ public class AbstractTest4ExtractManager {
 
         List list = extractMeta.getConnection(metadataConn.getDbType(), metadataConn.getUrl(), metadataConn.getUsername(),
                 metadataConn.getPassword(), metadataConn.getDatabase(), metadataConn.getSchema(), metadataConn.getDriverClass(),
-                metadataConn.getDriverJarPath(), metadataConn.getDbVersionString(), metadataConn.getAdditionalParams());
+                metadataConn.getDriverJarPath(), metadataConn.getDbVersionString(), metadataConn.getAdditionalParams(), metadataConn.isSupportNLS());
         assertTrue(list.size() == 0);
         list.add(conn);
         assertTrue(list.size() != 0);

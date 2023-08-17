@@ -71,6 +71,9 @@ public interface IProcess2 extends IRepositoryObject, IProcess {
     @Override
     void setActivate(boolean b);
 
+    public boolean isRefactoringToJoblet();
+
+    public void refactoringToJoblet(boolean isRefactoring);
     /**
      * DOC qzhang Comment method "checkStartNodes".
      */

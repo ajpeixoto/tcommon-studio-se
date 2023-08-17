@@ -12,8 +12,6 @@
 // ============================================================================
 package org.talend.core.prefs;
 
-import org.talend.commons.utils.network.ITalendNexusPrefConstants;
-
 /**
  * Core preferences. Detailled comment <br/>
  *
@@ -187,8 +185,6 @@ public interface ITalendCorePrefConstants {
 
     public static final String PERFORMANCE_JAVA_PROCESS_CODE_FORMATE_TIMEOUT = "PERFORMANCE_JAVA_PROCESS_CODE_FORMATE_TIMEOUT"; //$NON-NLS-1$
 
-    public static final String NEXUS_TIMEOUT = ITalendNexusPrefConstants.NEXUS_TIMEOUT;
-
     public static final String NEXUS_REFRESH_FREQUENCY = "NEXUS_REFRESH_FREQUENCY"; //$NON-NLS-1$
 
     /**
@@ -206,5 +202,13 @@ public interface ITalendCorePrefConstants {
     public static final String NEXUS_SHARE_LIBS = "NEXUS_SHARE_LIBS";
 
     public static final boolean NEXUS_SHARE_LIBS_DEFAULT = false;
+
+    public static final String PERSPECTIVE_PERSIST_SCOPE = "PERSPECTIVE_PERSIST_SCOPE"; //$NON-NLS-1$
+
+    public static final String PERSPECTIVE_PERSIST_SCOPE_PROJECT_AND_BRANCH = "PROJECT_AND_BRANCH"; //$NON-NLS-1$
+
+    public static final String PERSPECTIVE_PERSIST_SCOPE_STUDIO = "STUDIO"; //$NON-NLS-1$
+
+    public static final String PERSPECTIVE_PERSIST_SCOPE_DEFAULT = PERSPECTIVE_PERSIST_SCOPE_PROJECT_AND_BRANCH;
 
 }

@@ -52,7 +52,6 @@ import org.eclipse.m2e.core.internal.IMavenConstants;
 import org.eclipse.m2e.core.project.IMavenProjectFacade;
 import org.eclipse.m2e.core.project.IMavenProjectRegistry;
 import org.eclipse.m2e.core.project.ResolverConfiguration;
-import org.eclipse.m2e.internal.launch.MavenLaunchDelegate;
 import org.eclipse.m2e.internal.launch.MavenLaunchUtils;
 import org.eclipse.osgi.util.NLS;
 import org.talend.commons.CommonsPlugin;
@@ -292,7 +291,7 @@ public abstract class MavenCommandLauncher {
 
     protected File getLicenseFile() {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ICoreTisService.class)) {
-            ICoreTisService coreTisService = (ICoreTisService) GlobalServiceRegister.getDefault()
+            ICoreTisService coreTisService = GlobalServiceRegister.getDefault()
                     .getService(ICoreTisService.class);
             File licenseFile = coreTisService.getLicenseFile();
             if (licenseFile.exists() && !coreTisService.isLicenseExpired()) {
@@ -304,7 +303,7 @@ public abstract class MavenCommandLauncher {
 
     private String getSessionId() {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ICoreTisService.class)) {
-            ICoreTisService coreTisService = (ICoreTisService) GlobalServiceRegister.getDefault()
+            ICoreTisService coreTisService = GlobalServiceRegister.getDefault()
                     .getService(ICoreTisService.class);
             return coreTisService.generateSignerSessionId();
         }
@@ -411,7 +410,7 @@ public abstract class MavenCommandLauncher {
         }
         monitor.beginTask("", 1); //$NON-NLS-1$
         try {
-            MavenLaunchDelegate mvld = new TalendMavenLaunchDelegate();
+            TalendMavenLaunchDelegate mvld = new TalendMavenLaunchDelegate();
             ILaunch launch = new Launch(configuration, mode, null);
             ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
             launch.setAttribute(DebugPlugin.ATTR_LAUNCH_TIMESTAMP, Long.toString(System.currentTimeMillis()));

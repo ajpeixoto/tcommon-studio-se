@@ -29,6 +29,7 @@ Bundle-Vendor: .Talend SA.
 Bundle-Localization: plugin
 Export-Package: org.talend.metadata.managment.ui,
  org.talend.metadata.managment.ui.celleditor,
+ org.talend.metadata.managment.ui.convert.strategy,
  org.talend.metadata.managment.ui.dialog,
  org.talend.metadata.managment.ui.editor,
  org.talend.metadata.managment.ui.i18n,

@@ -134,7 +134,7 @@ public interface IRunProcessService extends IService {
     public void updateLibraries(Set<ModuleNeeded> jobModuleList, IProcess process, Set<ModuleNeeded> alreadyRetrievedModules)
             throws ProcessorException;
 
-    public void updateLibraries(Item routineItem);
+    public boolean updateLibraries(Item routineItem);
 
     public void refreshView();
 
@@ -159,6 +159,8 @@ public interface IRunProcessService extends IService {
     public boolean checkExportProcess(IStructuredSelection selection, boolean isJob);
 
     public void checkLastGenerationHasCompilationError(boolean updateProblemsView) throws ProcessorException;
+
+    public void checkLastGenerationHasCompilationError(boolean updateProblemsView, boolean isJob) throws ProcessorException;
 
     /**
      * DOC ycbai Comment method "getResourceFilePath".

@@ -70,7 +70,7 @@ public class PromptDialog extends SelectionDialog {
 
     private static final int MINIMUM_WIDTH = 50;
 
-    private static final String DEFAULT_FLAG = "(default)"; //$NON-NLS-1$
+    private static final String DEFAULT_FLAG = "(Default)"; //$NON-NLS-1$
 
     private static final String TITLE = Messages.getString("ContextSetsSelectionDialog.Title"); //$NON-NLS-1$
 
@@ -92,15 +92,24 @@ public class PromptDialog extends SelectionDialog {
 
     private Composite child;
 
+    public PromptDialog(Shell parentShell, IContext context) {
+        super(parentShell);
+        initDialog(context, canCancel, Messages.getString("ContextSetsSelectionDialog.Messages")); //$NON-NLS-1$
+        initSets();
+    }
+
     public PromptDialog(Shell parentShell, ContextItem contextItem) {
         super(parentShell);
         initDialog(contextItem, canCancel, Messages.getString("ContextSetsSelectionDialog.Messages")); //$NON-NLS-1$
         initSets();
     }
 
-    public PromptDialog(Shell parentShell, List<IContext> contexts) {
+    public PromptDialog(Shell parentShell, List<IContext> contexts, IContext defaultIContext) {
         super(parentShell);
         initDialog(contexts, canCancel, Messages.getString("ContextSetsSelectionDialog.Messages")); //$NON-NLS-1$
+        if (defaultIContext != null) {
+            defalutContext = defaultIContext.getName();
+        }
         initSets();
     }
 
@@ -121,7 +130,7 @@ public class PromptDialog extends SelectionDialog {
                 defalutContext = contextItem.getDefaultContext();
                 for (ContextType contextType : contexts) {
                     String name = contextType.getName();
-                    if (name.equals(defalutContext)) {
+                    if (name.equalsIgnoreCase(defalutContext)) {
                         name = name + DEFAULT_FLAG;
                         selectedContext = name;
                         currentContext = ContextUtils.convert2IContext(contextType, repositoryContextId).clone();
@@ -130,16 +139,17 @@ public class PromptDialog extends SelectionDialog {
                 }
             } else if (source instanceof List) {
                 List<IContext> contexts = (List<IContext>) source;
-                defalutContext = "Default"; //$NON-NLS-1$
                 for (IContext context : contexts) {
                     String name = context.getName();
-                    if (name.equals(defalutContext)) {
+                    if (name.equalsIgnoreCase(defalutContext)) {
                         name = name + DEFAULT_FLAG;
                         selectedContext = name;
                         currentContext = context.clone();
                     }
                     contextSetsList.add(name);
                 }
+            } else if (source instanceof IContext) {
+                currentContext = (IContext) source;
             }
         }
     }
@@ -200,26 +210,26 @@ public class PromptDialog extends SelectionDialog {
         }
     }
 
-    private Control createSelectionArea(Composite parent) {
-        Composite inner = new Composite(parent, SWT.NONE);
-        GridLayout gridLayout = new GridLayout();
-        gridLayout.marginHeight = 0;
-        inner.setLayout(gridLayout);
-        GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
-        gridData.minimumWidth = 220;
-        gridData.minimumHeight = 100;
-        inner.setLayoutData(gridData);
+    private void createSelectionArea(Composite parent) {
+        if (source != null && (source instanceof ContextItem || source instanceof List)) {
+            Composite inner = new Composite(parent, SWT.NONE);
+            GridLayout gridLayout = new GridLayout();
+            gridLayout.marginHeight = 0;
+            inner.setLayout(gridLayout);
+            GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+            gridData.minimumWidth = 220;
+            gridData.minimumHeight = 100;
+            inner.setLayoutData(gridData);
 
-        contextCombo = new LabelledCombo(inner, Messages.getString("PromptDialog.context.environments.name"), null, //$NON-NLS-1$
-                contextSetsList, true);
-        contextCombo.setText(defalutContext + DEFAULT_FLAG);
-
-        return inner;
+            contextCombo = new LabelledCombo(inner, Messages.getString("PromptDialog.context.environments.name"), null, //$NON-NLS-1$
+                    contextSetsList, true);
+            contextCombo.setText(defalutContext + DEFAULT_FLAG);
+        }
     }
 
     private void createContextArea(IContext currentContext, Composite parent) {
         Group promptGroup = new Group(parent, SWT.NONE);
-        promptGroup.setText(Messages.getString("PromptDialog.promptGroup.name")); //$NON-NLS-1$
+        promptGroup.setText(Messages.getString("PromptDialog.variablePrompts.name")); //$NON-NLS-1$
         promptGroup.setLayout(new GridLayout(1, false));
         promptGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         // Prompt for context values ?
@@ -436,21 +446,23 @@ public class PromptDialog extends SelectionDialog {
     }
 
     protected void addFieldsListeners() {
-        contextCombo.addModifyListener(new ModifyListener() {
+        if (contextCombo != null) {
+            contextCombo.addModifyListener(new ModifyListener() {
 
-            @Override
-            public void modifyText(final ModifyEvent e) {
-                selectedContext = contextCombo.getItem(contextCombo.getSelectionIndex());
-                contextComp.dispose();
-                contextComp = new Composite(child, SWT.NONE);
-                contextComp.setLayout(new GridLayout(1, false));
-                contextComp.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-                createContextArea(getCloneContext(), contextComp);
-                child.layout();
-                child.getParent().layout();
-                contextComp.layout();
-            }
-        });
+                @Override
+                public void modifyText(final ModifyEvent e) {
+                    selectedContext = contextCombo.getItem(contextCombo.getSelectionIndex());
+                    contextComp.dispose();
+                    contextComp = new Composite(child, SWT.NONE);
+                    contextComp.setLayout(new GridLayout(1, false));
+                    contextComp.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+                    createContextArea(getCloneContext(), contextComp);
+                    child.layout();
+                    child.getParent().layout();
+                    contextComp.layout();
+                }
+            });
+        }
     }
 
     @Override
@@ -485,7 +497,11 @@ public class PromptDialog extends SelectionDialog {
         Point dialogSize = new Point(X_POSITION, Math.min((height * nbParams) + Y_POSITION, 400));
         setSize(newShell, dialogSize);
 
-        newShell.setText(Messages.getString("PromptDialog.choose.title")); //$NON-NLS-1$
+        if (source != null && source instanceof IContext) {
+            newShell.setText(Messages.getString("PromptDialog.title", currentContext.getName())); //$NON-NLS-1$
+        } else {
+            newShell.setText(Messages.getString("PromptDialog.choose.title")); //$NON-NLS-1$
+        }
     }
 
     public IContext getCloneContext() {
@@ -496,7 +512,7 @@ public class PromptDialog extends SelectionDialog {
                 String repositoryContextId = contextItem.getProperty().getId();
                 for (ContextType contextType : contexts) {
                     String name = contextType.getName();
-                    if (name.equals(selectedContext) || (name + DEFAULT_FLAG).equals(selectedContext)) {
+                    if (name.equalsIgnoreCase(selectedContext) || (name + DEFAULT_FLAG).equalsIgnoreCase(selectedContext)) {
                         currentContext = ContextUtils.convert2IContext(contextType, repositoryContextId).clone();
                         return currentContext;
                     }
@@ -505,7 +521,7 @@ public class PromptDialog extends SelectionDialog {
                 List<IContext> contexts = (List<IContext>) source;
                 for (IContext context : contexts) {
                     String name = context.getName();
-                    if (name.equals(selectedContext) || (name + DEFAULT_FLAG).equals(selectedContext)) {
+                    if (name.equalsIgnoreCase(selectedContext) || (name + DEFAULT_FLAG).equalsIgnoreCase(selectedContext)) {
                         currentContext = context.clone();
                         return currentContext;
                     }

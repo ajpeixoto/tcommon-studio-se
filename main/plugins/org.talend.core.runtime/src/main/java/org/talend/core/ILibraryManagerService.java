@@ -16,11 +16,13 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.talend.core.model.general.ModuleNeeded;
+import org.talend.core.model.general.RetrieveResult;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.nexus.ArtifactRepositoryBean;
 import org.talend.core.nexus.TalendLibsServerManager;
@@ -109,6 +111,8 @@ public interface ILibraryManagerService extends IService {
 
     public boolean retrieve(ModuleNeeded module, String pathToStore, boolean showDialog, IProgressMonitor... monitorWrap);
 
+    RetrieveResult retrieveModules(ERepositoryObjectType codeType, Set<ModuleNeeded> modulesNeeded, String pathToStore,
+            boolean showDialog, IProgressMonitor... monitorWrap);
     /**
      *
      * Resolve the jar from custom nexus
@@ -151,6 +155,10 @@ public interface ILibraryManagerService extends IService {
     public boolean contains(String jarName);
 
     public void clearCache();
+    
+    public void clearCache(boolean cleanIndex);
+    
+    public void deployLibsFromCustomComponents(File componentFolder, List<ModuleNeeded> modulesNeeded);
 
     @Deprecated
     public Set<String> list(boolean withComponent, IProgressMonitor... monitorWrap);

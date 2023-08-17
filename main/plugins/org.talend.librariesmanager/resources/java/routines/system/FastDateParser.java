@@ -135,6 +135,8 @@ public class FastDateParser {
                 calendar.clear();
                 calendar.set(year, month, day);
                 return calendar.getTime();
+            } catch (NumberFormatException numberFormatException){
+                throw new RuntimeException("Unparseable date: \"" + source + "\""); //$NON-NLS-1$ //$NON-NLS-2$
             } catch (Exception e) {
                 pos.setErrorIndex(index);
                 e.printStackTrace();

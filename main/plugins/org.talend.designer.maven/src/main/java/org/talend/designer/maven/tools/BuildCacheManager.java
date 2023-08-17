@@ -241,7 +241,8 @@ public class BuildCacheManager {
                     property.getVersion(), true);
             if (obj != null) {
 				IRunProcessService.get().generatePom(obj.getProperty().getItem(),
-						TalendProcessOptionConstants.GENERATE_POM_NOT_CLEAR_CACHE);
+                        TalendProcessOptionConstants.GENERATE_POM_NOT_CLEAR_CACHE
+                                | TalendProcessOptionConstants.GENERATE_NO_RESET_DQ);
             }
         }
     }
@@ -331,7 +332,7 @@ public class BuildCacheManager {
 
     private ITalendProcessJavaProject getTalendJobJavaProject(Property property) {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
-            IRunProcessService service = (IRunProcessService) GlobalServiceRegister.getDefault()
+            IRunProcessService service = GlobalServiceRegister.getDefault()
                     .getService(IRunProcessService.class);
             return service.getTalendJobJavaProject(property);
         }
@@ -347,7 +348,7 @@ public class BuildCacheManager {
 
     private boolean isBuildJob() {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
-            IRunProcessService service = (IRunProcessService) GlobalServiceRegister.getDefault()
+            IRunProcessService service = GlobalServiceRegister.getDefault()
                     .getService(IRunProcessService.class);
             return service.isExportConfig();
         }

@@ -78,6 +78,7 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute TalendFile.ecore#//ElementValueType/value"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute TalendFile.ecore#//ElementValueType/type"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute TalendFile.ecore#//ElementValueType/hexValue"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute TalendFile.ecore#//ElementValueType/label"/>
     </genClasses>
     <genClasses ecoreClass="TalendFile.ecore#//JobType">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute TalendFile.ecore#//JobType/context"/>

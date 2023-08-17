@@ -17,6 +17,7 @@ import org.eclipse.emf.ecore.util.InternalEList;
 import org.talend.core.model.metadata.builder.connection.CDCConnection;
 import org.talend.core.model.metadata.builder.connection.ConnectionPackage;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
+import org.talend.cwm.helper.StudioEncryptionHelper;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '<em><b>Database Connection</b></em>'. <!--
@@ -51,6 +52,7 @@ import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
  *   <li>{@link org.talend.core.model.metadata.builder.connection.impl.DatabaseConnectionImpl#isSQLMode <em>SQL Mode</em>}</li>
  *   <li>{@link org.talend.core.model.metadata.builder.connection.impl.DatabaseConnectionImpl#getUiSchema <em>Ui Schema</em>}</li>
  *   <li>{@link org.talend.core.model.metadata.builder.connection.impl.DatabaseConnectionImpl#getParameters <em>Parameters</em>}</li>
+ *   <li>{@link org.talend.core.model.metadata.builder.connection.impl.DatabaseConnectionImpl#isSupportNLS <em>Support NLS</em>}</li>
  * </ul>
  *
  * @generated
@@ -564,6 +566,35 @@ public class DatabaseConnectionImpl extends ConnectionImpl implements DatabaseCo
     protected EMap<String, String> parameters;
 
     /**
+     * The default value of the '{@link #isSupportNLS() <em>Support NLS</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #isSupportNLS()
+     * @generated
+     * @ordered
+     */
+    protected static final boolean SUPPORT_NLS_EDEFAULT = false;
+
+    /**
+     * The cached value of the '{@link #isSupportNLS() <em>Support NLS</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #isSupportNLS()
+     * @generated
+     * @ordered
+     */
+    protected boolean supportNLS = SUPPORT_NLS_EDEFAULT;
+
+    /**
+     * This is true if the Support NLS attribute has been set.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    protected boolean supportNLSESet = true;
+
+    /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
      * @generated
      */
@@ -693,7 +724,7 @@ public class DatabaseConnectionImpl extends ConnectionImpl implements DatabaseCo
      */
     public void setPort(String newPort) {
         String oldPort = port;
-        port = newPort;
+        port = newPort;       
         if (eNotificationRequired())
             eNotify(new ENotificationImpl(this, Notification.SET, ConnectionPackage.DATABASE_CONNECTION__PORT, oldPort, port));
     }
@@ -743,6 +774,9 @@ public class DatabaseConnectionImpl extends ConnectionImpl implements DatabaseCo
     }
 
     public void setRawPassword(String value) {
+        if (value != null && StudioEncryptionHelper.isLatestEncryptionKey(password) && value.equals(getRawPassword())) {
+            return;
+        }
         setPassword(getValue(value, true));
     }
 
@@ -1174,6 +1208,54 @@ public class DatabaseConnectionImpl extends ConnectionImpl implements DatabaseCo
     }
 
     /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public boolean isSupportNLS() {
+        return supportNLS;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public void setSupportNLS(boolean newSupportNLS) {
+        boolean oldSupportNLS = supportNLS;
+        supportNLS = newSupportNLS;
+        boolean oldSupportNLSESet = supportNLSESet;
+        supportNLSESet = true;
+        if (eNotificationRequired())
+            eNotify(new ENotificationImpl(this, Notification.SET, ConnectionPackage.DATABASE_CONNECTION__SUPPORT_NLS,
+                    oldSupportNLS, supportNLS, !oldSupportNLSESet));
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public void unsetSupportNLS() {
+        boolean oldSupportNLS = supportNLS;
+        boolean oldSupportNLSESet = supportNLSESet;
+        supportNLS = SUPPORT_NLS_EDEFAULT;
+        supportNLSESet = false;
+        if (eNotificationRequired())
+            eNotify(new ENotificationImpl(this, Notification.UNSET, ConnectionPackage.DATABASE_CONNECTION__SUPPORT_NLS,
+                    oldSupportNLS, SUPPORT_NLS_EDEFAULT, oldSupportNLSESet));
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public boolean isSetSupportNLS() {
+        return supportNLSESet;
+    }
+
+    /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
      * @generated
      */
@@ -1267,6 +1349,8 @@ public class DatabaseConnectionImpl extends ConnectionImpl implements DatabaseCo
                 return getParameters();
             else
                 return getParameters().map();
+        case ConnectionPackage.DATABASE_CONNECTION__SUPPORT_NLS:
+            return isSupportNLS();
         }
         return super.eGet(featureID, resolve, coreType);
     }
@@ -1335,6 +1419,8 @@ public class DatabaseConnectionImpl extends ConnectionImpl implements DatabaseCo
                 return getParameters();
             else
                 return getParameters().map();
+        case ConnectionPackage.DATABASE_CONNECTION__SUPPORT_NLS:
+            return isSupportNLS();
         }
         return super.eGet(featureID, resolve, coreType);
     }
@@ -1423,6 +1509,9 @@ public class DatabaseConnectionImpl extends ConnectionImpl implements DatabaseCo
             return;
         case ConnectionPackage.DATABASE_CONNECTION__PARAMETERS:
             ((EStructuralFeature.Setting) getParameters()).set(newValue);
+            return;
+        case ConnectionPackage.DATABASE_CONNECTION__SUPPORT_NLS:
+            setSupportNLS((Boolean) newValue);
             return;
         }
         super.eSet(featureID, newValue);
@@ -1513,6 +1602,9 @@ public class DatabaseConnectionImpl extends ConnectionImpl implements DatabaseCo
         case ConnectionPackage.DATABASE_CONNECTION__PARAMETERS:
             getParameters().clear();
             return;
+        case ConnectionPackage.DATABASE_CONNECTION__SUPPORT_NLS:
+            unsetSupportNLS();
+            return;
         }
         super.eUnset(featureID);
     }
@@ -1578,6 +1670,8 @@ public class DatabaseConnectionImpl extends ConnectionImpl implements DatabaseCo
             return UI_SCHEMA_EDEFAULT == null ? uiSchema != null : !UI_SCHEMA_EDEFAULT.equals(uiSchema);
         case ConnectionPackage.DATABASE_CONNECTION__PARAMETERS:
             return parameters != null && !parameters.isEmpty();
+        case ConnectionPackage.DATABASE_CONNECTION__SUPPORT_NLS:
+            return isSetSupportNLS();
         }
         return super.eIsSet(featureID);
     }
@@ -1643,6 +1737,11 @@ public class DatabaseConnectionImpl extends ConnectionImpl implements DatabaseCo
             result.append("<unset>");
         result.append(", UiSchema: ");
         result.append(uiSchema);
+        result.append(", supportNLS: ");
+        if (supportNLSESet)
+            result.append(supportNLS);
+        else
+            result.append("<unset>");
         result.append(')');
         return result.toString();
     }

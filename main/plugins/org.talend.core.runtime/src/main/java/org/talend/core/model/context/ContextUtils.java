@@ -222,6 +222,32 @@ public class ContextUtils {
         }
         return parameterType;
     }
+    
+    // TUP-36519:For possible duplicate internalid scenario(TUP-36667) after several times' renaming in joblet. Loop all and find the nearest
+    // one.
+    public static ContextParameterType getContextParameterTypeById(ContextType contextType, final String uuId,
+            boolean isFromContextItem, String paraName) {
+        if (contextType == null || uuId == null) {
+            return null;
+        }
+
+        ContextParameterType parameterType = null;
+        for (ContextParameterType param : (List<ContextParameterType>) contextType.getContextParameter()) {
+            String paramId = null;
+            if (isFromContextItem) {
+                paramId = ResourceHelper.getUUID(param);
+            } else {
+                paramId = param.getInternalId();
+            }
+            if (uuId.equals(paramId)) {
+                parameterType = param;
+                if (paraName != null && StringUtils.equals(paraName, param.getName())) {
+                    break;
+                }
+            }
+        }
+        return parameterType;
+    }
 
     public static ContextParameterType getContextParameterTypeById(ContextType contextType, final String uuId,
             boolean isFromContextItem) {
@@ -496,15 +522,24 @@ public class ContextUtils {
         return itemMap;
     }
 
+
+    private static Set<String> missingContexts = new HashSet<>();
+
+    public static void clearMissingContextCache() {
+        missingContexts.clear();
+    }
+
     /**
-     *
-     * get the repository context item,now contextId can be either joblet node or context node.
-     */
+    * get the repository context item, now contextId can be either joblet node or context node.
+    */
     public static Item getRepositoryContextItemById(String contextId) {
         if (IContextParameter.BUILT_IN.equals(contextId)) {
             return null;
         }
         if (checkObject(contextId)) {
+            return null;
+        }
+        if (missingContexts.contains(contextId)) {
             return null;
         }
 
@@ -521,6 +556,8 @@ public class ContextUtils {
                     return item;
                 }
             }
+            missingContexts.add(contextId);
+            ExceptionHandler.log("Can't find Context item[id=" + contextId + "].");
         } catch (PersistenceException e) {
             ExceptionHandler.process(e);
         }
@@ -831,6 +868,7 @@ public class ContextUtils {
             ItemContextLink itemContextLink) {
         Map<String, String> renamedMap = new HashMap<String, String>();
         Map<String, Item> tempItemMap = new HashMap<String, Item>();
+        clearMissingContextCache();
         for (ContextType contextType : contextTypeList) {
             for (Object obj : contextType.getContextParameter()) {
                 if (obj instanceof ContextParameterType) {
@@ -846,7 +884,7 @@ public class ContextUtils {
                         if (item != null) {
                             final ContextType repoContextType = ContextUtils.getContextTypeByName(item, contextType.getName());
                             ContextParameterType repoContextParam = ContextUtils.getContextParameterTypeById(repoContextType,
-                                    paramLink.getId(), item instanceof ContextItem);
+                                    paramLink.getId(), item instanceof ContextItem, contextParameterType.getName());
                             if (repoContextParam != null
                                     && !StringUtils.equals(repoContextParam.getName(), contextParameterType.getName())) {
                                 renamedMap.put(repoContextParam.getName(), contextParameterType.getName());
@@ -893,6 +931,7 @@ public class ContextUtils {
      */
     public static Map<String, String> calculateRenamedMapFromLinkFile(String projectLabel, String itemId,
             List<IContext> contextList) {
+        clearMissingContextCache();
         Map<String, String> renamedMap = new HashMap<String, String>();
         Map<String, Item> idToItemMap = new HashMap<String, Item>();
         try {
@@ -915,7 +954,7 @@ public class ContextUtils {
                                 if (item != null) {
                                     ContextType contextType = ContextUtils.getContextTypeByName(item, context.getName());
                                     ContextParameterType repoParameterType = ContextUtils.getContextParameterTypeById(contextType,
-                                            parameterLink.getId(), item instanceof ContextItem);
+                                            parameterLink.getId(), item instanceof ContextItem, parameterType.getName());
                                     if (repoParameterType != null
                                             && !StringUtils.equals(repoParameterType.getName(), parameterType.getName())) {
                                         renamedMap.put(repoParameterType.getName(), parameterType.getName());
@@ -958,6 +997,14 @@ public class ContextUtils {
 
         }
 
+        public boolean remove(Item item, String param) {
+            Set<String> params = map.get(item);
+            if (params != null && params.contains(param)) {
+                return params.remove(param);
+            }
+            return false;
+        }
+
         public boolean isEmpty() {
             return map.isEmpty();
         }
@@ -975,7 +1022,7 @@ public class ContextUtils {
         ContextParameterType contextParameterType = null;
         if (paramLink != null && paramLink.getId() != null && contextType != null) {
             contextParameterType = getContextParameterTypeById(contextType, paramLink.getId(),
-                    contextItem instanceof ContextItem);
+                    contextItem instanceof ContextItem, paramName);
         }
         if (contextParameterType != null) {// Compare use UUID
             if (!StringUtils.equals(contextParameterType.getName(), paramName)) {

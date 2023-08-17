@@ -23,6 +23,7 @@ Export-Package: metadata.managment.i18n,
  org.talend.core.model.metadata.builder.database,
  org.talend.core.model.metadata.builder.database.dburl,
  org.talend.core.model.metadata.builder.database.extractots,
+ org.talend.core.model.metadata.builder.database.jdbc,
  org.talend.core.model.metadata.builder.database.manager,
  org.talend.core.model.metadata.builder.database.manager.dbs,
  org.talend.metadata.managment,
@@ -33,6 +34,7 @@ Export-Package: metadata.managment.i18n,
  org.talend.metadata.managment.mdm,
  org.talend.metadata.managment.model,
  org.talend.metadata.managment.repository,
+ org.talend.metadata.managment.ui.convert,
  org.talend.metadata.managment.utils
 Bundle-ClassPath: .
 Bundle-Vendor: .Talend SA.

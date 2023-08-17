@@ -14,12 +14,16 @@ package org.talend.designer.maven.tools;
 
 import static org.talend.designer.maven.model.TalendJavaProjectConstants.*;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -46,6 +50,8 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.m2e.core.MavenPlugin;
 import org.eclipse.swt.widgets.Display;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.utils.MojoType;
@@ -59,8 +65,10 @@ import org.talend.core.model.general.ILibrariesService;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.general.ModuleNeeded.ELibraryInstallStatus;
 import org.talend.core.model.general.Project;
+import org.talend.core.model.process.JobInfo;
 import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.Item;
+import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.ProjectReference;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.relationship.Relation;
@@ -98,6 +106,8 @@ import org.talend.repository.ProjectManager;
  * DOC zwxue class global comment. Detailled comment
  */
 public class AggregatorPomsHelper {
+    
+    private static final Logger LOGGER = LoggerFactory.getLogger(AggregatorPomsHelper.class);
 
     private String projectTechName;
 
@@ -204,24 +214,29 @@ public class AggregatorPomsHelper {
     }
 
     public void updateCodeProjects(IProgressMonitor monitor, boolean forceBuild, boolean buildIfNoUpdate) {
-        Project currentProject = ProjectManager.getInstance().getCurrentProject();
         try {
             for (ERepositoryObjectType codeType : ERepositoryObjectType.getAllTypesOfCodes()) {
-                ITalendProcessJavaProject codeProject = getCodesProject(codeType);
-                if (ERepositoryObjectType.ROUTINES == codeType) {
-                    PomUtil.checkExistingLog4j2Dependencies4RoutinePom(projectTechName, codeProject.getProjectPom());
-                }
-                if (forceBuild || CodeM2CacheManager.needUpdateCodeProject(currentProject, codeType)) {
-                    updateCodeProjectPom(monitor, codeType, codeProject.getProjectPom());
-                    MavenProjectUtils.updateMavenProject(monitor, codeProject.getProject());
-                    build(codeType, true, monitor);
-                    CodeM2CacheManager.updateCacheStatus(currentProject.getTechnicalLabel(), codeType, true);
-                } else if (buildIfNoUpdate) {
-                    build(codeType, false, monitor);
-                }
+                updateCodeProject(monitor, codeType, forceBuild, buildIfNoUpdate);
             }
         } catch (Exception e) {
             ExceptionHandler.process(e);
+        }
+    }
+
+    public void updateCodeProject(IProgressMonitor monitor, ERepositoryObjectType codeType, boolean forceBuild,
+            boolean buildIfNoUpdate) throws Exception {
+        Project currentProject = ProjectManager.getInstance().getCurrentProject();
+        ITalendProcessJavaProject codeProject = getCodesProject(codeType);
+        if (ERepositoryObjectType.ROUTINES == codeType) {
+            PomUtil.checkExistingLog4j2Dependencies4RoutinePom(projectTechName, codeProject.getProjectPom());
+        }
+        if (forceBuild || CodeM2CacheManager.needUpdateCodeProject(currentProject, codeType)) {
+            updateCodeProjectPom(monitor, codeType, codeProject.getProjectPom());
+            MavenProjectUtils.updateMavenProject(monitor, codeProject.getProject());
+            build(codeType, true, monitor);
+            CodeM2CacheManager.updateCacheStatus(currentProject.getTechnicalLabel(), codeType, true);
+        } else if (buildIfNoUpdate) {
+            build(codeType, false, monitor);
         }
     }
 
@@ -440,6 +455,44 @@ public class AggregatorPomsHelper {
         }
         return jobFolder;
     }
+    
+    public static void updateProjectPomFile(Set<String> visistedProjects, Project prj, Set<String> removedTechLabels) {
+        if (visistedProjects.contains(prj.getTechnicalLabel())) {
+            return;
+        }
+        
+        visistedProjects.add(prj.getTechnicalLabel());
+
+        IFile pomFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(prj.getTechnicalLabel() + "/" + DIR_POMS + "/" + TalendMavenConstants.POM_FILE_NAME));
+        // read project pom
+        try (InputStream is = new BufferedInputStream(new FileInputStream(pomFile.getLocation().toFile()))) {
+            Model projectModel = MavenPlugin.getMavenModelManager().readMavenModel(is);
+
+            Set<String> newMods = projectModel.getModules().stream().filter(mod -> {
+                String techLabel = getTechnicalLabelFromRefModule(mod);
+                return !removedTechLabels.contains(techLabel);
+            }).collect(Collectors.toSet());
+
+            // remove the ref mods
+            if (newMods.size() != projectModel.getModules().size()) {
+                LOGGER.info("project: " + prj.getTechnicalLabel() + " removed number of ref mods: " + (projectModel.getModules().size() - newMods.size()));
+                projectModel.getModules().clear();
+                projectModel.getModules().addAll(newMods);
+
+                // update the pom file.
+                PomUtil.savePom(null, projectModel, pomFile);
+            }
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+
+        List<ProjectReference> prjRefs = prj.getProjectReferenceList();
+        if (!prjRefs.isEmpty()) {
+            for (ProjectReference pr : prjRefs) {
+                updateProjectPomFile(visistedProjects, new Project(pr.getReferencedProject()), removedTechLabels);
+            }
+        }
+    }
 
     public static IFolder getItemPomFolder(Property property, String realVersion) {
         return getItemPomFolder(property, realVersion, p -> ItemResourceUtil.getItemRelativePath(p));
@@ -475,7 +528,7 @@ public class AggregatorPomsHelper {
                     @Override
                     public void run(final IProgressMonitor monitor) throws CoreException {
                         try {
-                            syncAllPomsWithoutProgress(monitor, PomIdsHelper.getPomFilter());
+                            syncAllPomsWithoutProgress(monitor, PomIdsHelper.getPomFilter(), false);
                         } catch (Exception e) {
                             ExceptionHandler.process(e);
                         }
@@ -570,10 +623,12 @@ public class AggregatorPomsHelper {
     }
 
     public void syncAllPomsWithoutProgress(IProgressMonitor monitor) throws Exception {
-        syncAllPomsWithoutProgress(monitor, PomIdsHelper.getPomFilter());
+        syncAllPomsWithoutProgress(monitor, PomIdsHelper.getPomFilter(), false);
     }
 
-    public void syncAllPomsWithoutProgress(IProgressMonitor monitor, String pomFilter) throws Exception {
+    public void syncAllPomsWithoutProgress(IProgressMonitor monitor, String pomFilter, boolean withDependencies)
+            throws Exception {
+        LOGGER.info("syncAllPomsWithoutProgress, pomFilter: " + pomFilter);
         IRunProcessService runProcessService = IRunProcessService.get();
         if (runProcessService == null) {
             return;
@@ -583,17 +638,52 @@ public class AggregatorPomsHelper {
         Boolean isCIMode = IRunProcessService.get().isCIMode();
 
         List<IRepositoryViewObject> objects = new ArrayList<>();
+        List<ERepositoryObjectType> allJobletTypes = ERepositoryObjectType.getAllTypesOfJoblet();
         for (ERepositoryObjectType type : ERepositoryObjectType.getAllTypesOfProcess2()) {
+            if (isCIMode && withDependencies && allJobletTypes.contains(type)) {
+                continue;
+            }
             objects.addAll(ProxyRepositoryFactory.getInstance().getAll(type, true, true));
         }
+        Iterator<IRepositoryViewObject> iterator = objects.iterator();
+        while (iterator.hasNext()) {
+            IRepositoryViewObject object = iterator.next();
+            if (object.getProperty() == null || object.getProperty().getItem() == null) {
+                iterator.remove();
+                continue;
+            }
+            if (isCIMode && !allJobletTypes.contains(object.getRepositoryObjectType()) && IFilterService.get() != null
+                    && !IFilterService.get().isFilterAccepted(object.getProperty().getItem(), pomFilter)) {
+                iterator.remove();
+                continue;
+            }
+            if (isCIMode && object.isDeleted() && PomIdsHelper.getIfExcludeDeletedItems()) {
+                iterator.remove();
+            }
+        }
+        Set<Item> allItems;
+        if (withDependencies) {
+            allItems = objects.stream().flatMap(object -> {
+                ProcessItem item = (ProcessItem) object.getProperty().getItem();
+                Set<JobInfo> allJobInfos = ProcessorUtilities.getChildrenJobInfo(item, false, true);
+                allJobInfos.add(new JobInfo(item, item.getProcess().getDefaultContext()));
+                return allJobInfos.stream();
+            }).filter(info -> !info.isTestContainer() && ProjectManager.getInstance()
+                    .isInCurrentMainProject(info.getJobletProperty() != null ? info.getJobletProperty() : info.getProcessItem()))
+                    .distinct()
+                    .map(info -> info.getJobletProperty() != null ? info.getJobletProperty().getItem() : info.getProcessItem())
+                    .collect(Collectors.toSet());
+        } else {
+            allItems = objects.stream().map(object -> object.getProperty().getItem()).collect(Collectors.toSet());
+        }
 
-        int size = 3 + objects.size();
+        int size = 3 + allItems.size();
         monitor.setTaskName("Synchronize all poms"); //$NON-NLS-1$
         monitor.beginTask("", size); //$NON-NLS-1$
         // project pom
         monitor.subTask("Synchronize project pom"); //$NON-NLS-1$
         Model model = getCodeProjectTemplateModel();
-
+        LOGGER.info("syncAllPomsWithoutProgress, isCIMode: " + isCIMode + ", useProfileMode: " + PomIdsHelper.useProfileModule());
         if (isCIMode) {
             if (PomIdsHelper.useProfileModule()) {
                 model.getProfiles().addAll(collectRefProjectProfiles(null));
@@ -623,41 +713,17 @@ public class AggregatorPomsHelper {
         }
         // all jobs pom
         List<String> modules = new ArrayList<>();
-        IFilterService filterService = null;
-        if (GlobalServiceRegister.getDefault().isServiceRegistered(IFilterService.class)) {
-            filterService = (IFilterService) GlobalServiceRegister.getDefault().getService(IFilterService.class);
-        }
-
         List<Property> serviceRefJobs = getAllServiceReferencedJobs();
-        List<ERepositoryObjectType> allJobletTypes = ERepositoryObjectType.getAllTypesOfJoblet();
-        for (IRepositoryViewObject object : objects) {
-            if (filterService != null) {
-                if (isCIMode && !allJobletTypes.contains(object.getRepositoryObjectType())
-                        && !filterService.isFilterAccepted(object.getProperty().getItem(), pomFilter)) {
-                    continue;
-                }
-            }
-            if (object.getProperty() != null && object.getProperty().getItem() != null) {
-                if (isCIMode && object.isDeleted() && PomIdsHelper.getIfExcludeDeletedItems()) {
-                    continue;
-                }
-                Item item = object.getProperty().getItem();
-                if (ProjectManager.getInstance().isInCurrentMainProject(item)) {
-                    monitor.subTask("Synchronize job pom: " + item.getProperty().getLabel() //$NON-NLS-1$
-                            + "_" + item.getProperty().getVersion()); //$NON-NLS-1$
-                    if (runProcessService != null) {
-                        // already filtered
-                        runProcessService.generatePom(item, TalendProcessOptionConstants.GENERATE_POM_NO_FILTER);
-                    } else {
-                        ExceptionHandler.log("Cannot generate pom for " + object.getLabel()
-                                + " - Reason: RunProcessService is null.");
-                    }
-                    IFile pomFile = getItemPomFolder(item.getProperty()).getFile(TalendMavenConstants.POM_FILE_NAME);
-                    // TODO if not work, use serviceRefJobs.contains(object.getProperty()) to judge
-                    // filter esb data service node
-                    if (isCIMode && !isSOAPServiceProvider(object.getProperty()) && pomFile.exists()) {
-                        modules.add(getModulePath(pomFile));
-                    }
+        for (Item item : allItems) {
+            if (ProjectManager.getInstance().isInCurrentMainProject(item)) {
+                monitor.subTask("Synchronize job pom: " + item.getProperty().getLabel() //$NON-NLS-1$
+                        + "_" + item.getProperty().getVersion()); //$NON-NLS-1$
+                runProcessService.generatePom(item, TalendProcessOptionConstants.GENERATE_POM_NO_FILTER);
+                IFile pomFile = getItemPomFolder(item.getProperty()).getFile(TalendMavenConstants.POM_FILE_NAME);
+                // filter esb data service node
+                // FIXME use serviceRefJobs.contains(item.getProperty()) if isSOAPServiceProvider() doesn't work.
+                if (isCIMode && !isSOAPServiceProvider(item.getProperty()) && pomFile.exists()) {
+                    modules.add(getModulePath(pomFile));
                 }
             }
             monitor.worked(1);
@@ -686,8 +752,22 @@ public class AggregatorPomsHelper {
             }
             CodesJarResourceCache.getAllCodesJars().stream().filter(CodesJarInfo::isInCurrentMainProject)
                     .forEach(info -> CodesJarM2CacheManager.updateCodesJarProjectPom(monitor, info));
+            
+            if (!PomIdsHelper.useProfileModule()) {
+                // remove ref mods
+                Set<String> visitedProjectLabels = new HashSet<String>();
+                Map<String, ReferenceCount> rcs = new HashMap<String, ReferenceCount>();
+                findReferenceCount(visitedProjectLabels, ProjectManager.getInstance().getCurrentProject(), rcs);
+                
+                visitedProjectLabels = new HashSet<String>();
+                Set<String> removedTechLabels = rcs.values().stream().filter(rc -> rc.referenceCount > 1).map(rc -> rc.getTalendProject().getTechnicalLabel()).collect(Collectors.toSet());
+                if (!removedTechLabels.isEmpty()) {
+                    LOGGER.info("Need to remove duplicated mods: " + removedTechLabels);
+                    updateProjectPomFile(visitedProjectLabels, ProjectManager.getInstance().getCurrentProject(), removedTechLabels);
+                }
+            }
         }
-
+        LOGGER.info("syncAllPomsWithoutProgress, done");
         monitor.done();
     }
 
@@ -773,6 +853,75 @@ public class AggregatorPomsHelper {
         // FIXME get profile id from extension point.
         List<String> otherProfiles = Arrays.asList("docker", "cloud-publisher", "nexus"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         return !otherProfiles.contains(profileId) && StringUtils.startsWithIgnoreCase(profileId, projectTechName + "_");
+    }
+    
+    public static String getTechnicalLabelFromRefModule(String refMod) {
+        String[] modPaths= refMod.split("/");
+        return modPaths[modPaths.length-2];
+    }
+    
+    protected void findReferenceCount(Set<String> visitedProjects, Project projectTree, Map<String, ReferenceCount> rcs) {
+        if (visitedProjects.contains(projectTree.getTechnicalLabel()) || projectTree == null || projectTree.getProjectReferenceList().isEmpty()) {
+            return;
+        }
+
+        visitedProjects.add(projectTree.getTechnicalLabel());
+
+        for (ProjectReference refPrj : projectTree.getProjectReferenceList()) {
+            ReferenceCount rc = rcs.get(refPrj.getReferencedProject().getTechnicalLabel());
+            if (rc == null) {
+                rc = new ReferenceCount(new Project(refPrj.getReferencedProject()));
+                rcs.put(refPrj.getReferencedProject().getTechnicalLabel(), rc);
+            }
+            if (StringUtils.equals(refPrj.getReferencedProject().getTechnicalLabel(), rc.getTalendProject().getTechnicalLabel())) {
+                rc.increaseReferenceCount();
+            }
+            rc.increaseReferenceLevel();
+            findReferenceCount(visitedProjects, new Project(refPrj.getReferencedProject()), rcs);
+        }
+    }
+
+    static class ReferenceCount {
+
+        private Project talendProject;
+
+        private int referenceCount;
+        
+        private int referenceLevel;
+
+        
+        /**
+         * @return the referenceLevel
+         */
+        public int getReferenceLevel() {
+            return referenceLevel;
+        }
+
+        public void increaseReferenceLevel() {
+            referenceLevel++;
+        }
+        
+        /**
+         * @return the talendProject
+         */
+        public Project getTalendProject() {
+            return talendProject;
+        }
+
+        /**
+         * @return the referenceCount
+         */
+        public int getReferenceCount() {
+            return referenceCount;
+        }
+
+        public void increaseReferenceCount() {
+            referenceCount++;
+        }
+
+        public ReferenceCount(Project project) {
+            talendProject = project;
+        }
     }
 
 }

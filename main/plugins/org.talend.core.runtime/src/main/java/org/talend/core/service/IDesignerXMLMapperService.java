@@ -30,4 +30,6 @@ public interface IDesignerXMLMapperService extends IService {
      */
     public boolean isVirtualComponent(final INode node);
 
+    public Object rebuildXmlMapData(final INode node);
+
 }

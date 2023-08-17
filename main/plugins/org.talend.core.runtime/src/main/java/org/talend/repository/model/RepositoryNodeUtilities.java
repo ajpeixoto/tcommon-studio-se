@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
@@ -27,6 +28,7 @@ import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
+import org.talend.commons.runtime.service.ITaCoKitService;
 import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.hadoop.IHadoopClusterService;
@@ -377,7 +379,7 @@ public class RepositoryNodeUtilities {
                     return node;
                 } else {
                     if (GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerProviderService.class)) {
-                        ITestContainerProviderService testContainerService = (ITestContainerProviderService) GlobalServiceRegister
+                        ITestContainerProviderService testContainerService = GlobalServiceRegister
                                 .getDefault().getService(ITestContainerProviderService.class);
                         if (testContainerService != null) {
                             String originalID = testContainerService.getOriginalID(curNode);
@@ -510,6 +512,7 @@ public class RepositoryNodeUtilities {
                     || curType == ERepositoryObjectType.METADATA_FILE_RULES
                     || curType == ERepositoryObjectType.METADATA_FILE_LINKRULES
                     || curType == ERepositoryObjectType.METADATA_SAPCONNECTIONS
+                    || curType == ERepositoryObjectType.METADATA_BIGQUERYCONNECTIONS
                     || curType == ERepositoryObjectType.METADATA_HEADER_FOOTER) {
                 tmpType = ERepositoryObjectType.METADATA;
             } else if (curType == ERepositoryObjectType.ROUTINES || curType == ERepositoryObjectType.SNIPPETS) {
@@ -710,7 +713,7 @@ public class RepositoryNodeUtilities {
         ERepositoryObjectType type = connection.getObject().getRepositoryObjectType();
         IGenericWizardService wizardService = null;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericWizardService.class)) {
-            wizardService = (IGenericWizardService) GlobalServiceRegister.getDefault().getService(IGenericWizardService.class);
+            wizardService = GlobalServiceRegister.getDefault().getService(IGenericWizardService.class);
         }
         if (wizardService != null && wizardService.isGenericType(type)) {
             return getGenericSchemaNode(connection, tableName);
@@ -870,6 +873,7 @@ public class RepositoryNodeUtilities {
             // RelationshipItemBuilder
             if (item instanceof ConnectionItem) {
                 ConnectionItem connectionItem = (ConnectionItem) item;
+
                 if (connectionItem.getConnection().isContextMode()) {
                     String id = connectionItem.getConnection().getContextId();
                     if (id != null) {
@@ -882,10 +886,53 @@ public class RepositoryNodeUtilities {
                         checkItemDependencies(object, repositoryObjects, includeSystemItems, includeReferenceProjectItems,
                                 needRebuild);
                     }
+                } else {
+                    ITaCoKitService coKitService = ITaCoKitService.getInstance();
+                    String parentItemId = null;
+                    IRepositoryViewObject obj = null;
+                    if (coKitService != null) {
+                        parentItemId = coKitService.getParentItemIdFromItem(item);
+                    }
+                    if (StringUtils.isNotBlank(parentItemId)) {
+
+                        if (includeReferenceProjectItems) {
+                            obj = factory.getLastVersion(parentItemId);
+                        } else {
+                            obj = factory.getLastVersion(ProjectManager.getInstance().getCurrentProject(),
+                                    parentItemId);
+                        }
+                    }
+
+                    if (obj != null) {
+                        if (obj instanceof IRepositoryViewObject && !repositoryObjects.contains(obj)) {
+
+                            repositoryObjects.add(obj);
+                        }
+                    }
                 }
+
             }
         } catch (PersistenceException et) {
             ExceptionHandler.process(et);
+        }
+
+    }
+
+    private static void checkParentItemForTacokit(IRepositoryViewObject obj,
+            List<IRepositoryViewObject> repositoryObjects) {
+
+        ITaCoKitService coKitService = ITaCoKitService.getInstance();
+
+        if (coKitService == null) {
+            return;
+        }
+
+        Object datastoreFromDataset = coKitService.getDatastoreFromDataset(obj);
+
+        if (datastoreFromDataset instanceof IRepositoryViewObject
+                && !repositoryObjects.contains(datastoreFromDataset)) {
+
+            repositoryObjects.add((IRepositoryViewObject) datastoreFromDataset);
         }
 
     }
@@ -894,6 +941,7 @@ public class RepositoryNodeUtilities {
             boolean includeSystemItems, boolean includeReferenceProjectItems, boolean needRebuild) {
         if (obj != null && !repositoryObjects.contains(obj)) {
             repositoryObjects.add(obj);
+            checkParentItemForTacokit(obj, repositoryObjects);
             checkAllVersionLatest(repositoryObjects, obj, includeSystemItems, includeReferenceProjectItems);
             checkItemDependencies(obj.getProperty().getItem(), repositoryObjects, includeSystemItems,
                     includeReferenceProjectItems, needRebuild);
@@ -961,7 +1009,7 @@ public class RepositoryNodeUtilities {
         List<ERepositoryObjectType> extraTypes = new ArrayList<ERepositoryObjectType>();
         IGenericDBService dbService = null;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericDBService.class)) {
-            dbService = (IGenericDBService) GlobalServiceRegister.getDefault().getService(IGenericDBService.class);
+            dbService = GlobalServiceRegister.getDefault().getService(IGenericDBService.class);
         }
         if (dbService != null) {
             extraTypes.addAll(dbService.getExtraTypes());

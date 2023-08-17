@@ -15,7 +15,7 @@ package org.talend.librariesmanager.ui.dialogs;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.text.MessageFormat;
+import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.lang.StringUtils;
@@ -540,6 +540,15 @@ public class InstallModuleDialog extends TitleAreaDialog implements ICellEditorD
      */
     @Override
     public String getMavenURI() {
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.talend.commons.ui.swt.dialogs.IConfigModuleDialog#getModulesMVNUrls()
+     */
+    @Override
+    public Map<String, String> getModulesMVNUrls() {
+        // TODO Auto-generated method stub
         return null;
     }
 }

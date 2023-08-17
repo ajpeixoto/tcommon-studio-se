@@ -45,6 +45,8 @@ public interface ICamelDesignerCoreService extends IService {
 
     boolean isInstanceofCamelBeansJar(Item item);
 
+    boolean isRouteletProcess(Item item);
+
     /**
      * Synchronized Route resource
      *

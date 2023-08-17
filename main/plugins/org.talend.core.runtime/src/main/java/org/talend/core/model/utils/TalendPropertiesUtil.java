@@ -35,7 +35,7 @@ public final class TalendPropertiesUtil {
      * @return
      */
     public static boolean isHideExchange() {
-        return isEnabled("talend.hide.exchange") || isEnabled("talend.disable.internet"); //$NON-NLS-1$ //$NON-NLS-2$
+        return true; //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     /**
@@ -78,5 +78,9 @@ public final class TalendPropertiesUtil {
 
     public static String getProductApp() {
         return System.getProperty(PROD_APP);
+    }
+
+    public static boolean isEnabledUseShortJobletName() {
+        return isEnabled("talend.job.build.useShortJobletName"); //$NON-NLS-1$
     }
 }

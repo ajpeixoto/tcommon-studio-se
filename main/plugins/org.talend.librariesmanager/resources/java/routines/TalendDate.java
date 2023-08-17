@@ -467,13 +467,13 @@ public class TalendDate {
      *
      * {Category} TalendDate
      *
-     * {param} String("") string : date represent in string
+     * {param} String("2008/11/24 12:15:25") string : date represent in string
      *
-     * {param} String("yyyy-MM-dd") pattern : date pattern
+     * {param} String("yyyy/MM/dd HH:mm:ss") pattern : date pattern
      *
-     * {param} int(addValue) nb : the added value
+     * {param} int(5) nb : the added value
      *
-     * {param} date("MM") dateType : the part to add
+     * {param} String("dd") dateType : the part to add
      *
      * {examples}
      *
@@ -1153,8 +1153,8 @@ public class TalendDate {
             maxDate = "2099-12-31";
         }
 
-        if (!minDate.matches("\\d{4}-\\d{2}-\\d{2}") || !minDate.matches("\\d{4}-\\d{2}-\\d{2}")) {
-            throw new IllegalArgumentException("The parameter should be \"yyy-MM-dd\"");
+        if (!minDate.matches("\\d{4}-\\d{2}-\\d{2}") || !maxDate.matches("\\d{4}-\\d{2}-\\d{2}")) {
+            throw new IllegalArgumentException("The parameter should be \"yyyy-MM-dd\"");
         }
 
         int minYear = Integer.parseInt(minDate.substring(0, 4));
@@ -1216,8 +1216,19 @@ public class TalendDate {
     }
 
     /**
-     * format date to mssql 2008 type datetimeoffset ISO 8601 string with local time zone format string : yyyy-MM-dd
-     * HH:mm:ss.SSSXXX(JDK7 support it)
+     * Format date to mssql 2008 type datetimeoffset ISO 8601 string with local time zone format string : yyyy-MM-dd
+     * HH:mm:ss.SSSXXX (JDK7 support it)
+     *
+     * @param date the time value to be formatted into a time string.
+     * @return the formatted time string.
+     *
+     * {talendTypes} String
+     *
+     * {Category} TalendDate
+     *
+     * {param} date(new Date()) date : the time value to be formatted into a time string
+     *
+     * {example} formatDatetimeoffset(new Date()) #
      */
     public static String formatDatetimeoffset(Date date) {
         String dateString = formatDate("yyyy-MM-dd HH:mm:ss.SSSZ", date);// keep the max precision in java
@@ -1346,14 +1357,28 @@ public class TalendDate {
     }
 
     /**
-     *
+     * Convert a formatted string to date
+     * 
      * @param string Must be a string datatype. Passes the values that you want to convert.
      * @param format Enter a valid TO_DATE format string. The format string must match the parts of the string argument
-     * 		  default formate is "MM/DD/yyyy HH:mm:ss.sss" if not specified.
+     * default format is "MM/DD/yyyy HH:mm:ss.sss" if not specified.
+     * 
      * @return Date
      * @throws ParseException
-     * {example} TO_DATE("1464576463231", "J") #Mon May 30 10:47:43 CST 2016
-     * {example} TO_DATE("2015-11-21 13:23:45","yyyy-MM-dd HH:mm:ss") #Sat Nov 21 13:23:45 CST 2015
+     * 
+     * {talendTypes} Date
+     *
+     * {Category} TalendDate
+     * 
+     * {param} String("2015-11-21 13:23:45") string : string Must be a string datatype. Passes the values that you want
+     * to convert.
+     *
+     * {param} String("yyyy-MM-dd HH:mm:ss") format : Enter a valid TO_DATE format string. The format string must match
+     * the parts of the string argument default format is "MM/DD/yyyy HH:mm:ss.sss" if not specified.
+     *
+     *
+     * {example} TO_DATE("1464576463231", "J") #Mon May 30 10:47:43 CST 2016 {example} TO_DATE("2015-11-21
+     * 13:23:45","yyyy-MM-dd HH:mm:ss") #Sat Nov 21 13:23:45 CST 2015
      *
      */
     public static Date TO_DATE(String string, String format) throws ParseException {
@@ -1373,6 +1398,24 @@ public class TalendDate {
         }
 
     }
+
+    /**
+     * Convert a formatted string to date with default format as ""MM/DD/yyyy HH:mm:ss.sss"
+     * 
+     * @param string Must be a string datatype. Passes the values that you want to convert.
+     * @return Date
+     * @throws ParseException
+     * 
+     * {talendTypes} Date
+     *
+     * {Category} TalendDate
+     * 
+     * {param} String("11/21/2015 13:23:45.111") string : string Must be a string datatype. Passes the values that you
+     * want to convert.
+     *
+     * {example} TO_DATE("11/21/2015 13:23:45.111") #Sat Nov 21 13:23:45.111 CST 2015
+     *
+     */
 
     public static Date TO_DATE(String string) throws ParseException {
         return TO_DATE(string, null);
@@ -1410,13 +1453,25 @@ public class TalendDate {
     }
 
     /**
-     *
-     * @param date  Passes the values you want to change
+     * Add values to the specified portion of the date
+     * 
+     * @param date Passes the values you want to change
      * @param format A format string specifying the portion of the date value you want to change.For example, 'mm'.
-     * @param amount An integer value specifying the amount of years, months, days, hours,
-     * 				and so on by which you want to change the date value.
-     * @return Date  NULL if a null value is passed as an argument to the function.
+     * @param amount An integer value specifying the amount of years, months, days, hours, and so on by which you want
+     * to change the date value.
+     * @return Date NULL if a null value is passed as an argument to the function.
      * @throws ParseException
+     * 
+     * {talendTypes} Date
+     *
+     * {Category} TalendDate
+     * 
+     * {param} Date(new Date()) date :
+     * 
+     * {param} String("HH") format :
+     * 
+     * {param} int(2) amount :
+     * 
      * {example} ADD_TO_DATE(new Date(1464576463231l), "HH",2) #Mon May 30 12:47:43 CST 2016
      */
     public static Date ADD_TO_DATE(Date date, String format, int amount) throws ParseException{
@@ -1485,10 +1540,21 @@ public class TalendDate {
     }
 
     /**
+     * Convert a Date to a formatted character string.
      *
-     * @param date  Date/Time datatype. Passes the date values you want to convert to character strings.
-     * @param format   Enter a valid TO_CHAR format string. The format string defines the format of the return value,
-     * @return  String.   NULL if a value passed to the function is NULL.
+     * @param date the date value you want to convert to character strings.
+     * @param format the format of the return value,
+     * @return String. NULL if a value passed to the function is NULL.
+     *
+     * {talendTypes} String
+     *
+     * {Category} TalendDate
+     *
+     * {param} Date(new Date()) date : the date value you want to convert to character strings.
+     * 
+     * {param} String("MM/DD/YYYY HH24:MI:SS") format : the format of the return value,
+     *
+     * {example} TO_CHAR(new Date(),"MM/DD/YYYY HH24:MI:SS") #
      */
 
     public static String TO_CHAR(Date date, String format) {

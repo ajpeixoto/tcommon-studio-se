@@ -38,6 +38,7 @@ public enum EParameterFieldType {
     SCHEMA_XPATH_QUERYS,
     QUERYSTORE_TYPE,
     GUESS_SCHEMA,
+    DYNAMIC_GUESS_SCHEMA,
     PROPERTY_TYPE,
     EXTERNAL,
     FILE,

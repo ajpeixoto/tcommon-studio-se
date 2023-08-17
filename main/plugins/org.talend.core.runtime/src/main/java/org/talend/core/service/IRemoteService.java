@@ -14,6 +14,7 @@ package org.talend.core.service;
 
 import org.talend.commons.exception.LoginException;
 import org.talend.commons.exception.PersistenceException;
+import org.talend.core.GlobalServiceRegister;
 import org.talend.core.IService;
 import org.talend.core.nexus.ArtifactRepositoryBean;
 import org.talend.utils.json.JSONException;
@@ -34,8 +35,15 @@ public interface IRemoteService extends IService {
             LoginException, JSONException;
 
     boolean isAuthorized(String value);
+    
+    public boolean isCloudConnection();
+    
+    public static IRemoteService get() {
+        GlobalServiceRegister gsr = GlobalServiceRegister.getDefault();
+        if (gsr.isServiceRegistered(IRemoteService.class)) {
+            return gsr.getService(IRemoteService.class);
+        }
+        return null;
+    }
 
-    boolean isTokenUsed(String adminUrl) throws Exception;
-
-    String getPendoKeyFromLicense() throws Exception;
 }

@@ -38,8 +38,10 @@ import org.talend.core.model.routines.CodesJarInfo;
 import org.talend.core.runtime.projectsetting.IProjectSettingPreferenceConstants;
 import org.talend.core.runtime.projectsetting.IProjectSettingTemplateConstants;
 import org.talend.designer.maven.DesignerMavenPlugin;
+import org.talend.designer.maven.model.MergedModel;
 import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.maven.setting.project.IProjectSettingManagerProvider;
+import org.talend.designer.maven.tools.MergeModelTool;
 import org.talend.designer.maven.tools.extension.PomExtensionRegistry;
 import org.talend.designer.maven.utils.PomIdsHelper;
 import org.talend.designer.maven.utils.PomUtil;
@@ -211,49 +213,67 @@ public class MavenTemplateManager {
         }
     }
 
-    public static Model getCodeProjectTemplateModel() {
-        return getCodeProjectTemplateModel(null); // by default will be current project.
-    }
-
     /**
      * Try to load the project template from bundle, if load failed, use default instead.
      */
     public static Model getCodeProjectTemplateModel(Map<String, Object> parameters) {
-        final String projectTechName = PomUtil.getProjectNameFromTemplateParameter(parameters);
-        Model defaultModel = getDefaultCodeProjectTemplateModel(projectTechName);
+        Model basicModel = getBasicProjectPomTemplateModel(parameters);
+        Model defaultModel = getDefaultProjectModel(parameters);
+        if (defaultModel == null) {
+            defaultModel = basicModel;
+        }
+        Model customModel = getCustomProjectModel(parameters);
+        MergedModel mergedModel = new MergeModelTool().mergeModel(defaultModel, customModel);
+        Model model = mergedModel.getModel();
+        if (model != null) {
+            Map<ETalendMavenVariables, String> variablesValuesMap = new HashMap<>();
+            variablesValuesMap.put(ETalendMavenVariables.ProjectGroupId, basicModel.getGroupId());
+            variablesValuesMap.put(ETalendMavenVariables.ProjectArtifactId, basicModel.getArtifactId());
+            variablesValuesMap.put(ETalendMavenVariables.ProjectVersion, basicModel.getVersion());
+            variablesValuesMap.put(ETalendMavenVariables.ProjectName, PomUtil.getProjectNameFromTemplateParameter(parameters));
+
+            model.setGroupId(ETalendMavenVariables.replaceVariables(model.getGroupId(), variablesValuesMap));
+            model.setArtifactId(ETalendMavenVariables.replaceVariables(model.getArtifactId(), variablesValuesMap));
+            model.setVersion(ETalendMavenVariables.replaceVariables(model.getVersion(), variablesValuesMap));
+            model.setName(ETalendMavenVariables.replaceVariables(model.getName(), variablesValuesMap));
+
+            setJavaVersionForModel(model, variablesValuesMap);
+        }
+
+        return model;
+    }
+
+    public static Model getDefaultProjectModel(Map<String, Object> parameters) {
         try {
-            InputStream stream = MavenTemplateManager.getTemplateStream(null,
-                    IProjectSettingPreferenceConstants.TEMPLATE_PROJECT_POM, DesignerMavenPlugin.PLUGIN_ID,
+            InputStream stream = MavenTemplateManager.getTemplateStream(null, null, DesignerMavenPlugin.PLUGIN_ID,
                     IProjectSettingTemplateConstants.PATH_GENERAL + '/'
-                            + IProjectSettingTemplateConstants.PROJECT_TEMPLATE_FILE_NAME, parameters);
+                            + IProjectSettingTemplateConstants.PROJECT_TEMPLATE_FILE_NAME,
+                    parameters);
             if (stream != null) {
                 Model model = MavenPlugin.getMavenModelManager().readMavenModel(stream);
-
-                Map<ETalendMavenVariables, String> variablesValuesMap = new HashMap<ETalendMavenVariables, String>();
-                variablesValuesMap.put(ETalendMavenVariables.ProjectGroupId, defaultModel.getGroupId());
-                variablesValuesMap.put(ETalendMavenVariables.ProjectArtifactId, defaultModel.getArtifactId());
-                variablesValuesMap.put(ETalendMavenVariables.ProjectVersion, defaultModel.getVersion());
-
-                variablesValuesMap.put(ETalendMavenVariables.ProjectName, projectTechName);
-
-                model.setGroupId(ETalendMavenVariables.replaceVariables(model.getGroupId(), variablesValuesMap));
-                model.setArtifactId(ETalendMavenVariables.replaceVariables(model.getArtifactId(), variablesValuesMap));
-                model.setVersion(ETalendMavenVariables.replaceVariables(model.getVersion(), variablesValuesMap));
-                model.setName(ETalendMavenVariables.replaceVariables(model.getName(), variablesValuesMap));
-
-                setJavaVersionForModel(model, variablesValuesMap);
-
                 PomExtensionRegistry.getInstance().updateProjectPom(model);
-
+                PomExtensionRegistry.getInstance().updatePomTemplate(model);
                 Properties properties = model.getProperties();
-                properties.put("talend.project.name", projectTechName); //$NON-NLS-1$
-
+                properties.put("talend.project.name", PomUtil.getProjectNameFromTemplateParameter(parameters)); //$NON-NLS-1$
                 return model;
             }
         } catch (Exception e) {
-            // ExceptionHandler.process(e);
+            ExceptionHandler.process(e);
         }
-        return defaultModel; // if error, try to use default model
+        return null;
+    }
+
+    public static Model getCustomProjectModel(Map<String, Object> parameters) {
+        try {
+            InputStream stream = MavenTemplateManager.getTemplateStream(null,
+                    IProjectSettingPreferenceConstants.TEMPLATE_PROJECT_POM, null, null, parameters);
+            if (stream != null) {
+                return MavenPlugin.getMavenModelManager().readMavenModel(stream);
+            }
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        }
+        return null;
     }
 
     private static void setJavaVersionForModel(Model model, Map<ETalendMavenVariables, String> variablesValuesMap) {
@@ -275,7 +295,8 @@ public class MavenTemplateManager {
         }
     }
 
-    private static Model getDefaultCodeProjectTemplateModel(String projectTechName) {
+    private static Model getBasicProjectPomTemplateModel(Map<String, Object> parameters) {
+        String projectTechName = PomUtil.getProjectNameFromTemplateParameter(parameters);
         Model templateCodeProjectMOdel = new Model();
         templateCodeProjectMOdel.setGroupId(PomIdsHelper.getProjectGroupId(projectTechName));
         templateCodeProjectMOdel.setArtifactId(PomIdsHelper.getProjectArtifactId());

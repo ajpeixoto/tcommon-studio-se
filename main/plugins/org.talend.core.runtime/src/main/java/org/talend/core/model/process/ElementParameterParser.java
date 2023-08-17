@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.text.StringEscapeUtils;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -25,6 +24,7 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.utils.PasswordEncryptUtil;
 import org.talend.commons.utils.generation.CodeGenerationUtils;
+import org.talend.core.GlobalServiceRegister;
 import org.talend.core.language.ECodeLanguage;
 import org.talend.core.language.LanguageManager;
 import org.talend.core.model.metadata.types.JavaType;
@@ -38,6 +38,7 @@ import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.utils.JavaResourcesHelper;
 import org.talend.core.model.utils.SQLPatternUtils;
 import org.talend.core.runtime.CoreRuntimePlugin;
+import org.talend.core.service.IDesignerXMLMapperService;
 import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
@@ -128,7 +129,7 @@ public final class ElementParameterParser {
         if (canEncryptValue(value)) {
             try {
                 String removeQuotes = TalendQuoteUtils.removeQuotes(value);
-                removeQuotes = StringEscapeUtils.unescapeJava(removeQuotes);
+                removeQuotes = TalendQuoteUtils.checkSlashAndRemoveQuotation(removeQuotes);
                 return TalendQuoteUtils.addQuotes(PasswordEncryptUtil.encryptPasswordHex(removeQuotes),
                         TalendQuoteUtils.QUOTATION_MARK);
             } catch (Exception e) {
@@ -294,8 +295,7 @@ public final class ElementParameterParser {
 
         List<IElementParameter> params = (List<IElementParameter>) element.getElementParametersWithChildrens();
         if (params != null && !params.isEmpty()) {
-            for (int i = 0; i < params.size(); i++) {
-                IElementParameter param = params.get(i);
+            for (IElementParameter param : params) {
                 if (text.indexOf(param.getVariableName()) != -1
                         || (param.getVariableName() != null && param.getVariableName().contains(text))) {
                     if (param.getFieldType() == EParameterFieldType.TABLE) {
@@ -423,8 +423,8 @@ public final class ElementParameterParser {
         }
         IElementParameter param;
 
-        for (int i = 0; i < element.getElementParameters().size(); i++) {
-            param = element.getElementParameters().get(i);
+        for (IElementParameter element2 : element.getElementParameters()) {
+            param = element2;
             if (text.indexOf(param.getVariableName()) != -1) {
                 if (param.getFieldType() == EParameterFieldType.TABLE) {
                     return createTableValuesXML((List<Map<String, Object>>) param.getValue(), param);
@@ -484,7 +484,21 @@ public final class ElementParameterParser {
         if (element instanceof INode) {
             INode node = (INode) element;
             if (node.getExternalNode() != null) {
-                return EcoreUtil.copy(node.getExternalNode().getExternalEmfData());
+                Object obj = null;
+                if (node.isVirtualGenerateNode()) {
+                    if (GlobalServiceRegister.getDefault().isServiceRegistered(IDesignerXMLMapperService.class)) {
+                        final IDesignerXMLMapperService service = GlobalServiceRegister.getDefault()
+                                .getService(IDesignerXMLMapperService.class);
+                        if (service != null) {
+                            obj = service.rebuildXmlMapData(node.getExternalNode());
+                        }
+                    }
+                }
+                if (obj != null) {
+                    return obj;
+                } else {
+                    return EcoreUtil.copy(node.getExternalNode().getExternalEmfData());
+                }
             }
         }
         return null;
@@ -497,8 +511,8 @@ public final class ElementParameterParser {
         }
         IElementParameter param;
         newText = text;
-        for (int i = 0; i < element.getElementParameters().size(); i++) {
-            param = element.getElementParameters().get(i);
+        for (IElementParameter element2 : element.getElementParameters()) {
+            param = element2;
             if (newText.contains(param.getVariableName())) {
                 String value = getDisplayValue(param);
                 newText = newText.replace(param.getVariableName(), value);

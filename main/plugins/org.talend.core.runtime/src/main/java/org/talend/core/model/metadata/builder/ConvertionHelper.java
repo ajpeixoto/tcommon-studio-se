@@ -33,6 +33,7 @@ import org.talend.core.database.EDatabaseTypeName;
 import org.talend.core.database.ERedshiftDriver;
 import org.talend.core.database.conn.ConnParameterKeys;
 import org.talend.core.database.conn.template.EDatabaseConnTemplate;
+import org.talend.core.database.conn.version.EDatabaseVersion4Drivers;
 import org.talend.core.model.metadata.Dbms;
 import org.talend.core.model.metadata.DiSchemaConstants;
 import org.talend.core.model.metadata.IConvertionConstants;
@@ -260,6 +261,7 @@ public final class ConvertionHelper {
         result.setContentModel(connection.isContextMode());
         result.setContextId(sourceConnection.getContextId());
         result.setContextName(sourceConnection.getContextName());
+        result.setSupportNLS(sourceConnection.isSupportNLS());
         // handle oracle database connnection of general_jdbc.
         result.setSchema(getMeataConnectionSchema(result));
         convertOtherParameters(result, connection);
@@ -271,7 +273,7 @@ public final class ConvertionHelper {
 
     }
 
-    private static String getDriverVersionString(DatabaseConnection dbConn) {
+    public static String getDriverVersionString(DatabaseConnection dbConn) {
         String dbVersionString = dbConn.getDbVersionString();
         if (EDatabaseTypeName.REDSHIFT.getDisplayName().equals(dbConn.getDatabaseType())
                 || EDatabaseTypeName.REDSHIFT_SSO.getDisplayName().equals(dbConn.getDatabaseType())) {
@@ -284,6 +286,9 @@ public final class ConvertionHelper {
                     dbVersionString = ERedshiftDriver.DRIVER_V1.name();
                 }
             }
+        }
+        if (EDatabaseTypeName.VERTICA.getDisplayName().equals(dbConn.getDatabaseType())) {
+            dbVersionString = EDatabaseVersion4Drivers.VERTICA_12.getVersionValue();
         }
         return dbVersionString;
     }

@@ -359,7 +359,9 @@ public abstract class RepositoryUpdateManager {
             List<UpdateResult> checkedResults = null;
 
             if (parameter == null) { // update all job
-                checkedResults = filterSpecialCheckedResult(results);
+                // TUP-36519: comment out the filter for only opening job
+                // checkedResults = filterSpecialCheckedResult(results);
+                checkedResults = results;
             } else { // filter
                 checkedResults = filterCheckedResult(results);
             }
@@ -768,6 +770,15 @@ public abstract class RepositoryUpdateManager {
                 updateConnectionContextParam((ConnectionItem) item, citem, valueMap);
             }
         }
+        
+        List<IRepositoryViewObject> bigqueryConnList = FACTORY.getAll(ERepositoryObjectType.METADATA_BIGQUERYCONNECTIONS, true);
+        for (IRepositoryViewObject obj : bigqueryConnList) {
+            Item item = obj.getProperty().getItem();
+            if (item instanceof ConnectionItem) {
+                updateConnectionContextParam((ConnectionItem) item, citem, valueMap);
+            }
+        }
+        
         for (String updateType : UpdateRepositoryHelper.getAllHadoopConnectionTypes()) {
             List<IRepositoryViewObject> hadoopConnList = FACTORY
                     .getAll(ERepositoryObjectType.valueOf(ERepositoryObjectType.class, updateType), true);

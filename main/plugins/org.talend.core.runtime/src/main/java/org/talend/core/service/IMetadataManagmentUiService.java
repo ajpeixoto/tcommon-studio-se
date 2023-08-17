@@ -42,7 +42,9 @@ public interface IMetadataManagmentUiService extends IService {
 
     public boolean promptConfirmLauch(Shell shell, Connection connection, ContextItem contextItem);
 
-    public IContext promptConfirmLauch(Shell shell, List<IContext> contexts);
+    public IContext promptConfirmLauch(Shell shell, List<IContext> contexts, IContext defaultContext);
+
+    public boolean promptConfirmLauch(Shell shell, IContext context);
 
     public boolean isPromptNeeded(List<IContext> contexts);
 

@@ -24,6 +24,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.talend.commons.ui.runtime.ColorConstants;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.swt.calendar.SWTCalendarWithTime;
 import org.talend.commons.ui.swt.proposal.ContentProposalAdapterExtended;
@@ -61,7 +62,7 @@ public class PatternCalendar extends SWTCalendarWithTime {
         gridLayout.marginHeight = 5;
         composite.setLayout(gridLayout);
         composite.setLayoutData(new GridData(GridData.FILL_BOTH));
-        composite.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
+        composite.setBackground(ColorConstants.getTableBackgroundColor());
 
         Label patternLabel = new Label(composite, SWT.NONE);
         patternLabel.setText(Messages.getString("PatternCalendar.pattern")); //$NON-NLS-1$
@@ -71,6 +72,7 @@ public class PatternCalendar extends SWTCalendarWithTime {
         patternText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         patternText.addModifyListener(new ModifyListener() {
 
+            @Override
             public void modifyText(ModifyEvent e) {
                 onPatternChange();
             }

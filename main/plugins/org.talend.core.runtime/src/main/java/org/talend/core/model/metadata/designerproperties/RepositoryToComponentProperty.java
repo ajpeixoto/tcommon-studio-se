@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.Path;
@@ -47,6 +48,7 @@ import org.talend.core.model.metadata.MultiSchemasUtil;
 import org.talend.core.model.metadata.builder.ConvertionHelper;
 import org.talend.core.model.metadata.builder.connection.AdditionalConnectionProperty;
 import org.talend.core.model.metadata.builder.connection.BRMSConnection;
+import org.talend.core.model.metadata.builder.connection.BigQueryConnection;
 import org.talend.core.model.metadata.builder.connection.Concept;
 import org.talend.core.model.metadata.builder.connection.ConceptTarget;
 import org.talend.core.model.metadata.builder.connection.Connection;
@@ -147,6 +149,10 @@ public class RepositoryToComponentProperty {
 
         if (connection instanceof SAPConnection) {
             return getSAPValue((SAPConnection) connection, value);
+        }
+        
+        if (connection instanceof BigQueryConnection) {
+            return getBigQueryValue((BigQueryConnection) connection, value, table);
         }
 
         if (connection instanceof SalesforceSchemaConnection) {
@@ -454,6 +460,62 @@ public class RepositoryToComponentProperty {
                 return TalendQuoteUtils.addQuotes(dbParameters);
             }
         }
+        return null;
+    }
+    
+    public static Object getBigQueryValue(BigQueryConnection connection, String value, IMetadataTable table) {
+        if ("SERVICE_ACCOUNT_CREDENTIALS_FILE".equals(value)) {
+            if (isContextMode(connection, connection.getServiceAccountCredentialsFile())) {
+                return connection.getServiceAccountCredentialsFile();
+            } else {
+                return TalendQuoteUtils.addQuotes(connection.getServiceAccountCredentialsFile());
+            }
+        } else if ("PROJECT_ID".equals(value)) {
+            if (isContextMode(connection, connection.getProjectId())) {
+                return connection.getProjectId();
+            } else {
+                return TalendQuoteUtils.addQuotes(connection.getProjectId());
+            }
+        } else if ("USE_REGION_ENDPOINT".equals(value)) {
+            return connection.isUseRegionEndpoint();
+        } else if ("REGION_ENDPOINT_BQ".equals(value)) {
+            if (isContextMode(connection, connection.getRegionEndpoint())) {
+                return connection.getRegionEndpoint();
+            } else {
+                return TalendQuoteUtils.addQuotes(connection.getRegionEndpoint());
+            }
+        } else if ("DATASET".equals(value)) {
+            if(table!=null) {
+                Map<String, String> properties = table.getAdditionalProperties();
+                if(properties!=null) {
+                    String dataSet = properties.get("dataSet");
+                    if (isContextMode(connection, dataSet)) {
+                        return dataSet;
+                    } else {
+                        return TalendQuoteUtils.addQuotes(dataSet);
+                    }
+                }
+            }
+        } else if ("QUERY".equals(value)) {
+            if(table!=null) {
+                Map<String, String> properties = table.getAdditionalProperties();
+                if(properties!=null) {
+                    String dataSet = properties.get("dataSet");
+                    String tableName = table.getLabel();
+                    if(dataSet!=null && tableName!=null) {
+                        List<IMetadataColumn> columns = table.getListColumns();
+                        StringBuilder strBuilder = new StringBuilder();
+                        strBuilder.append("SELECT");
+                        if(columns!=null) {
+                            strBuilder.append(columns.stream().map(column -> column.getOriginalDbColumnName()).collect(Collectors.joining(",", " ", " ")));
+                        }
+                        strBuilder.append("FROM ").append(dataSet).append('.').append(tableName);
+                        return TalendQuoteUtils.addQuotes(strBuilder.toString());
+                    }
+                }
+            }
+        }
+        
         return null;
     }
 
@@ -1091,6 +1153,10 @@ public class RepositoryToComponentProperty {
                 if (dbVersionString != null) {
                     return dbVersionString.toUpperCase();
                 }
+            } else if (EDatabaseConnTemplate.AMAZON_AURORA.getDBDisplayName().equals(databaseType)) {
+                if (dbVersionString != null) {
+                    return dbVersionString.toUpperCase();
+                }
             } else if (EDatabaseTypeName.HIVE.getDisplayName().equals(databaseType)) {
                 return connection.getParameters().get(ConnParameterKeys.CONN_PARA_KEY_HIVE_VERSION);
             } else if (EDatabaseTypeName.HBASE.getDisplayName().equals(databaseType)) {
@@ -1115,7 +1181,9 @@ public class RepositoryToComponentProperty {
                         || EDatabaseConnTemplate.SAPHana.getDBDisplayName().equals(databaseType)
                         || EDatabaseConnTemplate.MSSQL.getDBDisplayName().equals(databaseType)) {
                     if (dbVersionString != null) {
-                        driverValue = dbVersionString.toUpperCase();
+                        if (EDatabaseVersion4Drivers.getDbVersionName(databaseType, dbVersionString) != null) {
+                            driverValue = dbVersionString.toUpperCase();
+                        }
                     }
                 }
                 if (isContextMode(connection, dbVersionString)) {
@@ -1250,6 +1318,11 @@ public class RepositoryToComponentProperty {
             return value2;
 
         }
+        
+        if(value.equals("SUPPORT_NLS")) {
+            return connection.isSupportNLS();
+        }
+        
         if (value.equals("CDC_TYPE_MODE")) { //$NON-NLS-1$
             return new Boolean(CDCTypeMode.LOG_MODE.getName().equals(connection.getCdcTypeMode()));
         }

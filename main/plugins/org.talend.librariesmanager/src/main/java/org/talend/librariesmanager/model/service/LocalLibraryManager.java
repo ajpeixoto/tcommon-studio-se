@@ -67,6 +67,7 @@ import org.talend.core.model.general.ILibrariesService.IChangedLibrariesListener
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.general.ModuleNeeded.ELibraryInstallStatus;
 import org.talend.core.model.general.ModuleStatusProvider;
+import org.talend.core.model.general.RetrieveResult;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.nexus.ArtifactRepositoryBean;
 import org.talend.core.nexus.NexusConstants;
@@ -376,6 +377,10 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
                     .process(new Exception(getClass().getSimpleName() + " resolve " + module.getModuleName() + " failed !"));
         }
         try {
+            // try maven uri first
+            if (jarFile == null) {
+                jarFile = getJarFile(module.getMavenUri());
+            }
             // try the jar name if can't get jar with uri.
             if (jarFile == null) {
                 jarFile = getJarFile(jarNeeded);
@@ -387,7 +392,10 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
                         ILibraryManagerUIService libUiService = GlobalServiceRegister.getDefault()
                                 .getService(ILibraryManagerUIService.class);
 
-                        libUiService.installModules(new String[] { jarNeeded });
+                        // libUiService.installModules(new String[] { jarNeeded });
+                        List<ModuleNeeded> moduleList = new ArrayList<ModuleNeeded>();
+                        moduleList.add(module);
+                        libUiService.installModules(moduleList);
                     }
                     jarFile = retrieveJarFromLocal(module);
                     if (jarFile == null) {
@@ -717,8 +725,15 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
     @Override
     public boolean retrieve(ERepositoryObjectType codeType, Set<ModuleNeeded> modulesNeeded, String pathToStore,
             boolean showDialog, IProgressMonitor... monitorWrap) {
+        return retrieveModules(codeType, modulesNeeded, pathToStore, showDialog, monitorWrap).isAllResolved();
+    }
+
+    @Override
+    public RetrieveResult retrieveModules(ERepositoryObjectType codeType, Set<ModuleNeeded> modulesNeeded, String pathToStore,
+            boolean showDialog, IProgressMonitor... monitorWrap) {
+        RetrieveResult result = new RetrieveResult();
         if (modulesNeeded == null || modulesNeeded.size() == 0) {
-            return false;
+            return result;
         }
         
         // install local platform jars.
@@ -745,8 +760,10 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
                     if (!retrieve(jar, pathToStore, false, false)) {
                         jarNotFound.add(jar);
                         allIsOK = false;
+                        result.getUnresolvedModules().add(jar);
                     } else {
                         needResetModulesNeeded = true;
+                        result.getResovledModules().add(jar);
                     }
                 }
                 if (needResetModulesNeeded) {
@@ -763,8 +780,8 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
                 }
             }
         }
-
-        return allIsOK;
+        result.setAllResolved(allIsOK);
+        return result;
     }
 
     @Override
@@ -822,12 +839,19 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
     }
 
     @Override
-    public void clearCache() {
+    public void clearCache(boolean cleanIndex) {
         if (isInitialized()) {
-            LibrariesIndexManager.getInstance().clearAll();
+            if (cleanIndex) {
+                LibrariesIndexManager.getInstance().clearAll();
+            }
             ModuleStatusProvider.reset();
         }
         jarList.clear();
+    }
+    
+    @Override
+    public void clearCache() {
+        clearCache(true);
     }
 
     @Override
@@ -903,8 +927,11 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
                                 urlWarned.add(moduleLocation);
                             }
                             moduleLocation = relativePath;
-                            found = true;
-                            fileToDeploy = new File(getJarPathFromPlatform(moduleLocation));
+                            String jarPathFromPlatform = getJarPathFromPlatform(moduleLocation);
+                            if(jarPathFromPlatform != null) {
+                                found = true;
+                                fileToDeploy = new File(jarPathFromPlatform);
+                            }
                         }
                     }
                 }
@@ -1323,10 +1350,81 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
         saveMavenIndex(mavenURIMap, monitorWrap);
         savePlatfromURLIndex(platformURLMap, monitorWrap);
 
-        if (service != null) {
-            deployLibsFromCustomComponents(service, platformURLMap);
-        }
         return mavenURIMap;
+    }
+
+    public void deployLibsFromCustomComponents(File componentFolder, List<ModuleNeeded> modulesNeeded) {
+        if (modulesNeeded == null || modulesNeeded.isEmpty()) {
+            return;
+        }
+        Map<File, Set<MavenArtifact>> needToDeploy = new HashMap<File, Set<MavenArtifact>>();
+        modulesNeeded.forEach(module -> {
+            if (module != null) {
+                boolean needDeploy = false;
+                String mvnUri = module.getMavenUri();
+                String jarPathFromMaven = getJarPathFromMaven(StringUtils.isNotBlank(mvnUri) ? mvnUri : module.getModuleName());
+                if (StringUtils.isBlank(jarPathFromMaven)) {
+                    needDeploy = true;
+                } else {
+                    File jarFromMaven = new File(jarPathFromMaven);
+                    if (!jarFromMaven.exists()) {
+                        needDeploy = true;
+                    }
+                }
+
+                if (needDeploy) {
+                    File deployFile = getDeployJarFileByModule(componentFolder, module);
+                    if (deployFile != null) {
+
+                        install(deployFile, mvnUri, false, true, null);
+
+                        if (needToDeploy.get(deployFile) == null) {
+                            needToDeploy.put(deployFile, new HashSet<MavenArtifact>());
+                        }
+                        if (StringUtils.isNotBlank(mvnUri)) {
+                            MavenArtifact mavenArtifact = MavenUrlHelper.parseMvnUrl(mvnUri);
+                            needToDeploy.get(deployFile).add(mavenArtifact);
+                        } else {
+                            Map<String, String> sourceAndMavenUri = new HashMap<>();
+                            guessMavenRUIFromIndex(deployFile, true, sourceAndMavenUri);
+                            Set<MavenArtifact> MavenArtifactSet = new HashSet<MavenArtifact>();
+                            sourceAndMavenUri.keySet()
+                                    .forEach(mavenUri -> {
+                                        if (StringUtils.isNotBlank(mvnUri)) {
+                                            MavenArtifactSet.add(MavenUrlHelper.parseMvnUrl(mavenUri));
+                                        }
+                                    });
+                            needToDeploy.get(deployFile).addAll(MavenArtifactSet);
+                        }
+                    }
+                }
+            }
+        });
+
+        if (!needToDeploy.isEmpty()) {
+            ShareComponentsLibsJob shareJob = new ShareComponentsLibsJob(
+                    Messages.getString("LocalLibraryManager.shareLibsForCustomponents"), needToDeploy, deployer);
+            shareJob.schedule();
+        }
+    }
+
+    private File getDeployJarFileByModule(File componentFolder, ModuleNeeded module) {
+        String mvnUri = module.getMavenUri();
+        if (StringUtils.isNotBlank(mvnUri)) {
+            MavenArtifact mavenArtifact = MavenUrlHelper.parseMvnUrl(mvnUri);
+            String fileName = mavenArtifact.getFileName();
+            File jarFile = new File(componentFolder, fileName);
+            if (jarFile.exists()) {
+                return jarFile;
+            }
+
+        }
+        // try module name
+        File jarFile = new File(componentFolder, module.getModuleName());
+        if (jarFile.exists()) {
+            return jarFile;
+        }
+        return null;
     }
 
     /**
@@ -1378,93 +1476,11 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
     
    private boolean isExtComponentProvider(String id) {
        if ("org.talend.designer.components.model.UserComponentsProvider".equals(id)
-               || "org.talend.designer.codegen.components.model.SharedStudioUserComponentProvider".equals(id)
-               || "org.talend.designer.components.exchange.ExchangeComponentsProvider".equals(id)
-               || "org.talend.designer.components.exchange.SharedStudioExchangeComponentsProvider".equals(id)) {
+               || "org.talend.designer.codegen.components.model.SharedStudioUserComponentProvider".equals(id)) {
            return true;
        }
        return false;
    }
-
-    private void deployLibsFromCustomComponents(IComponentsService service, Map<String, String> platformURLMap) {
-        boolean deployToRemote = true;
-        if (!LibrariesManagerUtils.shareLibsAtStartup()) {
-            log.info("Skip deploying libs from custom components");
-            deployToRemote = false;
-        }
-
-        Map<File, Set<MavenArtifact>> needToDeploy = new HashMap<File, Set<MavenArtifact>>();
-        List<ComponentProviderInfo> componentsFolders = service.getComponentsFactory().getComponentsProvidersInfo();
-        for (ComponentProviderInfo providerInfo : componentsFolders) {
-            String id = providerInfo.getId();
-            try {
-                File file = new File(providerInfo.getLocation());
-                if (isExtComponentProvider(id)) {
-                    if (file.isDirectory()) {
-                        List<File> jarFiles = FilesUtils.getJarFilesFromFolder(file, null);
-                        if (jarFiles.size() > 0) {
-                            for (File jarFile : jarFiles) {
-                                String name = jarFile.getName();
-                                if (!canDeployFromCustomComponentFolder(name) || platformURLMap.get(name) != null) {
-                                    continue;
-                                }
-
-                                collectLibModules(jarFile, needToDeploy);
-                            }
-                        }
-                    } else {
-                        if (!canDeployFromCustomComponentFolder(file.getName()) || platformURLMap.get(file.getName()) != null) {
-                            continue;
-                        }
-                        collectLibModules(file, needToDeploy);
-                    }
-                }
-            } catch (Exception e) {
-                ExceptionHandler.process(e);
-                continue;
-            }
-        }
-
-        // first install them locally
-        needToDeploy.forEach((k, v) -> {
-            try {
-                // install as release version if can't find mvn url from index
-                install(k, null, false, true);
-            } catch (Exception e) {
-                ExceptionHandler.process(e);
-            }
-        });
-
-        if (!deployToRemote) {
-            return;
-        }
-
-        ShareComponentsLibsJob shareJob = new ShareComponentsLibsJob(
-                Messages.getString("LocalLibraryManager.shareLibsForCustomponents"), needToDeploy, deployer);
-        shareJob.schedule();
-    }
-
-    private void collectLibModules(File jarFile, Map<File, Set<MavenArtifact>> needToDeploy) {
-        Map<String,String> mavenUris = new HashMap<String,String>();
-        guessMavenRUIFromIndex(jarFile, true, mavenUris);
-        
-        Set<MavenArtifact> artifacts = new HashSet<MavenArtifact>();
-        for(String uri: mavenUris.keySet()) {
-            MavenArtifact art = MavenUrlHelper.parseMvnUrl(uri);
-            if(art!=null) {
-                artifacts.add(art);
-            }
-        }
-        
-        needToDeploy.put(jarFile, artifacts);
-    }
-
-    private boolean canDeployFromCustomComponentFolder(String fileName) {
-        if (isSystemCacheFile(fileName) || isComponentDefinitionFileType(fileName)) {
-            return false;
-        }
-        return true;
-    }
 
     private void warnDuplicated(List<ModuleNeeded> modules, Set<String> duplicates, String type) {
         for (String lib : duplicates) {

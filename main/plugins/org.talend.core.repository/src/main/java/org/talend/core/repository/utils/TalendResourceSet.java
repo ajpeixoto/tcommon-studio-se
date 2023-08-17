@@ -48,6 +48,8 @@ import org.talend.commons.runtime.model.emf.provider.EmfResourcesFactoryReader;
  */
 public class TalendResourceSet extends ResourceSetImpl {
 
+    private boolean showLog;
+
     public TalendResourceSet() {
         super();
 
@@ -56,6 +58,14 @@ public class TalendResourceSet extends ResourceSetImpl {
         getLoadOptions().put(XMLResource.OPTION_USE_PARSER_POOL, new XMLParserPoolImpl());
         getLoadOptions().put(XMLResource.OPTION_USE_XML_NAME_TO_FEATURE_MAP, new HashMap<Object, Object>());
         getLoadOptions().put(XMLResource.OPTION_USE_DEPRECATED_METHODS, Boolean.FALSE);
+    }
+
+    public boolean isShowLog() {
+        return this.showLog;
+    }
+
+    public void setShowLog(boolean showLog) {
+        this.showLog = showLog;
     }
 
     /*
@@ -83,7 +93,13 @@ public class TalendResourceSet extends ResourceSetImpl {
             Resource resource = map.get(uri);
             if (resource != null) {
                 if (loadOnDemand && !resource.isLoaded()) {
-                    demandLoadHelper(resource);
+                    try {
+                        demandLoadHelper(resource);
+                    } catch (Exception e) {
+                        if (showLog) {
+                            throw new RuntimeException(e);
+                        }
+                    }
                 }
                 return resource;
             }
@@ -99,7 +115,13 @@ public class TalendResourceSet extends ResourceSetImpl {
                 }
                 if (theURIConverter.normalize(resource.getURI()).equals(normalizedURI)) {
                     if (loadOnDemand && !resource.isLoaded()) {
-                        demandLoadHelper(resource);
+                        try {
+                            demandLoadHelper(resource);
+                        } catch (Exception e) {
+                            if (showLog) {
+                                throw new RuntimeException(e);
+                            }
+                        }
                     }
 
                     if (map != null) {
@@ -125,7 +147,13 @@ public class TalendResourceSet extends ResourceSetImpl {
                         + "'; a registered resource factory is needed");
             }
 
-            demandLoadHelper(resource);
+            try {
+                demandLoadHelper(resource);
+            } catch (Exception e) {
+                if (showLog) {
+                    throw new RuntimeException(e);
+                }
+            }
 
             if (map != null) {
                 map.put(uri, resource);

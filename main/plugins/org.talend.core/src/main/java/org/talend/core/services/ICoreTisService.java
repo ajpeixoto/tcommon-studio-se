@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.common.util.URI;
 import org.osgi.service.prefs.BackingStoreException;
@@ -25,6 +26,7 @@ import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.exception.SystemException;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.IService;
+import org.talend.core.model.general.ConnectionBean;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.properties.Property;
@@ -84,13 +86,31 @@ public interface ICoreTisService extends IService {
 
     public void afterImport (Property property) throws PersistenceException;  
 
+    Integer getSignatureVerifyResult(Property property, IPath resourcePath, boolean considerGP) throws Exception;
+
+    String getLicenseCustomer();
+    
+    void storeLicenseAndUpdateConfig(String licenseString) throws IOException;
+
+    boolean isInValidGP();
+
     boolean hasNewPatchInPatchesFolder();
 
     boolean isDefaultLicenseAndProjectType();
+    
+    String getLicenseProductName(String licenseString) throws Exception;
+    
+    String getLicenseProductEdition(String licenseString) throws Exception; 
+    
+    boolean isLicenseExpired(String licenseString) throws Exception;
+    
+    boolean isLicenseVersionCorrect(String licenseString) throws Exception;
 
     void syncProjectUpdateSettingsFromServer(IProgressMonitor monitor, Project proj) throws Exception;
 
     void refreshPatchesFolderCache();
+    
+    boolean hasValidToken(ConnectionBean conn) throws Exception;
 
     static ICoreTisService get() {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ICoreTisService.class)) {

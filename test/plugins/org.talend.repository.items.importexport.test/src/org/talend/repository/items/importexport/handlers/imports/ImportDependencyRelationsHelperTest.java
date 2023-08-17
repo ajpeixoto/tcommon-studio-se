@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
@@ -41,6 +42,7 @@ import org.talend.core.model.properties.ItemRelations;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.PropertiesFactory;
 import org.talend.core.model.properties.Property;
+import org.talend.core.model.properties.RoutineItem;
 import org.talend.core.model.properties.User;
 import org.talend.core.model.properties.impl.PropertiesFactoryImpl;
 import org.talend.core.model.relationship.Relation;
@@ -93,8 +95,10 @@ public class ImportDependencyRelationsHelperTest {
             allImportItemNodesList.add(importNode);
             propertyList.add(property);
         }
+        // test0 --> test1 --> test2
         createRelations(propertyList);
         Property property2 = propertyList.get(2);
+        // label test2 version 0.7
         Property property3 = PropertiesFactory.eINSTANCE.createProperty();
         property3.setId(property2.getId());
         property3.setLabel(property2.getLabel());
@@ -108,6 +112,34 @@ public class ImportDependencyRelationsHelperTest {
         projectNode.addChild(importNode);
         allImportItemNodesList.add(importNode);
         propertyList.add(property3);
+
+        Property routineProperty = PropertiesFactory.eINSTANCE.createProperty();
+        routineProperty.setId(ProxyRepositoryFactory.getInstance().getNextId());
+        routineProperty.setLabel("testRoutine");
+        routineProperty.setVersion("0.1");
+        RoutineItem routineItem = PropertiesFactory.eINSTANCE.createRoutineItem();
+        routineProperty.setItem(routineItem);
+        ImportItem routineItemRecord = new ImportItem(new Path(fakePath + "/" + technicalLabel + "/code/routines"
+                + routineProperty.getLabel() + "_" + routineProperty.getVersion() + ".item"));
+        routineItemRecord.setProperty(routineProperty);
+        ItemImportNode routineImportNode = new ItemImportNode(routineItemRecord);
+        projectNode.addChild(routineImportNode);
+        allImportItemNodesList.add(routineImportNode);
+        propertyList.add(routineProperty);
+        Property routineProperty1 = PropertiesFactory.eINSTANCE.createProperty();
+        routineProperty1.setId(routineProperty.getId());
+        routineProperty1.setLabel("testRoutine");
+        routineProperty1.setVersion("0.7");
+        RoutineItem routineItem1 = PropertiesFactory.eINSTANCE.createRoutineItem();
+        routineProperty1.setItem(routineItem1);
+        ImportItem routineItemRecord1 = new ImportItem(new Path(fakePath + "/" + technicalLabel + "/code/routines"
+                + routineProperty1.getLabel() + "_" + routineProperty1.getVersion() + ".item"));
+        routineItemRecord1.setProperty(routineProperty1);
+        ItemImportNode routineImportNode1 = new ItemImportNode(routineItemRecord1);
+        projectNode.addChild(routineImportNode1);
+        allImportItemNodesList.add(routineImportNode1);
+        propertyList.add(routineProperty1);
+
         ImportCacheHelper.getInstance().getPathWithProjects().put(fakeProjectPath, project.getEmfProject());
     }
 
@@ -131,7 +163,35 @@ public class ImportDependencyRelationsHelperTest {
         helperInstance.checkImportRelationDependency(checkedNodeList, toSelectSet, allImportItemNodesList);
         Assert.assertTrue(toSelectSet.size() == 3);
 
-        // to test loop dependency
+        Map<Relation, Set<Relation>> importItemsRelations = helperInstance.getImportItemsRelations(fakeProjectPath);
+        Property jobProperty = propertyList.get(3);
+        Relation baseRelation = new Relation();
+        baseRelation.setId(jobProperty.getId());
+        baseRelation.setType(RelationshipItemBuilder.JOB_RELATION);
+        baseRelation.setVersion(jobProperty.getVersion());
+        Relation relatedRelation = new Relation();
+        relatedRelation.setId(propertyList.get(4).getLabel());
+        relatedRelation.setType(RelationshipItemBuilder.ROUTINE_RELATION);
+        relatedRelation.setVersion(RelationshipItemBuilder.LATEST_VERSION);
+        Set<Relation> relationSet = new HashSet<Relation>();
+        relationSet.add(relatedRelation);
+        importItemsRelations.put(baseRelation, relationSet);
+        toSelectSet.clear();
+        toSelectSet.add(allImportItemNodesList.get(0));
+        helperInstance.checkImportRelationDependency(checkedNodeList, toSelectSet, allImportItemNodesList);
+        Assert.assertTrue(toSelectSet.size() == 4);
+
+    }
+
+    @Test
+    public void checkImportRelationWithLoopDependency() {
+        helperInstance.clear();
+        helperInstance.loadRelations(fakeProjectPath, project.getEmfProject().getItemsRelations());
+        Set<ItemImportNode> toSelectSet = new HashSet<ItemImportNode>();
+        List<ItemImportNode> checkedNodeList = new ArrayList<ItemImportNode>();
+        checkedNodeList.add(allImportItemNodesList.get(0));
+        toSelectSet.add(allImportItemNodesList.get(0));
+        // to test loop dependency test0 --> test1 --> test2 --> test0
         Map<Relation, Set<Relation>> importItemsRelations = helperInstance.getImportItemsRelations(fakeProjectPath);
         Property property3 = propertyList.get(3);
         Relation baseRelation = new Relation();
@@ -145,20 +205,87 @@ public class ImportDependencyRelationsHelperTest {
         Set<Relation> relationSet = new HashSet<Relation>();
         relationSet.add(relatedRelation);
         importItemsRelations.put(baseRelation, relationSet);
-        toSelectSet.clear();
-        toSelectSet.add(allImportItemNodesList.get(0));
         helperInstance.checkImportRelationDependency(checkedNodeList, toSelectSet, allImportItemNodesList);
         Assert.assertTrue(toSelectSet.size() == 3);
     }
 
     @Test
+    public void checkImportRelationDependencyWithMultiVersion() {
+        helperInstance.clear();
+        helperInstance.loadRelations(fakeProjectPath, project.getEmfProject().getItemsRelations());
+        Set<ItemImportNode> toSelectSet = new HashSet<ItemImportNode>();
+        List<ItemImportNode> checkedNodeList = new ArrayList<ItemImportNode>();
+
+        // test1 --> test2 latest (0.7)
+        // test1 --> test2 0.1
+        Relation relatedRelation = new Relation();
+        relatedRelation.setId(propertyList.get(3).getId());
+        relatedRelation.setType(RelationshipItemBuilder.JOB_RELATION);
+        relatedRelation.setVersion("0.1");
+
+        Map<Relation, Set<Relation>> importItemsRelations = helperInstance.getImportItemsRelations(fakeProjectPath);
+        String test1_id = propertyList.get(1).getId();
+        Optional<Relation> optional = importItemsRelations.keySet().stream().filter(relation -> relation.getId().equals(test1_id))
+                .findFirst();
+        Assert.assertTrue(optional.isPresent());
+        importItemsRelations.get(optional.get()).add(relatedRelation);
+        checkedNodeList.add(allImportItemNodesList.get(1));
+        toSelectSet.add(allImportItemNodesList.get(1));
+        helperInstance.checkImportRelationDependency(checkedNodeList, toSelectSet, allImportItemNodesList);
+        Assert.assertTrue(toSelectSet.size() == 3);
+
+        toSelectSet.clear();
+        checkedNodeList.add(allImportItemNodesList.get(0));
+        toSelectSet.add(allImportItemNodesList.get(0));
+        helperInstance.checkImportRelationDependency(checkedNodeList, toSelectSet, allImportItemNodesList);
+        Assert.assertTrue(toSelectSet.size() == 4);
+    }
+
+    @Test
+    public void testGetItemImportNodeByIdVersion() {
+        ItemImportNode theVersionNode = helperInstance.getItemImportNodeByIdVersion(propertyList.get(2).getId(), "0.1", null,
+                allImportItemNodesList, false);
+        Property imporRecordProperty = theVersionNode.getItemRecord().getProperty();
+        Property property3 = propertyList.get(3);
+        Assert.assertEquals(property3.getId(), imporRecordProperty.getId());
+        Assert.assertEquals("0.1", imporRecordProperty.getVersion());
+        theVersionNode = helperInstance.getItemImportNodeByIdVersion(propertyList.get(2).getId(), "0.7", null,
+                allImportItemNodesList, false);
+        imporRecordProperty = theVersionNode.getItemRecord().getProperty();
+        Assert.assertEquals(property3.getId(), imporRecordProperty.getId());
+        Assert.assertEquals("0.7", imporRecordProperty.getVersion());
+
+        Property routineProperty = propertyList.get(4);
+        ItemImportNode routineImportNode = helperInstance.getItemImportNodeByIdVersion(routineProperty.getLabel(), "0.1", null,
+                allImportItemNodesList, true);
+        Property routineImportProperty = routineImportNode.getItemRecord().getProperty();
+        Assert.assertEquals(routineProperty.getId(), routineImportProperty.getId());
+        Assert.assertEquals(routineProperty.getLabel(), routineImportProperty.getLabel());
+        Assert.assertEquals("0.1", routineImportProperty.getVersion());
+        routineImportNode = helperInstance.getItemImportNodeByIdVersion(routineProperty.getLabel(), "0.7", null,
+                allImportItemNodesList, true);
+        routineImportProperty = routineImportNode.getItemRecord().getProperty();
+        Assert.assertEquals(routineProperty.getId(), routineImportProperty.getId());
+        Assert.assertEquals(routineProperty.getLabel(), routineImportProperty.getLabel());
+        Assert.assertEquals("0.7", routineImportProperty.getVersion());
+    }
+
+    @Test
     public void testGetLatestVersionItemImportNode() {
         ItemImportNode latestVersionNode = helperInstance.getLatestVersionItemImportNode(propertyList.get(2).getId(),
-                null, allImportItemNodesList);
+                null, allImportItemNodesList, false);
         Property latestVersionProperty = latestVersionNode.getItemRecord().getProperty();
         Property property3 = propertyList.get(3);
         Assert.assertEquals(latestVersionProperty.getId(), property3.getId());
         Assert.assertEquals(latestVersionProperty.getVersion(), property3.getVersion());
+
+        ItemImportNode latestRoutineNode = helperInstance.getLatestVersionItemImportNode(propertyList.get(4).getLabel(), null,
+                allImportItemNodesList, true);
+        Property latestRoutineProperty = latestRoutineNode.getItemRecord().getProperty();
+        Property property5 = propertyList.get(5);
+        Assert.assertEquals(latestRoutineProperty.getId(), property5.getId());
+        Assert.assertEquals(latestRoutineProperty.getLabel(), property5.getLabel());
+        Assert.assertEquals(latestRoutineProperty.getVersion(), property5.getVersion());
     }
 
     private void createRelations(List<Property> propertyList) {

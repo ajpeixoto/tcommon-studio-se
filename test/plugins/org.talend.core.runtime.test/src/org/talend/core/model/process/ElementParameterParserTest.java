@@ -87,46 +87,50 @@ public class ElementParameterParserTest {
         elementParametersWithChildrens.add(parameter);
         when(node.getElementParametersWithChildrens()).thenReturn(elementParametersWithChildrens);
 
-        // "ab"
+        // input: "ab"
         String val = "\"ab\"";
         when(parameter.getValue()).thenReturn(val);
         assertEquals("ab",
                 decryptPassword(ElementParameterParser.getEncryptedValue(node, paramName)));
-        // "a\"b"
+        // input: "a\"b"
         val = "\"a\\\"b\"";
         when(parameter.getValue()).thenReturn(val);
         assertEquals("a\"b",
                 decryptPassword(ElementParameterParser.getEncryptedValue(node, paramName)));
-        // "a\\b"
+        // input: "a\\b" (keep the studio behavior)
         val = "\"a\\\\b\"";
-        when(parameter.getValue()).thenReturn(val);
-        assertEquals("a\\b",
-                decryptPassword(ElementParameterParser.getEncryptedValue(node, paramName)));
-        // "a\\\\b"
-        val = "\"a\\\\\\\\b\"";
         when(parameter.getValue()).thenReturn(val);
         assertEquals("a\\\\b",
                 decryptPassword(ElementParameterParser.getEncryptedValue(node, paramName)));
-        // "test"+context.mypassword + "a"
+        // input: "a\\\\b" (keep the studio behavior)
+        val = "\"a\\\\\\\\b\"";
+        when(parameter.getValue()).thenReturn(val);
+        assertEquals("a\\\\\\\\b",
+                decryptPassword(ElementParameterParser.getEncryptedValue(node, paramName)));
+        // input: "test"+context.mypassword + "a"
         val = "\"test\"+context.mypassword + \"a\"";
         when(parameter.getValue()).thenReturn(val);
         assertEquals(val,
                 ElementParameterParser.getEncryptedValue(node, paramName));
-        // "a" + "b"
+        // input: "a" + "b"
         val = "\"a\" + \"b\"";
         when(parameter.getValue()).thenReturn(val);
         assertEquals(val, ElementParameterParser.getEncryptedValue(node, paramName));
-        // "\\123456/"
+        // input: "\\123456/" (keep the studio behavior)
         val = "\"\\\\123456/\"";
         when(parameter.getValue()).thenReturn(val);
-        assertEquals("\\123456/",
+        assertEquals("\\\\123456/",
                 decryptPassword(ElementParameterParser.getEncryptedValue(node, paramName)));
-        // "\123456/"
+        // input: "\123456/" (keep the studio behavior)
         val = "\"\\123456/\"";
-        final String exp = "\123456/";
+        final String exp = "\\123456/";
         when(parameter.getValue()).thenReturn(val);
         assertEquals(exp,
                 decryptPassword(ElementParameterParser.getEncryptedValue(node, paramName)));
+        // input: "\,\n123\"" (keep the studio behavior)
+        val = "\"\\,\\n123\\\"\"";
+        when(parameter.getValue()).thenReturn(val);
+        assertEquals("\\,\\n123\"", decryptPassword(ElementParameterParser.getEncryptedValue(node, paramName)));
     }
 
     @Test
@@ -148,8 +152,8 @@ public class ElementParameterParserTest {
         // "c":"d"
         // }
 
-        // "{\r\n\"a\":\"b\",\r\n\"c\":\"d\"\r\n}"
-        String val = "\"{\\r\\n\\\"a\\\":\\\"b\\\",\\r\\n\\\"c\\\":\\\"d\\\"\\r\\n}\"";
+        // "{\r\n\"a\":\"b\",\r\n\"c\":\"d\"\r\n}" (keep the studio behavior)
+        String val = "\"{\r\n\\\"a\\\":\\\"b\\\",\r\n\\\"c\\\":\\\"d\\\"\r\n}\"";
         when(parameter.getValue()).thenReturn(val);
         assertEquals("{\r\n\"a\":\"b\",\r\n\"c\":\"d\"\r\n}",
                 decryptPassword(ElementParameterParser.getEncryptedValue(node, paramName)));

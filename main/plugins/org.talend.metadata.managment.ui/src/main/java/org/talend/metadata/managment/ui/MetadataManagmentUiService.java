@@ -82,8 +82,13 @@ public class MetadataManagmentUiService implements IMetadataManagmentUiService {
     }
 
     @Override
-    public IContext promptConfirmLauch(Shell shell, List<IContext> contexts) {
-        return ConnectionContextHelper.promptConfirmLauch(shell, contexts);
+    public IContext promptConfirmLauch(Shell shell, List<IContext> contexts, IContext defaultContext) {
+        return ConnectionContextHelper.promptConfirmLauch(shell, contexts, defaultContext);
+    }
+
+    @Override
+    public boolean promptConfirmLauch(Shell shell, IContext context) {
+        return ConnectionContextHelper.promptConfirmLauch(shell, context);
     }
 
     @Override

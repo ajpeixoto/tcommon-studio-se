@@ -17,4 +17,8 @@ public interface ElementValueTypeValidator {
     boolean validateElementRef(String value);
     boolean validateValue(String value);
     boolean validateType(String value);
+
+    boolean validateHexValue(boolean value);
+
+    boolean validateLabel(String value);
 }

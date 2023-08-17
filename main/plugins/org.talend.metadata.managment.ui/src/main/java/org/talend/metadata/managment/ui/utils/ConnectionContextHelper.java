@@ -2169,7 +2169,7 @@ public final class ConnectionContextHelper {
         return false;
     }
 
-    public static IContext promptConfirmLauch(Shell shell, List<IContext> contexts) {
+    public static IContext promptConfirmLauch(Shell shell, List<IContext> contexts, IContext defaultContext) {
         int nbValues = 0;
         Assert.isNotNull(contexts);
         // Prompt for context values ?
@@ -2182,7 +2182,7 @@ public final class ConnectionContextHelper {
             }
         }
         if (nbValues > 0 || (contexts != null && contexts.size() > 1)) {
-            PromptDialog promptDialog = new PromptDialog(shell, contexts);
+            PromptDialog promptDialog = new PromptDialog(shell, contexts, defaultContext);
             if (promptDialog.open() == PromptDialog.OK) {
                 return promptDialog.getCurrentContext();
             }
@@ -2219,6 +2219,40 @@ public final class ConnectionContextHelper {
                 // set the input values to connection
                 JavaSqlFactory.setPromptContextValues(connection);
                 JavaSqlFactory.haveSetPromptContextVars = true;
+            } else {
+                continueLaunch = false;
+            }
+        }
+        return continueLaunch;
+    }
+
+    public static boolean promptConfirmLauch(Shell shell, IContext context) {
+        boolean continueLaunch = true;
+
+        int nbValues = 0;
+        Assert.isNotNull(context);
+        // Prompt for context values ?
+        for (IContextParameter parameter : context.getContextParameterList()) {
+            if (parameter.isPromptNeeded()) {
+                nbValues++;
+            }
+        }
+        if (nbValues > 0) {
+            IContext contextCopy = context.clone();
+            PromptDialog promptDialog = new PromptDialog(shell, contextCopy);
+            if (promptDialog.open() == PromptDialog.OK) {
+                for (IContextParameter param : context.getContextParameterList()) {
+                    boolean found = false;
+                    IContextParameter paramCopy = null;
+                    for (int i = 0; i < contextCopy.getContextParameterList().size() & !found; i++) {
+                        paramCopy = contextCopy.getContextParameterList().get(i);
+                        if (param.getName().equals(paramCopy.getName())) {
+                            // param.setValueList(paramCopy.getValueList());
+                            param.setInternalValue(paramCopy.getValue());
+                            found = true;
+                        }
+                    }
+                }
             } else {
                 continueLaunch = false;
             }

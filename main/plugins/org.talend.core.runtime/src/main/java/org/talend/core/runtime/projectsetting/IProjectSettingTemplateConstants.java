@@ -19,6 +19,8 @@ package org.talend.core.runtime.projectsetting;
 public interface IProjectSettingTemplateConstants {
 
     final static String PATH_RESOURCES = "resources";
+    
+    final static String PATH_APPLICATION_PROPERTIES = PATH_RESOURCES + '/' + "application.properties";
 
     final static String PATH_RESOURCES_TEMPLATES = PATH_RESOURCES + '/' + "templates";
 
@@ -57,6 +59,8 @@ public interface IProjectSettingTemplateConstants {
     final static String ASSEMBLY_ROUTE_TEMPLATE_FILE_NAME = "assembly_route_template.xml";
 
     final static String PROJECT_TEMPLATE_FILE_NAME = "pom_project_template.xml";
+
+    final static String PROJECT_CUSTOM_TEMPLATE_FILE_NAME = "pom_project_custom_template.xml";
 
     final static String MAVEN_USER_SETTING_TEMPLATE_FILE_NAME = "maven_user_settings.xml";
 

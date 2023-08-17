@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -243,20 +244,14 @@ public class MigrationToolService implements IMigrationToolService {
         sortMigrationTasks(toExecute);
 
         final List<MigrationTask> done = new ArrayList<MigrationTask>(storedMigrations);
-        int nbMigrationsToDo = 0;
-        for (IProjectMigrationTask task : toExecute) {
-            MigrationTask mgTask = MigrationUtil.findMigrationTask(done, task);
-            if (mgTask == null && !task.isDeprecated()) {
-                nbMigrationsToDo++;
-            }
-        }
+        boolean hasTaskToExecute = toExecute.stream()
+                .anyMatch(task -> !task.isDeprecated() && MigrationUtil.findMigrationTask(done, task) == null);
 
         // force to redo the migration task for the relations only if user ask for "clean" or if relations is empty
         // or if there is at least another migration to do.
-        if (!beforeLogon
-                && (!RelationshipItemBuilder.INDEX_VERSION.equals(project.getEmfProject().getItemsRelationVersion()) || nbMigrationsToDo > 0)) {
+        if (!beforeLogon && (!RelationshipItemBuilder.INDEX_VERSION.equals(project.getEmfProject().getItemsRelationVersion())
+                || hasTaskToExecute)) {
             // force to redo this migration task, to make sure the relationship is done correctly
-            // done.remove(RELATION_TASK);
             MigrationUtil.removeMigrationTaskById(done, RELATION_TASK);
             RelationshipItemBuilder.getInstance().unloadRelations();
 
@@ -267,39 +262,35 @@ public class MigrationToolService implements IMigrationToolService {
                     RelationshipItemBuilder.JOBLET_RELATION, true);
             // reset
             RelationshipItemBuilder.getInstance().unloadRelations();
-
-            nbMigrationsToDo++;
+            hasTaskToExecute = true;
         }
-        if (nbMigrationsToDo == 0) {
+
+        boolean checkDupContext = !beforeLogon && Boolean.getBoolean("duplicate.context.reference.check");
+        if (!hasTaskToExecute && !checkDupContext) {
             return;
         }
 
-        // force execute migration in case user copy-past items with diffrent path on the file system and refresh
-        // the studio,it may cause bug TDI-19229
-        MigrationUtil.removeMigrationTaskById(done, "org.talend.repository.model.migration.FixProjectResourceLink");
-
-        if (beforeLogon) {
-            // for every migration, force reset to default maven template
-            MigrationUtil.removeMigrationTaskById(done, "org.talend.repository.model.migration.ResetMavenTemplateMigrationTask");
+        if (checkDupContext) {
+            MigrationUtil.removeMigrationTaskById(done,
+                    "org.talend.repository.model.migration.RemoveDuplicateContextReferencesMigrationTask");
         }
+        if (hasTaskToExecute) {
+            // force execute migration in case user copy-past items with diffrent path on the file system and refresh
+            // the studio,it may cause bug TDI-19229
+            MigrationUtil.removeMigrationTaskById(done, "org.talend.repository.model.migration.FixProjectResourceLink");
 
-        boolean haveAnyBinFolder = false; // to avoid some problems of migration, sometimes
-        for (ERepositoryObjectType type : (ERepositoryObjectType[]) ERepositoryObjectType.values()) {
-            if (!type.hasFolder()) {
-                continue;
+            if (beforeLogon) {
+                // for every migration, force reset to default maven template
+                MigrationUtil.removeMigrationTaskById(done,
+                        "org.talend.repository.model.migration.ResetMavenTemplateMigrationTask");
             }
-            String folderName = ERepositoryObjectType.getFolderName(type);
-            if (folderName == null || "".equals(folderName)) {
-                continue;
+            boolean hasBinFolder = Stream.of((ERepositoryObjectType[]) ERepositoryObjectType.values())
+                    .filter(type -> type.hasFolder()).map(ERepositoryObjectType::getFolderName).filter(StringUtils::isNotBlank)
+                    .map(folderName -> fsProject.getFolder(folderName))
+                    .anyMatch(folder -> folder.exists() && folder.getFolder("bin").exists());
+            if (hasBinFolder) {
+                MigrationUtil.removeMigrationTaskById(done, "org.talend.repository.model.migration.RemoveBinFolderMigrationTask");
             }
-            IFolder folder = fsProject.getFolder(folderName);
-            if (folder.exists() && folder.getFolder("bin").exists()) { //$NON-NLS-1$
-                haveAnyBinFolder = true;
-                break;
-            }
-        }
-        if (haveAnyBinFolder) {
-            MigrationUtil.removeMigrationTaskById(done, "org.talend.repository.model.migration.RemoveBinFolderMigrationTask");
         }
 
         final SubProgressMonitor subProgressMonitor = new SubProgressMonitor(monitorWrap, toExecute.size());

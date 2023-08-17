@@ -4,18 +4,14 @@ import org.apache.commons.codec.binary.StringUtils;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.resource.ImageRegistry;
-import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.ToolItem;
-import org.eclipse.ui.IWorkbenchWindow;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.service.IExchangeService;
 import org.talend.core.service.ITutorialsService;
+import org.talend.rcp.i18n.Messages;
 
 public class ResourceToolbarHandler extends AbstractHandler {
 
@@ -25,7 +21,7 @@ public class ResourceToolbarHandler extends AbstractHandler {
     
     public static final String DOCUMENTATION = "Documentation";//$NON-NLS-1$
     
-    public static final String DOCUMENTATION_ORIG_URL = "https://help.talend.com";//$NON-NLS-1$
+    public static final String DOCUMENTATION_ORIG_URL = Messages.getString("ResourceToolbarHandler.documentationLink"); //$NON-NLS-1$
 
     public static final String ASK = "Ask"; //$NON-NLS-1$
 
@@ -43,9 +39,20 @@ public class ResourceToolbarHandler extends AbstractHandler {
 
     public static final String CLOUD_ORIG_URL = "https://www.talend.com/free-trial";//$NON-NLS-1$
 
+    public static final String WHATS_NEW_URL = "https://help.talend.com/r/en-US/8.0/release-notes";//$NON-NLS-1$
+
+    public static final String PLANS_URL = "https://www.talend.com/pricing/";//$NON-NLS-1$
+
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
         String id = event.getCommand().getId();
+
+        if (StringUtils.equals(id, "org.talend.rcp.plans.command")) {//$NON-NLS-1$
+            openBrower(PLANS_URL);
+        }
+        if (StringUtils.equals(id, "org.talend.rcp.whats.new.command")) {//$NON-NLS-1$
+            openBrower(WHATS_NEW_URL);
+        }
         if (StringUtils.equals(id, "org.talend.resoruses.toolbar.Learn")) {//$NON-NLS-1$
             openBrower(LEARN_ORIG_URL);
         }

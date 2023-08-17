@@ -11,19 +11,19 @@
 	<packaging>eclipse-plugin</packaging>
 	<properties>
 		<tcomp.version>${component-runtime.version}</tcomp.version>
-		<cxf.version>3.5.1</cxf.version>
+		<cxf.version>3.5.5</cxf.version>
 		<geronimo.version>1.0.2</geronimo.version>
 		<jcache.version>1.0.5</jcache.version>
 		<jcache_spec.version>1.0-alpha-1</jcache_spec.version>
-		<johnzon.version>1.2.16</johnzon.version>
-		<meecrowave.version>1.2.13</meecrowave.version>
+		<johnzon.version>1.2.20</johnzon.version>
+		<meecrowave.version>1.2.15</meecrowave.version>
 		<microprofile.version>1.2.1</microprofile.version>
-		<owb.version>2.0.26</owb.version>
-		<slf4j.version>1.7.33</slf4j.version>
-		<tomcat.version>9.0.62</tomcat.version>
+		<owb.version>2.0.27</owb.version>
+		<slf4j.version>1.7.34</slf4j.version>
+		<tomcat.version>9.0.75</tomcat.version>
 		<xbean.version>4.20</xbean.version>
-		<reload4j.version>1.2.19</reload4j.version>
-		<log4j2.version>2.17.2</log4j2.version>
+		<reload4j.version>1.2.22</reload4j.version>
+		<log4j2.version>2.20.0</log4j2.version>
 		<tycho.buildtimestamp.format>${timestamp}</tycho.buildtimestamp.format>
 	</properties>
 	<repositories>
@@ -370,14 +370,8 @@
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
+			<artifactId>slf4j-reload4j</artifactId>
 			<version>${slf4j.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>log4j</groupId>
-					<artifactId>log4j</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>ch.qos.reload4j</groupId>
@@ -394,11 +388,10 @@
 			<artifactId>commons-cli</artifactId>
 			<version>1.4</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-text -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-text</artifactId>
-			<version>1.4</version>
+			<version>1.10.0</version>
 		</dependency>
 	</dependencies>
 	<build>

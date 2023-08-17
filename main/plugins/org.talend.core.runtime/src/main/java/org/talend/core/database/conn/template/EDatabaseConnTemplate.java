@@ -112,6 +112,13 @@ public enum EDatabaseConnTemplate {
     SQLITE(new DbConnStr(EDatabaseTypeName.SQLITE, //
             "jdbc:sqlite:/<filename>")), //$NON-NLS-1$
 
+    INGRES(new DbConnStr(EDatabaseTypeName.INGRES, //
+            "jdbc:ingres://<host>:<port>/<sid>;<property>", //$NON-NLS-1$
+            "II7")), //$NON-NLS-1$
+    VECTORWISE(new DbConnStr(EDatabaseTypeName.VECTORWISE, //
+            "jdbc:ingres://<host>:<port>/<sid>;<property>", //$NON-NLS-1$
+            "II7")),
+    
     FIREBIRD(new DbConnStr(EDatabaseTypeName.FIREBIRD, //
             "jdbc:firebirdsql:<host>/<port>:<filename>?<property>", //$NON-NLS-1$
             "3050")), //$NON-NLS-1$
@@ -207,7 +214,13 @@ public enum EDatabaseConnTemplate {
             "2181")), //$NON-NLS-1$
 
     MAPRDB(new DbConnStr(EDatabaseTypeName.MAPRDB, "127.0.0.1", //$NON-NLS-1$
-            "5181")); //$NON-NLS-1$
+            "5181")), //$NON-NLS-1$
+
+    SNOWFLAKE(
+            new DbConnStr(EDatabaseTypeName.SNOWFLAKE, //
+                    "jdbc:snowflake://<host>:<port>/?<property>",
+                    "3306" //$NON-NLS-1$
+            )); // $NON-NLS-1$
 
     private DbConnStr connStr;
 
@@ -415,6 +428,8 @@ public enum EDatabaseConnTemplate {
             case PSQL:
             case PLUSPSQL:
             case GREENPLUM:
+            case INGRES:
+            case VECTORWISE:
             case FIREBIRD:
             case JAVADB_EMBEDED:
             case JAVADB_JCCJDBC:
@@ -441,6 +456,8 @@ public enum EDatabaseConnTemplate {
             case SYBASEASE_16_SA:
             case IBMDB2:
             case IBMDB2_ZOS:
+            case INGRES:
+            case VECTORWISE:
             case MSSQL:
             case INFORMIX:
             case TERADATA:

@@ -81,6 +81,8 @@ public interface ITestContainerProviderService extends IService {
 
     public List<ProcessItem> getAllTestContainers(ProcessItem item);
 
+    public List<ProcessItem> getAllTestContainers(ProcessItem item, boolean latest, boolean excludeDeleted);
+
     public void copyDataSetFiles(IProcess process, IPath srcPath);
 
     public String getTestDataValue(IProcess process, String instance, String testData);

@@ -18,13 +18,17 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
+import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.exception.PersistenceException;
 import org.talend.core.model.genhtml.HTMLDocUtils;
 import org.talend.core.model.genhtml.IHTMLDocConstants;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.properties.ConnectionItem;
+import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.utils.ParameterValueUtil;
+import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.designer.core.IDesignerCoreService;
 
@@ -88,11 +92,58 @@ public class InternalNodeComponentHandler extends AbstractComponentHandler {
      */
     @Override
     public void generateComponentInfo() {
+
         for (INode node : this.componentsList) {
-            Element componentElement = generateComponentDetailsInfo(false, node, this.internalNodeElement, this.picFilePathMap,
-                    this.sourceConnectionMap, this.targetConnectionMap, this.repositoryDBIdAndNameMap);
+            Element componentElement = generateComponentDetailsInfo(false, node, this.internalNodeElement,
+                    this.picFilePathMap, this.sourceConnectionMap, this.targetConnectionMap,
+                    this.repositoryDBIdAndNameMap);
 
             CoreRuntimePlugin.getInstance().getRepositoryService().setInternalNodeHTMLMap(node, internalNodeHTMLMap);
+            boolean istRunJob = node.getComponent().getName().equals("tRunJob"); //$NON-NLS-1$
+            if (istRunJob) {
+
+                String version = null;
+                String processId = null;
+                IElementParameter processElement = node.getElementParameter("PROCESS");
+                if (processElement != null) {
+                    Map<String, IElementParameter> childParameters = processElement.getChildParameters();
+                    if (childParameters != null) {
+
+                        IElementParameter processElementId = childParameters.get("PROCESS_TYPE_PROCESS");
+                        if (processElementId != null) {
+                            processId = (String) processElementId.getValue();
+                        }
+                        IElementParameter versionElement = childParameters.get("PROCESS_TYPE_VERSION");
+                        if (versionElement != null) {
+                            version = (String) versionElement.getValue();
+                            if ("Latest".equals(version) && processId != null) {
+                                try {
+                                    IRepositoryViewObject rep = ProxyRepositoryFactory.getInstance()
+                                            .getLastVersion(processId);
+                                    if (rep != null) {
+                                        version = rep.getProperty().getVersion();
+                                    }
+                                } catch (PersistenceException e) {
+                                    ExceptionHandler.process(e);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (version == null) {
+                    version = "0.1";
+                    ExceptionHandler.log("The property of sbujob is missing");
+                }
+                componentElement.addAttribute("job", HTMLDocUtils.checkString(node.getLabel()));
+                // ../b/b_0.1.html
+                if (processElement != null && processElement.getValue() != null) {
+                    String processName = processElement.getValue().toString();
+                    String href = "../" + processName + "/" + processName + "_" + version + ".html";
+                    componentElement.addAttribute("href", HTMLDocUtils.checkString(href));
+                }
+
+            }
             generateComponentElemParamters(node, componentElement);
         }
     }
@@ -105,10 +156,9 @@ public class InternalNodeComponentHandler extends AbstractComponentHandler {
      */
     protected void generateComponentElemParamters(INode node, Element componentElement) {
         Element parametersElement = componentElement.addElement("parameters"); //$NON-NLS-1$
-
         List elementParameterList = node.getElementParameters();
-
         boolean istRunJob = node.getComponent().getName().equals("tRunJob"); //$NON-NLS-1$
+        
         generateComponentElementParamInfo(istRunJob, parametersElement, elementParameterList, node);
 
         generateComponentSchemaInfo(node, componentElement);

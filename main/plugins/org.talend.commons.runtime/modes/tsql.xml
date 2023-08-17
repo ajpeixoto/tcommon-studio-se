@@ -283,6 +283,7 @@
 			<KEYWORD1>smallint</KEYWORD1>
 			<KEYWORD1>smallmoney</KEYWORD1>
 			<KEYWORD1>text</KEYWORD1>
+			<KEYWORD1>TIME</KEYWORD1>
 			<KEYWORD1>timestamp</KEYWORD1>
 			<KEYWORD1>tinyint</KEYWORD1>
 			<KEYWORD1>uniqueidentifier</KEYWORD1>

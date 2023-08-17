@@ -30,6 +30,7 @@ public enum ERepositoryCategoryType {
     DATABASE,
     SAP,
     SAPIDOC,
+    BIGQUERY,
     EBCDIC,
     HL7,
     FTP,

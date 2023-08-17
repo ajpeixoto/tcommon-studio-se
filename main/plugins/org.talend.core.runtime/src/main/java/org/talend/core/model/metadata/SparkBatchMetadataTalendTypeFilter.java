@@ -13,10 +13,16 @@ public class SparkBatchMetadataTalendTypeFilter extends SparkMetadataTalendTypeF
     public static List<String> dynamicTypeCompatibleComponents = Arrays.asList(
             "tDeltaLakeInput",
             "tDeltaLakeOutput",
+            "tFileInputDelimited",
             "tFileInputParquet",
             "tFileOutputParquet",
             "tJDBCInput",
-            "tJDBCOutput", "tLogRow", "tSqlRow"
+            "tJDBCOutput",
+            "tLogRow",
+            "tAvroInput",
+            "tMongoDBInput",
+            "tMongoDBOutput",
+            "tSqlRow"
             );
 
     public SparkBatchMetadataTalendTypeFilter(INode node) {

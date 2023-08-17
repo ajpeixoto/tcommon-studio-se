@@ -30,6 +30,7 @@ import org.talend.core.database.conn.ConnParameterKeys;
 import org.talend.core.database.conn.DatabaseConnStrUtil;
 import org.talend.core.database.conn.template.DbConnStrForHive;
 import org.talend.core.database.conn.template.EDatabaseConnTemplate;
+import org.talend.core.database.conn.version.EDatabaseVersion4Drivers;
 import org.talend.core.hadoop.IHadoopClusterService;
 import org.talend.core.hadoop.repository.HadoopRepositoryUtil;
 import org.talend.core.language.ECodeLanguage;
@@ -868,6 +869,11 @@ public final class DBConnectionContextUtils {
 
         filePath = TalendQuoteUtils.removeQuotes(filePath);
         dbRootPath = TalendQuoteUtils.removeQuotes(dbRootPath);
+        
+        //
+        if (EDatabaseTypeName.VERTICA.getDisplayName().equals(dbConn.getDatabaseType())) {
+            dbVersionString = EDatabaseVersion4Drivers.VERTICA_12.getVersionValue();
+        }
         // url
 
         String urlConnection;
@@ -893,6 +899,7 @@ public final class DBConnectionContextUtils {
         managerConnection.setValue(0, dbType, urlConnection, server, username, password, sidOrDatabase, port, filePath,
                 datasource, schemaOracle, additionParam, driverClassName, driverJarPath, dbVersionString);
         managerConnection.setDbRootPath(dbRootPath);
+        managerConnection.setSupportNLS(dbConn.isSupportNLS());
 
         return urlConnection;
     }
@@ -1002,6 +1009,7 @@ public final class DBConnectionContextUtils {
         // get values
         String server = ConnectionContextHelper.getOriginalValue(contextType, dbConn.getServerName());
         String username = ConnectionContextHelper.getOriginalValue(contextType, dbConn.getUsername());
+        String originEncryptedPassword = ConnectionContextHelper.getOriginalValue(contextType, dbConn.getPassword());
         String password = ConnectionContextHelper.getOriginalValue(contextType, dbConn.getRawPassword());
         String port = ConnectionContextHelper.getOriginalValue(contextType, dbConn.getPort());
         String sidOrDatabase = ConnectionContextHelper.getOriginalValue(contextType, dbConn.getSID());
@@ -1023,6 +1031,8 @@ public final class DBConnectionContextUtils {
         cloneConn.setDatasourceName(datasource);
         cloneConn.setDBRootPath(dbRootPath);
         cloneConn.setFileFieldName(filePath);
+        // To avoid encrypt the same value
+        cloneConn.setPassword(originEncryptedPassword);
         cloneConn.setRawPassword(password); // the password is raw.
         cloneConn.setPort(port);
         cloneConn.setUiSchema(schemaOracle);
@@ -1058,6 +1068,12 @@ public final class DBConnectionContextUtils {
             cloneConn.setSQLMode(true);
         }
 
+        if(dbConn.isSetSupportNLS()) {
+            cloneConn.setSupportNLS(dbConn.isSupportNLS());
+        } else {
+            cloneConn.setSupportNLS(false);
+        }
+        
         // cloneConn.setProperties(dbConn.getProperties());
         // cloneConn.setCdcConns(dbConn.getCdcConns());
         // cloneConn.setQueries(dbConn.getQueries());
@@ -1484,6 +1500,7 @@ public final class DBConnectionContextUtils {
         }
         String server = ContextParameterUtils.getOriginalValue(contextType, conn.getServerName());
         String username = ContextParameterUtils.getOriginalValue(contextType, conn.getUsername());
+        String originEncryptedPassword = ContextParameterUtils.getOriginalValue(contextType, conn.getPassword());
         String password = ContextParameterUtils.getOriginalValue(contextType, conn.getRawPassword());
         String port = ContextParameterUtils.getOriginalValue(contextType, conn.getPort());
         String sidOrDatabase = ContextParameterUtils.getOriginalValue(contextType, conn.getSID());
@@ -1504,6 +1521,8 @@ public final class DBConnectionContextUtils {
         conn.setDatasourceName(datasource);
         conn.setDBRootPath(dbRootPath);
         conn.setFileFieldName(filePath);
+        // To avoid encrypt the same value
+        conn.setPassword(originEncryptedPassword);
         conn.setRawPassword(password);
         conn.setPort(port);
         conn.setUiSchema(schemaOracle);

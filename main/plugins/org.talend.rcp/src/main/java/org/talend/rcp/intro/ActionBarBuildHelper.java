@@ -13,7 +13,9 @@
 package org.talend.rcp.intro;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.jface.action.ActionContributionItem;
@@ -31,9 +33,7 @@ import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.preference.IPreferenceNode;
 import org.eclipse.swt.SWT;
 import org.eclipse.ui.IWorkbenchActionConstants;
-import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.actions.ActionFactory.IWorkbenchAction;
 import org.eclipse.ui.application.IActionBarConfigurer;
@@ -46,12 +46,12 @@ import org.talend.core.language.ECodeLanguage;
 import org.talend.core.language.LanguageManager;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.util.SharedStudioUtils;
+import org.talend.core.services.IGITProviderService;
 import org.talend.core.ui.branding.IActionBarHelper;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.core.ui.perspective.PerspectiveMenuManager;
 import org.talend.core.ui.services.IOpenJobScriptActionService;
 import org.talend.rcp.i18n.Messages;
-import org.talend.rcp.intro.linksbar.LinksToolbarItem;
 import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.ui.actions.toolbar.ProjectSettingsAction;
 
@@ -240,7 +240,7 @@ public class ActionBarBuildHelper implements IActionBarHelper {
         menuBar.add(helpMenu);
 
         // Help
-        helpMenu.add(ActionFactory.HELP_CONTENTS.create(window));
+        helpMenu.add(new TalendHelpDocAction());
         helpMenu.add(new Separator());
 
         menuBar.add(new GroupMarker(IWorkbenchActionConstants.MB_ADDITIONS));
@@ -330,20 +330,26 @@ public class ActionBarBuildHelper implements IActionBarHelper {
         // ViewDescriptor[] descriptors = { viewDesc };
         // registry.removeExtension(viewDesc.getConfigurationElement().getDeclaringExtension(), descriptors);
         // }
+        
+        List<String> disabledPrefsIdList = new ArrayList<String>();
+        if (IGITProviderService.get() == null || !IGITProviderService.get().isStandardMode()) {
+            disabledPrefsIdList.add("org.eclipse.team.ui.TeamPreferences");
+        }
 
         List<IPreferenceNode> prefsToDelete = new ArrayList<IPreferenceNode>();
         IBrandingService brandingService = GlobalServiceRegister.getDefault().getService(
                 IBrandingService.class);
         String[] availableLanguages = brandingService.getBrandingConfiguration().getAvailableLanguages();
         if (ArrayUtils.contains(availableLanguages, ECodeLanguage.PERL.getName())) {
-            String[] prefsId = { "org.eclipse.team.ui.TeamPreferences" };
+            String[] prefsId = disabledPrefsIdList.toArray(new String[0]);
             for (IPreferenceNode node : window.getWorkbench().getPreferenceManager().getRootSubNodes()) {
                 if (ArrayUtils.contains(prefsId, node.getId())) {
                     prefsToDelete.add(node);
                 }
             }
         } else {
-            String[] prefsId = { "org.eclipse.team.ui.TeamPreferences", "org.epic.core.preferences.PerlMainPreferencePage" };
+            disabledPrefsIdList.add("org.epic.core.preferences.PerlMainPreferencePage");
+            String[] prefsId = disabledPrefsIdList.toArray(new String[0]);
             for (IPreferenceNode node : window.getWorkbench().getPreferenceManager().getRootSubNodes()) {
                 if (ArrayUtils.contains(prefsId, node.getId())) {
                     prefsToDelete.add(node);
@@ -404,13 +410,25 @@ public class ActionBarBuildHelper implements IActionBarHelper {
         String[] removeIds = {
                 "org.eclipse.equinox.p2.ui.sdk.update", "group.assist", //$NON-NLS-1$ //$NON-NLS-2$
                 "org.eclipse.ui.actions.showKeyAssistHandler", "additions", "group.tutorials", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                "org.eclipse.ui.cheatsheets.actions.CheatSheetHelpMenuAction", "subversive", "subversive.help", "org.eclipse.equinox.p2.ui.sdk.install" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                "org.eclipse.ui.cheatsheets.actions.CheatSheetHelpMenuAction", "subversive", "subversive.help" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         for (String id : removeIds) {
             helpMenu.remove(id);
         }
+        String p2InstallId = "org.eclipse.equinox.p2.ui.sdk.install";
+        IContributionItem[] items = helpMenu.getItems();
+        Map<String, IContributionItem> map = new HashMap<String, IContributionItem>();
+        for (IContributionItem item : items) {
+            if (p2InstallId.equals(item.getId())) {
+                map.put(p2InstallId, item);
+            }
+        }
+
+        helpMenu.remove(map.get(p2InstallId));
+
         // Remove unsupported action on shared mode
         if (SharedStudioUtils.isSharedStudioMode()) {
-            helpMenu.remove("org.eclipse.equinox.p2.ui.sdk.install"); //$NON-NLS-1$ 
+            helpMenu.remove(p2InstallId); // $NON-NLS-1$
+
         }
     }
 

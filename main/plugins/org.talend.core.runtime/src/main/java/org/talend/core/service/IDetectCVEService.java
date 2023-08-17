@@ -94,7 +94,11 @@ public interface IDetectCVEService extends IService {
             if (art == null) {
                 return null;
             }
-            return String.format("%s:%s:%s", art.getGroupId(), art.getArtifactId(), art.getVersion());
+            String gavc = String.format("%s:%s:%s", art.getGroupId(), art.getArtifactId(), art.getVersion());
+            if (!StringUtils.isEmpty(art.getClassifier())) {
+                gavc += ":" + art.getClassifier();
+            }
+            return gavc;
         }
         return null;
     }
@@ -112,6 +116,8 @@ public interface IDetectCVEService extends IService {
         private String a;
 
         private String v;
+        
+        private String c;
 
         /**
          * @return the g
@@ -155,8 +161,28 @@ public interface IDetectCVEService extends IService {
             this.v = v;
         }
 
+        
+        /**
+         * @return the c
+         */
+        public String getC() {
+            return c;
+        }
+
+        
+        /**
+         * @param c the c to set
+         */
+        public void setC(String c) {
+            this.c = c;
+        }
+
         public String getGAVString() {
-            return String.format("%s:%s:%s", g, a, v);
+            String gav = String.format("%s:%s:%s", g, a, v);
+            if (!StringUtils.isEmpty(c)) {
+                gav += ":" + c;
+            }
+            return gav;
         }
 
         public String getGA() {
@@ -168,13 +194,16 @@ public interface IDetectCVEService extends IService {
                 return null;
             }
             String[] gavs = gav.split(":");
-            if (gavs.length != 3) {
+            if (gavs.length < 3) {
                 return null;
             }
             GAV ret = new GAV();
             ret.setG(gavs[0]);
             ret.setA(gavs[1]);
             ret.setV(gavs[2]);
+            if (gavs.length > 3) {
+                ret.setC(gavs[3]);
+            }
             return ret;
         }
 
@@ -184,19 +213,7 @@ public interface IDetectCVEService extends IService {
             }
 
             String gav = mavenUri2GAV(mavenURI);
-            if (StringUtils.isEmpty(gav)) {
-                return null;
-            }
-
-            String[] gavs = gav.split(":");
-            if (gavs.length != 3) {
-                return null;
-            }
-            GAV ret = new GAV();
-            ret.setG(gavs[0]);
-            ret.setA(gavs[1]);
-            ret.setV(gavs[2]);
-            return ret;
+            return parseFromGAV(gav);
         }
 
         public GAV clone() throws CloneNotSupportedException {
@@ -224,6 +241,12 @@ public interface IDetectCVEService extends IService {
                 sb.append(v);
                 sb.append(",");
             }
+            
+            if (!StringUtils.isEmpty(c)) {
+                sb.append("c:");
+                sb.append(c);
+                sb.append(",");
+            }
 
             if (sb.lastIndexOf(",") > 0) {
                 sb.deleteCharAt(sb.length() - 1);
@@ -244,6 +267,9 @@ public interface IDetectCVEService extends IService {
             }
             if (!StringUtils.isEmpty(v)) {
                 hash += hash * 31 + v.hashCode();
+            }
+            if (!StringUtils.isEmpty(c)) {
+                hash += hash * 31 + c.hashCode();
             }
             return hash;
         }
@@ -267,8 +293,12 @@ public interface IDetectCVEService extends IService {
             if (!StringUtils.equals(a, gav.getA())) {
                 return false;
             }
+            
+            if (!StringUtils.equals(v, gav.getV())) {
+                return false;
+            }
 
-            return StringUtils.equals(v, gav.getV());
+            return StringUtils.equals(c, gav.getC());
 
         }
 
