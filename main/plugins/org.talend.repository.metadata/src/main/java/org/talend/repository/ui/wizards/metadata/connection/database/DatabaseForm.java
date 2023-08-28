@@ -5338,7 +5338,8 @@ public class DatabaseForm extends AbstractForm {
 
                         getConnection().setDbVersionString(version.getVersionValue());
 
-                        showOracleSupportNLS(isSupportNLSOracleVersion(dbVersionCombo.getText()));
+                        boolean supportNLSOracleVersion = oracleVersionEnable() && isSupportNLSOracleVersion(dbVersionCombo.getText());
+                        showOracleSupportNLS(supportNLSOracleVersion, supportNLSOracleVersion);
                         
                     }
                     urlConnectionStringText.setText(getStringConnection());
@@ -6991,7 +6992,7 @@ public class DatabaseForm extends AbstractForm {
             showIfHiveMetastore();
             showIfSupportEncryption();
             showIfAuthentication();
-            showOracleSupportNLS(isOracle && isSupportNLSOracleVersion(dbVersionCombo.getText()));
+            showOracleSupportNLS(oracleVersionEnable() && isSupportNLSOracleVersion(dbVersionCombo.getText()), visible);
             hideHiveExecutionFields(!doSupportTez());
 
             urlConnectionStringText.setEditable(!visible);
@@ -7309,7 +7310,7 @@ public class DatabaseForm extends AbstractForm {
         compositeGroupDbSettings.layout();
     }
 
-    private void showOracleSupportNLS(boolean show) {
+    private void showOracleSupportNLS(boolean show, boolean editable) {
         GridData layoutData = (GridData) supportNLSContainer.getLayoutData();
         layoutData.exclude = !show;
         supportNLSContainer.setLayoutData(layoutData);
@@ -7318,6 +7319,8 @@ public class DatabaseForm extends AbstractForm {
         if(!show) {
             isOracleSupportNLS.setSelection(false);
             getConnection().setSupportNLS(false);
+        } else {
+            isOracleSupportNLS.setEnabled(editable);
         }
         supportNLSContainer.getParent().layout();
     }
