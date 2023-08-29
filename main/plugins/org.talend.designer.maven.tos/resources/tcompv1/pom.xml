@@ -57,6 +57,16 @@
             </snapshots>
             <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
         </repository>
+        <repository>
+			<id>snapshots</id>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<url>https://artifacts-zl.talend.com/nexus/content/repositories/snapshots/</url>
+		</repository>
     </repositories>
 
     <dependencyManagement>
