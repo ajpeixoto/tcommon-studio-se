@@ -124,7 +124,10 @@ public class RepositoryChangeMetadataForSAPBapi extends Command {
                         if (properties != null) {
                             properties.put(ISINPUT, TRUE);
                         }
-                        createNewSchema(paramValues, ConvertionHelper.convert(table), MetadataSchemaType.INPUT.name());
+                        IMetadataTable convertTable = ConvertionHelper.convert(table);
+                        // escape "-"
+                        convertTable.setLabel(MetadataToolHelper.validateValue(convertTable.getLabel()));
+                        createNewSchema(paramValues, convertTable, MetadataSchemaType.INPUT.name());
                     }
                 }
             }
