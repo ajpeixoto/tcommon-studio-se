@@ -419,5 +419,33 @@ public interface Property extends EObject {
      * @generated
      */
     void setItem(Item value);
+    
+    /**
+     * Returns the value of the parent '<em><b>Item</b></em>' reference. It is bidirectional and its opposite is '
+     * {@link org.talend.core.model.properties.Item#getProperty <em>Property</em>}'. <!-- begin-user-doc -->
+     * <p>
+     * If the meaning of the parent '<em>Item</em>' reference isn't clear, there really should be more of a description here...
+     * </p>
+     * <!-- end-user-doc -->
+     * 
+     * @return the value of the parent'<em>Item</em>' reference.
+     * @see #setParentItem(Item)
+     * @see org.talend.core.model.properties.PropertiesPackage#getProperty_Item()
+     * @see org.talend.core.model.properties.Item#getProperty
+     * @model opposite="property"
+     * @generated
+     */
+    Item getParentItem();
+
+    /**
+     * Sets the value of the parent '{@link org.talend.core.model.properties.Property#getItem <em>Item</em>}' reference. <!--
+     * begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @param value the new value of the parent '<em>Item</em>' reference.
+     * @see #getParentItem()
+     * @generated
+     */
+    void setParentItem(Item value);
+
 
 } // Property

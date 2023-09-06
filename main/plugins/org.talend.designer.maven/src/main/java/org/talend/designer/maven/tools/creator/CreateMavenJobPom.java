@@ -282,6 +282,9 @@ public class CreateMavenJobPom extends AbstractMavenProcessorPom {
         String jobId = jobInfoProp.getProperty(JobInfoProperties.JOB_ID, process.getId());
         checkPomProperty(properties, "talend.job.id", ETalendMavenVariables.JobId,
                 jobId);
+        String jobParentId = jobInfoProp.getProperty(JobInfoProperties.JOB_PARENT_ID, "");
+        checkPomProperty(properties, "talend.job.parent.id", ETalendMavenVariables.JobParentId,
+                jobParentId);
         checkPomProperty(properties, "talend.job.type", ETalendMavenVariables.JobType,
                 jobInfoProp.getProperty(JobInfoProperties.JOB_TYPE));
 
