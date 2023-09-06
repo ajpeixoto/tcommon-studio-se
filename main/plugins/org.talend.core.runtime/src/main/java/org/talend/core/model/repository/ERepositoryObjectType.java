@@ -335,10 +335,6 @@ public class ERepositoryObjectType extends DynaEnum<ERepositoryObjectType> {
             "SYSTEM_INDICATORS_TEXT_STATISTICS", 97, true, "repository.systemIndicators.textStatistics.alias",
             new String[] { PROD_DQ }, new String[] {}, false);
 
-    public final static ERepositoryObjectType TDQ_EXCHANGE = new ERepositoryObjectType("repository.tdqExchange", //$NON-NLS-1$
-            "TDQ_Libraries/Exchange", "TDQ_EXCHANGE", 98, true, "repository.tdqExchange.alias", new String[] { PROD_DQ }, //$NON-NLS-1$
-            new String[] {});
-
     public final static ERepositoryObjectType METADATA_SALESFORCE_MODULE = new ERepositoryObjectType(
             "repository.metadataSalesforceModule", "METADATA_SALESFORCE_MODULE", 99, true, true, new String[] { PROD_DI }, //$NON-NLS-1$ //$NON-NLS-2$
             new String[] {}, false);

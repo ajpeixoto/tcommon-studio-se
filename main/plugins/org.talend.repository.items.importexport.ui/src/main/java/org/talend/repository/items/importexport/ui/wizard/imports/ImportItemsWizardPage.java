@@ -138,7 +138,7 @@ public class ImportItemsWizardPage extends WizardPage {
 
     private Text directoryPathField, archivePathField;
 
-    protected Button browseDirectoriesButton, browseArchivesButton, fromExchangeButton;
+    protected Button browseDirectoriesButton, browseArchivesButton;
 
     protected Button dependencyButton;
     
@@ -342,37 +342,6 @@ public class ImportItemsWizardPage extends WizardPage {
             }
         });
 
-        if (isEnableForExchange()) {
-            this.fromExchangeButton = new Button(selectionArea, SWT.PUSH);
-            this.fromExchangeButton.setText(Messages.getString("ImportItemsWizardPage_fromExchangeText")); //$NON-NLS-1$
-            this.fromExchangeButton.setToolTipText(Messages.getString("ImportItemsWizardPage_fromExchangeToolTipText")); //$NON-NLS-1$
-            setButtonLayoutData(fromExchangeButton);
-
-            this.fromExchangeButton.addSelectionListener(new SelectionAdapter() {
-
-                @Override
-                public void widgetSelected(SelectionEvent e) {
-                    if (GlobalServiceRegister.getDefault().isServiceRegistered(IExchangeService.class)) {
-                        archivePathField.setEditable(false);
-
-                        IExchangeService service = GlobalServiceRegister.getDefault().getService(
-                                IExchangeService.class);
-
-                        String selectedArchive = service.openExchangeDialog();
-                        if (selectedArchive != null) {
-                            previouslyBrowsedArchivePath = selectedArchive;
-                            archivePathField.setText(selectedArchive);
-                            updateItemsList(selectedArchive, false, false);
-                        }
-                    } else {
-                        MessageDialog.openWarning(getShell(),
-                                Messages.getString("ImportItemsWizardPage_fromExchangeWarningTitle"), //$NON-NLS-1$
-                                Messages.getString("ImportItemsWizardPage_fromExchangeWarningMessage")); //$NON-NLS-1$
-                    }
-                }
-            });
-        }
-
     }
 
     private void updateSelectionFields(boolean fromDir) {
@@ -381,10 +350,6 @@ public class ImportItemsWizardPage extends WizardPage {
 
         this.archivePathField.setEnabled(!fromDir);
         this.browseArchivesButton.setEnabled(!fromDir);
-        if (isEnableForExchange()) {
-            this.fromExchangeButton.setEnabled(!fromDir);
-
-        }
     }
 
     protected void createImportDependenciesArea(Composite parent) {
@@ -720,10 +685,6 @@ public class ImportItemsWizardPage extends WizardPage {
         overwriteLayoutData.top = new FormAttachment(optionsArea, 5, SWT.BOTTOM);
         overwriteLayoutData.left = new FormAttachment(optionsArea, 0, SWT.LEFT);
         this.overwriteButton.setLayoutData(overwriteLayoutData);
-    }
-
-    protected boolean isEnableForExchange() {
-        return PluginChecker.isExchangeSystemLoaded() && !TalendPropertiesUtil.isHideExchange();
     }
 
     /**

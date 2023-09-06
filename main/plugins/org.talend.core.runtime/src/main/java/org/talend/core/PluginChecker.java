@@ -273,10 +273,6 @@ public class PluginChecker {
         return isPluginLoaded(MDM_PLUGIN_ID);
     }
 
-    public static boolean isExchangeSystemLoaded() {
-        return false;
-    }
-
     public static boolean isRulesPluginLoaded() { // added by hyWang
         return isPluginLoaded(RULES_PLUGIN_ID);
     }
