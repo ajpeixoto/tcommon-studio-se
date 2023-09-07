@@ -184,10 +184,6 @@ public  class CreatResourcesToolbarAction implements IWorkbenchWindowPulldownDel
                 Messages.getString("LinksToolbarItem_Learn")), -1);
         addToMenu(menu, new ResourceImageTextAction(this.window, "/icons/irc_protocol.png", ASK_ORIG_URL, ASK,
                 Messages.getString("LinksToolbarItem_7")), -1);
-        if (PluginChecker.isExchangeSystemLoaded() && !TalendPropertiesUtil.isHideExchange()) {
-            addToMenu(menu, new ResourceImageTextAction(this.window, "/icons/exchange_view.png", EXCHANGE_ORIG_URL, EXCHANGE,
-                    Messages.getString("LinksToolbarItem_exchange")), -1);
-        }
         addToMenu(menu, new ResourceImageTextAction(this.window, "/icons/videos_icon16x16.png", VIDEOS_ORIG_URL, VIDEOS,
                 Messages.getString("LinksToolbarItem_videos")), -1);
         if (!PluginChecker.isTIS()) {
