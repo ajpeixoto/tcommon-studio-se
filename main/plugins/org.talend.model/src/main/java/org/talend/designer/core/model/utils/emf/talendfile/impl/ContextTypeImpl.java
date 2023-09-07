@@ -27,12 +27,13 @@ import org.talend.designer.core.model.utils.emf.talendfile.TalendFilePackage;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.talend.designer.core.model.utils.emf.talendfile.impl.ContextTypeImpl#getContextParameter <em>Context Parameter</em>}</li>
  *   <li>{@link org.talend.designer.core.model.utils.emf.talendfile.impl.ContextTypeImpl#isConfirmationNeeded <em>Confirmation Needed</em>}</li>
+ *   <li>{@link org.talend.designer.core.model.utils.emf.talendfile.impl.ContextTypeImpl#isHide <em>Hide</em>}</li>
  *   <li>{@link org.talend.designer.core.model.utils.emf.talendfile.impl.ContextTypeImpl#getName <em>Name</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -75,6 +76,35 @@ public class ContextTypeImpl extends EObjectImpl implements ContextType {
      * @ordered
      */
     protected boolean confirmationNeededESet;
+
+    /**
+     * The default value of the '{@link #isHide() <em>Hide</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #isHide()
+     * @generated
+     * @ordered
+     */
+    protected static final boolean HIDE_EDEFAULT = false;
+
+    /**
+     * The cached value of the '{@link #isHide() <em>Hide</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #isHide()
+     * @generated
+     * @ordered
+     */
+    protected boolean hide = HIDE_EDEFAULT;
+
+    /**
+     * This is true if the Hide attribute has been set.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    protected boolean hideESet;
 
     /**
      * The default value of the '{@link #getName() <em>Name</em>}' attribute.
@@ -177,6 +207,52 @@ public class ContextTypeImpl extends EObjectImpl implements ContextType {
      * <!-- end-user-doc -->
      * @generated
      */
+    public boolean isHide() {
+        return hide;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public void setHide(boolean newHide) {
+        boolean oldHide = hide;
+        hide = newHide;
+        boolean oldHideESet = hideESet;
+        hideESet = true;
+        if (eNotificationRequired())
+            eNotify(new ENotificationImpl(this, Notification.SET, TalendFilePackage.CONTEXT_TYPE__HIDE, oldHide, hide, !oldHideESet));
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public void unsetHide() {
+        boolean oldHide = hide;
+        boolean oldHideESet = hideESet;
+        hide = HIDE_EDEFAULT;
+        hideESet = false;
+        if (eNotificationRequired())
+            eNotify(new ENotificationImpl(this, Notification.UNSET, TalendFilePackage.CONTEXT_TYPE__HIDE, oldHide, HIDE_EDEFAULT, oldHideESet));
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public boolean isSetHide() {
+        return hideESet;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
     public String getName() {
         return name;
     }
@@ -217,6 +293,8 @@ public class ContextTypeImpl extends EObjectImpl implements ContextType {
                 return getContextParameter();
             case TalendFilePackage.CONTEXT_TYPE__CONFIRMATION_NEEDED:
                 return isConfirmationNeeded() ? Boolean.TRUE : Boolean.FALSE;
+            case TalendFilePackage.CONTEXT_TYPE__HIDE:
+                return isHide() ? Boolean.TRUE : Boolean.FALSE;
             case TalendFilePackage.CONTEXT_TYPE__NAME:
                 return getName();
         }
@@ -236,6 +314,9 @@ public class ContextTypeImpl extends EObjectImpl implements ContextType {
                 return;
             case TalendFilePackage.CONTEXT_TYPE__CONFIRMATION_NEEDED:
                 setConfirmationNeeded(((Boolean)newValue).booleanValue());
+                return;
+            case TalendFilePackage.CONTEXT_TYPE__HIDE:
+                setHide(((Boolean)newValue).booleanValue());
                 return;
             case TalendFilePackage.CONTEXT_TYPE__NAME:
                 setName((String)newValue);
@@ -257,6 +338,9 @@ public class ContextTypeImpl extends EObjectImpl implements ContextType {
             case TalendFilePackage.CONTEXT_TYPE__CONFIRMATION_NEEDED:
                 unsetConfirmationNeeded();
                 return;
+            case TalendFilePackage.CONTEXT_TYPE__HIDE:
+                unsetHide();
+                return;
             case TalendFilePackage.CONTEXT_TYPE__NAME:
                 setName(NAME_EDEFAULT);
                 return;
@@ -275,6 +359,8 @@ public class ContextTypeImpl extends EObjectImpl implements ContextType {
                 return contextParameter != null && !contextParameter.isEmpty();
             case TalendFilePackage.CONTEXT_TYPE__CONFIRMATION_NEEDED:
                 return isSetConfirmationNeeded();
+            case TalendFilePackage.CONTEXT_TYPE__HIDE:
+                return isSetHide();
             case TalendFilePackage.CONTEXT_TYPE__NAME:
                 return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT.equals(name);
         }
@@ -292,6 +378,8 @@ public class ContextTypeImpl extends EObjectImpl implements ContextType {
         StringBuffer result = new StringBuffer(super.toString());
         result.append(" (confirmationNeeded: ");
         if (confirmationNeededESet) result.append(confirmationNeeded); else result.append("<unset>");
+        result.append(", hide: ");
+        if (hideESet) result.append(hide); else result.append("<unset>");
         result.append(", name: ");
         result.append(name);
         result.append(')');

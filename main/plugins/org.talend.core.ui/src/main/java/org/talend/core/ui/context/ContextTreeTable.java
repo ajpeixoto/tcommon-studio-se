@@ -56,7 +56,6 @@ import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel.ColumnGroup;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupReorderLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.RowHideShowLayer;
-import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnHideCommand;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
@@ -94,7 +93,6 @@ import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.ui.runtime.ColorConstants;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.process.IContext;
-import org.talend.core.model.process.IContextManager;
 import org.talend.core.model.process.IContextParameter;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
@@ -104,7 +102,6 @@ import org.talend.core.ui.context.model.ContextTabChildModel;
 import org.talend.core.ui.context.model.table.ContextTableConstants;
 import org.talend.core.ui.context.model.table.ContextTableTabParentModel;
 import org.talend.core.ui.context.nattableTree.ContextAutoResizeTextPainter;
-import org.talend.core.ui.context.nattableTree.ContextColumnGroupConfiguration;
 import org.talend.core.ui.context.nattableTree.ContextColumnHeaderDecorator;
 import org.talend.core.ui.context.nattableTree.ContextNatTableBackGroudPainter;
 import org.talend.core.ui.context.nattableTree.ContextNatTableConfiguration;
@@ -148,11 +145,9 @@ public class ContextTreeTable {
 
     private IContextModelManager manager;
 
-    private final static int fixedCheckBoxWidth = 90;
+    private final static int fixedCheckBoxWidth = 100;
 
-    private final static int fixedTypeWidth = 90;
-
-    private final static int fixedHidePromptWidth = 1;
+    private final static int fixedTypeWidth = 100;
 
     public ContextTreeTable(IContextModelManager manager) {
         this.manager = manager;
@@ -170,14 +165,6 @@ public class ContextTreeTable {
 
     public void clearSelection() {
         currentNatTabSel = null;
-    }
-
-    public List<IContext> getContexts(IContextManager contextManger) {
-        List<IContext> contexts = new ArrayList<IContext>();
-        if (contextManger != null) {
-            contexts = contextManger.getListContext();
-        }
-        return contexts;
     }
 
     public void refresh() {
@@ -251,9 +238,6 @@ public class ContextTreeTable {
 
             ColumnGroupHeaderLayer columnGroupHeaderLayer = new ColumnGroupHeaderLayer(columnHeaderLayer, selectionLayer,
                     columnGroupModel);
-            addContextColumnGroupsBehaviour(columnGroupHeaderLayer,
-                    ContextRowDataListFixture.getContexts(manager.getContextManager()));
-            columnGroupHeaderLayer.addConfiguration(new ContextColumnGroupConfiguration(columnGroupModel));
 
             // Register labels
             SortHeaderLayer<ContextTreeNode> sortHeaderLayer = new SortHeaderLayer<ContextTreeNode>(columnGroupHeaderLayer,
@@ -293,8 +277,6 @@ public class ContextTreeTable {
 
             addCustomColumnHeaderStyleBehaviour();
 
-            List<Integer> hideColumnsPos = addCustomHideColumnsBehaviour(manager, columnGroupModel, bodyDataLayer);
-
             List<Integer> checkColumnPos = getAllCheckPosBehaviour(manager, columnGroupModel);
 
             int dataColumnsWidth = bodyDataLayer.getWidth();
@@ -303,7 +285,7 @@ public class ContextTreeTable {
 
             // for caculate the suitable column size for when maxmum or minmum the context tab
 
-            addCustomColumnsResizeBehaviour(bodyDataLayer, hideColumnsPos, checkColumnPos, cornerLayer.getWidth(), maxWidth);
+            addCustomColumnsResizeBehaviour(bodyDataLayer, checkColumnPos, cornerLayer.getWidth(), maxWidth);
 
             NatGridLayerPainter layerPainter = new NatGridLayerPainter(natTable);
             natTable.setLayerPainter(layerPainter);
@@ -352,7 +334,7 @@ public class ContextTreeTable {
     }
 
     private void constructContextTreeNodes() {
-        List<IContext> contextList = getContexts(manager.getContextManager());
+        List<IContext> contextList = ContextRowDataListFixture.getContexts(manager.getContextManager());
         List<IContextParameter> contextDatas = ContextTemplateComposite.computeContextTemplate(contextList);
         List<ContextTableTabParentModel> listofData = ContextNatTableUtils.constructContextDatas(contextDatas);
         contructContextTrees(listofData);
@@ -443,18 +425,19 @@ public class ContextTreeTable {
     private List<Integer> getAllCheckPosBehaviour(IContextModelManager manager, ColumnGroupModel contextGroupModel) {
         List<Integer> checkPos = new ArrayList<Integer>();
         if (manager.getContextManager() != null) {
-            List<IContext> contexts = manager.getContextManager().getListContext();
+            List<IContext> contexts = ContextRowDataListFixture.getContexts(manager.getContextManager());
             for (IContext envContext : contexts) {
                 ColumnGroup group = contextGroupModel.getColumnGroupByName(envContext.getName());
-                int checkIndex = group.getMembers().get(1);
-                checkPos.add(checkIndex);
+                if (group != null) {
+                    checkPos.add(3);
+                }
             }
         }
         return checkPos;
     }
 
-    private void addCustomColumnsResizeBehaviour(DataLayer dataLayer, List<Integer> hideColumnsPos,
-            List<Integer> checkColumnsPos, int cornerWidth, int maxWidth) {
+    private void addCustomColumnsResizeBehaviour(DataLayer dataLayer, List<Integer> checkColumnsPos, int cornerWidth,
+            int maxWidth) {
         dataLayer.setColumnsResizableByDefault(true);
         int dataColumnsCount = dataLayer.getPreferredColumnCount();
 
@@ -466,10 +449,9 @@ public class ContextTreeTable {
         } else {
             int typeColumnPos = dataLayer.getColumnPositionByIndex(1);
 
-            int leftWidth = maxWidth - fixedTypeWidth - fixedCheckBoxWidth * checkColumnsPos.size() - cornerWidth * 2
-                    - fixedHidePromptWidth;
+            int leftWidth = maxWidth - fixedTypeWidth - fixedCheckBoxWidth * checkColumnsPos.size() - cornerWidth * 2;
 
-            int currentColumnsCount = dataColumnsCount - hideColumnsPos.size() - checkColumnsPos.size() - 1;
+            int currentColumnsCount = dataColumnsCount - checkColumnsPos.size() - 1;
             int averageWidth = leftWidth / currentColumnsCount;
             for (int i = 0; i < dataLayer.getColumnCount(); i++) {
                 boolean findHide = false;
@@ -478,12 +460,6 @@ public class ContextTreeTable {
                 if (typeColumnPos == i) {
                     findType = true;
                     dataLayer.setColumnWidthByPosition(i, fixedTypeWidth);
-                }
-                for (int hidePos : hideColumnsPos) {
-                    if (hidePos == i) {
-                        findHide = true;
-                        dataLayer.setColumnWidthByPosition(i, fixedHidePromptWidth);
-                    }
                 }
                 for (int checkPos : checkColumnsPos) {
                     if (checkPos == i) {
@@ -523,35 +499,6 @@ public class ContextTreeTable {
         return colWidth > max ? colWidth : max;
     }
 
-    private List<Integer> addCustomHideColumnsBehaviour(IContextModelManager modelManager, ColumnGroupModel contextGroupModel,
-            DataLayer dataLayer) {
-        List<Integer> hidePos = new ArrayList<Integer>();
-        if (modelManager.getContextManager() != null) {
-            List<IContext> contexts = modelManager.getContextManager().getListContext();
-            for (IContext envContext : contexts) {
-                boolean needHidePrompt = true;
-                ColumnGroup group = contextGroupModel.getColumnGroupByName(envContext.getName());
-                // get every context's prompt to see if need to hide or not,decide by the check of prompt
-                int promptIndex = group.getMembers().get(2);
-                List<IContextParameter> list = envContext.getContextParameterList();
-                if (list != null && list.size() > 0) {
-                    for (IContextParameter contextPara : list) {
-                        if (contextPara.isPromptNeeded()) {
-                            needHidePrompt = false;
-                            break;
-                        }
-                    }
-                }
-                if (needHidePrompt) {
-                    int hidePosition = dataLayer.getColumnPositionByIndex(promptIndex);
-                    hidePos.add(hidePosition);
-                    natTable.doCommand(new ColumnHideCommand(dataLayer, hidePosition));
-                }
-            }
-        }
-        return hidePos;
-    }
-
     private void addCustomSelectionBehaviour(SelectionLayer layer) {
         // need control the selection style when select the rows.
         DefaultSelectionStyleConfiguration selectStyleConfig = new DefaultSelectionStyleConfiguration();
@@ -583,26 +530,14 @@ public class ContextTreeTable {
         natTable.addConfiguration(new ContextParaModeChangeMenuConfiguration(natTable, bodyDataProvider, selection));
     }
 
-    private void addContextColumnGroupsBehaviour(ColumnGroupHeaderLayer columnHeaderLayer, List<IContext> contexts) {
-        // 0=Name,1=Type,2=Comment.
-        int i = 2;
-        for (IContext context : contexts) {
-            String evnContext = context.getName();
-            columnHeaderLayer.addColumnsIndexesToGroup(evnContext, new int[] { ++i, ++i, ++i });
-        }
-    }
-
     private void registerColumnLabels(ColumnOverrideLabelAccumulator columnLabelAccumulator, List<IContext> contexts) {
         columnLabelAccumulator.registerColumnOverrides(0, new String[] { ContextTableConstants.COLUMN_NAME_PROPERTY });
         columnLabelAccumulator.registerColumnOverrides(1, new String[] { ContextTableConstants.COLUMN_TYPE_PROPERTY });
         columnLabelAccumulator.registerColumnOverrides(2, new String[] { ContextTableConstants.COLUMN_COMMENT_PROPERTY });
-        // the columns after "type" will caculated by the contexts
-        // 0=Name,1=Type,2=Comment.
-        int j = 3;
+        columnLabelAccumulator.registerColumnOverrides(3, new String[] { ContextTableConstants.COLUMN_CHECK_PROPERTY });
+        int j = 4;
         for (IContext context : contexts) {
             columnLabelAccumulator.registerColumnOverrides(j++, new String[] { ContextTableConstants.COLUMN_CONTEXT_VALUE });
-            columnLabelAccumulator.registerColumnOverrides(j++, new String[] { ContextTableConstants.COLUMN_CHECK_PROPERTY });
-            columnLabelAccumulator.registerColumnOverrides(j++, new String[] { ContextTableConstants.COLUMN_PROMPT_PROPERTY });
         }
     }
 
