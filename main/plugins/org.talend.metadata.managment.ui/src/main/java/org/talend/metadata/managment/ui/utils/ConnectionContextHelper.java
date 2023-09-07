@@ -2160,7 +2160,7 @@ public final class ConnectionContextHelper {
         if (contexts != null) {
             for (IContext context : contexts) {
                 for (IContextParameter parameter : context.getContextParameterList()) {
-                    if (parameter.isPromptNeeded()) {
+                    if (parameter.isPromptNeeded() || ContextUtils.isPromptNeeded(contexts, parameter.getName())) {
                         return true;
                     }
                 }
@@ -2175,7 +2175,7 @@ public final class ConnectionContextHelper {
         // Prompt for context values ?
         for (IContext context : contexts) {
             for (IContextParameter parameter : context.getContextParameterList()) {
-                if (parameter.isPromptNeeded()) {
+                if (parameter.isPromptNeeded() || ContextUtils.isPromptNeeded(contexts, parameter.getName())) {
                     nbValues++;
                     break;
                 }
@@ -2197,10 +2197,16 @@ public final class ConnectionContextHelper {
         Assert.isNotNull(contextItem);
         // Prompt for context values ?
         List<ContextType> contexts = contextItem.getContext();
+        List<IContext> iContexts = new ArrayList<IContext>();
         for (ContextType contextType : contexts) {
             IContext jobContext = ContextUtils.convert2IContext(contextType, contextItem.getProperty().getId());
-            for (IContextParameter parameter : jobContext.getContextParameterList()) {
-                if (parameter.isPromptNeeded()) {
+            if (jobContext != null) {
+                iContexts.add(jobContext);
+            }
+        }
+        for (IContext context : iContexts) {
+            for (IContextParameter parameter : context.getContextParameterList()) {
+                if (parameter.isPromptNeeded() || ContextUtils.isPromptNeeded(iContexts, parameter.getName())) {
                     nbValues++;
                     break;
                 }

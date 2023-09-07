@@ -54,7 +54,7 @@ public class SelectRepositoryContextGroupDialog extends SelectionDialog {
 
     private static final String DEFAULTMESAGE = Messages.getString("SelectRepositoryContextGroupDialog.Messages"); //$NON-NLS-1$
 
-    private static final String TITILE = Messages.getString("SelectRepositoryContextGroupDialog.Title"); //$NON-NLS-1$
+    private static final String TITILE = Messages.getString("SelectRepositoryContextGroupDialog.addTitle"); //$NON-NLS-1$
 
     private static final String LEFTBRACKET = " ("; //$NON-NLS-1$
 

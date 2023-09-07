@@ -194,7 +194,7 @@ public class ContextWizard extends CheckLastVersionRepositoryWizard implements I
      */
     @Override
     public void addPages() {
-        setWindowTitle(Messages.getString("ContextWizard.Title")); //$NON-NLS-1$
+        setWindowTitle(Messages.getString("ContextWizard.createEditTitle")); //$NON-NLS-1$
         contextWizardPage0 = new Step0WizardPage(contextProperty, pathToSave, ERepositoryObjectType.CONTEXT,
                 !isRepositoryObjectEditable(), creation);
         contextWizardPage0.setTitle(Messages.getString("ContextWizard.step0Title")); //$NON-NLS-1$
@@ -206,7 +206,7 @@ public class ContextWizard extends CheckLastVersionRepositoryWizard implements I
 
         ContextPage contextPage = new ContextPage("test", contextManager, !isRepositoryObjectEditable()); //$NON-NLS-1$
         contextPage.setTitle(Messages.getString("ContextWizard.contextPageTitle")); //$NON-NLS-1$
-        contextPage.setDescription(Messages.getString("ContextWizard.contextPageDescription")); //$NON-NLS-1$
+        contextPage.setDescription(Messages.getString("ContextWizard.defineContext.Description")); //$NON-NLS-1$
         addPage(contextPage);
         if (!isRepositoryObjectEditable()) {
             contextPage.setPageComplete(false);
@@ -349,7 +349,7 @@ public class ContextWizard extends CheckLastVersionRepositoryWizard implements I
             // Refresh DQ view if it is on DQ perspective
             ITDQRepositoryService tdqRepService = null;
             if (GlobalServiceRegister.getDefault().isServiceRegistered(ITDQRepositoryService.class)) {
-                tdqRepService = (ITDQRepositoryService) GlobalServiceRegister.getDefault()
+                tdqRepService = GlobalServiceRegister.getDefault()
                         .getService(ITDQRepositoryService.class);
             }
             if (tdqRepService != null) {
