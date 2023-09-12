@@ -1633,7 +1633,7 @@ public class ProcessorUtilities {
                                     }
                                 }
                                 
-                                if (isCIMode() && CommonsPlugin.isHeadless() && ("cTalendJob".equals(componentName) || "Routelets".equals(node.getComponent().getOriginalFamilyName()))  && interpreter != null) {
+                                if (("cTalendJob".equals(componentName) || "Routelets".equals(node.getComponent().getOriginalFamilyName())) && CommonsPlugin.isHeadless() && interpreter != null) {
                                 	processItem.getProperty().setParentItem(ItemCacheManager.getProcessItem(currentProcess.getId(), currentProcess.getVersion()));
                                 }
 
