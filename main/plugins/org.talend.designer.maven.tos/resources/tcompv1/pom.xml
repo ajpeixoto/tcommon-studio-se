@@ -11,7 +11,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <tcomp.version>1.38.9</tcomp.version>
+        <tcomp.version>1.38.10</tcomp.version>
         <slf4j.version>1.7.32</slf4j.version>
         <log4j2.version>2.17.1</log4j2.version>
         <reload4j.version>1.2.19</reload4j.version>
