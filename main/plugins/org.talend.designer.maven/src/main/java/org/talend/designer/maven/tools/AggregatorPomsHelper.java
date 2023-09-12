@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.model.Activation;
 import org.apache.maven.model.Model;
@@ -54,7 +55,6 @@ import org.slf4j.LoggerFactory;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.utils.MojoType;
-import org.talend.commons.utils.VersionUtils;
 import org.talend.commons.utils.workbench.resources.ResourceUtils;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.IESBService;
@@ -110,7 +110,7 @@ public class AggregatorPomsHelper {
     private static final Logger LOGGER = LoggerFactory.getLogger(AggregatorPomsHelper.class);
 
     private String projectTechName;
-    
+
     public AggregatorPomsHelper() {
         projectTechName = ProjectManager.getInstance().getCurrentProject().getTechnicalLabel();
     }
@@ -389,37 +389,9 @@ public class AggregatorPomsHelper {
     public String getJobProjectName(Property property) {
         return projectTechName + "_" + getJobProjectFolderName(property).toUpperCase(); //$NON-NLS-1$
     }
-    
-    public static String getJobLabel(Property property) {
-
-    	if (property == null) {
-    		return "";
-    	}
-    	
-    	if (property.getParentItem() != null) {
-    		Property parentProperty = property.getParentItem().getProperty();
-    		return parentProperty.getLabel() + "_" + parentProperty.getVersion().replace(".", "_") + "_" + property.getLabel();
-    	}
-    	
-    	return property.getLabel();
-    }
-    
-    public static String getJobId(Property property) {
-
-    	if (property == null) {
-    		return "";
-    	}
-    	
-    	if (property.getParentItem() != null) {
-    		Property parentProperty = property.getParentItem().getProperty();
-    		return property.getId() + "_" + parentProperty.getId() + "_" + parentProperty.getVersion().replace(".", "_");
-    	}
-    	
-    	return property.getId();
-    }
 
     public static String getJobProjectFolderName(Property property) {
-        return getJobProjectFolderName(getJobLabel(property), property.getVersion());
+        return getJobProjectFolderName(property.getLabel(), property.getVersion());
     }
 
     public static String getJobProjectFolderName(String label, String version) {
@@ -428,7 +400,7 @@ public class AggregatorPomsHelper {
 
     public static String getJobProjectId(Property property) {
         String _projectTechName = ProjectManager.getInstance().getProject(property).getTechnicalLabel();
-        return getJobProjectId(_projectTechName, getJobId(property), property.getVersion());
+        return getJobProjectId(_projectTechName, property.getId(), property.getVersion());
     }
 
     public static String getJobProjectId(String projectTechName, String id, String version) {
@@ -469,7 +441,7 @@ public class AggregatorPomsHelper {
         AggregatorPomsHelper helper = new AggregatorPomsHelper(projectTechName);
         IPath itemRelativePath = getItemRelativePath.apply(property);
         String version = realVersion == null ? property.getVersion() : realVersion;
-        String jobFolderName = getJobProjectFolderName(getJobLabel(property), version);
+        String jobFolderName = getJobProjectFolderName(property.getLabel(), version);
         ERepositoryObjectType type = ERepositoryObjectType.getItemType(property.getItem());
         IFolder jobFolder = null;
         if (PomIdsHelper.skipFolders()) {
@@ -654,8 +626,7 @@ public class AggregatorPomsHelper {
         syncAllPomsWithoutProgress(monitor, PomIdsHelper.getPomFilter(), false);
     }
 
-    @SuppressWarnings("unchecked")
-	public void syncAllPomsWithoutProgress(IProgressMonitor monitor, String pomFilter, boolean withDependencies)
+    public void syncAllPomsWithoutProgress(IProgressMonitor monitor, String pomFilter, boolean withDependencies)
             throws Exception {
         LOGGER.info("syncAllPomsWithoutProgress, pomFilter: " + pomFilter);
         IRunProcessService runProcessService = IRunProcessService.get();
@@ -745,110 +716,19 @@ public class AggregatorPomsHelper {
         List<Property> serviceRefJobs = getAllServiceReferencedJobs();
         for (Item item : allItems) {
             if (ProjectManager.getInstance().isInCurrentMainProject(item)) {
-            	
-	            // remove original child jobs/routelets projects as they will be created during parent Route generation 
-	            if (ProcessUtils.isRoutelet(item.getProperty()) || ProcessUtils.isChildRouteProcess(item)) {
-	            	continue;
-	            }
-	
                 monitor.subTask("Synchronize job pom: " + item.getProperty().getLabel() //$NON-NLS-1$
                         + "_" + item.getProperty().getVersion()); //$NON-NLS-1$
                 runProcessService.generatePom(item, TalendProcessOptionConstants.GENERATE_POM_NO_FILTER);
-                
                 IFile pomFile = getItemPomFolder(item.getProperty()).getFile(TalendMavenConstants.POM_FILE_NAME);
                 // filter esb data service node
                 // FIXME use serviceRefJobs.contains(item.getProperty()) if isSOAPServiceProvider() doesn't work.
                 if (isCIMode && !isSOAPServiceProvider(item.getProperty()) && pomFile.exists()) {
                     modules.add(getModulePath(pomFile));
                 }
-	            monitor.worked(1);
-	            if (monitor.isCanceled()) {
-	                return;
-	            }
-	            
-
-	            
-	            // Generate individual child job projects/poms for each Route (CI mode only)
-	            
-                if (isCIMode && (ProcessUtils.isRouteWithChildJobs(item) ||   ProcessUtils.isRouteWithRoutelets(item))) {
-                
-                    Set<JobInfo> allJobInfos = ProcessorUtilities.getChildrenJobInfo(item, true, true);
-                	
-	                for (JobInfo childJob : allJobInfos) {
-	                	
-	                	if (childJob.getProcessItem() != null && childJob.getProcessItem().getProperty() != null ) {
-	                		
-	                		Property childJobProperty = childJob.getProcessItem().getProperty();
-	                    	String jobGroupID = (String) childJob.getProcessItem().getProperty().getAdditionalProperties().get(MavenConstants.NAME_GROUP_ID);
-	                    	String jobCustomVersion = (String) childJob.getProcessItem().getProperty().getAdditionalProperties().get(MavenConstants.NAME_USER_VERSION);
-	                    	String jobBuildType = (String) childJob.getProcessItem().getProperty().getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE);
-	                    	boolean jobUseSnapshot = childJob.getProcessItem().getProperty().getAdditionalProperties().containsKey(MavenConstants.NAME_PUBLISH_AS_SNAPSHOT);
-	                    	
-	                		Property routeProperty = item.getProperty();
-	                    	String routeGroupID = PomIdsHelper.getJobGroupId(routeProperty);
-	                    	String routeVersion = VersionUtils.getPublishVersion(routeProperty.getVersion());
-	                    	String routeCustomVersion = (String) routeProperty.getAdditionalProperties().get(MavenConstants.NAME_USER_VERSION);
-	                    	boolean routeUseSnapshot = routeProperty.getAdditionalProperties().containsKey(MavenConstants.NAME_PUBLISH_AS_SNAPSHOT);
-	                    	String routeBuildType =  (String) routeProperty.getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE);
-	
-	                    	
-	                    	// Inherit child job parameters from parent route
-	                    	
-	                    	childJobProperty.setParentItem(item);
-	                    	childJobProperty.getAdditionalProperties().put(MavenConstants.NAME_GROUP_ID, routeGroupID);
-
-	                    	if (routeCustomVersion != null) {
-	                        	childJobProperty.getAdditionalProperties().put(MavenConstants.NAME_USER_VERSION, routeCustomVersion);
-	                    	} else {
-	                        	childJobProperty.getAdditionalProperties().put(MavenConstants.NAME_USER_VERSION, routeVersion);
-	                    	}
-	                    	
-	                    	if (routeUseSnapshot) {
-	                    		childJobProperty.getAdditionalProperties().put(MavenConstants.NAME_PUBLISH_AS_SNAPSHOT, "true");
-	                    	} else {
-	                    		childJobProperty.getAdditionalProperties().remove(MavenConstants.NAME_PUBLISH_AS_SNAPSHOT);
-	                    	}
-
-	                    	if ("ROUTE".equalsIgnoreCase(routeBuildType) || null == routeBuildType) {
-	                    		childJobProperty.getAdditionalProperties().put(TalendProcessArgumentConstant.ARG_BUILD_TYPE, "OSGI");
-	                    	} else {
-	                    		childJobProperty.getAdditionalProperties().put(TalendProcessArgumentConstant.ARG_BUILD_TYPE, "Standalone");
-	                    	}
-	                    	
-	                    	runProcessService.generatePom(childJob.getProcessItem(), TalendProcessOptionConstants.GENERATE_POM_NO_FILTER);
-	                    	
-	                    	IFile childPomFile = getItemPomFolder(childJobProperty).getFile(TalendMavenConstants.POM_FILE_NAME);
-	                        modules.add(getModulePath(childPomFile));
-	                        
-	                    	// restore original Job parameters
-	                    	childJobProperty.setParentItem(null);
-	                        
-	                        if ( jobGroupID!= null) {
-	                        	childJobProperty.getAdditionalProperties().put(MavenConstants.NAME_GROUP_ID, jobGroupID);
-	                        }else {
-	                        	childJobProperty.getAdditionalProperties().remove(MavenConstants.NAME_GROUP_ID);
-	                        }
-
-	                    	if (jobUseSnapshot) {
-	                    		childJobProperty.getAdditionalProperties().put(MavenConstants.NAME_PUBLISH_AS_SNAPSHOT, "true");
-	                    	}else {
-	                    		childJobProperty.getAdditionalProperties().remove(MavenConstants.NAME_PUBLISH_AS_SNAPSHOT);
-	                    	}
-	                    	
-	                    	if (jobCustomVersion!=null) {
-	                        	childJobProperty.getAdditionalProperties().put(MavenConstants.NAME_USER_VERSION, jobCustomVersion);
-	                    	} else {
-	                        	childJobProperty.getAdditionalProperties().remove(MavenConstants.NAME_USER_VERSION);
-	                    	}
-	                    	
-	                    	if (jobBuildType == null) {
-	                    		childJobProperty.getAdditionalProperties().remove(TalendProcessArgumentConstant.ARG_BUILD_TYPE);
-	                    	} else {
-	                    		childJobProperty.getAdditionalProperties().put(TalendProcessArgumentConstant.ARG_BUILD_TYPE, jobBuildType);
-	                    	}
-	                    }
-	                }
-	            }
+            }
+            monitor.worked(1);
+            if (monitor.isCanceled()) {
+                return;
             }
         }
         // sync project pom again with all modules.

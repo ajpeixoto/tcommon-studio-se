@@ -227,17 +227,6 @@ public class PropertyImpl extends EObjectImpl implements Property {
      * @ordered
      */
     protected Item item;
-    
-    
-    /**
-     * The cached value of the parent '{@link #getParentItem() <em>Item</em>}' reference.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @see #getParentItem()
-     * @generated
-     * @ordered
-     */
-    protected Item parentItem;
 
     /**
      * The cached value of the '{@link #getAuthor() <em>Author</em>}' reference.
@@ -553,23 +542,6 @@ public class PropertyImpl extends EObjectImpl implements Property {
         }
         return item;
     }
-    
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    public Item getParentItem() {
-        if (parentItem != null && parentItem.eIsProxy()) {
-            InternalEObject oldItem = (InternalEObject)parentItem;
-            parentItem = (Item)eResolveProxy(oldItem);
-            if (parentItem != oldItem) {
-                if (eNotificationRequired())
-                    eNotify(new ENotificationImpl(this, Notification.RESOLVE, PropertiesPackage.PROPERTY__PARENT_ITEM, oldItem, parentItem));
-            }
-        }
-        return parentItem;
-    }
 
     /**
      * <!-- begin-user-doc -->
@@ -578,15 +550,6 @@ public class PropertyImpl extends EObjectImpl implements Property {
      */
     public Item basicGetItem() {
         return item;
-    }
-    
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    public Item basicGetParentItem() {
-        return parentItem;
     }
 
     /**
@@ -621,13 +584,6 @@ public class PropertyImpl extends EObjectImpl implements Property {
         }
         else if (eNotificationRequired())
             eNotify(new ENotificationImpl(this, Notification.SET, PropertiesPackage.PROPERTY__ITEM, newItem, newItem));
-    }
-    
-    public void setParentItem(Item newItem) {
-    	Item oldItem = parentItem;
-    	parentItem = newItem;
-        if (eNotificationRequired())
-            eNotify(new ENotificationImpl(this, Notification.SET, PropertiesPackage.PROPERTY__PARENT_ITEM, oldItem, newItem));
     }
 
     /**
