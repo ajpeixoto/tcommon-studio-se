@@ -1633,7 +1633,7 @@ public class ProcessorUtilities {
                                     }
                                 }
                                 
-                                if (("cTalendJob".equals(componentName) || "Routelets".equals(node.getComponent().getOriginalFamilyName())) && CommonsPlugin.isHeadless() && interpreter != null) {
+                                if (CommonsPlugin.isHeadless() && interpreter != null) {
                                 	processItem.getProperty().setParentItem(ItemCacheManager.getProcessItem(currentProcess.getId(), currentProcess.getVersion()));
                                 }
 
