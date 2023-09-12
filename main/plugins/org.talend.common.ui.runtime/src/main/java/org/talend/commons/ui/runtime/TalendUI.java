@@ -105,4 +105,10 @@ public class TalendUI {
 
     }
 
+    public static class Events {
+
+        public static final String EVENT_UPDATE = "TalendUI.update";
+
+    }
+
 }

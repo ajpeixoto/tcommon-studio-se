@@ -49,6 +49,7 @@
     <genClasses ecoreClass="TalendFile.ecore#//ContextType">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference TalendFile.ecore#//ContextType/contextParameter"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute TalendFile.ecore#//ContextType/confirmationNeeded"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute TalendFile.ecore#//ContextType/hide"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute TalendFile.ecore#//ContextType/name"/>
     </genClasses>
     <genClasses ecoreClass="TalendFile.ecore#//DocumentRoot">

@@ -40,24 +40,27 @@ public class ContextRowDataListFixture {
     public static List<IContext> getContexts(IContextManager contextManger) {
         List<IContext> contexts = new ArrayList<IContext>();
         if (contextManger != null) {
-            contexts = contextManger.getListContext();
+            for (IContext context : contextManger.getListContext()) {
+                if (!context.isHide()) {
+                    contexts.add(context);
+                }
+            }
         }
         return contexts;
     }
 
     public static String[] getPropertyNames(IContextModelManager manager) {
         List<IContext> contexts = getContexts(manager.getContextManager());
-        int columnCount = contexts.size() * 3 + 3;
+        int columnCount = contexts.size() + 4;
         String[] columnsName = new String[columnCount];
         int i = 0;
         columnsName[i++] = ContextTableConstants.COLUMN_NAME_PROPERTY;
         columnsName[i++] = ContextTableConstants.COLUMN_TYPE_PROPERTY;
         columnsName[i++] = ContextTableConstants.COLUMN_COMMENT_PROPERTY;
+        columnsName[i++] = ContextTableConstants.COLUMN_CHECK_PROPERTY;
         if (contexts.size() > 0) {
             for (IContext context : contexts) {
-                columnsName[i++] = ContextTableConstants.COLUMN_CONTEXT_VALUE;
-                columnsName[i++] = ContextTableConstants.COLUMN_CHECK_PROPERTY;
-                columnsName[i++] = ContextTableConstants.COLUMN_PROMPT_PROPERTY;
+                columnsName[i++] = context.getName();
             }
             return columnsName;
         }
@@ -69,7 +72,6 @@ public class ContextRowDataListFixture {
         List<IContext> contexts = getContexts(manager.getContextManager());
         propertyToLabelMap.put(ContextTableConstants.COLUMN_NAME_PROPERTY, ContextTableConstants.COLUMN_NAME_PROPERTY);
         propertyToLabelMap.put(ContextTableConstants.COLUMN_TYPE_PROPERTY, ContextTableConstants.COLUMN_TYPE_PROPERTY);
-        propertyToLabelMap.put(ContextTableConstants.COLUMN_PROMPT_PROPERTY, ContextTableConstants.COLUMN_PROMPT_PROPERTY);
         propertyToLabelMap.put(ContextTableConstants.COLUMN_CONTEXT_VALUE, ContextTableConstants.COLUMN_CONTEXT_VALUE);
         for (IContext context : contexts) {
             propertyToLabelMap.put(context.getName(), context.getName());

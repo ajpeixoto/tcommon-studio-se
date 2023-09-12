@@ -17,5 +17,7 @@ public interface ContextTypeValidator {
 
     boolean validateContextParameter(EList value);
     boolean validateConfirmationNeeded(boolean value);
+    boolean validateHide(boolean value);
+
     boolean validateName(String value);
 }

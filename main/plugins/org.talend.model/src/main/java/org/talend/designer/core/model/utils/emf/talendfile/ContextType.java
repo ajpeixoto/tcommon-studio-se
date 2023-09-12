@@ -16,12 +16,13 @@ import org.eclipse.emf.ecore.EObject;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link org.talend.designer.core.model.utils.emf.talendfile.ContextType#getContextParameter <em>Context Parameter</em>}</li>
  *   <li>{@link org.talend.designer.core.model.utils.emf.talendfile.ContextType#isConfirmationNeeded <em>Confirmation Needed</em>}</li>
+ *   <li>{@link org.talend.designer.core.model.utils.emf.talendfile.ContextType#isHide <em>Hide</em>}</li>
  *   <li>{@link org.talend.designer.core.model.utils.emf.talendfile.ContextType#getName <em>Name</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.talend.designer.core.model.utils.emf.talendfile.TalendFilePackage#getContextType()
  * @model extendedMetaData="name='Context_._type' kind='elementOnly'"
@@ -98,6 +99,56 @@ public interface ContextType extends EObject {
      * @generated
      */
     boolean isSetConfirmationNeeded();
+
+    /**
+     * Returns the value of the '<em><b>Hide</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the value of the '<em>Hide</em>' attribute.
+     * @see #isSetHide()
+     * @see #unsetHide()
+     * @see #setHide(boolean)
+     * @see org.talend.designer.core.model.utils.emf.talendfile.TalendFilePackage#getContextType_Hide()
+     * @model unsettable="true" dataType="org.eclipse.emf.ecore.xml.type.Boolean"
+     *        extendedMetaData="kind='attribute' name='confirmationNeeded' namespace='##targetNamespace'"
+     * @generated
+     */
+    boolean isHide();
+
+    /**
+     * Sets the value of the '{@link org.talend.designer.core.model.utils.emf.talendfile.ContextType#isHide <em>Hide</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @param value the new value of the '<em>Hide</em>' attribute.
+     * @see #isSetHide()
+     * @see #unsetHide()
+     * @see #isHide()
+     * @generated
+     */
+    void setHide(boolean value);
+
+    /**
+     * Unsets the value of the '{@link org.talend.designer.core.model.utils.emf.talendfile.ContextType#isHide <em>Hide</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #isSetHide()
+     * @see #isHide()
+     * @see #setHide(boolean)
+     * @generated
+     */
+    void unsetHide();
+
+    /**
+     * Returns whether the value of the '{@link org.talend.designer.core.model.utils.emf.talendfile.ContextType#isHide <em>Hide</em>}' attribute is set.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return whether the value of the '<em>Hide</em>' attribute is set.
+     * @see #unsetHide()
+     * @see #isHide()
+     * @see #setHide(boolean)
+     * @generated
+     */
+    boolean isSetHide();
 
     /**
      * Returns the value of the '<em><b>Name</b></em>' attribute.

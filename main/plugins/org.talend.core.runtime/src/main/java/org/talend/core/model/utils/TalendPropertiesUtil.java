@@ -29,17 +29,6 @@ public final class TalendPropertiesUtil {
 
     /**
      *
-     * DOC ggu Comment method "isHideExchange".
-     *
-     *
-     * @return
-     */
-    public static boolean isHideExchange() {
-        return true; //$NON-NLS-1$ //$NON-NLS-2$
-    }
-
-    /**
-     *
      * DOC ggu Comment method "isHideBuildNumber".
      *
      * @return
