@@ -178,9 +178,17 @@ public class ContextNebulaGridComposite extends AbstractContextTabEditComposite 
             if (!ContextNatTableUtils.checkIsInstallExternalJar()) {
                 createMessageGroup(this);
             } else {
-                createButtonsGroup(this);
+                boolean isRepositoryContext = (modelManager instanceof ContextComposite)
+                        && ((ContextComposite) modelManager).isRepositoryContext();
+                if (isRepositoryContext) {
+                    createNatTableGroup(this);
 
-                createNatTableGroup(this);
+                    createButtonsGroup(this);
+                } else {
+                    createButtonsGroup(this);
+
+                    createNatTableGroup(this);
+                }
 
                 createNatTable();
 

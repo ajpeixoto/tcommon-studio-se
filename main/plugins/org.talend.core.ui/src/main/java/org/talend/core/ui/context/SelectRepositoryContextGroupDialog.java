@@ -52,7 +52,7 @@ import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
  */
 public class SelectRepositoryContextGroupDialog extends SelectionDialog {
 
-    private static final String DEFAULTMESAGE = Messages.getString("SelectRepositoryContextGroupDialog.Messages"); //$NON-NLS-1$
+    private static final String DEFAULTMESAGE = Messages.getString("SelectRepositoryContextGroupDialog.defaultMessages"); //$NON-NLS-1$
 
     private static final String TITILE = Messages.getString("SelectRepositoryContextGroupDialog.addTitle"); //$NON-NLS-1$
 
