@@ -399,6 +399,37 @@ public interface PropertiesPackage extends EPackage {
      * @generated
      */
     int ITEM = 6;
+    
+    
+    /**
+     * The meta object id for the parent '{@link org.talend.core.model.properties.impl.ItemImpl <em>Item</em>}' class. <!--
+     * begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @see org.talend.core.model.properties.impl.ItemImpl
+     * @see org.talend.core.model.properties.impl.PropertiesPackageImpl#getParentItem()
+     * @generated
+     */
+    int PARENT_ITEM = 109;
+    
+    
+    /**
+     * The meta object id for the '{@link org.talend.core.model.properties.impl.ItemImpl <em>Item</em>}' class. <!--
+     * begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @see org.talend.core.model.properties.impl.ItemImpl
+     * @see org.talend.core.model.properties.impl.PropertiesPackageImpl#getParentItem()
+     * @generated
+     */
+    int PARENT_ITEM__PROPERTY = 110;
+    
+    
+    /**
+     * The feature id for the parent '<em><b>Item</b></em>' reference.
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int PROPERTY__PARENT_ITEM = 111;
 
     /**
      * The meta object id for the '{@link org.talend.core.model.properties.impl.BusinessProcessItemImpl <em>Business Process Item</em>}' class.
