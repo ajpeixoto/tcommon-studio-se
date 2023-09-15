@@ -6,35 +6,28 @@
               context="plugin:org.talend.libraries.jfreechart"
               language="java"
               message="Needed for jfreechart plugin"
-              name="jcommon-1.0.15.jar" mvn_uri="mvn:org.talend.libraries/jcommon-1.0.15/6.0.0" 
+              name="jcommon-1.0.17.jar" mvn_uri="mvn:org.jfree/jcommon/1.0.17" 
               required="true">
         </libraryNeeded>
         <libraryNeeded
               context="plugin:org.talend.libraries.jfreechart"
               language="java"
               message="Needed for jfreechart plugin"
-              name="jfreechart-1.0.12.jar" mvn_uri="mvn:org.talend.libraries/jfreechart-1.0.12/6.0.0" 
+              name="jfreechart-1.0.14.jar" mvn_uri="mvn:org.jfree/jfreechart/1.0.14" 
               required="true">
         </libraryNeeded>
         <libraryNeeded
               context="plugin:org.talend.libraries.jfreechart"
               language="java"
               message="Needed for jfreechart plugin"
-              name="jfreechart-1.0.12-experimental.jar" mvn_uri="mvn:org.talend.libraries/jfreechart-1.0.12-experimental/6.0.0" 
+              name="jfreechart-swt-1.0.17.jar" mvn_uri="mvn:jfree/jfreechart-swt/1.0.17" 
               required="true">
         </libraryNeeded>
         <libraryNeeded
               context="plugin:org.talend.libraries.jfreechart"
               language="java"
               message="Needed for jfreechart plugin"
-              name="jfreechart-1.0.12-swt.jar" mvn_uri="mvn:org.talend.libraries/jfreechart-1.0.12-swt/6.0.0" 
-              required="true">
-        </libraryNeeded>
-        <libraryNeeded
-              context="plugin:org.talend.libraries.jfreechart"
-              language="java"
-              message="Needed for jfreechart plugin"
-              name="swtgraphics2d.jar" mvn_uri="mvn:org.talend.libraries/swtgraphics2d/6.0.0" 
+              name="swtgraphics2d-1.1.0.jar" mvn_uri="mvn:org.jfree/swtgraphics2d/1.1.0" 
               required="true">
         </libraryNeeded>
    </extension>

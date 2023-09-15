@@ -4,12 +4,10 @@ Bundle-Name: Jfreechart Plug-in
 Bundle-SymbolicName: org.talend.libraries.jfreechart;singleton:=true
 Bundle-Version: 8.8.8.qualifier
 Bundle-Vendor: .Talend SA.
-Bundle-ClassPath: lib/jcommon-1.0.15.jar,
- lib/gnujaxp.jar,
- lib/jfreechart-1.0.12-experimental.jar,
- lib/jfreechart-1.0.12-swt.jar,
- lib/jfreechart-1.0.12.jar,
- lib/swtgraphics2d.jar,
+Bundle-ClassPath: lib/jcommon-1.0.17.jar;mvn:org.jfree/jcommon/1.0.17,
+ lib/jfreechart-swt-1.0.17.jar;mvn:jfree/jfreechart-swt/1.0.17,
+ lib/jfreechart-1.0.14.jar;mvn:org.jfree/jfreechart/1.0.14,
+ lib/swtgraphics2d-1.1.0.jar;mvn:org.jfree/swtgraphics2d/1.1.0,
  .
 Export-Package: org.jfree,
  org.jfree.base,
