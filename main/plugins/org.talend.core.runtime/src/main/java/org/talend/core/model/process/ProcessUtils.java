@@ -729,7 +729,7 @@ public final class ProcessUtils {
         return null;
     }
     
-    private static boolean isRoute(Property property) {
+    public static boolean isRoute(Property property) {
     	return  property!= null && (ERepositoryObjectType.getType(property).equals(ERepositoryObjectType.PROCESS_ROUTE) || 
 		ERepositoryObjectType.getType(property).equals(ERepositoryObjectType.PROCESS_ROUTE_MICROSERVICE));
     }

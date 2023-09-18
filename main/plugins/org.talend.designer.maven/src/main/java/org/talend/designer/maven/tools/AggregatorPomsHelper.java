@@ -770,7 +770,7 @@ public class AggregatorPomsHelper {
 	            
 	            // Generate individual child job projects/poms for each Route (CI mode only)
 	            
-                if (isCIMode && (ProcessUtils.isRouteWithChildJobs(item) ||   ProcessUtils.isRouteWithRoutelets(item))) {
+                if (isCIMode && ProcessUtils.isRoute(item.getProperty()) && (ProcessUtils.isRouteWithChildJobs(item) ||   ProcessUtils.isRouteWithRoutelets(item))) {
                 
                     Set<JobInfo> allJobInfos = ProcessorUtilities.getChildrenJobInfo(item, true, true);
                 	
