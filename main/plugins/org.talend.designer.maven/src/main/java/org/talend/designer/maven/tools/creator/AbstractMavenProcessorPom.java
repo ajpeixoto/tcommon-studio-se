@@ -165,6 +165,7 @@ public abstract class AbstractMavenProcessorPom extends CreateMavenBundleTemplat
         		
         		variablesValuesMap.put(ETalendMavenVariables.JobArtifactId, jobName);
         		variablesValuesMap.put(ETalendMavenVariables.JobName, jobName);
+        		variablesValuesMap.put(ETalendMavenVariables.JobVersion, PomIdsHelper.getJobVersion(property.getParentItem().getProperty()));
         	} else {
                 variablesValuesMap.put(ETalendMavenVariables.JobArtifactId, PomIdsHelper.getJobArtifactId(property));	
                 final String jobName = JavaResourcesHelper.escapeFileName(process.getName());

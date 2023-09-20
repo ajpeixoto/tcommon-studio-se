@@ -1355,5 +1355,22 @@ public class ContextUtils {
         fillContextParam(param, sourceParam);
     }
     
+    public static boolean isPromptNeeded(List<IContext> contexts, String contextParaName) {
+        for (IContext context : contexts) {
+            List<IContextParameter> list = context.getContextParameterList();
+            if (list != null && list.size() > 0) {
+                for (IContextParameter contextPara : list) {
+                    String tempContextParaName = contextPara.getName();
+                    if (tempContextParaName.equals(contextParaName)) {
+                        if (contextPara.isPromptNeeded()) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
 }
 

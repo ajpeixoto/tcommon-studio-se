@@ -307,6 +307,7 @@ public class JobContextManager implements IContextManager {
             }
             context = new JobContext(name);
             context.setConfirmationNeeded(contextType.isConfirmationNeeded());
+            context.setHide(contextType.isHide());
             contextParamList = new ArrayList<IContextParameter>();
             contextTypeParamList = contextType.getContextParameter();
             Set<String> paramNamesInCurrentContext = new HashSet<String>();
@@ -544,6 +545,7 @@ public class JobContextManager implements IContextManager {
             }
             contextType.setName(context.getName());
             contextType.setConfirmationNeeded(context.isConfirmationNeeded());
+            contextType.setHide(context.isHide());
             newcontextTypeList.add(contextType);
 
             EList contextTypeParamList = contextType.getContextParameter();

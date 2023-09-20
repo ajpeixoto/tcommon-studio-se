@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
@@ -222,11 +223,13 @@ public class ExportLogsWizardPage extends WizardPage {
             return false;
         }
         try {
-            exportSysconfig(new File(lastPath));
-            exportLogs(new File(lastPath));
-            exportPerformanceLogs(new File(lastPath));
-            exportStudioInfo(new File(lastPath));
-            exportRequiredJson(new File(lastPath));
+            File file = new File(lastPath);
+            exportIni(file);
+            exportSysconfig(file);
+            exportLogs(file);
+            exportPerformanceLogs(file);
+            exportStudioInfo(file);
+            exportRequiredJson(file);
         } catch (Exception e) {
             ExceptionHandler.process(e);
         }
@@ -247,6 +250,53 @@ public class ExportLogsWizardPage extends WizardPage {
             return confirm;
         }
         return true;
+    }
+
+    private void exportIni(File dest) throws Exception {
+        String zipFile = dest.getAbsolutePath();
+
+        String tmpFolder = ExportJobUtil.getTmpFolder();
+        File configFolder = new File(Platform.getConfigurationLocation().getURL().toURI());
+        File configIniFile = new File(configFolder, "config.ini");
+        if (configIniFile.exists()) {
+            zipLogFile(zipFile, tmpFolder, configIniFile.getCanonicalPath());
+        }
+
+        File installFolder = new File(Platform.getInstallLocation().getURL().toURI());
+        File launcherIniFile = null;
+        String launcherName = System.getProperty("eclipse.launcher.name");
+        if (StringUtils.isNotBlank(launcherName)) {
+            launcherIniFile = new File(installFolder, launcherName + ".ini");
+        }
+        if (launcherIniFile == null || !launcherIniFile.exists()) {
+            String os = Platform.getOS();
+            String osArch = Platform.getOSArch();
+            String ws = Platform.getWS();
+            String launcherIniFileSuffix = null;
+            if (Platform.OS_MACOSX.equals(os)) {
+                launcherIniFileSuffix = "-macosx-cocoa.ini";
+            } else if (Platform.OS_WIN32.equals(os)) {
+                launcherIniFileSuffix = "-win-" + osArch + ".ini";
+            } else {
+                launcherIniFileSuffix = "-" + os + "-" + ws + "-" + osArch + ".ini";
+            }
+            String suffix = launcherIniFileSuffix;
+            File[] matchedFiles = installFolder.listFiles(new FilenameFilter() {
+
+                @Override
+                public boolean accept(File dir, String name) {
+                    if (name.endsWith(suffix)) {
+                        return true;
+                    }
+                    return false;
+                }
+            });
+            for (File file : matchedFiles) {
+                zipLogFile(zipFile, tmpFolder, file.getCanonicalPath());
+            }
+        } else {
+            zipLogFile(zipFile, tmpFolder, launcherIniFile.getCanonicalPath());
+        }
     }
 
     private void exportLogs(File dest) throws Exception {

@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.gef.commands.Command;
@@ -177,35 +178,31 @@ public class ExtendedContextColumnPropertyAccessor<R> implements IColumnProperty
                     } else {
                         return contextParaType;
                     }
+                } else if (currentColumnName.equals(ContextTableConstants.COLUMN_CHECK_PROPERTY)) {
+                    if (manager != null && manager.getContextManager() != null) {
+                        List<IContext> contexts = manager.getContextManager().getListContext();
+                        return ContextUtils.isPromptNeeded(contexts, contextParaName);
+                    }
+                    return currentParam.isPromptNeeded();
                 } else if (currentColumnName.equals(ContextTableConstants.COLUMN_COMMENT_PROPERTY)) {
                     return currentParam.getComment();
                 } else {
-                    if (this.groupModel.isPartOfAGroup(columnIndex)) {
-                        String columnGroupName = this.groupModel.getColumnGroupByIndex(columnIndex).getName();
-                        if (manager.getContextManager() != null) {
-                            List<IContext> contexts = manager.getContextManager().getListContext();
-                            IContextParameter currentPara = findContextPara(contexts, columnGroupName, contextParaName);
-                            if (currentPara == null) {
-                                return "";
-                            }
-                            if (currentColumnName.equals(ContextTableConstants.COLUMN_CHECK_PROPERTY)) {
-                                return currentPara.isPromptNeeded();
-                            } else if (currentColumnName.equals(ContextTableConstants.COLUMN_PROMPT_PROPERTY)) {
-                                return currentPara.getPrompt();
-                            } else if (currentColumnName.equals(ContextTableConstants.COLUMN_CONTEXT_VALUE)) {
-                                // because it's raw value, so need display * for password type.
-                                if (PasswordEncryptUtil.isPasswordType(currentPara.getType())) {
-                                    return PasswordEncryptUtil.getPasswordDisplay(currentPara.getValue());
-                                }
-                                String displayValue = ContextNatTableUtils.getSpecialTypeDisplayValue(currentPara.getType(),
-                                        currentPara.getValue());
-                                if (displayValue != null) {
-                                    return displayValue;
-                                }
-                                return currentPara.getDisplayValue();
-
-                            }
+                    if (manager.getContextManager() != null) {
+                        List<IContext> contexts = manager.getContextManager().getListContext();
+                        IContextParameter currentPara = findContextPara(contexts, currentColumnName, contextParaName);
+                        if (currentPara == null) {
+                            return "";
                         }
+                        // because it's raw value, so need display * for password type.
+                        if (PasswordEncryptUtil.isPasswordType(currentPara.getType())) {
+                            return PasswordEncryptUtil.getPasswordDisplay(currentPara.getValue());
+                        }
+                        String displayValue = ContextNatTableUtils.getSpecialTypeDisplayValue(currentPara.getType(),
+                                currentPara.getValue());
+                        if (displayValue != null) {
+                            return displayValue;
+                        }
+                        return currentPara.getDisplayValue();
                     }
                 }
             }
@@ -233,57 +230,71 @@ public class ExtendedContextColumnPropertyAccessor<R> implements IColumnProperty
     private void setPropertyValue(IContextModelManager manager, Object dataElement, String contextParaName, int columnIndex,
             Object newValue) {
         String currentColumnName = getColumnProperty(columnIndex);
-        if (this.groupModel.isPartOfAGroup(columnIndex)) {
-            String columnGroupName = this.groupModel.getColumnGroupByIndex(columnIndex).getName();
+        if (currentColumnName.equals(ContextTableConstants.COLUMN_TYPE_PROPERTY)) {
+            ContextTableTabParentModel parent = (ContextTableTabParentModel) dataElement;
+            IContextParameter contextPara = parent.getContextParameter();
+            if (contextPara.getType() == ((String) newValue)) {
+                return;
+            }
+            String newType = getRealType((String) newValue);
+
+            Command cmd = new SetContextTypeCommand(manager, contextPara, newType);
+            runCommand(cmd, manager);
+        } else if (currentColumnName.equals(ContextTableConstants.COLUMN_NAME_PROPERTY)) {
+            ContextTableTabParentModel parent = (ContextTableTabParentModel) dataElement;
+            IContextParameter contextPara = parent.getContextParameter();
+            String sourceId = contextPara.getSource();
+            String newParaName = (String) newValue;
+
+            if (manager.getContextManager() instanceof JobContextManager) {
+                // in case joblet rename will propagate to the job,just record it
+                JobContextManager contextManager = (JobContextManager) manager.getContextManager();
+                contextManager.addNewName(newParaName, contextPara.getName());
+                contextManager.setModified(true);
+            }
+            Command cmd = new SetContextNameCommand(manager, contextPara, newParaName, sourceId);
+            runCommand(cmd, manager);
+        } else if (currentColumnName.equals(ContextTableConstants.COLUMN_COMMENT_PROPERTY)) {
+            ContextTableTabParentModel parent = (ContextTableTabParentModel) dataElement;
+            IContextParameter contextPara = parent.getContextParameter();
+            if (contextPara.getComment() == ((String) newValue)) {
+                return;
+            }
+            Command cmd = new setContextCommentCommand(manager, contextPara, (String) newValue);
+            runCommand(cmd, manager);
+        } else if (currentColumnName.equals(ContextTableConstants.COLUMN_CHECK_PROPERTY)) {
+            IContextParameter contextPara = null;
+            if (dataElement instanceof ContextTableTabChildModel) {
+                contextPara = ((ContextTableTabChildModel) dataElement).getContextParameter();
+            } else if (dataElement instanceof ContextTableTabParentModel) {
+                contextPara = ((ContextTableTabParentModel) dataElement).getContextParameter();
+            }
+            if (contextPara == null) {
+                return;
+            }
+            boolean isPromptNeeded = contextPara.isPromptNeeded();
+            if (manager != null && manager.getContextManager() != null) {
+                List<IContext> contexts = manager.getContextManager().getListContext();
+                isPromptNeeded = ContextUtils.isPromptNeeded(contexts, contextParaName);
+            }
+            if (isPromptNeeded == ((boolean) newValue)) {
+                return;
+            }
+            Command cmd = new setContextEnablePromptCommand(manager, contextPara, ((boolean) newValue));
+            runCommand(cmd, manager);
+        } else {
+            String columnGroupName = currentColumnName;
             IContextManager contextManger = manager.getContextManager();
             if (contextManger != null) {
-                // change the property of context such as prompt,promptyNeeded,value etc.
+                // change the property of context value.
                 List<Object> list = new ArrayList<Object>();
                 list.add(dataElement);
-
                 IContextParameter para = null;
                 para = getRealParameter(contextManger, columnGroupName, dataElement);
-                if (para == null) {
+                if (para == null || (StringUtils.isBlank(para.getValue()) && newValue == null)) {
                     return;
                 }
-                Command cmd = new SetContextGroupParameterCommand(manager, para, currentColumnName, newValue);
-                runCommand(cmd, manager);
-                if (currentColumnName.equals(ContextTableConstants.COLUMN_CHECK_PROPERTY)) {
-                    manager.refresh();
-                }
-            }
-        } else {
-            if (currentColumnName.equals(ContextTableConstants.COLUMN_TYPE_PROPERTY)) {
-                ContextTableTabParentModel parent = (ContextTableTabParentModel) dataElement;
-                IContextParameter contextPara = parent.getContextParameter();
-                if (contextPara.getType() == ((String) newValue)) {
-                    return;
-                }
-                String newType = getRealType((String) newValue);
-
-                Command cmd = new SetContextTypeCommand(manager, contextPara, newType);
-                runCommand(cmd, manager);
-            } else if (currentColumnName.equals(ContextTableConstants.COLUMN_NAME_PROPERTY)) {
-                ContextTableTabParentModel parent = (ContextTableTabParentModel) dataElement;
-                IContextParameter contextPara = parent.getContextParameter();
-                String sourceId = contextPara.getSource();
-                String newParaName = (String) newValue;
-
-                if (manager.getContextManager() instanceof JobContextManager) {
-                    // in case joblet rename will propagate to the job,just record it
-                    JobContextManager contextManager = (JobContextManager) manager.getContextManager();
-                    contextManager.addNewName(newParaName, contextPara.getName());
-                    contextManager.setModified(true);
-                }
-                Command cmd = new SetContextNameCommand(manager, contextPara, newParaName, sourceId);
-                runCommand(cmd, manager);
-            } else if (currentColumnName.equals(ContextTableConstants.COLUMN_COMMENT_PROPERTY)) {
-                ContextTableTabParentModel parent = (ContextTableTabParentModel) dataElement;
-                IContextParameter contextPara = parent.getContextParameter();
-                if (contextPara.getComment() == ((String) newValue)) {
-                    return;
-                }
-                Command cmd = new setContextCommentCommand(manager, contextPara, (String)newValue);
+                Command cmd = new SetContextParameterValueCommand(manager, para, currentColumnName, newValue);
                 runCommand(cmd, manager);
             }
         }
@@ -334,7 +345,7 @@ public class ExtendedContextColumnPropertyAccessor<R> implements IColumnProperty
         return para;
     }
 
-    class SetContextGroupParameterCommand extends Command {
+    class SetContextParameterValueCommand extends Command {
 
         IContextParameter param;
 
@@ -344,7 +355,7 @@ public class ExtendedContextColumnPropertyAccessor<R> implements IColumnProperty
 
         String property;
 
-        public SetContextGroupParameterCommand(IContextModelManager modelManager, IContextParameter param, String property,
+        public SetContextParameterValueCommand(IContextModelManager modelManager, IContextParameter param, String property,
                 Object newValue) {
             super();
             this.modelManager = modelManager;
@@ -360,34 +371,12 @@ public class ExtendedContextColumnPropertyAccessor<R> implements IColumnProperty
          */
         @Override
         public void execute() {
-            boolean modified = false;
-            if (property.equals(ContextTableConstants.COLUMN_CHECK_PROPERTY)) {
-                if (param.isPromptNeeded() == (Boolean) newValue) {
-                    return;
-                }
-                oldValue = param.isPromptNeeded();
-                param.setPromptNeeded((Boolean) newValue);
-                modified = true;
-            } else if (property.equals(ContextTableConstants.COLUMN_PROMPT_PROPERTY)) {
-                if (param.getPrompt() != null && param.getPrompt().equals(newValue)) {
-                    return;
-                }
-                oldValue = param.getPrompt();
-                param.setPrompt((String) newValue);
-                modified = true;
-            } else if (property.equals(ContextTableConstants.COLUMN_CONTEXT_VALUE)) {
-                if (param.getValue() != null && param.getValue().equals(newValue)) {
-                    return;
-                }
-                oldValue = param.getValue();
-                // if (newValue != null) {
-                param.setValue(newValue == null ? "" : (String) newValue);
-                modified = true;
-                // }
+            if (param.getValue() != null && param.getValue().equals(newValue)) {
+                return;
             }
-            if (modified) {
-                updateRelation();
-            }
+            oldValue = param.getValue();
+            param.setValue(newValue == null ? "" : (String) newValue);
+            updateRelation();
         }
 
         /*
@@ -397,22 +386,9 @@ public class ExtendedContextColumnPropertyAccessor<R> implements IColumnProperty
          */
         @Override
         public void undo() {
-            boolean modified = false;
-            if (property.equals(ContextTableConstants.COLUMN_CHECK_PROPERTY)) {
-                param.setPromptNeeded((Boolean) oldValue);
-                modified = true;
-            } else if (property.equals(ContextTableConstants.COLUMN_PROMPT_PROPERTY)) {
-                param.setPrompt((String) oldValue);
-                modified = true;
-            } else if (property.equals(ContextTableConstants.COLUMN_CONTEXT_VALUE)) {
-                param.setValue((String) oldValue);
-                modified = true;
-            }
-
-            if (modified) {
-                updateRelation();
-                modelManager.refresh();
-            }
+            param.setValue((String) oldValue);
+            updateRelation();
+            modelManager.refresh();
         }
 
         private void updateRelation() {
@@ -514,6 +490,83 @@ public class ExtendedContextColumnPropertyAccessor<R> implements IColumnProperty
             }
         }
 
+    }
+
+    class setContextEnablePromptCommand extends Command {
+
+        IContextParameter param;
+
+        IContextModelManager modelManager;
+
+        boolean newValue, oldValue;
+
+        public setContextEnablePromptCommand(IContextModelManager modelManager, IContextParameter param, boolean newValue) {
+            super();
+            this.modelManager = modelManager;
+            this.param = param;
+            this.newValue = newValue;
+        }
+
+        @Override
+        public void execute() {
+            boolean modified = false;
+            if (modelManager.getContextManager() != null) {
+                for (IContext context : modelManager.getContextManager().getListContext()) {
+                    for (IContextParameter contextParameter : context.getContextParameterList()) {
+                        if (param.getName().equals(contextParameter.getName())) {
+                            oldValue = param.isPromptNeeded();
+                            param.setPromptNeeded(newValue);
+                            contextParameter.setPromptNeeded(newValue);
+                            modified = true;
+                        }
+                    }
+                }
+            }
+            if (modified) {
+                updateRelation();
+            }
+        }
+
+        /*
+         * (non-Javadoc)
+         *
+         * @see org.eclipse.gef.commands.Command#undo()
+         */
+        @Override
+        public void undo() {
+            boolean modified = false;
+            if (modelManager.getContextManager() != null) {
+                for (IContext context : modelManager.getContextManager().getListContext()) {
+                    for (IContextParameter contextParameter : context.getContextParameterList()) {
+                        if (param.getName().equals(contextParameter.getName())) {
+                            param.setPromptNeeded(oldValue);
+                            contextParameter.setPromptNeeded(oldValue);
+                            modified = true;
+                        }
+                    }
+                }
+            }
+            if (modified) {
+                updateRelation();
+                modelManager.refresh();
+            }
+        }
+
+        private void updateRelation() {
+            // set updated flag.
+            if (param != null) {
+                IContextManager manager = modelManager.getContextManager();
+                if (manager != null && manager instanceof JobContextManager) {
+                    JobContextManager jobContextManager = (JobContextManager) manager;
+                    // not added new
+                    if (!modelManager.isRepositoryContext()
+                            || modelManager.isRepositoryContext() && jobContextManager.isOriginalParameter(param.getName())) {
+                        jobContextManager.setModified(true);
+                        manager.fireContextsChangedEvent();
+                    }
+                }
+            }
+        }
     }
 
     class setContextCommentCommand extends Command {

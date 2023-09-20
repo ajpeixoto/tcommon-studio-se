@@ -30,6 +30,8 @@ public class JobContext implements IContext, Cloneable {
 
     boolean confirmationNeeded;
 
+    boolean hide;
+
     public JobContext(String name) {
         this.name = name;
         if (this.name == null) {
@@ -64,6 +66,14 @@ public class JobContext implements IContext, Cloneable {
 
     public void setConfirmationNeeded(boolean confirmationNeeded) {
         this.confirmationNeeded = confirmationNeeded;
+    }
+
+    public boolean isHide() {
+        return this.hide;
+    }
+
+    public void setHide(boolean hide) {
+        this.hide = hide;
     }
 
     public IContext clone() {
@@ -131,14 +141,16 @@ public class JobContext implements IContext, Cloneable {
      * @return
      */
     public IContextParameter getContextParameter(String sourceId, String paraName) {
-        if (sourceId == null || paraName == null)
+        if (sourceId == null || paraName == null) {
             return null;
+        }
         if (contextParameterList != null && contextParameterList.size() > 0) {
             for (IContextParameter contextParam : contextParameterList) {
                 String tempSouceId = contextParam.getSource();
                 String tempParaName = contextParam.getName();
-                if (sourceId.equals(tempSouceId) && paraName.equals(tempParaName))
+                if (sourceId.equals(tempSouceId) && paraName.equals(tempParaName)) {
                     return contextParam;
+                }
             }
         }
         return null;
@@ -156,8 +168,9 @@ public class JobContext implements IContext, Cloneable {
         if (contextParameterList != null && contextParameterList.size() > 0) {
             for (IContextParameter contextParam : contextParameterList) {
                 String tempParaName = contextParam.getName();
-                if (tempParaName.equals(paraName))
+                if (tempParaName.equals(paraName)) {
                     list.add(contextParam);
+                }
             }
         }
         return list;

@@ -1635,7 +1635,7 @@ public class ProcessorUtilities {
                                     }
                                 }
                                 
-                                if (CommonsPlugin.isHeadless() && interpreter != null) {
+                                if (CommonsPlugin.isHeadless() && ("cTalendJob".equals(componentName) || "Routelets".equals(node.getComponent().getOriginalFamilyName()))  && interpreter != null) {
                                 	processItem.getProperty().setParentItem(ItemCacheManager.getProcessItem(currentProcess.getId(), currentProcess.getVersion()));
                                 }
 

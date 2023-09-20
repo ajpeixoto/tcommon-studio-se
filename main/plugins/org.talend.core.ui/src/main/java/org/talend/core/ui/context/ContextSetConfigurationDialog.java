@@ -48,7 +48,7 @@ import org.talend.repository.model.RepositoryConstants;
  */
 public class ContextSetConfigurationDialog extends ObjectSelectionDialog<IContext> {
 
-    private static String defaultMesage = "Configure Contexts for Job. Click to Set Default Context.         "; //$NON-NLS-1$
+    private static String defaultMesage = "Create as many environments as necessary and select a default one:"; //$NON-NLS-1$
 
     IContextModelManager manager = null;
 
@@ -77,7 +77,7 @@ public class ContextSetConfigurationDialog extends ObjectSelectionDialog<IContex
 
     @SuppressWarnings("restriction")
     public ContextSetConfigurationDialog(Shell parentShell, IContextModelManager manager) {
-        super(parentShell, "Configure Contexts", defaultMesage, null); //$NON-NLS-1$
+        super(parentShell, "Manage context environments", defaultMesage, null); //$NON-NLS-1$
         this.manager = manager;
         setLabelProvider(getLabelProvider());
         List<IContext> list = new ArrayList<IContext>(manager.getContextManager().getListContext());
@@ -135,7 +135,7 @@ public class ContextSetConfigurationDialog extends ObjectSelectionDialog<IContex
 
     private String toValid(String newText) {
         if (newText.equals("") || !newText.matches(RepositoryConstants.CODE_ITEM_PATTERN)) { //$NON-NLS-1$
-            return Messages.getString("ContextSetConfigurationDialog.nameNotValid"); //$NON-NLS-1$
+            return Messages.getString("ContextSetConfigurationDialog.required.validName"); //$NON-NLS-1$
         }
         for (IContext context : getAllContexts()) {
             if (context.getName().equalsIgnoreCase(newText)) {
@@ -156,8 +156,8 @@ public class ContextSetConfigurationDialog extends ObjectSelectionDialog<IContex
             }
         };
 
-        InputDialog inputDial = new InputDialog(getShell(), Messages.getString("ContextProcessSection.6"), //$NON-NLS-1$
-                Messages.getString("ContextProcessSection.7"), "", validator); //$NON-NLS-1$ //$NON-NLS-2$
+        InputDialog inputDial = new InputDialog(getShell(), Messages.getString("ContextProcessSection.createEnvironment.Title"), //$NON-NLS-1$
+                Messages.getString("ContextProcessSection.createEnvironment.Text"), "", validator); //$NON-NLS-1$ //$NON-NLS-2$
 
         inputDial.open();
         String returnValue = inputDial.getValue();
@@ -278,8 +278,8 @@ public class ContextSetConfigurationDialog extends ObjectSelectionDialog<IContex
 
         IContext selectedContext = (IContext) (getSelection()).getFirstElement();
         String contextName = selectedContext.getName();
-        InputDialog inputDial = new InputDialog(getShell(), Messages.getString("ContextProcessSection.12"), //$NON-NLS-1$
-                Messages.getString("ContextProcessSection.13", contextName), "", validator); //$NON-NLS-1$ //$NON-NLS-2$
+        InputDialog inputDial = new InputDialog(getShell(), Messages.getString("ContextProcessSection.renameEnvironment.Title"), //$NON-NLS-1$
+                Messages.getString("ContextProcessSection.renameEnvironment.Text"), "", validator); //$NON-NLS-1$ //$NON-NLS-2$
         inputDial.open();
         String returnValue = inputDial.getValue();
         if (returnValue == null || "".equals(returnValue)) {
