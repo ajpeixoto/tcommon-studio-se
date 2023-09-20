@@ -36,6 +36,8 @@ import org.apache.oro.text.regex.Perl5Matcher;
 import org.apache.oro.text.regex.Perl5Substitution;
 import org.apache.oro.text.regex.Util;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.emf.common.util.EList;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.utils.PasswordEncryptUtil;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.language.ECodeLanguage;
@@ -48,9 +50,13 @@ import org.talend.core.model.metadata.types.JavaTypesManager;
 import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IContextManager;
 import org.talend.core.model.process.IContextParameter;
+import org.talend.core.model.properties.ContextItem;
+import org.talend.core.model.properties.Item;
+import org.talend.core.model.properties.JobletProcessItem;
 import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.runtime.services.IGenericDBService;
 import org.talend.core.utils.TalendQuoteUtils;
+import org.talend.cwm.helper.ResourceHelper;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
 import org.talend.repository.model.RepositoryConstants;
@@ -541,6 +547,14 @@ public final class ContextParameterUtils {
         return value; // keep original value
 
     }
+    
+    public static ContextParameterType getOriginalParam(ContextParameterType jobContextParameterType) {
+        if (!StringUtils.isBlank(jobContextParameterType.getName()) || StringUtils.isBlank(jobContextParameterType.getInternalId())
+                || StringUtils.equals(jobContextParameterType.getRepositoryContextId(), IContextParameter.BUILT_IN)) {
+            return jobContextParameterType;
+        }
+        return ContextUtils.findSourceParam(jobContextParameterType.getRepositoryContextId());
+    }
 
     public static String getOriginalValue(ContextType contextType, final String value) {
         if (value == null) {
@@ -551,8 +565,9 @@ public final class ContextParameterUtils {
             if (var != null) {
                 ContextParameterType param = null;
                 for (ContextParameterType paramType : (List<ContextParameterType>) contextType.getContextParameter()) {
-                    if (paramType.getName().equals(var)) {
-                        param = paramType;
+                    ContextParameterType p = ContextParameterUtils.getOriginalParam(paramType);
+                    if (p.getName().equals(var)) {
+                        param = p;
                         break;
                     }
                 }
@@ -579,8 +594,9 @@ public final class ContextParameterUtils {
             if (var != null) {
                 ContextParameterType param = null;
                 for (ContextParameterType paramType : (List<ContextParameterType>) contextType.getContextParameter()) {
-                    if (paramType.getName().equals(var)) {
-                        param = paramType;
+                    ContextParameterType p = ContextParameterUtils.getOriginalParam(paramType);
+                    if (p.getName().equals(var)) {
+                        param = p;
                         break;
                     }
                 }
@@ -619,8 +635,9 @@ public final class ContextParameterUtils {
             String var = ContextParameterUtils.getVariableFromCode(value);
             if (var != null) {
                 for (ContextParameterType paramType : (List<ContextParameterType>) contextType.getContextParameter()) {
-                    if (var.equals(paramType.getName())) {
-                        param = paramType;
+                    ContextParameterType p = ContextParameterUtils.getOriginalParam(paramType);
+                    if (var.equals(p.getName())) {
+                        param = p;
                         break;
                     }
                 }

@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.core.model.context;
 
+import org.apache.commons.lang3.StringUtils;
 import org.talend.core.model.metadata.MetadataToolHelper;
 import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IContextParameter;
@@ -387,6 +388,14 @@ public class JobContextParameter implements IContextParameter, Cloneable {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((this.name == null) ? 0 : this.name.hashCode());
+        if (StringUtils.isEmpty(name)) {
+            if (!StringUtils.isEmpty(internalId)) {
+                result = prime * result + this.internalId.hashCode();
+            }
+            if (!StringUtils.isEmpty(source)) {
+                result = prime * result + this.source.hashCode();
+            }
+        }
         return result;
     }
 
@@ -421,6 +430,16 @@ public class JobContextParameter implements IContextParameter, Cloneable {
         } else if (!this.name.equals(other.name)) {
             return false;
         }
+        
+        if (StringUtils.isEmpty(name)) {
+            if (!StringUtils.equals(this.internalId, other.internalId)) {
+                return false;
+            }
+
+            if (!StringUtils.equals(this.source, other.source)) {
+                return false;
+            }
+        }
         return true;
     }
 
@@ -436,5 +455,35 @@ public class JobContextParameter implements IContextParameter, Cloneable {
             return false;
         }
         return true;
+    }
+    
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append("[name=");
+        sb.append(name);
+        sb.append("\n");
+
+        sb.append("source=");
+        sb.append(source);
+        sb.append("\n");
+
+        sb.append("internalId=");
+        sb.append(internalId);
+        sb.append("\n");
+
+        sb.append("type=");
+        sb.append(type);
+        sb.append("\n");
+
+        sb.append("comment=");
+        sb.append(comment);
+        sb.append("\n");
+
+        sb.append("prompt=");
+        sb.append(prompt);
+        sb.append("]");
+
+        return sb.toString();
+
     }
 }

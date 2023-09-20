@@ -50,6 +50,7 @@ import org.talend.core.model.properties.JobletProcessItem;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
+import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.cwm.helper.ResourceHelper;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextParameterType;
@@ -587,7 +588,8 @@ public class ContextUtils {
         }
         Set<String> varNameSet = new HashSet<String>();
         for (ContextParameterType paramType : (List<ContextParameterType>) contextType.getContextParameter()) {
-            varNameSet.add(paramType.getName());
+            ContextParameterType p = ContextParameterUtils.getOriginalParam(paramType);
+            varNameSet.add(p.getName());
         }
         return varNameSet;
     }
@@ -833,10 +835,14 @@ public class ContextUtils {
             return contextItem.getContext();
         } else if (item instanceof JobletProcessItem) {
             JobletProcessItem jobletProcessItem = (JobletProcessItem) item;
-            return jobletProcessItem.getJobletProcess().getContext();
+            EList jobletContexts = jobletProcessItem.getJobletProcess().getContext();
+            ContextUtils.populateContexts(jobletContexts);
+            return jobletContexts;
         } else if (item instanceof ProcessItem) {
             ProcessItem processItem = (ProcessItem) item;
-            return processItem.getProcess().getContext();
+            EList jobContexts = processItem.getProcess().getContext();
+            ContextUtils.populateContexts(jobContexts);
+            return jobContexts;
         }
         return null;
     }
@@ -873,6 +879,7 @@ public class ContextUtils {
             for (Object obj : contextType.getContextParameter()) {
                 if (obj instanceof ContextParameterType) {
                     ContextParameterType contextParameterType = (ContextParameterType) obj;
+                    contextParameterType = ContextParameterUtils.getOriginalParam(contextParameterType);
                     ContextParamLink paramLink = itemContextLink.findContextParamLinkByName(
                             contextParameterType.getRepositoryContextId(), contextType.getName(), contextParameterType.getName());
                     if (paramLink != null) {
@@ -1207,5 +1214,146 @@ public class ContextUtils {
         }
         return jobContext;
     }
+    
+    public static void populateContexts(EList jobContexts) {
+        if (jobContexts == null) {
+            return;
+        }
+        for (Object jobCtx : jobContexts) {
+            if (jobCtx instanceof ContextType) {
+                populateContext((ContextType) jobCtx);
+            }
+        }
+    }
+
+    public static void populateContext(ContextType jobContext) {
+        if (jobContext == null) {
+            return;
+        }
+        for (Object o : jobContext.getContextParameter()) {
+            ContextParameterType cpt = (ContextParameterType) o;
+            populateContextParameter(cpt);
+        }
+    }
+    
+    public static void populateContextParameter(ContextParameterType jobContextParam) {
+        if (jobContextParam == null || !StringUtils.isEmpty(jobContextParam.getName())) {
+            // already loaded
+            return;
+        }
+        if (StringUtils.isEmpty(jobContextParam.getInternalId()) || StringUtils.isEmpty(jobContextParam.getRepositoryContextId())) {
+            // log out
+            LOGGER.info("ContextParameter: " + jobContextParam.toString());
+            return;
+        }
+
+        ContextParameterType sourceParam = findSourceParam(jobContextParam.getRepositoryContextId());
+        if (sourceParam == null) {
+            ExceptionHandler.log("Can not find source context parameter for JobContextParameter: " + jobContextParam.toString());
+            return;
+        }
+        
+        fillContextParam(jobContextParam, sourceParam);
+    }
+    
+    public static void populateContextParam(IContextParameter param) {
+        if (param == null || !StringUtils.isEmpty(param.getName())) {
+            return;
+        }
+        if (StringUtils.isEmpty(param.getInternalId()) || StringUtils.isEmpty(param.getSource())) {
+            LOGGER.info("Can not find contexts for JobContextParameter: " + param.toString());
+            return;
+        }
+
+        ContextParameterType sourceParam = findSourceParam(param.getSource());
+        if (sourceParam == null) {
+            LOGGER.info("Can not find source context item for JobContextParameter: " + param.toString());
+            return;
+        }
+
+        fillContextParam(param, sourceParam);
+    }
+    
+    public static void fillContextParam(ContextParameterType jobContextParam, ContextParameterType sourceParam) {
+        if (jobContextParam == null || sourceParam == null) {
+            return;
+        }
+
+        jobContextParam.setName(sourceParam.getName());
+        jobContextParam.setType(sourceParam.getType());
+        jobContextParam.setComment(sourceParam.getComment());
+        jobContextParam.setPrompt(sourceParam.getPrompt());
+        jobContextParam.setPromptNeeded(sourceParam.isPromptNeeded());
+        jobContextParam.setRawValue(sourceParam.getRawValue());
+        jobContextParam.setValue(sourceParam.getValue());
+    }
+
+    public static void fillContextParam(IContextParameter jobContextParam, ContextParameterType sourceParam) {
+        if (jobContextParam == null || sourceParam == null) {
+            return;
+        }
+
+        jobContextParam.setComment(sourceParam.getComment());
+        jobContextParam.setName(sourceParam.getName());
+        jobContextParam.setPrompt(sourceParam.getPrompt());
+        jobContextParam.setPromptNeeded(sourceParam.isPromptNeeded());
+        jobContextParam.setType(sourceParam.getType());
+        jobContextParam.setValue(sourceParam.getRawValue());
+        jobContextParam.setOriginEncryptedValue(sourceParam.getValue());
+    }
+
+    public static ContextParameterType findSourceParam(String internalId, Item item) {
+        if (internalId == null || item == null) {
+            LOGGER.info("findSourceParam, internalId or item is null");
+            return null;
+        }
+        
+        if (StringUtils.equals(internalId, IContextParameter.BUILT_IN)) {
+            return null;
+        }
+
+        EList contexts = null;
+        if (item instanceof ContextItem) {
+            contexts = ((ContextItem) item).getContext();
+        } else if (item instanceof JobletProcessItem) {
+            contexts = ((JobletProcessItem) item).getJobletProcess().getContext();
+        }
+
+        if (contexts == null) {
+            LOGGER.info("Can not find contexts for source context item id: " + internalId);
+            return null;
+        }
+
+        for (Object context : contexts) {
+            ContextType ctx = (ContextType) context;
+            for (Object ctp : ctx.getContextParameter()) {
+                ContextParameterType cp = (ContextParameterType) ctp;
+                String cpid = cp.getInternalId();
+                if (StringUtils.isBlank(cpid)) {
+                    cpid = ResourceHelper.getUUID(cp);
+                }
+                if (StringUtils.equals(cpid, internalId)) {
+                    return cp;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    
+    public static ContextParameterType findSourceParam(String internalId) {
+        Item item = getContextItemById2(internalId);
+        if (item == null) {
+            item = getRepositoryContextItemById(internalId);
+        }
+        return findSourceParam(internalId, item);
+    }
+
+    public static void populateContextParam(IContextParameter param, Item item) {
+        ContextParameterType sourceParam = findSourceParam(param.getSource(), item);
+        fillContextParam(param, sourceParam);
+    }
+    
 }
 

@@ -87,6 +87,7 @@ import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.process.JobInfo;
 import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.process.ReplaceNodesInProcessProvider;
+import org.talend.core.model.properties.ContextItem;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.JobletProcessItem;
 import org.talend.core.model.properties.ProcessItem;
@@ -115,6 +116,7 @@ import org.talend.core.ui.IJobletProviderService;
 import org.talend.core.ui.ITestContainerProviderService;
 import org.talend.core.utils.BitwiseOptionUtils;
 import org.talend.core.utils.CodesJarResourceCache;
+import org.talend.cwm.helper.ResourceHelper;
 import org.talend.designer.core.IDesignerCoreService;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
@@ -1470,6 +1472,8 @@ public class ProcessorUtilities {
                 for (ContextType context : contexts) {
                     List<ContextParameterType> contextParameter = context.getContextParameter();
                     for (ContextParameterType contextParameterType : contextParameter) {
+                        // update value of context parameter
+                        populateContextParameterTypeValue(contextParameterType);
                         if (JavaTypesManager.RESOURCE.getId().equals(contextParameterType.getType())
                                 || JavaTypesManager.RESOURCE.getLabel().equals(contextParameterType.getType())) {
                             resourceList.add(contextParameterType.getValue());
@@ -1508,6 +1512,52 @@ public class ProcessorUtilities {
         }
     }
 
+    private static void populateContextParameterTypeValue(ContextParameterType jobContextParameterType) {
+        if (!StringUtils.isBlank(jobContextParameterType.getInternalId()) && !StringUtils.equals(jobContextParameterType.getRepositoryContextId(), IContextParameter.BUILT_IN)) {
+            Item contextFromItem = null;
+            // find from context groups
+            contextFromItem = ContextUtils.getContextItemById2(jobContextParameterType.getRepositoryContextId());
+
+            // find from joblets
+            if (contextFromItem == null) {
+                contextFromItem = ContextUtils.getRepositoryContextItemById(jobContextParameterType.getRepositoryContextId());
+            }
+
+            if (contextFromItem == null) {
+                ExceptionHandler.log("error can not load source context item for id: " + jobContextParameterType.getRepositoryContextId());
+                return;
+            }
+            EList contexts = null;
+            if (contextFromItem instanceof ContextItem) {
+                contexts = ((ContextItem) contextFromItem).getContext();
+            } else if (contextFromItem instanceof JobletProcessItem) {
+                contexts = ((JobletProcessItem) contextFromItem).getJobletProcess().getContext();
+            }
+
+            if (contexts != null) {
+                boolean populated = false;
+                for (Object obj : contexts) {
+                    ContextType ctx = (ContextType) obj;
+                    EList contextParams = ctx.getContextParameter();
+                    for (Object objp : contextParams) {
+                        ContextParameterType cpt = (ContextParameterType) objp;
+                        if ((!StringUtils.isBlank(cpt.getInternalId()) && StringUtils.equals(jobContextParameterType.getInternalId(), cpt.getInternalId()))
+                                || StringUtils.equals(jobContextParameterType.getInternalId(), ResourceHelper.getUUID(contextFromItem))) {
+                            jobContextParameterType.setValue(cpt.getValue());
+                            populated = true;
+                            break;
+                        }
+                    }
+
+                    if (populated) {
+                        break;
+                    }
+                }
+            }
+
+        }
+
+    }
     /**
      * DOC nrousseau Comment method "cloneJobInfo".
      *

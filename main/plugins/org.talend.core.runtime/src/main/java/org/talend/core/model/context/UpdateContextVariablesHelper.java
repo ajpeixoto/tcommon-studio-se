@@ -316,8 +316,9 @@ public final class UpdateContextVariablesHelper {
         ECodeLanguage language = LanguageManager.getCurrentLanguage();
 
         for (ContextParameterType parameter : (List<ContextParameterType>) contextType.getContextParameter()) {
-            String oldCode = ContextParameterUtils.getScriptCode(parameter);
-            String newCode = ContextParameterUtils.getNewScriptCode(parameter.getName(), language);
+            ContextParameterType p = ContextParameterUtils.getOriginalParam(parameter);
+            String oldCode = ContextParameterUtils.getScriptCode(p);
+            String newCode = ContextParameterUtils.getNewScriptCode(p.getName(), language);
             varsScriptCodeMap.put(oldCode, newCode);
         }
         return varsScriptCodeMap;

@@ -22,7 +22,6 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.talend.core.model.metadata.MetadataTalendType;
 import org.talend.core.model.metadata.types.ContextParameterJavaTypeManager;
 import org.talend.core.model.process.IContext;
@@ -33,7 +32,6 @@ import org.talend.core.model.properties.ContextItem;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.cwm.helper.ResourceHelper;
-import org.talend.cwm.helper.StudioEncryptionHelper;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
 import org.talend.designer.core.model.utils.emf.talendfile.TalendFileFactory;
@@ -281,7 +279,7 @@ public class JobContextManager implements IContextManager {
         }
         return null;
     }
-
+    
     @Override
     public void loadFromEmf(EList contextTypeList, String defaultContextName) {
         IContext context;
@@ -318,7 +316,9 @@ public class JobContextManager implements IContextManager {
                 if (paramNamesInCurrentContext.contains(contextParamType.getName())) {
                     continue;
                 }
-                paramNamesInCurrentContext.add(contextParamType.getName());
+                if (!StringUtils.isBlank(contextParamType.getName())) {
+                    paramNamesInCurrentContext.add(contextParamType.getName());
+                }
                 contextParam = new JobContextParameter();
                 contextParam.setContext(context);
                 contextParam.setName(contextParamType.getName());
@@ -354,6 +354,7 @@ public class JobContextManager implements IContextManager {
                     }
                     if (item != null) {
                         source = item.getProperty().getId();
+                        ContextUtils.populateContextParam(contextParam, item);
                     } else {
                         lostParameters.add(contextParam.getName());
                     }
@@ -562,15 +563,7 @@ public class JobContextManager implements IContextManager {
                     }
                     newContextTypeParamList.add(contextParamType);
 
-                    contextParamType.setName(contextParam.getName());
-                    contextParamType.setPrompt(contextParam.getPrompt());
-                    contextParamType.setType(contextParam.getType());
-                    //To avoid encrypt the same value
-                    contextParamType.setValue(contextParam.getOriginEncryptedValue()); 
-                    contextParamType.setRawValue(contextParam.getValue());
-                    contextParam.setOriginEncryptedValue(contextParamType.getValue()); // For origin encrypted value is null or encryption key upgrade
-                    contextParamType.setPromptNeeded(contextParam.isPromptNeeded());
-                    contextParamType.setComment(contextParam.getComment());
+                    String internalId = contextParam.getInternalId();
                     if (!contextParam.isBuiltIn()) {
                         Item item = idToItemMap.get(contextParam.getSource());
                         if (item == null) {
@@ -585,7 +578,8 @@ public class JobContextManager implements IContextManager {
                                     ContextParameterType repoContextParam = ContextUtils
                                             .getContextParameterTypeByName(repoContextType, contextParam.getName());
                                     if (repoContextParam != null) {
-                                        ResourceHelper.setUUid(contextParamType, ResourceHelper.getUUID(repoContextParam));
+                                        internalId = ResourceHelper.getUUID(repoContextParam);
+                                        ResourceHelper.setUUid(contextParamType, internalId);
                                     }
                                 }
                             }
@@ -599,12 +593,19 @@ public class JobContextManager implements IContextManager {
                         contextParamType.setRepositoryContextId(contextParam.getSource());
                     }
                     if (useInternalId) {
-                        String internalId = contextParam.getInternalId();
-                        if (StringUtils.isEmpty(internalId)) {
-                            internalId = EcoreUtil.generateUUID();
-                            contextParam.setInternalId(internalId);
-                        }
                         contextParamType.setInternalId(internalId);
+                    }
+                    
+                    if (IContextParameter.BUILT_IN.equals(contextParamType.getRepositoryContextId())) {
+                        contextParamType.setName(contextParam.getName());
+                        contextParamType.setPrompt(contextParam.getPrompt());
+                        contextParamType.setType(contextParam.getType());
+                        // To avoid encrypt the same value
+                        contextParamType.setValue(contextParam.getOriginEncryptedValue());
+                        contextParamType.setRawValue(contextParam.getValue());
+                                                                                           // upgrade
+                        contextParamType.setPromptNeeded(contextParam.isPromptNeeded());
+                        contextParamType.setComment(contextParam.getComment());
                     }
                 }
                 contextTypeParamList.clear(); // remove old

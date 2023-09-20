@@ -27,6 +27,7 @@ import org.apache.log4j.Priority;
 import org.eclipse.emf.common.util.EList;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.GlobalServiceRegister;
+import org.talend.core.model.context.ContextUtils;
 import org.talend.core.model.context.link.ContextLinkService;
 import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.process.IContext;
@@ -453,6 +454,7 @@ public class ChangeIdManager {
             changeValue(((ContextType) aim).getContextParameter(), fromValue, toValue);
         } else if (aim instanceof ContextParameterType) {
             ContextParameterType ctxParamType = (ContextParameterType) aim;
+            ContextUtils.populateContextParameter(ctxParamType);
             String comment = ctxParamType.getComment();
             if (comment != null) {
                 ctxParamType.setComment(doReplace(comment, fromValue, toValue));
@@ -489,6 +491,7 @@ public class ChangeIdManager {
             changeValue(((IContext) aim).getContextParameterList(), fromValue, toValue);
         } else if (aim instanceof IContextParameter) {
             IContextParameter contextParameter = (IContextParameter) aim;
+            ContextUtils.populateContextParam(contextParameter);
             String comment = contextParameter.getComment();
             if (comment != null) {
                 contextParameter.setComment(doReplace(comment, fromValue, toValue));

@@ -66,8 +66,9 @@ public class BaseConnectionContextHelper {
             if (var != null) {
                 ContextParameterType param = null;
                 for (ContextParameterType paramType : (List<ContextParameterType>) contextType.getContextParameter()) {
-                    if (paramType.getName().equals(var)) {
-                        param = paramType;
+                    ContextParameterType p = ContextParameterUtils.getOriginalParam(paramType);
+                    if (p.getName().equals(var)) {
+                        param = p;
                         break;
                     }
                 }
