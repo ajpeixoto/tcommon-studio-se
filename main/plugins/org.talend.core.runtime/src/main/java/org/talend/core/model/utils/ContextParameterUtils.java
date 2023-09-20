@@ -565,9 +565,9 @@ public final class ContextParameterUtils {
             if (var != null) {
                 ContextParameterType param = null;
                 for (ContextParameterType paramType : (List<ContextParameterType>) contextType.getContextParameter()) {
-                    ContextParameterType p = ContextParameterUtils.getOriginalParam(paramType);
-                    if (p.getName().equals(var)) {
-                        param = p;
+                    ContextUtils.populateContextParameter(paramType);
+                    if (paramType.getName().equals(var)) {
+                        param = paramType;
                         break;
                     }
                 }
@@ -594,9 +594,9 @@ public final class ContextParameterUtils {
             if (var != null) {
                 ContextParameterType param = null;
                 for (ContextParameterType paramType : (List<ContextParameterType>) contextType.getContextParameter()) {
-                    ContextParameterType p = ContextParameterUtils.getOriginalParam(paramType);
-                    if (p.getName().equals(var)) {
-                        param = p;
+                    ContextUtils.populateContextParameter(paramType);
+                    if (paramType.getName().equals(var)) {
+                        param = paramType;
                         break;
                     }
                 }
@@ -635,9 +635,9 @@ public final class ContextParameterUtils {
             String var = ContextParameterUtils.getVariableFromCode(value);
             if (var != null) {
                 for (ContextParameterType paramType : (List<ContextParameterType>) contextType.getContextParameter()) {
-                    ContextParameterType p = ContextParameterUtils.getOriginalParam(paramType);
-                    if (var.equals(p.getName())) {
-                        param = p;
+                    ContextUtils.populateContextParameter(paramType);
+                    if (var.equals(paramType.getName())) {
+                        param = paramType;
                         break;
                     }
                 }

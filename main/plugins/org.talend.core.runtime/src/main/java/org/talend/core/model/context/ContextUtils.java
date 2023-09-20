@@ -588,8 +588,8 @@ public class ContextUtils {
         }
         Set<String> varNameSet = new HashSet<String>();
         for (ContextParameterType paramType : (List<ContextParameterType>) contextType.getContextParameter()) {
-            ContextParameterType p = ContextParameterUtils.getOriginalParam(paramType);
-            varNameSet.add(p.getName());
+            ContextUtils.populateContextParameter(paramType);
+            varNameSet.add(paramType.getName());
         }
         return varNameSet;
     }
@@ -879,7 +879,7 @@ public class ContextUtils {
             for (Object obj : contextType.getContextParameter()) {
                 if (obj instanceof ContextParameterType) {
                     ContextParameterType contextParameterType = (ContextParameterType) obj;
-                    contextParameterType = ContextParameterUtils.getOriginalParam(contextParameterType);
+                    ContextUtils.populateContextParameter(contextParameterType);
                     ContextParamLink paramLink = itemContextLink.findContextParamLinkByName(
                             contextParameterType.getRepositoryContextId(), contextType.getName(), contextParameterType.getName());
                     if (paramLink != null) {
