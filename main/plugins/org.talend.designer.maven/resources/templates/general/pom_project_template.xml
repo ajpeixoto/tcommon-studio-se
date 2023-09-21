@@ -44,7 +44,17 @@
 						<dependency>
 							<groupId>org.codehaus.plexus</groupId>
 							<artifactId>plexus-utils</artifactId>
-							<version>3.0.24</version>
+							<version>4.0.0</version>
+						</dependency>
+						<dependency>
+							<groupId>org.codehaus.plexus</groupId>
+							<artifactId>plexus-xml</artifactId>
+							<version>4.0.0</version>
+						</dependency>
+						<dependency>
+							<groupId>org.codehaus.plexus</groupId>
+							<artifactId>plexus-io</artifactId>
+							<version>3.4.1</version>
 						</dependency>
 						<dependency>
 							<groupId>org.apache.commons</groupId>
@@ -64,7 +74,7 @@
 						<dependency>
 							<groupId>org.codehaus.plexus</groupId>
 							<artifactId>plexus-archiver</artifactId>
-							<version>3.6.0</version>
+							<version>4.8.0</version>
 						</dependency>
                         <dependency>
                             <groupId>org.apache.maven</groupId>
@@ -103,9 +113,14 @@
 						<dependency>
 							<groupId>org.codehaus.plexus</groupId>
 							<artifactId>plexus-utils</artifactId>
-							<version>3.0.24</version>
+							<version>4.0.0</version>
 						</dependency>
-							<dependency>
+						<dependency>
+							<groupId>org.codehaus.plexus</groupId>
+							<artifactId>plexus-xml</artifactId>
+							<version>4.0.0</version>
+						</dependency>
+						<dependency>
 							<groupId>org.apache.commons</groupId>
 							<artifactId>commons-compress</artifactId>
 							<version>1.21</version>
@@ -118,12 +133,12 @@
 						<dependency>
 							<groupId>org.codehaus.plexus</groupId>
 							<artifactId>plexus-archiver</artifactId>
-							<version>3.6.0</version>
+							<version>4.8.0</version>
 						</dependency>
 						<dependency>
 							<groupId>org.codehaus.plexus</groupId>
 						    <artifactId>plexus-io</artifactId>
-						    <version>3.0.0</version>
+						    <version>3.4.1</version>
 						</dependency>
 						<dependency>
                             <groupId>org.apache.maven.shared</groupId>
@@ -145,7 +160,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-assembly-plugin</artifactId>
-					<version>3.0.0</version>
+					<version>3.6.0</version>
 					<dependencies>
 						<dependency>
 					       <groupId>org.apache.maven.shared</groupId>
@@ -155,7 +170,12 @@
 						<dependency>
 							<groupId>org.codehaus.plexus</groupId>
 							<artifactId>plexus-utils</artifactId>
-							<version>3.0.24</version>
+							<version>4.0.0</version>
+						</dependency>
+						<dependency>
+							<groupId>org.codehaus.plexus</groupId>
+							<artifactId>plexus-xml</artifactId>
+							<version>4.0.0</version>
 						</dependency>
 						<dependency>
 							<groupId>org.apache.commons</groupId>
@@ -170,7 +190,7 @@
 						<dependency>
 							<groupId>org.codehaus.plexus</groupId>
 							<artifactId>plexus-archiver</artifactId>
-							<version>3.6.0</version>
+							<version>4.8.0</version>
 						</dependency>
                         <dependency>
                             <groupId>org.apache.maven</groupId>
@@ -204,11 +224,16 @@
                             <artifactId>maven-shared-utils</artifactId>
                             <version>3.3.3</version>
                         </dependency>
-                            <dependency>
-                                <groupId>org.apache.maven</groupId>
-                                <artifactId>maven-core</artifactId>
-                                <version>3.8.1</version>
-                            </dependency>
+                        <dependency>
+                            <groupId>org.apache.maven</groupId>
+                            <artifactId>maven-core</artifactId>
+                            <version>3.8.1</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>com.google.code.findbugs</groupId>
+                            <artifactId>jsr305</artifactId>
+                            <version>3.0.2</version>
+                        </dependency>
 					</dependencies>
 				</plugin>
 				<plugin>

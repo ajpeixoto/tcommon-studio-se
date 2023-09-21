@@ -27,6 +27,11 @@
 					<groupId>org.apache.commons</groupId>
 					<artifactId>commons-lang3</artifactId>
 				</exclusion>
+				<!-- for TUP-39614 -->
+				<exclusion>
+					<groupId>org.apache.maven</groupId>
+					<artifactId>maven-core</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
@@ -44,7 +49,29 @@
 		    <artifactId>plexus-component-annotations</artifactId>
 		    <version>1.7.1</version>
 		</dependency>
-		
+		<!-- TUP-39924 start-->
+		<dependency>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-assembly-plugin</artifactId>
+			<version>3.6.0</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.codehaus.plexus</groupId>
+					<artifactId>plexus-archiver</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.36</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.enterprise</groupId>
+			<artifactId>cdi-api</artifactId>
+			<version>1.2</version>
+		</dependency>
+		<!-- TUP-39924 end -->
 	</dependencies>
   	<build>
 		<plugins>
@@ -98,6 +125,48 @@
 							<useRepositoryLayout>true</useRepositoryLayout>
 							<addParentPoms>true</addParentPoms>
 							<copyPom>true</copyPom>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-artifact</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>org.junit</groupId>
+									<artifactId>junit-bom</artifactId>
+									<version>5.9.3</version>
+									<type>pom</type>
+									<overWrite>false</overWrite>
+									<outputDirectory>${project.basedir}/tmp/org/junit/junit-bom/5.9.3</outputDirectory>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.junit</groupId>
+									<artifactId>junit-bom</artifactId>
+									<version>5.7.2</version>
+									<type>pom</type>
+									<overWrite>false</overWrite>
+									<outputDirectory>${project.basedir}/tmp/org/junit/junit-bom/5.7.2</outputDirectory>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.apache.maven</groupId>
+									<artifactId>maven-bom</artifactId>
+									<version>4.0.0-alpha-5</version>
+									<type>pom</type>
+									<overWrite>false</overWrite>
+									<outputDirectory>${project.basedir}/tmp/org/apache/maven/maven-bom/4.0.0-alpha-5</outputDirectory>
+								</artifactItem>
+							</artifactItems>
+							<outputDirectory>${project.basedir}/tmp</outputDirectory>
 						</configuration>
 					</execution>
 				</executions>
