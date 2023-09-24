@@ -811,9 +811,7 @@ public class AggregatorPomsHelper {
 
 	                    	if ("ROUTE".equalsIgnoreCase(routeBuildType) || null == routeBuildType) {
 	                    		childJobProperty.getAdditionalProperties().put(TalendProcessArgumentConstant.ARG_BUILD_TYPE, "OSGI");
-	                    	} else if ("ROUTE_MICROSERVICE".equalsIgnoreCase(routeBuildType) && ProcessUtils.isRoutelet(childJobProperty)) {
-	                    		childJobProperty.getAdditionalProperties().put(TalendProcessArgumentConstant.ARG_BUILD_TYPE, "ROUTE_MICROSERVICE");
-	                    	} else  {
+	                    	} else {
 	                    		childJobProperty.getAdditionalProperties().put(TalendProcessArgumentConstant.ARG_BUILD_TYPE, "Standalone");
 	                    	}
 	                    	
