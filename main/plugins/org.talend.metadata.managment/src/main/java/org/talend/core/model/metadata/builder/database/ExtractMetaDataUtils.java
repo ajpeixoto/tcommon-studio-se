@@ -121,6 +121,8 @@ public class ExtractMetaDataUtils {
 
     private String[] ORACLE_SSL_JARS = new String[] { "oraclepki-12.2.0.1.jar", "osdt_cert-12.2.0.1.jar", //$NON-NLS-1$//$NON-NLS-2$
             "osdt_core-12.2.0.1.jar" }; //$NON-NLS-1$
+    private String[] ORACLE_SSL_JARS_18_ABOVE = new String[] { "oraclepki-19.19.0.0.jar", "osdt_cert-19.19.0.0.jar", //$NON-NLS-1$//$NON-NLS-2$
+    "osdt_core-19.19.0.0.jar" }; //$NON-NLS-1$
     
     private String ORACLE_NLS_JARS = "orai18n-19.19.0.0.jar";
 
@@ -969,7 +971,12 @@ public class ExtractMetaDataUtils {
                     if (EDatabaseTypeName.ORACLE_CUSTOM.getDisplayName().equals(dbType)
                             && StringUtils.isNotEmpty(additionalParams)) {
                         if (additionalParams.contains(SSLPreferenceConstants.TRUSTSTORE_TYPE)) {
-                             driverNames.addAll(Arrays.asList(ORACLE_SSL_JARS));
+                            //check oracle version to add different jars, ORACLE_SSL_JARS or ORACLE_SSL_JARS_18_ABOVE
+                            if(EDatabaseVersion4Drivers.ORACLE_18.getVersionValue().equals(dbVersion)) {
+                                driverNames.addAll(Arrays.asList(ORACLE_SSL_JARS_18_ABOVE));
+                            } else {
+                                driverNames.addAll(Arrays.asList(ORACLE_SSL_JARS));
+                            }
                         }
                         
                     } else if (SNOWFLAKE.equals(dbType)) { // $NON-NLS-1$
