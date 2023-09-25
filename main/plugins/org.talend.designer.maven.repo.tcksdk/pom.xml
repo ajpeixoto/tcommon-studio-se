@@ -11,7 +11,7 @@
 	<packaging>eclipse-plugin</packaging>
 	<properties>
 		<tcomp.version>${component-runtime.version}</tcomp.version>
-		<cxf.version>3.5.5</cxf.version>
+		<cxf.version>3.5.6</cxf.version>
 		<geronimo.version>1.0.2</geronimo.version>
 		<jcache.version>1.0.5</jcache.version>
 		<jcache_spec.version>1.0-alpha-1</jcache_spec.version>
