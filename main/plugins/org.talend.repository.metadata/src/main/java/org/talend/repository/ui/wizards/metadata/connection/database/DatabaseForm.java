@@ -6448,6 +6448,10 @@ public class DatabaseForm extends AbstractForm {
             if (EDatabaseVersion4Drivers.ORACLE_12.name().equals(getConnection().getDbVersionString())) {
                 return true;
             }
+            
+            if(EDatabaseVersion4Drivers.ORACLE_18.name().equals(getConnection().getDbVersionString())) {
+                return true;
+            }
         }
         return false;
     }
