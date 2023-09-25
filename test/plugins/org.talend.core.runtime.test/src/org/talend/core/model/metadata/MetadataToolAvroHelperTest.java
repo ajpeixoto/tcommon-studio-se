@@ -30,15 +30,11 @@ import org.apache.avro.SchemaBuilder;
 import org.apache.avro.SchemaBuilder.FieldAssembler;
 import org.apache.avro.SchemaBuilder.FieldBuilder;
 import org.apache.avro.SchemaBuilder.RecordBuilder;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.junit.Test;
 import org.talend.core.model.metadata.builder.connection.ConnectionFactory;
 import org.talend.core.model.metadata.builder.connection.MetadataColumn;
 import org.talend.core.model.metadata.builder.connection.MetadataTable;
 import org.talend.core.model.metadata.types.JavaTypesManager;
-import org.talend.core.model.repository.IRepositoryPrefConstants;
-import org.talend.core.prefs.ITalendCorePrefConstants;
 import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.cwm.helper.TaggedValueHelper;
 import org.talend.daikon.avro.AvroUtils;
@@ -236,7 +232,7 @@ public class MetadataToolAvroHelperTest {
         metadataTable.setName("table1");
         metadataTable.setLabel("table1");
         metadataTable.setSourceName("table1");
-        Schema avroSchema = new Schema.Parser().parse((String) schemaObj);
+        Schema avroSchema = new Schema.Parser().setValidateDefaults(false).parse((String) schemaObj);
 
         CoreRuntimePlugin.getInstance().getProjectPreferenceManager().setAllowSpecificCharacters(true);
         for (Schema.Field field : avroSchema.getFields()) {
@@ -354,7 +350,7 @@ public class MetadataToolAvroHelperTest {
         metadataTable.setName("table1");
         metadataTable.setLabel("table1");
         metadataTable.setSourceName("table1");
-        Schema avroSchema = new Schema.Parser().parse((String) schemaObj);
+        Schema avroSchema = new Schema.Parser().setValidateDefaults(false).parse((String) schemaObj);
 
         CoreRuntimePlugin.getInstance().getProjectPreferenceManager().setAllowSpecificCharacters(true);
         for (Schema.Field field : avroSchema.getFields()) {
