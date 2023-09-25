@@ -534,7 +534,8 @@ public class MetadataConnectionUtils {
         if (connection != null && connection instanceof DatabaseConnection) {
             DatabaseConnection dbConn = (DatabaseConnection) connection;
             if (EDatabaseTypeName.ORACLE_CUSTOM.getDisplayName().equals(dbConn.getDatabaseType())) {
-                if (EDatabaseVersion4Drivers.ORACLE_12.name().equals(dbConn.getDbVersionString())) {
+                if (EDatabaseVersion4Drivers.ORACLE_12.name().equals(dbConn.getDbVersionString()) || EDatabaseVersion4Drivers.ORACLE_18.name().equals(dbConn.getDbVersionString())) {
+                    
                     return true;
                 }
             }
