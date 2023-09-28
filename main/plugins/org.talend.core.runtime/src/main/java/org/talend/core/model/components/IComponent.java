@@ -40,6 +40,8 @@ public interface IComponent {
 
     String PROP_NAME = "NAME"; //$NON-NLS-1$
 
+    String PROP_DESCRIPTION = "DESCRIPTION"; //$NON-NLS-1$
+
     String PROP_LONG_NAME = "LONG_NAME"; //$NON-NLS-1$
 
     String PROP_FAMILY = "FAMILY"; //$NON-NLS-1$
