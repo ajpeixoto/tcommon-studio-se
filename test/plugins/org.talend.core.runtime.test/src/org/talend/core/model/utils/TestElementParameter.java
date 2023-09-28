@@ -1183,4 +1183,16 @@ public class TestElementParameter implements IElementParameter {
         // TODO Auto-generated method stub
         
     }
+
+	@Override
+	public void setDescription(String description) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getDescription() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
