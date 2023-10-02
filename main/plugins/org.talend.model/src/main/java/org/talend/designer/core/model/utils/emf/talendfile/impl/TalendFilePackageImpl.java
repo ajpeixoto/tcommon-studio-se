@@ -593,11 +593,20 @@ public class TalendFilePackageImpl extends EPackageImpl implements TalendFilePac
     }
 
     /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EAttribute getContextType_Hide() {
+        return (EAttribute)contextTypeEClass.getEStructuralFeatures().get(2);
+    }
+
+    /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
      * @generated
      */
     public EAttribute getContextType_Name() {
-        return (EAttribute)contextTypeEClass.getEStructuralFeatures().get(2);
+        return (EAttribute)contextTypeEClass.getEStructuralFeatures().get(3);
     }
 
     /**
@@ -1672,6 +1681,7 @@ public class TalendFilePackageImpl extends EPackageImpl implements TalendFilePac
         contextTypeEClass = createEClass(CONTEXT_TYPE);
         createEReference(contextTypeEClass, CONTEXT_TYPE__CONTEXT_PARAMETER);
         createEAttribute(contextTypeEClass, CONTEXT_TYPE__CONFIRMATION_NEEDED);
+        createEAttribute(contextTypeEClass, CONTEXT_TYPE__HIDE);
         createEAttribute(contextTypeEClass, CONTEXT_TYPE__NAME);
 
         documentRootEClass = createEClass(DOCUMENT_ROOT);
@@ -1890,6 +1900,7 @@ public class TalendFilePackageImpl extends EPackageImpl implements TalendFilePac
         initEClass(contextTypeEClass, ContextType.class, "ContextType", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
         initEReference(getContextType_ContextParameter(), this.getContextParameterType(), null, "contextParameter", null, 0, -1, ContextType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
         initEAttribute(getContextType_ConfirmationNeeded(), theXMLTypePackage.getBoolean(), "confirmationNeeded", null, 0, 1, ContextType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEAttribute(getContextType_Hide(), theXMLTypePackage.getBoolean(), "hide", null, 0, 1, ContextType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
         initEAttribute(getContextType_Name(), theXMLTypePackage.getString(), "name", null, 0, 1, ContextType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
         initEClass(documentRootEClass, DocumentRoot.class, "DocumentRoot", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -2356,6 +2367,14 @@ public class TalendFilePackageImpl extends EPackageImpl implements TalendFilePac
            });
         addAnnotation
           (getContextType_ConfirmationNeeded(),
+           source,
+           new String[] {
+               "kind", "attribute",
+               "name", "confirmationNeeded",
+               "namespace", "##targetNamespace"
+           });
+        addAnnotation
+          (getContextType_Hide(),
            source,
            new String[] {
                "kind", "attribute",

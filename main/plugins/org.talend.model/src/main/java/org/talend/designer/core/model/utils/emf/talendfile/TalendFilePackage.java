@@ -461,13 +461,22 @@ public interface TalendFilePackage extends EPackage {
     int CONTEXT_TYPE__CONFIRMATION_NEEDED = 1;
 
     /**
+     * The feature id for the '<em><b>Hide</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int CONTEXT_TYPE__HIDE = 2;
+
+    /**
      * The feature id for the '<em><b>Name</b></em>' attribute.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
-    int CONTEXT_TYPE__NAME = 2;
+    int CONTEXT_TYPE__NAME = 3;
 
     /**
      * The number of structural features of the '<em>Context Type</em>' class.
@@ -476,7 +485,7 @@ public interface TalendFilePackage extends EPackage {
      * @generated
      * @ordered
      */
-    int CONTEXT_TYPE_FEATURE_COUNT = 3;
+    int CONTEXT_TYPE_FEATURE_COUNT = 4;
 
     /**
      * The meta object id for the '{@link org.talend.designer.core.model.utils.emf.talendfile.impl.DocumentRootImpl <em>Document Root</em>}' class.
@@ -2248,6 +2257,17 @@ public interface TalendFilePackage extends EPackage {
     EAttribute getContextType_ConfirmationNeeded();
 
     /**
+     * Returns the meta object for the attribute '{@link org.talend.designer.core.model.utils.emf.talendfile.ContextType#isHide <em>Hide</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the attribute '<em>Hide</em>'.
+     * @see org.talend.designer.core.model.utils.emf.talendfile.ContextType#isHide()
+     * @see #getContextType()
+     * @generated
+     */
+    EAttribute getContextType_Hide();
+
+    /**
      * Returns the meta object for the attribute '{@link org.talend.designer.core.model.utils.emf.talendfile.ContextType#getName <em>Name</em>}'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -3953,6 +3973,14 @@ public interface TalendFilePackage extends EPackage {
          * @generated
          */
         EAttribute CONTEXT_TYPE__CONFIRMATION_NEEDED = eINSTANCE.getContextType_ConfirmationNeeded();
+
+        /**
+         * The meta object literal for the '<em><b>Hide</b></em>' attribute feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EAttribute CONTEXT_TYPE__HIDE = eINSTANCE.getContextType_Hide();
 
         /**
          * The meta object literal for the '<em><b>Name</b></em>' attribute feature.

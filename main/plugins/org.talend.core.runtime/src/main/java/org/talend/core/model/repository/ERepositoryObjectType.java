@@ -31,6 +31,7 @@ import org.talend.core.IESBService;
 import org.talend.core.PluginChecker;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.properties.BRMSConnectionItem;
+import org.talend.core.model.properties.BigQueryConnectionItem;
 import org.talend.core.model.properties.CSVFileConnectionItem;
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.properties.ContextItem;
@@ -334,10 +335,6 @@ public class ERepositoryObjectType extends DynaEnum<ERepositoryObjectType> {
             "SYSTEM_INDICATORS_TEXT_STATISTICS", 97, true, "repository.systemIndicators.textStatistics.alias",
             new String[] { PROD_DQ }, new String[] {}, false);
 
-    public final static ERepositoryObjectType TDQ_EXCHANGE = new ERepositoryObjectType("repository.tdqExchange", //$NON-NLS-1$
-            "TDQ_Libraries/Exchange", "TDQ_EXCHANGE", 98, true, "repository.tdqExchange.alias", new String[] { PROD_DQ }, //$NON-NLS-1$
-            new String[] {});
-
     public final static ERepositoryObjectType METADATA_SALESFORCE_MODULE = new ERepositoryObjectType(
             "repository.metadataSalesforceModule", "METADATA_SALESFORCE_MODULE", 99, true, true, new String[] { PROD_DI }, //$NON-NLS-1$ //$NON-NLS-2$
             new String[] {}, false);
@@ -360,10 +357,10 @@ public class ERepositoryObjectType extends DynaEnum<ERepositoryObjectType> {
 
     public final static ERepositoryObjectType METADATA_SAP_TABLE = new ERepositoryObjectType("repository.SAPTable", //$NON-NLS-1$
             "METADATA_SAP_TABLE", 104, true, true, new String[] { PROD_DI }, new String[] {}, false);
-
+    
     public final static ERepositoryObjectType METADATA_SAP_CONTENT_EXTRACTOR = new ERepositoryObjectType("repository.SAPTable", //$NON-NLS-1$
             "METADATA_SAP_CONTENT_EXTRACTOR", 105, true, true, new String[] { PROD_DI }, new String[] {}, false);
-
+    
     public final static ERepositoryObjectType METADATA_CON_CALCULATION_VIEW = new ERepositoryObjectType(
             "repository.metadataCalculationView", "METADATA_CON_CALCULATION_VIEW", 106, true, true, new String[] { PROD_DI },
             new String[] {}, false);
@@ -508,6 +505,8 @@ public class ERepositoryObjectType extends DynaEnum<ERepositoryObjectType> {
     public final static ERepositoryObjectType METADATA_FILE_FTP = ERepositoryObjectType.valueOf("METADATA_FILE_FTP");
 
     public final static ERepositoryObjectType METADATA_SAPCONNECTIONS = ERepositoryObjectType.valueOf("METADATA_SAPCONNECTIONS");
+    
+    public final static ERepositoryObjectType METADATA_BIGQUERYCONNECTIONS = ERepositoryObjectType.valueOf("METADATA_BIGQUERYCONNECTIONS");
 
     public final static ERepositoryObjectType METADATA_FILE_EBCDIC = ERepositoryObjectType.valueOf("METADATA_FILE_EBCDIC");
 
@@ -868,6 +867,8 @@ public class ERepositoryObjectType extends DynaEnum<ERepositoryObjectType> {
             return "DB connection"; //$NON-NLS-1$
         } else if (type == METADATA_SAPCONNECTIONS) {
             return "SAPconnection"; //$NON-NLS-1$
+        } else if (type == METADATA_BIGQUERYCONNECTIONS) {
+            return "BigQueryconnection"; //$NON-NLS-1$
         } else if (type == METADATA_FILE_EBCDIC) {
             return "fileEBCDIC"; //$NON-NLS-1$
         } else if (type == METADATA_FILE_HL7) {
@@ -1078,6 +1079,11 @@ public class ERepositoryObjectType extends DynaEnum<ERepositoryObjectType> {
             @Override
             public Object caseSAPConnectionItem(SAPConnectionItem object) {
                 return METADATA_SAPCONNECTIONS;
+            }
+            
+            @Override
+            public Object caseBigQueryConnectionItem(BigQueryConnectionItem object) {
+                return METADATA_BIGQUERYCONNECTIONS;
             }
 
             @Override

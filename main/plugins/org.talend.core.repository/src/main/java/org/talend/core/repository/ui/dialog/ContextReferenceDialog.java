@@ -129,7 +129,7 @@ public class ContextReferenceDialog extends SelectionDialog {
             Item item = objToDelete.getProperty().getItem();
             if (item != null) {
                 setMessage(Messages.getString(
-                        "ContextReferenceDialog.kindMessages1", item.getProperty().getLabel(), item.getProperty().getVersion())); //$NON-NLS-1$
+                        "ContextReferenceDialog.kindMessages2", item.getProperty().getLabel(), item.getProperty().getVersion())); //$NON-NLS-1$
             }
         }
         setHelpAvailable(false);
@@ -138,7 +138,7 @@ public class ContextReferenceDialog extends SelectionDialog {
     @Override
     protected void configureShell(Shell newShell) {
         super.configureShell(newShell);
-        newShell.setText(Messages.getString("ContextReferenceDialog.Title")); //$NON-NLS-1$
+        newShell.setText(Messages.getString("ContextReferenceDialog.DeleteContext.Title")); //$NON-NLS-1$
         newShell.setSize(650, 250);
     }
 

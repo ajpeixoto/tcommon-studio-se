@@ -606,6 +606,8 @@ public class DuplicateAction extends AContextualAction {
                     item = PropertiesFactory.eINSTANCE.createSalesforceSchemaConnectionItem();
                 } else if (repositoryType == ERepositoryObjectType.METADATA_SAPCONNECTIONS) {
                     item = PropertiesFactory.eINSTANCE.createSAPConnectionItem();
+                } else if (repositoryType == ERepositoryObjectType.METADATA_BIGQUERYCONNECTIONS) {
+                    item = PropertiesFactory.eINSTANCE.createBigQueryConnectionItem();
                 } else if (repositoryType == ERepositoryObjectType.METADATA_WSDL_SCHEMA) {
                     item = PropertiesFactory.eINSTANCE.createWSDLSchemaConnectionItem();
                 } else if (repositoryType == ERepositoryObjectType.PROCESS) {

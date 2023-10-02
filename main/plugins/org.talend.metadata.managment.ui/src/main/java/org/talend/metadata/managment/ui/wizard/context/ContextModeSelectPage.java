@@ -144,7 +144,7 @@ public class ContextModeSelectPage extends WizardPage {
 
             ContextPage contextPage = new ContextPage("test", contextManager, !isRepositoryObjectEditable); //$NON-NLS-1$
             contextPage.setTitle(Messages.getString("ContextWizard.contextPageTitle")); //$NON-NLS-1$
-            contextPage.setDescription(Messages.getString("ContextWizard.contextPageDescription")); //$NON-NLS-1$
+            contextPage.setDescription(Messages.getString("ContextWizard.defineContext.Description")); //$NON-NLS-1$
             dynamicPages.add(contextPage);
             contextPage.setPageComplete(true);
             contextPage.setWizard(getWizard());

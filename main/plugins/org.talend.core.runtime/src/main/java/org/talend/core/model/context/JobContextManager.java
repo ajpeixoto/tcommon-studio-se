@@ -33,7 +33,6 @@ import org.talend.core.model.properties.ContextItem;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.cwm.helper.ResourceHelper;
-import org.talend.cwm.helper.StudioEncryptionHelper;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
 import org.talend.designer.core.model.utils.emf.talendfile.TalendFileFactory;
@@ -309,6 +308,7 @@ public class JobContextManager implements IContextManager {
             }
             context = new JobContext(name);
             context.setConfirmationNeeded(contextType.isConfirmationNeeded());
+            context.setHide(contextType.isHide());
             contextParamList = new ArrayList<IContextParameter>();
             contextTypeParamList = contextType.getContextParameter();
             Set<String> paramNamesInCurrentContext = new HashSet<String>();
@@ -543,6 +543,7 @@ public class JobContextManager implements IContextManager {
             }
             contextType.setName(context.getName());
             contextType.setConfirmationNeeded(context.isConfirmationNeeded());
+            contextType.setHide(context.isHide());
             newcontextTypeList.add(contextType);
 
             EList contextTypeParamList = contextType.getContextParameter();

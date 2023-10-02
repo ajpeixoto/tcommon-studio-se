@@ -20,6 +20,7 @@ import org.talend.core.model.metadata.builder.connection.CDCConnection;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
 import org.talend.core.model.metadata.builder.connection.MetadataTable;
 import org.talend.core.model.properties.BRMSConnectionItem;
+import org.talend.core.model.properties.BigQueryConnectionItem;
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.properties.DatabaseConnectionItem;
 import org.talend.core.model.properties.EDIFACTConnectionItem;
@@ -85,6 +86,11 @@ public class ReadTableAction extends AbstractCreateTableAction {
                         }
                     }
                     if (item2 instanceof SAPConnectionItem) {
+                        setEnabled(false);
+                        return;
+                    }
+                    
+                    if (item2 instanceof BigQueryConnectionItem) {
                         setEnabled(false);
                         return;
                     }

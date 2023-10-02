@@ -77,6 +77,7 @@ public class StatusHelper {
             case PropertiesPackage.CSV_FILE_CONNECTION_ITEM:
             case PropertiesPackage.DATABASE_CONNECTION_ITEM:
             case PropertiesPackage.SAP_CONNECTION_ITEM:
+            case PropertiesPackage.BIG_QUERY_CONNECTION_ITEM:
             case PropertiesPackage.DELIMITED_FILE_CONNECTION_ITEM:
             case PropertiesPackage.POSITIONAL_FILE_CONNECTION_ITEM:
             case PropertiesPackage.CONTEXT_ITEM:

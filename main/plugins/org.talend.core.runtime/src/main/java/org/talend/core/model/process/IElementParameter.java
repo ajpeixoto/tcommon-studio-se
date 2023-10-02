@@ -239,4 +239,8 @@ public interface IElementParameter {
     public String getOrignEncryptedValue();
     
     public void setOrignEncryptedValue(String value);
+
+    public void setDescription (String description);
+
+    public String getDescription ();
 }

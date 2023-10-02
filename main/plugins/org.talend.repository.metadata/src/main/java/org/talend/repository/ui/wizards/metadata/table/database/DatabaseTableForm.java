@@ -82,6 +82,7 @@ import org.talend.core.model.metadata.IMetadataConnection;
 import org.talend.core.model.metadata.MappingTypeRetriever;
 import org.talend.core.model.metadata.MetadataTalendType;
 import org.talend.core.model.metadata.MetadataToolHelper;
+import org.talend.core.model.metadata.builder.ConvertionHelper;
 import org.talend.core.model.metadata.builder.connection.ConnectionFactory;
 import org.talend.core.model.metadata.builder.connection.ConnectionPackage;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
@@ -1203,7 +1204,7 @@ public class DatabaseTableForm extends AbstractForm {
             }
             // fix for TDI-23745 and related tasks ,use the converted connnection with selected context group to guess
             // query ,no need ask context group again
-            array = designerService.convertNode(connectionItem, getIMetadataConnection(), tableName);
+            array = designerService.convertNode(connectionItem, getConvertedConnection(getIMetadataConnection()), tableName);
             tableEditorView.getMetadataEditor().removeAll();
 
             List<MetadataColumn> columns = new ArrayList<MetadataColumn>();
@@ -1438,6 +1439,14 @@ public class DatabaseTableForm extends AbstractForm {
         }
     }
 
+    public IMetadataConnection getConvertedConnection(IMetadataConnection metadataConnection) {
+        if(metadataConnection != null && metadataConnection.getCurrentConnection() instanceof DatabaseConnection)  {
+            DatabaseConnection conn = (DatabaseConnection) metadataConnection.getCurrentConnection();
+            metadataConnection.setAdditionalParams(ConvertionHelper.convertAdditionalParameters(conn));
+        }
+        
+        return metadataConnection;
+    }
     /**
      *
      * for featrue 2449
