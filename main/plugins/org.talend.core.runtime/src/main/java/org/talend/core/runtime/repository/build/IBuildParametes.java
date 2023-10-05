@@ -22,6 +22,8 @@ public interface IBuildParametes {
     static final String SERVICE = "Service"; //$NON-NLS-1$
 
     static final String ITEM = "Item"; //$NON-NLS-1$
+    
+    static final String PARENT_ITEM = "ParentItem"; //$NON-NLS-1$
 
     static final String VERSION = "Version"; //$NON-NLS-1$
 

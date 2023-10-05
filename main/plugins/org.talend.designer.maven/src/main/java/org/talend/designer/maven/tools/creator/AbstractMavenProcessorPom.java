@@ -149,10 +149,30 @@ public abstract class AbstractMavenProcessorPom extends CreateMavenBundleTemplat
             variablesValuesMap.put(ETalendMavenVariables.JobGroupId, PomIdsHelper.getJobGroupId(property));
             variablesValuesMap.put(ETalendMavenVariables.JobVersion, PomIdsHelper.getJobVersion(property));	    	
         }
-        variablesValuesMap.put(ETalendMavenVariables.JobArtifactId, PomIdsHelper.getJobArtifactId(property));	 
         variablesValuesMap.put(ETalendMavenVariables.TalendJobVersion, property.getVersion());
-        final String jobName = JavaResourcesHelper.escapeFileName(process.getName());
-        variablesValuesMap.put(ETalendMavenVariables.JobName, jobName);
+        if(ProcessUtils.isRoutelet(property)) {
+        	if(property.getParentItem() != null) {
+            	String routeArtifactID = PomIdsHelper.getJobArtifactId(property.getParentItem().getProperty());
+            	String jobArtifactID =  PomIdsHelper.getJobArtifactId(property);
+            	String routeVersion = property.getParentItem().getProperty().getVersion().replace(".", "_");
+
+            	String jobName = (jobArtifactID.startsWith(routeArtifactID))? jobArtifactID : 
+            		routeArtifactID + "_" + routeVersion + "_" + jobArtifactID;
+
+                variablesValuesMap.put(ETalendMavenVariables.JobGroupId, PomIdsHelper.getJobGroupId(property.getParentItem().getProperty()));
+        		variablesValuesMap.put(ETalendMavenVariables.JobArtifactId, jobName);
+        		variablesValuesMap.put(ETalendMavenVariables.JobName, jobName);
+        		variablesValuesMap.put(ETalendMavenVariables.JobVersion, PomIdsHelper.getJobVersion(property.getParentItem().getProperty()));
+        	} else {
+                variablesValuesMap.put(ETalendMavenVariables.JobArtifactId, PomIdsHelper.getJobArtifactId(property));	
+                final String jobName = JavaResourcesHelper.escapeFileName(process.getName());
+                variablesValuesMap.put(ETalendMavenVariables.JobName, jobName);
+        	}
+        } else  {
+            variablesValuesMap.put(ETalendMavenVariables.JobArtifactId, PomIdsHelper.getJobArtifactId(property));	
+            final String jobName = JavaResourcesHelper.escapeFileName(process.getName());
+            variablesValuesMap.put(ETalendMavenVariables.JobName, jobName);
+        }
 
         if (property != null) {
             Project currentProject = ProjectManager.getInstance().getProject(property);

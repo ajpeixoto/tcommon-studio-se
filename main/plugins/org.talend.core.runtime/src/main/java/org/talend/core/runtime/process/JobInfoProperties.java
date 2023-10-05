@@ -42,6 +42,8 @@ public class JobInfoProperties extends Properties {
     public static final String PROJECT_NAME = "project"; //$NON-NLS-1$
 
     public static final String JOB_ID = "jobId"; //$NON-NLS-1$
+    
+    public static final String JOB_PARENT_ID = "jobParentId"; //$NON-NLS-1$
 
     public static final String JOB_NAME = "job"; //$NON-NLS-1$
 
@@ -92,6 +94,10 @@ public class JobInfoProperties extends Properties {
             setProperty(BRANCH, branchSelection);
         }
 
+        if (processItem.getProperty() != null && processItem.getProperty().getParentItem() != null) {
+            setProperty(JOB_PARENT_ID, processItem.getProperty().getParentItem().getProperty().getId());
+        }
+        
         setProperty(JOB_ID, jobInfo.getJobId());
         setProperty(JOB_NAME, jobInfo.getJobName());
         String jobType = processItem.getProcess().getJobType();

@@ -1608,6 +1608,11 @@ public class ProcessorUtilities {
                                     }
                                 }
 
+//                                if (isCIMode() && "Routelets".equals(node.getComponent().getOriginalFamilyName())) {
+                                if ("Routelets".equals(node.getComponent().getOriginalFamilyName())) {
+                                	processItem.getProperty().setParentItem(ItemCacheManager.getProcessItem(currentProcess.getId(), currentProcess.getVersion()));
+                                }
+
                                 int subJobOption = GENERATE_ALL_CHILDS;
                                 if (BitwiseOptionUtils.containOption(option, GENERATE_WITH_FIRST_CHILD)) {
                                     subJobOption = GENERATE_MAIN_ONLY;
@@ -2547,7 +2552,7 @@ public class ProcessorUtilities {
         return jobInfos;
     }
 
-    private static boolean isRouteletNode(NodeType node) {
+    public static boolean isRouteletNode(NodeType node) {
         String jobIds = getParameterValue(node.getElementParameter(), "PROCESS_TYPE:PROCESS_TYPE_PROCESS");
         String jobVersion = getParameterValue(node.getElementParameter(), "PROCESS_TYPE:PROCESS_TYPE_VERSION"); //$NON-NLS-1$
         ProcessItem processItem = ItemCacheManager.getProcessItem(jobIds, jobVersion);
@@ -2944,5 +2949,13 @@ public class ProcessorUtilities {
     
     public static boolean isNeedExportItemsForDQ() {
         return needExportItemsForDQ;
+    }
+    
+    public static boolean isMicroservice(Item item) {
+    	if (item == null || item.getProperty() == null || item.getProperty().getAdditionalProperties() == null) {
+    		return false;
+    	}
+    	return "ROUTE_MICROSERVICE".equals(item.getProperty().getAdditionalProperties()
+    			.get(TalendProcessArgumentConstant.ARG_BUILD_TYPE));
     }
 }
