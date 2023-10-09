@@ -79,6 +79,7 @@ import org.talend.core.prefs.ITalendCorePrefConstants;
 import org.talend.core.ui.CoreUIPlugin;
 import org.talend.core.ui.context.ContextTreeTable.ContextTreeNode;
 import org.talend.core.ui.context.model.ContextTabChildModel;
+import org.talend.core.ui.context.model.table.ContextTableConstants;
 import org.talend.core.ui.context.model.table.ContextTableTabChildModel;
 import org.talend.core.ui.context.model.table.ContextTableTabParentModel;
 import org.talend.core.ui.context.nattableTree.ContextNatTableUtils;
@@ -94,8 +95,6 @@ public class ContextNebulaGridComposite extends AbstractContextTabEditComposite 
     public static final int CONTEXT_COLUMN_WIDTH = 200;
 
     public static final String NEW_PARAM_NAME = "new"; //$NON-NLS-1$
-
-    public static final String CONTEXT_DEFAULT = "(Default)";//$NON-NLS-1$
 
     private TreeViewer viewer;
 
@@ -266,6 +265,7 @@ public class ContextNebulaGridComposite extends AbstractContextTabEditComposite 
 
         viewEnvironmentsCombo = new CCombo(environmentsComp, SWT.BORDER);
         viewEnvironmentsCombo.setVisibleItemCount(0);
+        viewEnvironmentsCombo.setListVisible(false);
         viewEnvironmentsCombo.setText(Messages.getString("ContextNebulaComposite.ViewEnvironmentsGroupLabel")); //$NON-NLS-1$
         viewEnvironmentsCombo.addMouseListener(new MouseListener() {
 
@@ -303,12 +303,14 @@ public class ContextNebulaGridComposite extends AbstractContextTabEditComposite 
         for (IContext context : contexts) {
             String contextName = context.getName();
             if (contextName.equalsIgnoreCase(defaultContext.getName())) {
-                contextName = contextName + CONTEXT_DEFAULT;
+                contextName = contextName + ContextTableConstants.CONTEXT_DEFAULT;
             }
             StagingAction action = new StagingAction(contextName, IAction.AS_CHECK_BOX) {
 
                 @Override
                 public void run() {
+                    viewEnvironmentsCombo.setVisibleItemCount(0);
+                    viewEnvironmentsCombo.setListVisible(false);
                     String name = getText();
                     if (StringUtils.isNotBlank(name)) {
                         updateContextStatus(name, isChecked());
@@ -329,7 +331,8 @@ public class ContextNebulaGridComposite extends AbstractContextTabEditComposite 
     private void updateContextStatus(String name, boolean isChecked) {
         List<IContext> contexts = modelManager.getContextManager().getListContext();
         for (IContext context : contexts) {
-            if (name.equalsIgnoreCase(context.getName()) || name.equalsIgnoreCase(context.getName() + CONTEXT_DEFAULT)) {
+            if (name.equalsIgnoreCase(context.getName())
+                    || name.equalsIgnoreCase(context.getName() + ContextTableConstants.CONTEXT_DEFAULT)) {
                 context.setHide(!isChecked);
                 break;
             }
