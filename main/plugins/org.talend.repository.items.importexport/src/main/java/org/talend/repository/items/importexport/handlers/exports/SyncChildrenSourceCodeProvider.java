@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.talend.commons.runtime.utils.io.FileCopyUtils;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.process.JobInfo;
+import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.repository.build.IBuildResourcesProvider;
@@ -67,6 +68,9 @@ public class SyncChildrenSourceCodeProvider implements IBuildResourcesProvider {
         final File targetFolder = mainSrcFolder.getLocation().toFile();
 
         dependenciesItems.stream().filter(jobInfo -> !jobInfo.isJoblet()).map(JobInfo::getProcessItem).forEach(item -> {
+            if (ProcessUtils.isRoutelet(item.getProperty())) {
+                item.getProperty().setParentItem(processItem);
+            }
             ITalendProcessJavaProject childJavaProject = runProcessService.getTalendJobJavaProject(item.getProperty());
             if (childJavaProject != null) {
                 final IFolder childSrcFolder = childJavaProject.getSrcFolder();
