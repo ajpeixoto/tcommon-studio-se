@@ -147,6 +147,10 @@ public class ExtendedContextColumnPropertyAccessor<R> implements IColumnProperty
         }
         String contextParaName = ContextNatTableUtils.getCurrentContextModelName(element);
         String currentColumnName = getColumnProperty(columnIndex);
+        if (currentColumnName.endsWith(ContextTableConstants.CONTEXT_DEFAULT)) {
+            currentColumnName = currentColumnName.substring(0,
+                    currentColumnName.length() - ContextTableConstants.CONTEXT_DEFAULT.length());
+        }
         if (currentColumnName.equals(ContextTableConstants.COLUMN_NAME_PROPERTY)) {
             if (element instanceof ContextTableTabParentModel) {
                 String sourceId = ((ContextTableTabParentModel) element).getSourceId();
@@ -230,6 +234,10 @@ public class ExtendedContextColumnPropertyAccessor<R> implements IColumnProperty
     private void setPropertyValue(IContextModelManager manager, Object dataElement, String contextParaName, int columnIndex,
             Object newValue) {
         String currentColumnName = getColumnProperty(columnIndex);
+        if (currentColumnName.endsWith(ContextTableConstants.CONTEXT_DEFAULT)) {
+            currentColumnName = currentColumnName.substring(0,
+                    currentColumnName.length() - ContextTableConstants.CONTEXT_DEFAULT.length());
+        }
         if (currentColumnName.equals(ContextTableConstants.COLUMN_TYPE_PROPERTY)) {
             ContextTableTabParentModel parent = (ContextTableTabParentModel) dataElement;
             IContextParameter contextPara = parent.getContextParameter();
@@ -283,14 +291,12 @@ public class ExtendedContextColumnPropertyAccessor<R> implements IColumnProperty
             Command cmd = new setContextEnablePromptCommand(manager, contextPara, ((boolean) newValue));
             runCommand(cmd, manager);
         } else {
-            String columnGroupName = currentColumnName;
             IContextManager contextManger = manager.getContextManager();
             if (contextManger != null) {
                 // change the property of context value.
                 List<Object> list = new ArrayList<Object>();
                 list.add(dataElement);
-                IContextParameter para = null;
-                para = getRealParameter(contextManger, columnGroupName, dataElement);
+                IContextParameter para = getRealParameter(contextManger, currentColumnName, dataElement);
                 if (para == null || (StringUtils.isBlank(para.getValue()) && newValue == null)) {
                     return;
                 }
