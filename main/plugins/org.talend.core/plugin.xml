@@ -78,12 +78,5 @@
             serviceId="ICoreService">
       </Service>
    </extension>
-   <extension
-         point="org.talend.core.runtime.service">
-      <Service
-            class="org.talend.core.services.NotificationService"
-            serviceId="INotificationService">
-      </Service>
-   </extension>
 
 </plugin>

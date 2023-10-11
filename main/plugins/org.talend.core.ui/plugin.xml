@@ -104,4 +104,8 @@
             class="org.talend.core.ui.perspective.RemoveQuickAccessProcessor">
       </processor>
    </extension>
+   <extension
+          point="org.eclipse.ui.startup">
+          <startup class="org.talend.core.ui.notification.Java17NotificationStartupTask" />
+    </extension>
 </plugin>
