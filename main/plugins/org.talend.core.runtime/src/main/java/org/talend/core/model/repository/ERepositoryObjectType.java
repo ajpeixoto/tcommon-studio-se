@@ -553,7 +553,7 @@ public class ERepositoryObjectType extends DynaEnum<ERepositoryObjectType> {
     /**
      * <font color="red">This value may be <b>null</b> in some licenses, <b>should add NPE check</b></font>
      */
-    public final static ERepositoryObjectType PROCESS_STANDALONE_MICROSERVICE = ERepositoryObjectType.valueOf("PROCESS_STANDALONE_MICROSERVICE"); //$NON-NLS-1$
+    public final static ERepositoryObjectType PROCESS_ROUTE_STANDALONE_MICROSERVICE = ERepositoryObjectType.valueOf("ROUTE_STANDALONE_MICROSERVICE"); //$NON-NLS-1$
 
     /**
      * <font color="red">This value may be <b>null</b> in some licenses, <b>should add NPE check</b></font>
