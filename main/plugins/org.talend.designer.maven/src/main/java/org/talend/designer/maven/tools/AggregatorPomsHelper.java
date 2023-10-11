@@ -25,7 +25,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -35,7 +34,6 @@ import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.apache.maven.model.Activation;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
-import org.apache.maven.model.Plugin;
 import org.apache.maven.model.Profile;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -1061,6 +1059,7 @@ public class AggregatorPomsHelper {
 	                    	String routeCustomVersion = (String) routeProperty.getAdditionalProperties().get(MavenConstants.NAME_USER_VERSION);
 	                    	boolean routeUseSnapshot = routeProperty.getAdditionalProperties().containsKey(MavenConstants.NAME_PUBLISH_AS_SNAPSHOT);
 	
+	                    	IFile routePomFile = getItemPomFolder(item.getProperty()).getFile(TalendMavenConstants.POM_FILE_NAME);
 	
 	                    	// Inherit child job parameters from parent route
 	
@@ -1083,7 +1082,9 @@ public class AggregatorPomsHelper {
 	                    	runProcessService.generatePom(childJob.getProcessItem(), TalendProcessOptionConstants.GENERATE_POM_NO_FILTER);
 	
 	                    	IFile childPomFile = getItemPomFolder(childJobProperty).getFile(TalendMavenConstants.POM_FILE_NAME);
-	                        modules.add(getModulePath(childPomFile));
+	                    	if (childPomFile.getProject().getName().equalsIgnoreCase(routePomFile.getProject().getName())) { 
+	                    		modules.add(getModulePath(childPomFile));
+	                    	}
 	
 	                    	// restore original Job parameters
 	                    	childJobProperty.setParentItem(null);
