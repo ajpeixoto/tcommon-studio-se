@@ -52,7 +52,9 @@ Require-Bundle: org.apache.commons.lang,
  org.talend.daikon,
  org.apache.commons.logging,
  org.apache.commons.lang3,
- org.apache.commons.codec
+ org.apache.commons.codec,
+ org.eclipse.jface.notifications,
+ org.eclipse.swt
 Import-Package: org.eclipse.jdt.internal.ui.workingsets
 Export-Package: org.talend.core.ui,
  org.talend.core.ui.actions,
@@ -72,6 +74,7 @@ Export-Package: org.talend.core.ui,
  org.talend.core.ui.context.model.tree,
  org.talend.core.ui.context.nattableTree,
  org.talend.core.ui.context.view,
+ org.talend.core.ui.dialog,
  org.talend.core.ui.documentation.generation,
  org.talend.core.ui.editor,
  org.talend.core.ui.editor.command,
