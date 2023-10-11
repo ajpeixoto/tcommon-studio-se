@@ -47,6 +47,7 @@ import org.talend.core.GlobalServiceRegister;
 import org.talend.core.IRepositoryContextService;
 import org.talend.core.database.EDatabase4DriverClassName;
 import org.talend.core.database.EDatabaseTypeName;
+import org.talend.core.database.conn.ConnParameterKeys;
 import org.talend.core.database.conn.version.EDatabaseVersion4Drivers;
 import org.talend.core.model.context.ContextUtils;
 import org.talend.core.model.metadata.IMetadataConnection;
@@ -530,15 +531,34 @@ public class MetadataConnectionUtils {
         return false;
     }
 
-    public static boolean isOracleCustomSSL(Connection connection) {
+    /**
+     * Judge if Oracle custom version supports SSL
+     * 
+     * @param connection
+     * @return
+     */
+    public static boolean isOracleCustomSupportSSL(Connection connection) {
         if (connection != null && connection instanceof DatabaseConnection) {
             DatabaseConnection dbConn = (DatabaseConnection) connection;
             if (EDatabaseTypeName.ORACLE_CUSTOM.getDisplayName().equals(dbConn.getDatabaseType())) {
                 if (EDatabaseVersion4Drivers.ORACLE_12.name().equals(dbConn.getDbVersionString()) || EDatabaseVersion4Drivers.ORACLE_18.name().equals(dbConn.getDbVersionString())) {
-                    
                     return true;
                 }
             }
+        }
+        return false;
+    }
+
+    /**
+     * Judge if it is Oracle custom and selects SSL
+     * 
+     * @param connection
+     * @return
+     */
+    public static boolean isOracleCustomSSLUsed(Connection connection) {
+        if (isOracleCustomSupportSSL(connection)) {
+            DatabaseConnection dbConn = (DatabaseConnection) connection;
+            return Boolean.parseBoolean(dbConn.getParameters().get(ConnParameterKeys.CONN_PARA_KEY_USE_SSL));
         }
         return false;
     }
