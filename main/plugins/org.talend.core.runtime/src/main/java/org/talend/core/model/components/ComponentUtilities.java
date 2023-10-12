@@ -93,8 +93,8 @@ public final class ComponentUtilities {
         // TODO SML Use getNodeProperty
         EList elementParameter = node.getElementParameter();
         Iterator iterator = elementParameter.iterator();
-        for (Object o = iterator.next(); iterator.hasNext(); o = iterator.next()) {
-            ElementParameterType t = (ElementParameterType) o;
+        while (iterator.hasNext()) {
+            ElementParameterType t = (ElementParameterType) iterator.next();
             if (t.getName().equals(property)) {
                 iterator.remove();
             }
