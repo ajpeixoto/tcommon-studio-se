@@ -14,6 +14,7 @@ package org.talend.core.model.metadata.builder.database;
 
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -27,12 +28,14 @@ import org.talend.core.IRepositoryContextService;
 import org.talend.core.database.conn.ConnParameterKeys;
 import org.talend.core.database.conn.DatabaseConnStrUtil;
 import org.talend.core.database.conn.HiveConfKeysForTalend;
+import org.talend.core.model.context.ContextUtils;
 import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
 import org.talend.core.model.metadata.builder.connection.DelimitedFileConnection;
 import org.talend.core.model.metadata.builder.connection.MDMConnection;
 import org.talend.core.model.metadata.builder.database.dburl.SupportDBUrlStore;
 import org.talend.core.model.metadata.builder.database.dburl.SupportDBUrlType;
+import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IContextParameter;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.CoreRuntimePlugin;
@@ -81,8 +84,8 @@ public final class JavaSqlFactory {
         return contextGroupName + "-" + uniqueId + "-" + variableName; //$NON-NLS-1$ //$NON-NLS-2$
     }
 
-    public static void savePromptConVars2Cache(Connection conn, IContextParameter param) {
-        if (param != null && param.isPromptNeeded()) {
+    public static void savePromptConVars2Cache(Connection conn, IContextParameter param, List<IContext> iContexts) {
+        if (param != null && (param.isPromptNeeded() || ContextUtils.isPromptNeeded(iContexts, param.getName()))) {
             String promptConVarsMapKey = getPromptConVarsMapKey(conn, "context." + param.getName()); //$NON-NLS-1$
             String paramValue = param.getValue();
             if (PasswordEncryptUtil.isPasswordType(param.getType())) {
@@ -102,8 +105,9 @@ public final class JavaSqlFactory {
         }
     }
 
-    public static void saveReportPromptConVars2Cache(String groupName, IContextParameter param) {
-        if (param != null && param.isPromptNeeded()) {
+    public static void saveReportPromptConVars2Cache(String groupName, IContextParameter param,
+            List<IContext> iContexts) {
+        if (param != null && (param.isPromptNeeded() || ContextUtils.isPromptNeeded(iContexts, param.getName()))) {
             String promptConVarsMapKey =
                     getPromptConVarsMapKey(groupName, param.getSource(), "context." + param.getName()); //$NON-NLS-1$
             String paramValue = param.getValue();
