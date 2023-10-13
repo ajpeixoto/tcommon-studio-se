@@ -209,7 +209,23 @@ public class ConnParameterKeys {
     public static final String CONN_PARA_KEY_AZURE_USERNAME = "CONN_PARA_KEY_AZURE_USERNAME"; //$NON-NLS-1$
 
     public static final String CONN_PARA_KEY_AZURE_PASSWORD = "CONN_PARA_KEY_AZURE_PASSWORD"; //$NON-NLS-1$
+    
+    public static final String CONN_PARA_KEY_AZURE_AUTH_MODE = "CONN_PARA_KEY_AZURE_AUTH_MODE";
+    
+    public static final String CONN_PARA_KEY_AZURE_FS_USERNAME = "CONN_PARA_KEY_AZURE_FS_USERNAME"; //$NON-NLS-1$
+    
+    public static final String CONN_PARA_KEY_AZURE_FS_PASSWORD = "CONN_PARA_KEY_AZURE_FS_PASSWORD"; //$NON-NLS-1$
+    
+    public static final String CONN_PARA_KEY_AZURE_APPLICATION_ID = "CONN_PARA_KEY_AZURE_APPLICATION_ID"; //$NON-NLS-1$
+    
+    public static final String CONN_PARA_KEY_AZURE_DIRECTORY_ID = "CONN_PARA_KEY_AZURE_DIRECTORY_ID"; //$NON-NLS-1$
 
+    public static final String CONN_PARA_KEY_AZURE_CLIENT_KEY = "CONN_PARA_KEY_AZURE_CLIENT_KEY"; //$NON-NLS-1$
+    
+    public static final String CONN_PARA_KEY_USE_AZURE_CLIENT_CERTIFICATE = "CONN_PARA_KEY_USE_AZURE_CLIENT_CERTIFICATE"; //$NON-NLS-1$
+    
+    public static final String CONN_PARA_KEY_AZURE_CLIENT_CERTIFICATE = "CONN_PARA_KEY_AZURE_CLIENT_CERTIFICATE"; //$NON-NLS-1$
+    
     public static final String CONN_PARA_KEY_AZURE_DEPLOY_BLOB = "CONN_PARA_KEY_AZURE_DEPLOY_BLOB"; //$NON-NLS-1$
 
     /******************************************/
