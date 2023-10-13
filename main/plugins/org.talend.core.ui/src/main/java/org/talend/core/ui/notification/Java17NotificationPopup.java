@@ -122,7 +122,7 @@ public class Java17NotificationPopup extends ArrangedNotificationPopup {
                 return false;
             }
             version = TalendQuoteUtils.removeQuotesIfExist(version);
-            if (Integer.parseInt(version.split("\\.")[0]) > 8) {
+            if (Integer.parseInt(version.split("[^\\d]+")[0]) > 8) {
                 // since Java 9
                 return true;
             }
@@ -135,7 +135,7 @@ public class Java17NotificationPopup extends ArrangedNotificationPopup {
     private static boolean isJava17() {
         boolean isJava17 = false;
         String javaVersion = System.getProperty("java.version");
-        String[] arr = javaVersion.split("\\.");
+        String[] arr = javaVersion.split("[^\\d]+");
         try {
             isJava17 = Integer.parseInt(arr[0]) >= 17;
         } catch (NumberFormatException e) {
@@ -144,5 +144,5 @@ public class Java17NotificationPopup extends ArrangedNotificationPopup {
         }
         return isJava17;
     }
-    
+
 }
