@@ -75,7 +75,6 @@ import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
-import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.BusinessException;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.LoginException;
@@ -958,15 +957,12 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
     }
 
     private void setPrefForNewProject(Project project) throws PersistenceException {
-        if (!CommonsPlugin.isTUJTest()) {
-            // set Java 17 compatibility option
-            IFile projectSettingsFile = ResourceUtils.getProject(project.getTechnicalLabel())
-                    .getFolder(FileConstants.SETTINGS_FOLDER_NAME).getFile(FileConstants.PROJECTSETTING_FILE_NAME);
-            if (!projectSettingsFile.exists()) {
-                ProjectPreferenceManager manager = new ProjectPreferenceManager(project, CoreRuntimePlugin.PLUGIN_ID, false);
-                manager.setValue(JavaUtils.ALLOW_JAVA_INTERNAL_ACCESS, true);
-                manager.save();
-            }
+        IFile projectSettingsFile = ResourceUtils.getProject(project.getTechnicalLabel())
+                .getFolder(FileConstants.SETTINGS_FOLDER_NAME).getFile(FileConstants.PROJECTSETTING_FILE_NAME);
+        if (!projectSettingsFile.exists()) {
+            ProjectPreferenceManager manager = new ProjectPreferenceManager(project, CoreRuntimePlugin.PLUGIN_ID, false);
+            manager.setValue(JavaUtils.ALLOW_JAVA_INTERNAL_ACCESS, true);
+            manager.save();
         }
     }
 
