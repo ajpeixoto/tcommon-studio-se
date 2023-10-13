@@ -20,7 +20,7 @@ import org.talend.migration.IMigrationTask.ExecutionResult;
  * $Id: talend.epf 1 2006-09-29 17:06:40 +0000 (ven., 29 sept. 2006) nrousseau $
  *
  */
-public abstract class AbstractMigrationTask {
+public abstract class AbstractMigrationTask implements IMigrationTask{
 
     private String id;
 
@@ -104,6 +104,10 @@ public abstract class AbstractMigrationTask {
     }
 
     public boolean isDeprecated() {
+        return false;
+    }
+    
+    public boolean isLazy() {
         return false;
     }
 }

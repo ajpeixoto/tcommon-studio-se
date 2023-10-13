@@ -42,14 +42,18 @@ import org.eclipse.ui.views.properties.PropertySheet;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.LoginException;
 import org.talend.commons.exception.PersistenceException;
+import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
 import org.talend.commons.ui.swt.actions.ITreeContextualAction;
 import org.talend.commons.utils.VersionUtils;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.IESBService;
 import org.talend.core.model.general.Project;
+import org.talend.core.model.migration.IMigrationToolService;
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ItemState;
+import org.talend.core.model.properties.JobletProcessItem;
+import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
@@ -800,5 +804,24 @@ public abstract class AContextualAction extends Action implements ITreeContextua
     @Override
     public ITreeContextualAction clone() throws CloneNotSupportedException {
         return (ITreeContextualAction) super.clone();
+    }
+    
+    protected void runLazyMigration() {
+        Object object = ((IStructuredSelection) this.getSelection()).getFirstElement();
+
+        if (object instanceof RepositoryNode) {
+            RepositoryNode node = (RepositoryNode) object;
+            Item item = node.getObject().getProperty().getItem();
+            if (item instanceof ProcessItem || item instanceof JobletProcessItem) {
+                IMigrationToolService service = (IMigrationToolService) GlobalServiceRegister.getDefault().getService(IMigrationToolService.class);
+                if (service != null) {
+                    try {
+                        service.executeLazyMigrations(null, item);
+                    } catch (Exception e) {
+                        MessageBoxExceptionHandler.process(e);
+                    }
+                }
+            }
+        }
     }
 }

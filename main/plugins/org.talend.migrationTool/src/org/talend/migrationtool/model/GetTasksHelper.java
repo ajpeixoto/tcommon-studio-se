@@ -15,16 +15,19 @@ package org.talend.migrationtool.model;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
-import org.talend.commons.ui.runtime.exception.ExceptionHandler;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.utils.workbench.extensions.ExtensionImplementationProvider;
 import org.talend.commons.utils.workbench.extensions.ExtensionPointLimiterImpl;
 import org.talend.commons.utils.workbench.extensions.IExtensionPointLimiter;
 import org.talend.core.model.properties.MigrationTask;
 import org.talend.core.model.utils.MigrationUtil;
+import org.talend.designer.runprocess.ProcessorUtilities;
+import org.talend.migration.IMigrationTask;
 import org.talend.migration.IProjectMigrationTask;
 import org.talend.migration.IWorkspaceMigrationTask;
 
@@ -36,15 +39,11 @@ import org.talend.migration.IWorkspaceMigrationTask;
  */
 public class GetTasksHelper {
 
-    private static GetTasksHelper instance = null;
+    private static GetTasksHelper instance = new GetTasksHelper();
 
-    private Map<String, IProjectMigrationTask> migrationsInstances = null;
+    private Map<String, IProjectMigrationTask> migrationsInstances = new HashMap<String, IProjectMigrationTask>();
 
     public static GetTasksHelper getInstance() {
-        if (instance == null) {
-            instance = new GetTasksHelper();
-            instance.migrationsInstances = new HashMap<String, IProjectMigrationTask>();
-        }
         return instance;
     }
 
@@ -53,7 +52,7 @@ public class GetTasksHelper {
      * This could be called if needed, but migration tasks shouldn't take too much memory
      */
     public void dispose() {
-        migrationsInstances = null;
+        migrationsInstances.clear();
     }
 
     /**
@@ -79,19 +78,9 @@ public class GetTasksHelper {
                 @Override
                 protected IProjectMigrationTask createImplementation(IExtension extension,
                         IExtensionPointLimiter extensionPointLimiter, IConfigurationElement configurationElement) {
-                    try {
-                        if (configurationElement.getAttribute("id").equals(taskId)) { //$NON-NLS-1$
-                            IProjectMigrationTask currentAction = (IProjectMigrationTask) configurationElement
-                                    .createExecutableExtension("class"); //$NON-NLS-1$
-                            currentAction.setId(configurationElement.getAttribute("id")); //$NON-NLS-1$
-                            currentAction.setName(configurationElement.getAttribute("name")); //$NON-NLS-1$
-                            currentAction.setDescription(configurationElement.getAttribute("description")); //$NON-NLS-1$
-                            currentAction.setVersion(configurationElement.getAttribute("version"));
-                            currentAction.setBreaks(configurationElement.getAttribute("breaks"));
-                            return currentAction;
-                        }
-                    } catch (CoreException e) {
-                        ExceptionHandler.process(e);
+                    if (configurationElement.getAttribute("id").equals(taskId)) { //$NON-NLS-1$
+                        IProjectMigrationTask currentAction = create(configurationElement);
+                        return currentAction;
                     }
                     return null;
                 }
@@ -137,6 +126,11 @@ public class GetTasksHelper {
     }
 
     public static List<IProjectMigrationTask> getProjectTasks(final boolean beforeLogon) {
+        return getProjectTasks(beforeLogon, false);
+    }
+    
+    
+    public static List<IProjectMigrationTask> getProjectTasks(final Boolean beforeLogon, final boolean isLazy) {
         IExtensionPointLimiter actionExtensionPoint = new ExtensionPointLimiterImpl(
                 "org.talend.core.migrationTask", "projecttask"); //$NON-NLS-1$ //$NON-NLS-2$
 
@@ -153,26 +147,26 @@ public class GetTasksHelper {
             @Override
             protected IProjectMigrationTask createImplementation(IExtension extension,
                     IExtensionPointLimiter extensionPointLimiter, IConfigurationElement configurationElement) {
-                try {
+                if (beforeLogon == null) {
+                    IProjectMigrationTask currentAction = create(configurationElement);
+                    return currentAction;
+                } else {
                     if (new Boolean(configurationElement.getAttribute("beforeLogon")) == beforeLogon) { //$NON-NLS-1$
-                        IProjectMigrationTask currentAction = (IProjectMigrationTask) configurationElement
-                                .createExecutableExtension("class"); //$NON-NLS-1$
-                        currentAction.setId(configurationElement.getAttribute("id")); //$NON-NLS-1$
-                        currentAction.setName(configurationElement.getAttribute("name")); //$NON-NLS-1$
-                        currentAction.setDescription(configurationElement.getAttribute("description")); //$NON-NLS-1$
-                        currentAction.setVersion(configurationElement.getAttribute("version"));
-                        currentAction.setBreaks(configurationElement.getAttribute("breaks"));
+                        IProjectMigrationTask currentAction = create(configurationElement);
                         return currentAction;
                     }
-                } catch (CoreException e) {
-                    ExceptionHandler.process(e);
+                    return null;
                 }
-                return null;
             }
-
         };
 
-        return provider.createInstances();
+        return provider.createInstances().stream().filter(t -> {
+            if (isCIMode()) {
+                return true;
+            } else {
+                return t.isLazy() == isLazy;
+            }
+        }).collect(Collectors.toList());
     }
 
     public static List<IWorkspaceMigrationTask> getWorkspaceTasks() {
@@ -192,21 +186,33 @@ public class GetTasksHelper {
             @Override
             protected IWorkspaceMigrationTask createImplementation(IExtension extension,
                     IExtensionPointLimiter extensionPointLimiter, IConfigurationElement configurationElement) {
-                try {
-                    IWorkspaceMigrationTask currentAction = (IWorkspaceMigrationTask) configurationElement
-                            .createExecutableExtension("class"); //$NON-NLS-1$
-                    currentAction.setId(configurationElement.getAttribute("id")); //$NON-NLS-1$
-                    currentAction.setName(configurationElement.getAttribute("name")); //$NON-NLS-1$
-                    currentAction.setVersion(configurationElement.getAttribute("version"));
-                    currentAction.setBreaks(configurationElement.getAttribute("breaks"));
-                    return currentAction;
-                } catch (CoreException e) {
-                    ExceptionHandler.process(e);
-                }
-                return null;
+                IWorkspaceMigrationTask currentAction = create(configurationElement);
+                return currentAction;
             }
 
         };
         return provider.createInstances();
+    }
+    
+    static <T extends IMigrationTask> T create(IConfigurationElement configurationElement) {
+        T currentAction = null;
+        try {
+            currentAction = (T) configurationElement.createExecutableExtension("class");
+            currentAction.setId(configurationElement.getAttribute("id")); //$NON-NLS-1$
+            currentAction.setName(configurationElement.getAttribute("name")); //$NON-NLS-1$
+            currentAction.setVersion(configurationElement.getAttribute("version"));
+            currentAction.setBreaks(configurationElement.getAttribute("breaks"));
+            if (currentAction instanceof IProjectMigrationTask) {
+                ((IProjectMigrationTask) currentAction).setDescription(configurationElement.getAttribute("description")); //$NON-NLS-1$
+            }
+        } catch (CoreException e) {
+            ExceptionHandler.process(e);
+        }
+
+        return currentAction;
+    }
+    
+    private static boolean isCIMode() {
+        return ProcessorUtilities.isCIMode();
     }
 }

@@ -67,5 +67,12 @@ public interface IMigrationToolService extends IService {
     public void updateMigrationSystem(org.talend.core.model.properties.Project project, boolean persistence);
 
     public String getTaskId();
+    
+    /**
+     * Execute lazy migrations for given item
+     * @param project item's project
+     * @param item given item
+     */
+    public void executeLazyMigrations(Project project, Item item) throws Exception;
 
 }

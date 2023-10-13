@@ -68,5 +68,35 @@ public interface IMigrationTask {
         FAILURE, // task failed (stacktrace in error log). will be retry on next login
         SKIPPED; // task not failed, not show to user in summary pop-up. will be retry on next login
     }
+    
+    /**
+     * <p>
+     * Whether the migration task is lazy or not. Lazy migration task will be applied to items at the time of opening or
+     * running, non-lazy migration task will be applied during project logon.
+     * </p>
+     * <p>
+     * Dependency between migration tasks is expressed by order of the task.
+     * </p>
+     * </pre>
+     * Lazy migration task is targeted on job or joblet process item, if a migration task does not change following, then it is lazy, otherwise it is not.
+     * <ol>
+     * <li>
+     * Metadata, for example database connections
+     * </li>
+     * <li>
+     * Global context
+     * </li>
+     * <li>
+     * Preference settings
+     * </li>
+     * <li>
+     * Project settings
+     * </li>
+     * </ol>
+     * </pre>
+     * 
+     * @return
+     */
+    public boolean isLazy();
 
 }

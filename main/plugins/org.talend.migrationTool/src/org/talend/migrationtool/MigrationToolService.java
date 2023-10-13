@@ -19,11 +19,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -41,11 +46,11 @@ import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.LoginException;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.runtime.model.emf.provider.EmfResourcesFactoryReader;
 import org.talend.commons.runtime.model.emf.provider.ResourceOption;
-import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
 import org.talend.commons.utils.VersionUtils;
 import org.talend.core.GlobalServiceRegister;
@@ -53,8 +58,10 @@ import org.talend.core.ICoreService;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.migration.IMigrationToolService;
 import org.talend.core.model.properties.Item;
+import org.talend.core.model.properties.JobletProcessItem;
 import org.talend.core.model.properties.MigrationStatus;
 import org.talend.core.model.properties.MigrationTask;
+import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.properties.RoutineItem;
 import org.talend.core.model.relationship.RelationshipItemBuilder;
@@ -73,6 +80,7 @@ import org.talend.core.utils.CodesJarResourceCache;
 import org.talend.designer.codegen.ICodeGeneratorService;
 import org.talend.designer.codegen.ITalendSynchronizer;
 import org.talend.designer.runprocess.IRunProcessService;
+import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.migration.IMigrationTask;
 import org.talend.migration.IMigrationTask.ExecutionResult;
 import org.talend.migration.IProjectMigrationTask;
@@ -108,6 +116,10 @@ public class MigrationToolService implements IMigrationToolService {
     private boolean migrationOnNewProject = false;
 
     private String taskId;
+    
+    private static final String MIGRATION_ORDER_PROP = "migration_order";
+
+    private static final String MIGRATION_FAILED_PROP = "migration_failed";
 
     public MigrationToolService() {
         doneThisSession = new ArrayList<IProjectMigrationTask>();
@@ -759,7 +771,7 @@ public class MigrationToolService implements IMigrationToolService {
         }
     }
 
-    private void sortMigrationTasks(List<? extends IMigrationTask> tasks) {
+    static void sortMigrationTasks(List<? extends IMigrationTask> tasks) {
         Collections.sort(tasks, new Comparator<IMigrationTask>() {
 
             @Override
@@ -932,6 +944,93 @@ public class MigrationToolService implements IMigrationToolService {
     @Override
     public String getTaskId() {
         return this.taskId;
+    }
+    
+    public void executeLazyMigrations(Project project, Item item) throws Exception {
+        if (ProcessorUtilities.isCIMode()) {
+            log.info("CI mode, lazy migration is disabled");
+            return;
+        }
+        
+        if (project == null) {
+            project = ProjectManager.getInstance().getCurrentProject();
+        }
+        if (!(item instanceof ProcessItem || item instanceof JobletProcessItem)) {
+            throw new IllegalArgumentException("item is not process item or joblet process item");
+        }
+        // get all lazy tasks
+        List<IProjectMigrationTask> allLazyTasks = getLazyMigrationTasks();
+        // check whether needs to migrate or not
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+        List<IProjectMigrationTask> nonExecutedLazyMigrationTasks = null;
+        Object migrationOrderObj = item.getProperty().getAdditionalProperties().get(MIGRATION_ORDER_PROP);
+        if (migrationOrderObj != null) {
+            try {
+                Date migrationOrder = formatter.parse(migrationOrderObj.toString());
+                nonExecutedLazyMigrationTasks = getNonExecutedLazyMigrationTasks(allLazyTasks, migrationOrder);
+            } catch (ParseException e) {
+                ExceptionHandler.process(e);
+            }
+        } else {
+            nonExecutedLazyMigrationTasks = allLazyTasks;
+        }
+        if (nonExecutedLazyMigrationTasks == null || nonExecutedLazyMigrationTasks.isEmpty()) {
+            log
+                    .info("No lazy migration tasks for project: " + project.getTechnicalLabel() + ", item id: " + item.getProperty().getId() + ", item display name: "
+                            + item.getProperty().getDisplayName());
+            return;
+        }
+        // execute migrations
+        log
+                .info("lazy migration tasks for project: " + project.getTechnicalLabel() + ", item id: " + item.getProperty().getId() + ", item display name: " + item.getProperty().getDisplayName()
+                        + ", size: " + nonExecutedLazyMigrationTasks.size());
+        List<String> failedMigrations = new ArrayList<String>();
+        for (IProjectMigrationTask t : nonExecutedLazyMigrationTasks) {
+            try {
+                ExecutionResult res = t.execute(project, item);
+                t.setStatus(res);
+                if (t.getStatus() == ExecutionResult.FAILURE) {
+                    failedMigrations.add(t.getId());
+                }
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
+            }
+        }
+        // save latest migration order into properties
+        item.getProperty().getAdditionalProperties().put(MIGRATION_ORDER_PROP, formatter.format(nonExecutedLazyMigrationTasks.get(nonExecutedLazyMigrationTasks.size() - 1).getOrder()));
+        if (!failedMigrations.isEmpty()) {
+            log
+                    .info("lazy migration tasks for project: " + project.getTechnicalLabel() + ", item id: " + item.getProperty().getId() + ", item display name: "
+                            + item.getProperty().getDisplayName() + ", failed migration size: " + failedMigrations.size());
+            item.getProperty().getAdditionalProperties().put(MIGRATION_FAILED_PROP, String.join(",", failedMigrations));
+        }
+        IRepositoryService service = (IRepositoryService) GlobalServiceRegister.getDefault().getService(IRepositoryService.class);
+        final IProxyRepositoryFactory repFactory = service.getProxyRepositoryFactory();
+        try {
+            repFactory.save(item.getProperty());
+        } catch (PersistenceException e) {
+            ExceptionHandler.process(e);
+        }
+    }
+    
+    private static List<IProjectMigrationTask> getNonExecutedLazyMigrationTasks(List<IProjectMigrationTask> allTasks, Date migrationOrder) {
+        if (allTasks == null || allTasks.isEmpty()) {
+            return null;
+        }
+        return allTasks.stream().filter(t -> t.getOrder().after(migrationOrder)).collect(Collectors.toList());
+    }
+    
+    private static List<IProjectMigrationTask> getLazyMigrationTasks() {
+        List<IProjectMigrationTask> ret = new ArrayList<IProjectMigrationTask>();
+        List<IProjectMigrationTask> lazyTasks = GetTasksHelper.getProjectTasks(null, true);
+        if (lazyTasks != null && !lazyTasks.isEmpty()) {
+            ret.addAll(lazyTasks);
+        }
+        
+        // sort
+        sortMigrationTasks(ret);
+
+        return ret;
     }
 
 }
