@@ -149,6 +149,8 @@ public interface IRepositoryService extends IService {
 
     String getStandardNodeLabel();
 
+    void openProjectSettingsDialog(String pageId);
+
     public static IRepositoryService get() {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IRepositoryService.class)) {
             return GlobalServiceRegister.getDefault().getService(IRepositoryService.class);

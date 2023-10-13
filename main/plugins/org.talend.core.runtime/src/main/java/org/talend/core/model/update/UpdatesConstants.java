@@ -52,9 +52,9 @@ public final class UpdatesConstants {
      * Category
      */
 
-    public static final String CONTEXT = Messages.getString("UpdatesConstants.Context"); //$NON-NLS-1$
+    public static final String CONTEXT = Messages.getString("UpdatesConstants.ContextVariable"); //$NON-NLS-1$
 
-    public static final String CONTEXT_GROUP = Messages.getString("UpdatesConstants.ContextGroup"); //$NON-NLS-1$
+    public static final String CONTEXT_GROUP = Messages.getString("UpdatesConstants.ContextEnvironment"); //$NON-NLS-1$
 
     public static final String COMPONENT = Messages.getString("UpdatesConstants.Component"); //$NON-NLS-1$
 

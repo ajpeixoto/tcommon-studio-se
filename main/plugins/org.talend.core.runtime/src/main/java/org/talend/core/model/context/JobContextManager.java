@@ -56,6 +56,11 @@ public class JobContextManager implements IContextManager {
      */
     private Map<String, String> nameMap = new HashMap<String, String>();
 
+    /*
+     * record rename context for node
+     */
+    private Map<String, String> nameMapNode = new HashMap<String, String>();
+
     private Map<ContextItem, Map<String, String>> repositoryRenamedMap = new HashMap<ContextItem, Map<String, String>>();
 
     /*
@@ -403,6 +408,18 @@ public class JobContextManager implements IContextManager {
 
         // check if the newly added parameters is renamed
         updateNewParameters(newName, oldName);
+    }
+
+    public void addNameMapForNode(String newName, String oldName) {
+        nameMapNode.put(newName, oldName);
+    }
+
+    public void clearNameMapForNode() {
+        nameMapNode.clear();
+    }
+
+    public Map<String, String> getNameMapNode() {
+        return nameMapNode;
     }
 
     public Map<String, String> getNameMap() {

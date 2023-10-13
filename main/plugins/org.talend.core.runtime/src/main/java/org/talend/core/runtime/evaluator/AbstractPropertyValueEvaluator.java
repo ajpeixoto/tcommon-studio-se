@@ -15,6 +15,7 @@ package org.talend.core.runtime.evaluator;
 import java.util.List;
 
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.runtime.util.GenericTypeUtils;
 import org.talend.core.utils.TalendQuoteUtils;
@@ -127,6 +128,9 @@ public abstract class AbstractPropertyValueEvaluator implements PropertyValueEva
 
         if (GenericTypeUtils.isStringType(property)) {
             if (property.isFlag(Property.Flags.ENCRYPT)) {
+                if (!StringUtils.isEmpty(stringValue)) {
+                    stringValue = stringValue.replace("\\\"", "\"");
+                }
                 return TalendQuoteUtils.removeQuotes(stringValue);
             }
             return TalendQuoteUtils.removeQuotes(StringEscapeUtils.unescapeJava(stringValue));
