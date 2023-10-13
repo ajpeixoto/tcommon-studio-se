@@ -23,7 +23,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -40,6 +39,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
@@ -951,7 +951,7 @@ public class MigrationToolService implements IMigrationToolService {
             log.info("CI mode, lazy migration is disabled");
             return;
         }
-        
+
         if (project == null) {
             project = ProjectManager.getInstance().getCurrentProject();
         }
@@ -981,35 +981,77 @@ public class MigrationToolService implements IMigrationToolService {
             return;
         }
         // execute migrations
-        log
-                .info("lazy migration tasks for project: " + project.getTechnicalLabel() + ", item id: " + item.getProperty().getId() + ", item display name: " + item.getProperty().getDisplayName()
-                        + ", size: " + nonExecutedLazyMigrationTasks.size());
-        List<String> failedMigrations = new ArrayList<String>();
-        for (IProjectMigrationTask t : nonExecutedLazyMigrationTasks) {
-            try {
-                ExecutionResult res = t.execute(project, item);
-                t.setStatus(res);
-                if (t.getStatus() == ExecutionResult.FAILURE) {
-                    failedMigrations.add(t.getId());
-                }
-            } catch (Exception e) {
-                ExceptionHandler.process(e);
-            }
-        }
-        // save latest migration order into properties
-        item.getProperty().getAdditionalProperties().put(MIGRATION_ORDER_PROP, formatter.format(nonExecutedLazyMigrationTasks.get(nonExecutedLazyMigrationTasks.size() - 1).getOrder()));
-        if (!failedMigrations.isEmpty()) {
-            log
-                    .info("lazy migration tasks for project: " + project.getTechnicalLabel() + ", item id: " + item.getProperty().getId() + ", item display name: "
-                            + item.getProperty().getDisplayName() + ", failed migration size: " + failedMigrations.size());
-            item.getProperty().getAdditionalProperties().put(MIGRATION_FAILED_PROP, String.join(",", failedMigrations));
-        }
         IRepositoryService service = (IRepositoryService) GlobalServiceRegister.getDefault().getService(IRepositoryService.class);
         final IProxyRepositoryFactory repFactory = service.getProxyRepositoryFactory();
+        final Project projectMig = project;
+        final List<IProjectMigrationTask> nonExecutedLazyMigrationList = nonExecutedLazyMigrationTasks;
+        log
+                .info("lazy migration tasks for project: " + project.getTechnicalLabel() + ", item id: " + item.getProperty().getId() + ", item display name: " + item.getProperty().getDisplayName()
+                        + ", size: " + nonExecutedLazyMigrationList.size());
+        String taskDesc = "executeLazyMigrations on project: " + project.getTechnicalLabel();
+        log.trace(taskDesc);
         try {
-            repFactory.save(item.getProperty());
-        } catch (PersistenceException e) {
-            ExceptionHandler.process(e);
+            EmfResourcesFactoryReader.INSTANCE.addOption(ResourceOption.MIGRATION, false);
+            EmfResourcesFactoryReader.INSTANCE.addOption(ResourceOption.MIGRATION, true);
+
+            RepositoryWorkUnit<Void> repositoryWorkUnit = new RepositoryWorkUnit<Void>(project, taskDesc) {
+
+                @Override
+                public void run() throws PersistenceException {
+                    final IWorkspaceRunnable op = new IWorkspaceRunnable() {
+
+                        @Override
+                        public void run(IProgressMonitor monitor) throws CoreException {
+                            List<String> failedMigrations = new ArrayList<String>();
+                            for (IProjectMigrationTask t : nonExecutedLazyMigrationList) {
+                                try {
+                                    ExecutionResult res = t.execute(projectMig, item);
+                                    t.setStatus(res);
+                                    if (t.getStatus() == ExecutionResult.FAILURE) {
+                                        failedMigrations.add(t.getId());
+                                    }
+                                } catch (Exception e) {
+                                    ExceptionHandler.process(e);
+                                }
+                            }
+                            // save latest migration order into properties
+                            item
+                                    .getProperty()
+                                    .getAdditionalProperties()
+                                    .put(MIGRATION_ORDER_PROP, formatter.format(nonExecutedLazyMigrationList.get(nonExecutedLazyMigrationList.size() - 1).getOrder()));
+                            if (!failedMigrations.isEmpty()) {
+                                log
+                                        .info("lazy migration tasks for project: " + projectMig.getTechnicalLabel() + ", item id: " + item.getProperty().getId() + ", item display name: "
+                                                + item.getProperty().getDisplayName() + ", failed migration size: " + failedMigrations.size());
+                                item.getProperty().getAdditionalProperties().put(MIGRATION_FAILED_PROP, String.join(",", failedMigrations));
+                            }
+                            
+                            try {
+                                repFactory.save(item.getProperty());
+                            } catch (PersistenceException e) {
+                                ExceptionHandler.process(e);
+                            }
+                        }
+                    };
+                    
+                    IWorkspace workspace1 = ResourcesPlugin.getWorkspace();
+                    ISchedulingRule schedulingRule = workspace1.getRoot();
+                    // the update the project files need to be done in the workspace runnable to
+                    // avoid all notification of changes before the end of the modifications.
+                    try {
+                        workspace1.run(op, schedulingRule, IWorkspace.AVOID_UPDATE, new NullProgressMonitor());
+                    } catch (CoreException e) {
+                        ExceptionHandler.process(e);
+                        throw new PersistenceException(e);
+                    }
+                }
+            };
+            
+            repositoryWorkUnit.setAvoidUnloadResources(true);
+            repFactory.executeRepositoryWorkUnit(repositoryWorkUnit);
+        } finally {
+            EmfResourcesFactoryReader.INSTANCE.removOption(ResourceOption.MIGRATION, false);
+            EmfResourcesFactoryReader.INSTANCE.removOption(ResourceOption.MIGRATION, true);
         }
     }
     
