@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.codec.binary.StringUtils;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
@@ -122,7 +123,18 @@ public class GetTasksHelper {
 
         };
 
-        return provider.createInstances();
+        List<MigrationTask> allTasks = provider.createInstances();
+        final List<IProjectMigrationTask> allLazyTasks = getProjectTasks(beforeLogon, true);
+        return allTasks.stream().filter(t -> {
+            boolean found = false;
+            for (IProjectMigrationTask pt : allLazyTasks) {
+                if (StringUtils.equals(t.getId(), pt.getId())) {
+                    found = true;
+                    break;
+                }
+            }
+            return !found;
+        }).collect(Collectors.toList());
     }
 
     public static List<IProjectMigrationTask> getProjectTasks(final boolean beforeLogon) {
