@@ -124,6 +124,9 @@ public class GetTasksHelper {
         };
 
         List<MigrationTask> allTasks = provider.createInstances();
+        if (isCIMode()) {
+            return allTasks;
+        }
         final List<IProjectMigrationTask> allLazyTasks = getProjectTasks(null, true);
         return allTasks.stream().filter(t -> {
             boolean found = false;
