@@ -124,7 +124,7 @@ public class GetTasksHelper {
         };
 
         List<MigrationTask> allTasks = provider.createInstances();
-        final List<IProjectMigrationTask> allLazyTasks = getProjectTasks(beforeLogon, true);
+        final List<IProjectMigrationTask> allLazyTasks = getProjectTasks(null, true);
         return allTasks.stream().filter(t -> {
             boolean found = false;
             for (IProjectMigrationTask pt : allLazyTasks) {
