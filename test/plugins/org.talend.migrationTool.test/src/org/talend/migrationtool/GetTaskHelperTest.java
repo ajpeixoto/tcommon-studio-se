@@ -42,6 +42,7 @@ public class GetTaskHelperTest {
         Assert.assertTrue(found.isLazy());
     }
 
+    @Test
     public void testGetMigrationTasks() throws Exception {
         List<MigrationTask> migrationTasksBeforeLogon = GetTasksHelper.getMigrationTasks(true);
         List<MigrationTask> migrationTasksAfterLogon = GetTasksHelper.getMigrationTasks(false);
@@ -55,6 +56,7 @@ public class GetTaskHelperTest {
         Assert.assertNull(foundLazy);
     }
 
+    @Test
     public void testGetProjectTasks() throws Exception {
         List<IProjectMigrationTask> migrationTasksBeforeLogon = GetTasksHelper.getProjectTasks(true);
         List<IProjectMigrationTask> migrationTasksAfterLogon = GetTasksHelper.getProjectTasks(false);
