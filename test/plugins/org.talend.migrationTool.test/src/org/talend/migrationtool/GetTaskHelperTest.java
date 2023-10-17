@@ -74,6 +74,8 @@ public class GetTaskHelperTest {
         for (T t : tasks) {
             if (t instanceof IProjectMigrationTask) {
                 taskId = ((IProjectMigrationTask) t).getId();
+            } else {
+                taskId = ((MigrationTask) t).getId();
             }
             if (StringUtils.equals(taskId, LAZY_TASK_ID)) {
                 foundLazy = t;
