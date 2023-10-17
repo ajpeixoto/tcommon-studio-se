@@ -2287,7 +2287,7 @@ public final class ConnectionContextHelper {
         Assert.isNotNull(context);
         // Prompt for context values ?
         for (IContextParameter parameter : context.getContextParameterList()) {
-            if (parameter.isPromptNeeded()) {
+            if (parameter.isPromptNeeded() || ContextUtils.isPromptNeeded(contexts, parameter.getName())) {
                 nbValues++;
                 break;
             }
