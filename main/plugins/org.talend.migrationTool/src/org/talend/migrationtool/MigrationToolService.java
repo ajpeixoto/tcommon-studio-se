@@ -1014,8 +1014,20 @@ public class MigrationToolService implements IMigrationToolService {
                                     ExceptionHandler.process(e);
                                 }
                             }
+
+                            Item tempItem = item;
+                            if (item.getProperty().eResource() == null) { // In case some
+                                // migration task has
+                                // unloaded.
+                                try {
+                                    tempItem = (Item) repFactory.getSpecificVersion(item.getProperty().getId(), item.getProperty().getVersion(), true);
+                                } catch (PersistenceException e) {
+                                    ExceptionHandler.process(e);
+                                }
+                            }
+                            
                             // save latest migration order into properties
-                            item
+                            tempItem
                                     .getProperty()
                                     .getAdditionalProperties()
                                     .put(MIGRATION_ORDER_PROP, formatter.format(nonExecutedLazyMigrationList.get(nonExecutedLazyMigrationList.size() - 1).getOrder()));
@@ -1023,11 +1035,11 @@ public class MigrationToolService implements IMigrationToolService {
                                 log
                                         .info("lazy migration tasks for project: " + projectMig.getTechnicalLabel() + ", item id: " + item.getProperty().getId() + ", item display name: "
                                                 + item.getProperty().getDisplayName() + ", failed migration size: " + failedMigrations.size());
-                                item.getProperty().getAdditionalProperties().put(MIGRATION_FAILED_PROP, String.join(",", failedMigrations));
+                                tempItem.getProperty().getAdditionalProperties().put(MIGRATION_FAILED_PROP, String.join(",", failedMigrations));
                             }
                             
                             try {
-                                repFactory.save(item.getProperty());
+                                repFactory.save(tempItem.getProperty());
                             } catch (PersistenceException e) {
                                 ExceptionHandler.process(e);
                             }
