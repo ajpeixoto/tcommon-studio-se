@@ -117,6 +117,8 @@ public class MigrationToolService implements IMigrationToolService {
 
     private String taskId;
     
+    private static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    
     private static final String MIGRATION_ORDER_PROP = "migration_order";
 
     private static final String MIGRATION_FAILED_PROP = "migration_failed";
@@ -961,12 +963,11 @@ public class MigrationToolService implements IMigrationToolService {
         // get all lazy tasks
         List<IProjectMigrationTask> allLazyTasks = getLazyMigrationTasks();
         // check whether needs to migrate or not
-        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
         List<IProjectMigrationTask> nonExecutedLazyMigrationTasks = null;
         Object migrationOrderObj = item.getProperty().getAdditionalProperties().get(MIGRATION_ORDER_PROP);
         if (migrationOrderObj != null) {
             try {
-                Date migrationOrder = formatter.parse(migrationOrderObj.toString());
+                Date migrationOrder = DATE_FORMATTER.parse(migrationOrderObj.toString());
                 nonExecutedLazyMigrationTasks = getNonExecutedLazyMigrationTasks(allLazyTasks, migrationOrder);
             } catch (ParseException e) {
                 ExceptionHandler.process(e);
@@ -1030,7 +1031,7 @@ public class MigrationToolService implements IMigrationToolService {
                             tempItem
                                     .getProperty()
                                     .getAdditionalProperties()
-                                    .put(MIGRATION_ORDER_PROP, formatter.format(nonExecutedLazyMigrationList.get(nonExecutedLazyMigrationList.size() - 1).getOrder()));
+                                    .put(MIGRATION_ORDER_PROP, DATE_FORMATTER.format(nonExecutedLazyMigrationList.get(nonExecutedLazyMigrationList.size() - 1).getOrder()));
                             if (!failedMigrations.isEmpty()) {
                                 log
                                         .info("lazy migration tasks for project: " + projectMig.getTechnicalLabel() + ", item id: " + item.getProperty().getId() + ", item display name: "
