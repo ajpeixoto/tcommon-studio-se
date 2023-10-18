@@ -807,7 +807,7 @@ public abstract class AContextualAction extends Action implements ITreeContextua
     }
     
     protected void runLazyMigration() {
-        Object object = ((IStructuredSelection) this.getSelection()).getFirstElement();
+        Object object = ((IStructuredSelection) this.getRepositorySelection()).getFirstElement();
 
         if (object instanceof RepositoryNode) {
             RepositoryNode node = (RepositoryNode) object;

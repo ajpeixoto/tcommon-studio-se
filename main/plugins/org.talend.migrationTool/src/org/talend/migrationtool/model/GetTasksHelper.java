@@ -109,7 +109,7 @@ public class GetTasksHelper {
             protected MigrationTask createImplementation(IExtension extension, IExtensionPointLimiter extensionPointLimiter,
                     IConfigurationElement configurationElement) {
                 try {
-                    if (new Boolean(configurationElement.getAttribute("beforeLogon")) == beforeLogon) { //$NON-NLS-1$
+                    if (new Boolean(configurationElement.getAttribute("beforeLogon")).booleanValue() == beforeLogon) { //$NON-NLS-1$
                         String id = configurationElement.getAttribute("id"); //$NON-NLS-1$
                         String version = configurationElement.getAttribute("version"); //$NON-NLS-1$
                         String breaks = configurationElement.getAttribute("breaks"); //$NON-NLS-1$
@@ -166,7 +166,7 @@ public class GetTasksHelper {
                     IProjectMigrationTask currentAction = create(configurationElement);
                     return currentAction;
                 } else {
-                    if (new Boolean(configurationElement.getAttribute("beforeLogon")) == beforeLogon) { //$NON-NLS-1$
+                    if (new Boolean(configurationElement.getAttribute("beforeLogon")).booleanValue() == beforeLogon) { //$NON-NLS-1$
                         IProjectMigrationTask currentAction = create(configurationElement);
                         return currentAction;
                     }
