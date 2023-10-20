@@ -457,7 +457,41 @@ public class ExportLogsWizardPage extends WizardPage {
         for (Entry<Object, Object> en : p.entrySet()) {
             sb.append(en.getKey() + "=" + en.getValue() + "\n"); //$NON-NLS-1$ //$NON-NLS-2$
         }
-        writeToFile(dest, ".sysConfig", sb); //$NON-NLS-1$
+        StringBuffer processedData = processSensitiveDataHidden(sb.toString());
+        writeToFile(dest, ".sysConfig", processedData); //$NON-NLS-1$
+    }
+
+    private StringBuffer processSensitiveDataHidden(String data) {
+        StringBuffer processedData = new StringBuffer();
+        while (true) {
+            String line;
+            int index = data.indexOf("\n");
+            if (index == -1) {
+                line = data.toString();
+                String processedLine = line;
+                int equalsIndex = line.indexOf('=');
+                if (equalsIndex != -1) {
+                    String key = line.substring(0, equalsIndex).trim();
+                    if (key.toLowerCase().contains("password")) {
+                        processedLine = key + "=" + "***";
+                    }
+                }
+                processedData.append(processedLine);
+                break;
+            }
+            line = data.substring(0, index);
+            String processedLine = line;
+            int equalsIndex = line.indexOf('=');
+            if (equalsIndex != -1) {
+                String key = line.substring(0, equalsIndex).trim();
+                if (key.toLowerCase().contains("password")) {
+                    processedLine = key + "=" + "***";
+                }
+            }
+            processedData.append(processedLine).append("\n");
+            data = data.substring(index + 1);
+        }
+        return processedData;
     }
 
     private void writeToFile(File dest, String fileName, StringBuffer sb) {
