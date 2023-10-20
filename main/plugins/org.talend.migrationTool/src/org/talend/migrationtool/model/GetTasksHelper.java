@@ -117,7 +117,7 @@ public class GetTasksHelper {
                         if (!isCIMode() && Boolean.parseBoolean(isLazy)) {
                             return null;
                         }
-                        return MigrationUtil.createMigrationTask(id, version, breaks, MigrationUtil.DEFAULT_STATUS, isLazy);
+                        return MigrationUtil.createMigrationTask(id, version, breaks, MigrationUtil.DEFAULT_STATUS);
                     }
                 } catch (Exception e) {
                     ExceptionHandler.process(e);

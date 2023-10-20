@@ -23,14 +23,13 @@ import org.talend.core.model.properties.PropertiesPackage;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
- * </p>
  * <ul>
  *   <li>{@link org.talend.core.model.properties.impl.MigrationTaskImpl#getId <em>Id</em>}</li>
  *   <li>{@link org.talend.core.model.properties.impl.MigrationTaskImpl#getBreaks <em>Breaks</em>}</li>
  *   <li>{@link org.talend.core.model.properties.impl.MigrationTaskImpl#getVersion <em>Version</em>}</li>
  *   <li>{@link org.talend.core.model.properties.impl.MigrationTaskImpl#getStatus <em>Status</em>}</li>
- *   <li>{@link org.talend.core.model.properties.impl.MigrationTaskImpl#getIsLazy <em>Is Lazy</em>}</li>
  * </ul>
+ * </p>
  *
  * @generated
  */
@@ -114,26 +113,6 @@ public class MigrationTaskImpl extends EObjectImpl implements MigrationTask {
      * @ordered
      */
     protected MigrationStatus status = STATUS_EDEFAULT;
-
-    /**
-     * The default value of the '{@link #getIsLazy() <em>Is Lazy</em>}' attribute.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @see #getIsLazy()
-     * @generated
-     * @ordered
-     */
-    protected static final String IS_LAZY_EDEFAULT = null;
-
-    /**
-     * The cached value of the '{@link #getIsLazy() <em>Is Lazy</em>}' attribute.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @see #getIsLazy()
-     * @generated
-     * @ordered
-     */
-    protected String isLazy = IS_LAZY_EDEFAULT;
 
     /**
      * <!-- begin-user-doc -->
@@ -242,27 +221,6 @@ public class MigrationTaskImpl extends EObjectImpl implements MigrationTask {
      * <!-- end-user-doc -->
      * @generated
      */
-    public String getIsLazy() {
-        return isLazy;
-    }
-
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    public void setIsLazy(String newIsLazy) {
-        String oldIsLazy = isLazy;
-        isLazy = newIsLazy;
-        if (eNotificationRequired())
-            eNotify(new ENotificationImpl(this, Notification.SET, PropertiesPackage.MIGRATION_TASK__IS_LAZY, oldIsLazy, isLazy));
-    }
-
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
     public Object eGet(int featureID, boolean resolve, boolean coreType) {
         switch (featureID) {
             case PropertiesPackage.MIGRATION_TASK__ID:
@@ -273,8 +231,6 @@ public class MigrationTaskImpl extends EObjectImpl implements MigrationTask {
                 return getVersion();
             case PropertiesPackage.MIGRATION_TASK__STATUS:
                 return getStatus();
-            case PropertiesPackage.MIGRATION_TASK__IS_LAZY:
-                return getIsLazy();
         }
         return super.eGet(featureID, resolve, coreType);
     }
@@ -297,9 +253,6 @@ public class MigrationTaskImpl extends EObjectImpl implements MigrationTask {
                 return;
             case PropertiesPackage.MIGRATION_TASK__STATUS:
                 setStatus((MigrationStatus)newValue);
-                return;
-            case PropertiesPackage.MIGRATION_TASK__IS_LAZY:
-                setIsLazy((String)newValue);
                 return;
         }
         super.eSet(featureID, newValue);
@@ -324,9 +277,6 @@ public class MigrationTaskImpl extends EObjectImpl implements MigrationTask {
             case PropertiesPackage.MIGRATION_TASK__STATUS:
                 setStatus(STATUS_EDEFAULT);
                 return;
-            case PropertiesPackage.MIGRATION_TASK__IS_LAZY:
-                setIsLazy(IS_LAZY_EDEFAULT);
-                return;
         }
         super.eUnset(featureID);
     }
@@ -346,8 +296,6 @@ public class MigrationTaskImpl extends EObjectImpl implements MigrationTask {
                 return VERSION_EDEFAULT == null ? version != null : !VERSION_EDEFAULT.equals(version);
             case PropertiesPackage.MIGRATION_TASK__STATUS:
                 return status != STATUS_EDEFAULT;
-            case PropertiesPackage.MIGRATION_TASK__IS_LAZY:
-                return IS_LAZY_EDEFAULT == null ? isLazy != null : !IS_LAZY_EDEFAULT.equals(isLazy);
         }
         return super.eIsSet(featureID);
     }
@@ -369,8 +317,6 @@ public class MigrationTaskImpl extends EObjectImpl implements MigrationTask {
         result.append(version);
         result.append(", status: ");
         result.append(status);
-        result.append(", isLazy: ");
-        result.append(isLazy);
         result.append(')');
         return result.toString();
     }

@@ -110,7 +110,7 @@ public class MigrationToolServiceTest {
             Project project = mock(Project.class);
 
             EList<MigrationTask> tasks = new BasicEList<MigrationTask>();
-            tasks.add(MigrationUtil.createMigrationTask("task", topVersion, topBreaks, DEFAULT_STATUS, MigrationUtil.DEFAULT_LAZY));
+            tasks.add(MigrationUtil.createMigrationTask("task", topVersion, topBreaks, DEFAULT_STATUS));
             when(project.getMigrationTask()).thenReturn(tasks);
 
             return service.checkMigrationTasks(project);

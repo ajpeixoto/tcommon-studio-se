@@ -33,8 +33,6 @@ public class MigrationUtil {
     public static final String DEFAULT_BREAKS = "5.1.1"; //$NON-NLS-1$
 
     public static final MigrationStatus DEFAULT_STATUS = MigrationStatus.OK_LITERAL;
-    
-    public static final String DEFAULT_LAZY = "false";
 
     public static MigrationTask findMigrationTask(List<? extends MigrationTask> tasks, IMigrationTask task) {
         if (tasks == null || task == null) {
@@ -124,22 +122,21 @@ public class MigrationUtil {
             }
         }
 
-        return createMigrationTask(task.getId(), task.getVersion(), task.getBreaks(), migrationStatus, String.valueOf(task.isLazy()));
+        return createMigrationTask(task.getId(), task.getVersion(), task.getBreaks(), migrationStatus);
     }
 
-    public static MigrationTask createMigrationTask(String id, String version, String breaks, MigrationStatus status, String isLazy) {
+    public static MigrationTask createMigrationTask(String id, String version, String breaks, MigrationStatus status) {
         MigrationTask task = PropertiesFactory.eINSTANCE.createMigrationTask();
         task.setId(id);
         task.setVersion(version);
         task.setBreaks(breaks);
         task.setStatus(status);
-        task.setIsLazy(isLazy);
 
         return task;
     }
 
     public static MigrationTask createDefaultMigrationTask(String id) {
-        return createMigrationTask(id, DEFAULT_VERSION, DEFAULT_BREAKS, DEFAULT_STATUS, DEFAULT_LAZY);
+        return createMigrationTask(id, DEFAULT_VERSION, DEFAULT_BREAKS, DEFAULT_STATUS);
     }
 
 }
