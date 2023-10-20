@@ -98,5 +98,7 @@ public interface IMigrationTask {
      * @return
      */
     public boolean isLazy();
+    
+    public void setLazy(boolean isLazy);
 
 }

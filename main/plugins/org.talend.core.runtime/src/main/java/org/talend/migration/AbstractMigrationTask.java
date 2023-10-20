@@ -34,6 +34,8 @@ public abstract class AbstractMigrationTask implements IMigrationTask{
 
     private ExecutionResult status;
 
+    private boolean isLazy = false;
+
     /**
      * DOC smallet AbstractMigrationTask constructor comment.
      */
@@ -108,6 +110,10 @@ public abstract class AbstractMigrationTask implements IMigrationTask{
     }
     
     public boolean isLazy() {
-        return false;
+        return isLazy;
+    }
+    
+    public void setLazy(boolean isLazy) {
+        this.isLazy = isLazy;
     }
 }

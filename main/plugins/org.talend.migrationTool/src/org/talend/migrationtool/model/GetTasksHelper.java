@@ -113,7 +113,11 @@ public class GetTasksHelper {
                         String id = configurationElement.getAttribute("id"); //$NON-NLS-1$
                         String version = configurationElement.getAttribute("version"); //$NON-NLS-1$
                         String breaks = configurationElement.getAttribute("breaks"); //$NON-NLS-1$
-                        return MigrationUtil.createMigrationTask(id, version, breaks, MigrationUtil.DEFAULT_STATUS);
+                        String isLazy = configurationElement.getAttribute("isLazy");
+                        if (!isCIMode() && Boolean.parseBoolean(isLazy)) {
+                            return null;
+                        }
+                        return MigrationUtil.createMigrationTask(id, version, breaks, MigrationUtil.DEFAULT_STATUS, isLazy);
                     }
                 } catch (Exception e) {
                     ExceptionHandler.process(e);
@@ -123,21 +127,7 @@ public class GetTasksHelper {
 
         };
 
-        List<MigrationTask> allTasks = provider.createInstances();
-        if (isCIMode()) {
-            return allTasks;
-        }
-        final List<IProjectMigrationTask> allLazyTasks = getProjectTasks(null, true);
-        return allTasks.stream().filter(t -> {
-            boolean found = false;
-            for (IProjectMigrationTask pt : allLazyTasks) {
-                if (StringUtils.equals(t.getId(), pt.getId())) {
-                    found = true;
-                    break;
-                }
-            }
-            return !found;
-        }).collect(Collectors.toList());
+        return provider.createInstances();
     }
 
     public static List<IProjectMigrationTask> getProjectTasks(final boolean beforeLogon) {
@@ -217,6 +207,7 @@ public class GetTasksHelper {
             currentAction.setName(configurationElement.getAttribute("name")); //$NON-NLS-1$
             currentAction.setVersion(configurationElement.getAttribute("version"));
             currentAction.setBreaks(configurationElement.getAttribute("breaks"));
+            currentAction.setLazy(Boolean.parseBoolean(configurationElement.getAttribute("isLazy")));
             if (currentAction instanceof IProjectMigrationTask) {
                 ((IProjectMigrationTask) currentAction).setDescription(configurationElement.getAttribute("description")); //$NON-NLS-1$
             }
