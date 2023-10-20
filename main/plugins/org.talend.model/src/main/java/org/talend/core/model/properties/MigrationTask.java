@@ -15,14 +15,13 @@ import org.eclipse.emf.ecore.EObject;
  *
  * <p>
  * The following features are supported:
- * </p>
  * <ul>
  *   <li>{@link org.talend.core.model.properties.MigrationTask#getId <em>Id</em>}</li>
  *   <li>{@link org.talend.core.model.properties.MigrationTask#getBreaks <em>Breaks</em>}</li>
  *   <li>{@link org.talend.core.model.properties.MigrationTask#getVersion <em>Version</em>}</li>
  *   <li>{@link org.talend.core.model.properties.MigrationTask#getStatus <em>Status</em>}</li>
- *   <li>{@link org.talend.core.model.properties.MigrationTask#getIsLazy <em>Is Lazy</em>}</li>
  * </ul>
+ * </p>
  *
  * @see org.talend.core.model.properties.PropertiesPackage#getMigrationTask()
  * @model
@@ -110,6 +109,7 @@ public interface MigrationTask extends EObject {
 
     /**
      * Returns the value of the '<em><b>Status</b></em>' attribute.
+     * The default value is <code>"0"</code>.
      * The literals are from the enumeration {@link org.talend.core.model.properties.MigrationStatus}.
      * <!-- begin-user-doc -->
      * <p>
@@ -121,7 +121,7 @@ public interface MigrationTask extends EObject {
      * @see org.talend.core.model.properties.MigrationStatus
      * @see #setStatus(MigrationStatus)
      * @see org.talend.core.model.properties.PropertiesPackage#getMigrationTask_Status()
-     * @model required="true"
+     * @model default="0" required="true"
      * @generated
      */
     MigrationStatus getStatus();
@@ -136,27 +136,5 @@ public interface MigrationTask extends EObject {
      * @generated
      */
     void setStatus(MigrationStatus value);
-
-    /**
-     * Returns the value of the '<em><b>Is Lazy</b></em>' attribute.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @return the value of the '<em>Is Lazy</em>' attribute.
-     * @see #setIsLazy(String)
-     * @see org.talend.core.model.properties.PropertiesPackage#getMigrationTask_IsLazy()
-     * @model
-     * @generated
-     */
-    String getIsLazy();
-
-    /**
-     * Sets the value of the '{@link org.talend.core.model.properties.MigrationTask#getIsLazy <em>Is Lazy</em>}' attribute.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @param value the new value of the '<em>Is Lazy</em>' attribute.
-     * @see #getIsLazy()
-     * @generated
-     */
-    void setIsLazy(String value);
 
 } // MigrationTask
