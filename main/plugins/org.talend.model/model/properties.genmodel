@@ -680,6 +680,7 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute properties.ecore#//MigrationTask/breaks"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute properties.ecore#//MigrationTask/version"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute properties.ecore#//MigrationTask/status"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute properties.ecore#//MigrationTask/isLazy"/>
     </genClasses>
     <genClasses ecoreClass="properties.ecore#//PigudfItem"/>
     <genClasses ecoreClass="properties.ecore#//RoutinesJarType">

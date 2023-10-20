@@ -858,6 +858,7 @@
         eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="status" lowerBound="1"
         eType="#//MigrationStatus"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="isLazy" eType="ecore:EDataType platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EEnum" name="MigrationStatus">
     <eLiterals name="default" literal="default"/>
