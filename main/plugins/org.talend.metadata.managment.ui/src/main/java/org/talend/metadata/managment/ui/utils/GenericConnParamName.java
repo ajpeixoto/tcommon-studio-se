@@ -12,25 +12,15 @@
 // ============================================================================
 package org.talend.metadata.managment.ui.utils;
 
-import org.talend.metadata.managment.ui.model.IConnParamName;
+import org.talend.metadata.managment.ui.model.AbsConnParamName;
 
 /**
- * created by ycbai on 2015年11月20日 Detailled comment
+ * created by ycbai on 2015骞�11鏈�20鏃� Detailled comment
  *
  */
-public class GenericConnParamName implements IConnParamName {
-
-    private String name;
+public class GenericConnParamName extends AbsConnParamName {
 
     private String contextVar;
-
-    public String getName() {
-        return this.name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public String getContextVar() {
         return this.contextVar;

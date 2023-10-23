@@ -379,7 +379,7 @@ public class RepositoryDropAdapter extends PluginDropAdapter {
         if (target == null) {
             return false;
         }
-        super.validateDrop(target, operation, transferType);
+        // super.validateDrop(target, operation, transferType);
         boolean isValid = true;
         Set<IResource> parents = new HashSet<IResource>();
         for (Object obj : ((StructuredSelection) getViewer().getSelection()).toArray()) {
@@ -455,6 +455,15 @@ public class RepositoryDropAdapter extends PluginDropAdapter {
                         if (ENodeType.SYSTEM_FOLDER == targetRN.getType() || ENodeType.SIMPLE_FOLDER == targetRN.getType()) {
                             if (targetRN.getContentType() == ERepositoryObjectType.PROCESS_MR
                                     || targetRN.getContentType() == ERepositoryObjectType.PROCESS_STORM) {
+                                return isValid = true;
+                            }
+                        }
+                    }
+                } else if (object.getRepositoryObjectType() == ERepositoryObjectType.METADATA_TACOKIT_JDBC) {
+                    if (target instanceof RepositoryNode) {
+                        RepositoryNode targetRN = (RepositoryNode) target;
+                        if (ENodeType.SYSTEM_FOLDER == targetRN.getType() || ENodeType.SIMPLE_FOLDER == targetRN.getType()) {
+                            if (targetRN.getContentType() == ERepositoryObjectType.METADATA_CONNECTIONS) {
                                 return isValid = true;
                             }
                         }

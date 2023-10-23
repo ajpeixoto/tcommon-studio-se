@@ -51,6 +51,10 @@ import org.talend.repository.metadata.i18n.Messages;
  */
 public class DatabaseWizardPage extends WizardPage {
 
+    private String dbType;
+
+    private String displayDbType;
+
     private ConnectionItem connectionItem;
 
     private DatabaseForm databaseForm;
@@ -63,8 +67,6 @@ public class DatabaseWizardPage extends WizardPage {
 
     private Composite compositeDbSettings;
 
-    private DBTypeForm dbTypeForm;
-
     private final String[] existingNames;
 
     private final boolean isRepositoryObjectEditable;
@@ -72,6 +74,8 @@ public class DatabaseWizardPage extends WizardPage {
     private Composite parentContainer;
 
     private boolean isCreation = false;
+
+    private ConnectionItem oriConnItem;
 
     protected IStatus genericStatus;
 
@@ -98,6 +102,9 @@ public class DatabaseWizardPage extends WizardPage {
     public void createControl(final Composite parent) {
         if (this.getWizard() instanceof RepositoryWizard) {
             isCreation = ((RepositoryWizard) getWizard()).isCreation();
+            if (!isCreation) {
+                oriConnItem = connectionItem;
+            }
         }
 
         parentContainer = new Composite(parent, SWT.NONE);
@@ -115,9 +122,85 @@ public class DatabaseWizardPage extends WizardPage {
         data.left = new FormAttachment(0, 0);
         data.right = new FormAttachment(100, 0);
         compositeDbSettings.setLayoutData(data);
-        dbTypeForm = new DBTypeForm(this, compositeDbSettings, connectionItem, SWT.NONE, !isRepositoryObjectEditable, isCreation);
 
         createDBForm();
+    }
+
+    public void updateByDBSelection() {
+        setPageComplete(isRepositoryObjectEditable);
+        setErrorMessage(null);
+        if (dbType == null) {
+            return;
+        }
+        if (isAdditionalJDBC(dbType)) {
+            dbType = "JDBC";
+        }
+        String oldType = getDisplayConnectionDBType();
+        if (dbType.equals(oldType)) {
+            return;
+        }
+        if (needDisposeOldForm(dbType, oldType)) {
+            recreateConnection();
+            setConnectionDBType(dbType);
+            if (!isTCOMDB(dbType)) {
+                ((DatabaseConnection) connectionItem.getConnection()).getParameters().clear();
+                ((DatabaseConnection) connectionItem.getConnection()).setDbVersionString(null);
+            }
+            refreshDBForm(connectionItem);
+            if (isTCOMDB(dbType)) {
+                setPageComplete(true);
+            }
+        } else {
+            setConnectionDBType(dbType);
+            refreshDBForm(null);
+        }
+    }
+
+    private boolean isAdditionalJDBC(String dbType) {
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericWizardService.class)) {
+            IGenericWizardService service = GlobalServiceRegister.getDefault().getService(IGenericWizardService.class);
+            if (service != null) {
+                return service.getIfAdditionalJDBCDBType(dbType);
+            }
+        }
+        return false;
+    }
+
+    public boolean needDisposeOldForm(String newType, String oldType) {
+        return !newType.equals(oldType);
+    }
+
+    private void recreateConnection() {
+        if (isTCOMDB(dbType)) {
+            IGenericDBService dbService = null;
+            if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericDBService.class)) {
+                dbService = (IGenericDBService) GlobalServiceRegister.getDefault().getService(IGenericDBService.class);
+            }
+            if (dbService == null) {
+                return;
+            }
+            if (!isCreation && dbType.equals(oriConnItem.getTypeName())) {
+                connectionItem = oriConnItem;
+                return;
+            }
+        }
+    }
+
+    private void setConnectionDBType(String type) {
+        if (connectionItem.getConnection() instanceof DatabaseConnection) {
+            connectionItem.setTypeName(type);
+            ((DatabaseConnection) connectionItem.getConnection()).setDatabaseType(type);
+        }
+    }
+
+    public String getDisplayConnectionDBType() {
+        DatabaseConnection connection = (DatabaseConnection) connectionItem.getConnection();
+        String databaseType = connection.getDatabaseType();
+        String productId = connection.getProductId();
+        if (isTCOMDB(databaseType) && !databaseType.equals(productId)) {
+            return productId;
+        }
+        return databaseType;
     }
 
     public void createDBForm(){
@@ -158,10 +241,10 @@ public class DatabaseWizardPage extends WizardPage {
                 !isRepositoryObjectEditable, isCreation, connectionItem.getProperty(), "JDBC");
         dynamicForm = map.get("DynamicComposite");//$NON-NLS-1$
         dynamicContextForm = map.get("ContextComposite");//$NON-NLS-1$
-        if(isTCOMDB(dbTypeForm.getDBType())){
+        if (isTCOMDB(dbType)) {
             setControl(dynamicForm);
         }
-        dynamicParentForm.setVisible(isTCOMDB(dbTypeForm.getDBType()));
+        dynamicParentForm.setVisible(isTCOMDB(dbType));
         addCheckListener(dbService.getDynamicChecker(dynamicForm));
         if(isCreation){
             resetDynamicConnectionItem(connectionItem);
@@ -171,7 +254,7 @@ public class DatabaseWizardPage extends WizardPage {
     }
 
     private void createDatabaseForm(){
-        if(isTCOMDB(dbTypeForm.getDBType())){
+        if (isTCOMDB(dbType)) {
            return;
         }
         FormData data = new FormData();
@@ -189,7 +272,7 @@ public class DatabaseWizardPage extends WizardPage {
 
             @Override
             public void checkPerformed(final AbstractForm source) {
-                if (dbTypeForm.getDBType() == null){
+                if (dbType == null) {
                     DatabaseWizardPage.this.setPageComplete(false);
                     setErrorMessage(Messages.getString("DatabaseForm.alert", "DB Type"));//$NON-NLS-1$  //$NON-NLS-2$
                 }else if (source.isStatusOnError()) {
@@ -206,10 +289,10 @@ public class DatabaseWizardPage extends WizardPage {
         if (connectionItem.getProperty().getLabel() != null && !connectionItem.getProperty().getLabel().equals("")) { //$NON-NLS-1$
             databaseForm.checkFieldsValue();
         }
-        if(!isTCOMDB(dbTypeForm.getDBType())){
+        if (!isTCOMDB(dbType)) {
             setControl(databaseForm);
         }
-        databaseForm.setVisible(!isTCOMDB(dbTypeForm.getDBType()));
+        databaseForm.setVisible(!isTCOMDB(dbType));
     }
 
     public boolean isTCOMDB(String type){
@@ -268,7 +351,7 @@ public class DatabaseWizardPage extends WizardPage {
         if(databaseForm == null || databaseForm.isDisposed()){
             createDatabaseForm();
         }
-        if(isTCOMDB(dbTypeForm.getDBType())){
+        if (isTCOMDB(dbType)) {
             if(dynamicParentForm == null || dynamicParentForm.isDisposed()){
                 createDynamicForm();
             }
@@ -280,7 +363,7 @@ public class DatabaseWizardPage extends WizardPage {
             resetDynamicConnectionItem(connItem);
 
             DatabaseConnection dbConnection = ((DatabaseConnection) connItem.getConnection());
-            String product = dbTypeForm.getDBType();
+            String product = displayDbType;
             dbConnection.setProductId(product);
             String mapping = null;
             if (MetadataTalendType.getDefaultDbmsFromProduct(product) != null) {
@@ -304,19 +387,14 @@ public class DatabaseWizardPage extends WizardPage {
     }
 
     private void initJDBCDefaultConnection4SwitchType(DatabaseConnection connection) {
-        String displayDBType = dbTypeForm.getDisplayDBType();
-        IGenericWizardService service = null;
-        GlobalServiceRegister register = GlobalServiceRegister.getDefault();
-        if (register.isServiceRegistered(IGenericWizardService.class)) {
-            service = register.getService(IGenericWizardService.class);
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericWizardService.class)) {
+            IGenericWizardService service = GlobalServiceRegister.getDefault().getService(IGenericWizardService.class);
+            if (service != null) {
+                service.initAdditonalJDBCConnectionValue(connection, dynamicForm, displayDbType,
+                        connectionItem.getProperty().getId());
+            }
         }
-        if (service == null) {
-            return;
-        }
-
-        service.initAdditonalJDBCConnectionValue(connection, dynamicForm, displayDBType, connectionItem.getProperty().getId());
     }
-
 
     public void disposeDBForm(){
         if(databaseForm != null && !databaseForm.isDisposed()){
@@ -383,6 +461,11 @@ public class DatabaseWizardPage extends WizardPage {
             }
         };
         checker.setListener(checkListener);
+    }
+
+    public void setDbType(String dbType) {
+        this.dbType = dbType;
+        displayDbType = dbType;
     }
 
 }

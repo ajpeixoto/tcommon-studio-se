@@ -129,6 +129,8 @@ Package connection <http://www.talend.org/metadata/connection/2010>
     Reference parameters : AdditionalProperties<<0..*>>
     Attribute supportNLS : EBoolean
 
+  Class TacokitDatabaseConnection -> DatabaseConnection
+
   Class SAPConnection -> Connection
     Attribute Host : EString
     Attribute Username : EString

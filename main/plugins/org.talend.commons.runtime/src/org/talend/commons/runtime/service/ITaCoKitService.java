@@ -15,6 +15,7 @@ package org.talend.commons.runtime.service;
 import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -45,12 +46,22 @@ public interface ITaCoKitService {
     boolean isNeedMigration(String componentName, Map<String, String> properties);
 
     boolean isTaCoKitType(Object repoType);
+    
+    boolean isTaCoKitRepositoryNode(Object node);
+    
+    boolean isTaCoKitConnection(Object conn);
 
     Object getDatastoreFromDataset(Object repositoryViewObject);
 
     String getParentItemIdFromItem(Object Item);
 
     boolean isValueSelectionParameter(Object parameter);
+
+    List<Map<String, Object>> convertToTable(String value);
+    
+    List<String> getValuesFromTableParameter(Object parameter, String... keys);
+    
+    List<String> getValuesFromTableParameterValue(String value, String ...keys);
 
     public static ITaCoKitService getInstance() {
         BundleContext bc = FrameworkUtil.getBundle(ITaCoKitService.class).getBundleContext();

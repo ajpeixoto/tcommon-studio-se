@@ -14,7 +14,9 @@ package org.talend.core.runtime.services;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.talend.components.api.component.ComponentDefinition;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.IService;
 import org.talend.core.model.components.IComponent;
@@ -63,6 +65,10 @@ public interface IGenericService extends IService {
     public boolean isTcompv0(IComponent component);
 
     public void validateGenericConnection(Connection conn) throws Exception;
+
+    void mergeGenericNodes(RepositoryNode parent, String type);
+
+    Set<ComponentDefinition> getJDBCComponentDefinitions();
 
     public static IGenericService getService() {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericService.class)) {
