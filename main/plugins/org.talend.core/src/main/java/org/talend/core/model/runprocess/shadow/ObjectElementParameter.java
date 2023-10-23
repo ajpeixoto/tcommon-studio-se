@@ -1065,4 +1065,16 @@ public class ObjectElementParameter implements IElementParameter {
         this.originEncryptedValue = value;
         
     }
+
+	@Override
+	public void setDescription(String description) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getDescription() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

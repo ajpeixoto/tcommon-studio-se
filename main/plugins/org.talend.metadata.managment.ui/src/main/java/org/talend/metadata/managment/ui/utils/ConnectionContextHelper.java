@@ -2220,7 +2220,7 @@ public final class ConnectionContextHelper {
                 connection.setContextName(selectedContext.getName());
                 // save the input prompt context values to cache
                 for (IContextParameter param : selectedContext.getContextParameterList()) {
-                    JavaSqlFactory.savePromptConVars2Cache(connection, param);
+                    JavaSqlFactory.savePromptConVars2Cache(connection, param, iContexts);
                 }
                 // set the input values to connection
                 JavaSqlFactory.setPromptContextValues(connection);
@@ -2232,6 +2232,12 @@ public final class ConnectionContextHelper {
         return continueLaunch;
     }
 
+    /**
+     * @deprecated use instead promptConfirmLauchIterateContexts(Shell shell, List<IContext> contexts, IContext context)
+     * @param shell
+     * @param context
+     * @return
+     */
     public static boolean promptConfirmLauch(Shell shell, IContext context) {
         boolean continueLaunch = true;
 
@@ -2254,6 +2260,51 @@ public final class ConnectionContextHelper {
                         paramCopy = contextCopy.getContextParameterList().get(i);
                         if (param.getName().equals(paramCopy.getName())) {
                             // param.setValueList(paramCopy.getValueList());
+                            param.setInternalValue(paramCopy.getValue());
+                            found = true;
+                        }
+                    }
+                }
+            } else {
+                continueLaunch = false;
+            }
+        }
+        return continueLaunch;
+    }
+
+    /**
+     * Set contexts for 'PromptDialog' and Iterate all contexts to check and confirm prompt
+     * 
+     * @param shell
+     * @param contexts
+     * @param context
+     * @return
+     */
+    public static boolean promptConfirmLauchIterateContexts(Shell shell, List<IContext> contexts, IContext context) {
+        boolean continueLaunch = true;
+
+        int nbValues = 0;
+        Assert.isNotNull(context);
+        // Prompt for context values ?
+        for (IContextParameter parameter : context.getContextParameterList()) {
+            if (parameter.isPromptNeeded() || ContextUtils.isPromptNeeded(contexts, parameter.getName())) {
+                nbValues++;
+                break;
+            }
+        }
+        if (nbValues > 0) {
+            IContext contextCopy = context.clone();
+            PromptDialog promptDialog = new PromptDialog(shell, contextCopy);
+            if (!contexts.isEmpty()) {
+                promptDialog.setiContexts(contexts);
+            }
+            if (promptDialog.open() == PromptDialog.OK) {
+                for (IContextParameter param : context.getContextParameterList()) {
+                    boolean found = false;
+                    IContextParameter paramCopy = null;
+                    for (int i = 0; i < contextCopy.getContextParameterList().size() & !found; i++) {
+                        paramCopy = contextCopy.getContextParameterList().get(i);
+                        if (param.getName().equals(paramCopy.getName())) {
                             param.setInternalValue(paramCopy.getValue());
                             found = true;
                         }

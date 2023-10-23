@@ -170,7 +170,7 @@ public class CreateTableAction extends AbstractCreateTableAction {
         } else if (ERepositoryObjectType.METADATA_SAPCONNECTIONS != null
                 && ERepositoryObjectType.METADATA_SAPCONNECTIONS.equals(nodeType)) {
             createSAPSchemaWizard(node, false);
-        } else if (ERepositoryObjectType.METADATA_BIGQUERYCONNECTIONS.equals(nodeType)) {
+        } else if (ERepositoryObjectType.METADATA_BIGQUERYCONNECTIONS != null && ERepositoryObjectType.METADATA_BIGQUERYCONNECTIONS.equals(nodeType)) {
             createBigQuerySchemaWizard(node, false);
         } else {
             createExtenseNodeSchemaWizard(nodeType, node, false);

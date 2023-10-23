@@ -110,8 +110,7 @@ public class ProxyDynamicCellEditor extends AbstractCellEditor {
                 this.layerCell.getRowPosition());
         int cellColumnIndex = this.layerCell.getColumnIndex();
         int cellRowIndex = this.layerCell.getRowIndex();
-        String[] propertyNames = ContextRowDataListFixture.getPropertyNames(modelManager);
-        String currentColumnName = Arrays.asList(propertyNames).get(cellColumnIndex);
+        String currentColumnName = ContextRowDataListFixture.getPropertyNamesAsList(modelManager).get(cellColumnIndex);
         ContextTreeNode rowNode = ((GlazedListsDataProvider<ContextTreeNode>) dataProvider).getRowObject(cellRowIndex);
         IContextParameter realPara = ContextNatTableUtils.getRealParameter(manager, currentColumnName, rowNode.getTreeData());
         if (NatTableCellEditorFactory.isBoolean(realPara.getType())) {

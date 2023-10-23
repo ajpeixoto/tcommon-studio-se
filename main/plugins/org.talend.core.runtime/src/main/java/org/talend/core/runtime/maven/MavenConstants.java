@@ -78,5 +78,7 @@ public interface MavenConstants {
     static final String PACKAGING_JAR = "jar";
 
     static final String PACKAGING_POM = "pom";
+    
+    static final String PACKAGING_BUNDLE = "bundle";
 
 }

@@ -14,6 +14,7 @@ package org.talend.core.model.metadata.builder.database;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
@@ -22,6 +23,7 @@ import org.talend.core.model.context.JobContextParameter;
 import org.talend.core.model.metadata.builder.connection.ConnectionPackage;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
 import org.talend.core.model.metadata.types.JavaTypesManager;
+import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IContextParameter;
 
 /**
@@ -73,7 +75,7 @@ public class JavaSqlFactoryTest {
         DatabaseConnection conn = getConnection();
         JobContextManager contextManager = getContextManager();
         for (IContextParameter contextParam : contextManager.getDefaultContext().getContextParameterList()) {
-            JavaSqlFactory.savePromptConVars2Cache(conn, contextParam);
+            JavaSqlFactory.savePromptConVars2Cache(conn, contextParam, new ArrayList<IContext>());
         }
         JavaSqlFactory.haveSetPromptContextVars = true;
         String pwd = JavaSqlFactory.getPassword(conn);

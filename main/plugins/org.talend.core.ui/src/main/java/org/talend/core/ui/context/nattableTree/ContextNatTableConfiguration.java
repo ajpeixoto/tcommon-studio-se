@@ -154,7 +154,8 @@ public class ContextNatTableConfiguration extends AbstractRegistryConfiguration 
         configRegistry.registerConfigAttribute(EditConfigAttributes.DATA_VALIDATOR,
                 new EventDataValidator(dataProvider, manager), DisplayMode.EDIT, ContextTableConstants.COLUMN_NAME_PROPERTY);
         configRegistry.registerConfigAttribute(EditConfigAttributes.DATA_VALIDATOR,
-                new EventDataValueValidator(dataProvider, manager, columnGroupModel), DisplayMode.EDIT, ContextTableConstants.COLUMN_CONTEXT_VALUE);
+                new EventDataValueValidator(dataProvider, manager, modelManager), DisplayMode.EDIT,
+                ContextTableConstants.COLUMN_CONTEXT_VALUE);
     }
 
     private void registerErrorHandlingStrategies(IConfigRegistry configRegistry) {

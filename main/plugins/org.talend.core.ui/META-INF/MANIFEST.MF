@@ -36,7 +36,9 @@ Require-Bundle: org.apache.commons.lang,
  org.apache.httpcomponents.httpclient,
  org.slf4j.api,
  org.apache.ant,
- org.eclipse.m2e.maven.runtime
+ org.eclipse.m2e.maven.runtime,
+ org.eclipse.jface.notifications,
+ org.eclipse.swt
 Import-Package: org.eclipse.jdt.internal.ui.workingsets
 Export-Package: org.talend.core.ui,
  org.talend.core.ui.actions,
@@ -56,6 +58,7 @@ Export-Package: org.talend.core.ui,
  org.talend.core.ui.context.model.tree,
  org.talend.core.ui.context.nattableTree,
  org.talend.core.ui.context.view,
+ org.talend.core.ui.dialog,
  org.talend.core.ui.documentation.generation,
  org.talend.core.ui.editor,
  org.talend.core.ui.editor.command,
