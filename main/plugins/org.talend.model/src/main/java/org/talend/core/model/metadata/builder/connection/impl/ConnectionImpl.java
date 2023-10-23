@@ -1226,6 +1226,37 @@ public class ConnectionImpl extends AbstractMetadataObjectImpl implements Connec
         }
         return value;
     }
+    
+    /**
+     * @generated NOT
+     */
+    public String getValueIgnoreContextMode(String value, boolean encrypt) {
+        if (value != null && value.length() > 0) {
+            StudioEncryption se = StudioEncryption.getStudioEncryption(StudioEncryption.EncryptionKeyName.SYSTEM);
+            // Set default encrypt and decrypt methods
+            if (this.encrypt == null) {
+                this.encrypt = (src) -> se.encrypt(src);
+            }
+            if (this.decrypt == null) {
+                this.decrypt = (src) -> {
+                    if (src != null && StudioEncryption.hasEncryptionSymbol(src)) {
+                        return se.decrypt(src);
+                    }
+                    return src;
+                };
+            }
+            String newValue = null;
+            if (encrypt) {
+                newValue = this.encrypt.apply(value);
+            } else {
+                newValue = this.decrypt.apply(value);
+            }
+            if (newValue != null) { // if enable to encrypt/decrypt will return the new value.
+                return newValue;
+            }
+        }
+        return value;
+    }
 
     /**
      * @generated NOT

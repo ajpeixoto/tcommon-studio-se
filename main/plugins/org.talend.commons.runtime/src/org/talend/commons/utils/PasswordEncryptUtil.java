@@ -13,6 +13,7 @@
 package org.talend.commons.utils;
 
 import java.security.SecureRandom;
+import java.util.regex.Pattern;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -33,6 +34,8 @@ public class PasswordEncryptUtil {
     private static SecretKey key = null;
 
     private static final SecureRandom SECURERANDOM = new SecureRandom();
+
+    private static final Pattern REG_ENCRYPTED_DATA = Pattern.compile("^enc\\:system\\.encryption\\.key\\.v\\d\\:\\p{Print}+");
 
     private static SecretKey getSecretKey() throws Exception {
         if (key == null) {
@@ -122,6 +125,13 @@ public class PasswordEncryptUtil {
      */
     public static boolean isPasswordField(String field) {
         return "PASSWORD".equals(field) || "LICENSEKEY".equals(field); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    /**
+     * Test whether input data is encrypted
+     */
+    public static boolean isEncrypted(String src) {
+        return src != null && REG_ENCRYPTED_DATA.matcher(src).matches();
     }
 
     /**

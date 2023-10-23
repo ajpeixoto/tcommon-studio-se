@@ -155,8 +155,10 @@ public class MoveObjectAction {
             switch (targetNode.getType()) {
             case SYSTEM_FOLDER:
             case SIMPLE_FOLDER:
-                boolean booleanValue = ((ERepositoryObjectType) targetNode.getProperties(EProperties.CONTENT_TYPE))
-                        .equals(sourceNode.getProperties(EProperties.CONTENT_TYPE));
+                ERepositoryObjectType sourceType = (ERepositoryObjectType) sourceNode.getProperties(EProperties.CONTENT_TYPE);
+                ERepositoryObjectType targetType = (ERepositoryObjectType) targetNode.getProperties(EProperties.CONTENT_TYPE);
+                boolean booleanValue = sourceType == targetType || (ERepositoryObjectType.METADATA_TACOKIT_JDBC == sourceType
+                        && ERepositoryObjectType.METADATA_CONNECTIONS == targetType);
                 if (isGenericSchema) {
                     return true;
                 } else {

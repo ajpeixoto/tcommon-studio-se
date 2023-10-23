@@ -351,6 +351,7 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="supportNLS" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"
         defaultValueLiteral="false" unsettable="true"/>
   </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="TacokitDatabaseConnection" eSuperTypes="#//DatabaseConnection"/>
   <eClassifiers xsi:type="ecore:EClass" name="SAPConnection" eSuperTypes="#//Connection">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="Host" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="Username" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
