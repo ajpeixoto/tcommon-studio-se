@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.text.ParseException;
@@ -57,6 +58,7 @@ import org.talend.core.GlobalServiceRegister;
 import org.talend.core.ICoreService;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.migration.IMigrationToolService;
+import org.talend.core.model.process.JobInfo;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.JobletProcessItem;
 import org.talend.core.model.properties.MigrationStatus;
@@ -960,6 +962,39 @@ public class MigrationToolService implements IMigrationToolService {
         if (!(item instanceof ProcessItem || item instanceof JobletProcessItem)) {
             throw new IllegalArgumentException("item is not process item or joblet process item");
         }
+
+        // get all of children
+        final List<Item> targetedItems = new ArrayList<Item>();
+        targetedItems.add(item);
+        if (item instanceof ProcessItem) {
+            Set<JobInfo> subjobs = ProcessorUtilities.getChildrenJobInfo(item, false, true);
+            subjobs.forEach(s -> {
+                if (s.getProcessItem() != null) {
+                    targetedItems.add(s.getProcessItem());
+                } else if (s.getJobletProperty() != null && s.getJobletProperty().getItem() != null) {
+                    targetedItems.add(s.getJobletProperty().getItem());
+                }
+            });
+        }
+
+        for (Item targetItem : targetedItems) {
+            executeLazyMigrationsInternal(project, targetItem);
+        }
+    }
+    
+    protected void executeLazyMigrationsInternal(Project project, Item item) throws Exception {
+        if (ProcessorUtilities.isCIMode()) {
+            log.info("CI mode, lazy migration is disabled");
+            return;
+        }
+
+        if (project == null) {
+            project = ProjectManager.getInstance().getCurrentProject();
+        }
+        if (!(item instanceof ProcessItem || item instanceof JobletProcessItem)) {
+            throw new IllegalArgumentException("item is not process item or joblet process item");
+        }
+        
         // get all lazy tasks
         List<IProjectMigrationTask> allLazyTasks = getLazyMigrationTasks();
         // check whether needs to migrate or not
