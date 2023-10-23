@@ -166,6 +166,16 @@
                </appInfo>
             </annotation>
          </attribute>
+         <attribute name="isLazy" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appInfo>
+                  <meta.attribute translatable="true"/>
+               </appInfo>
+            </annotation>
+         </attribute>
       </complexType>
    </element>
 
