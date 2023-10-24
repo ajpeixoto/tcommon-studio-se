@@ -29,7 +29,7 @@
               context="plugin:org.talend.libraries.jdbc.mysql"
               language="java"
               message="Needed for Mysql jdbc plugin"
-              mvn_uri="mvn:org.talend.libraries/mysql-connector-java-3.1.14-bin/6.0.0"
+              mvn_uri="mvn:mysql/mysql-connector-java/3.1.14"
               name="mysql-connector-java-3.1.14-bin.jar"
               required="true">
         </libraryNeeded>

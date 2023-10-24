@@ -13,7 +13,7 @@
             context="plugin:org.talend.libraries.jboss"
             language="java"
             message="Needed for JBoss"
-            name="trove.jar" mvn_uri="mvn:org.talend.libraries/trove/6.0.0" 
+            name="trove.jar" mvn_uri="mvn:trove/trove/1.0.2" 
             required="true">
       </libraryNeeded>
    </extension>
