@@ -951,11 +951,6 @@ public class MigrationToolService implements IMigrationToolService {
     }
     
     public void executeLazyMigrations(Project project, Item item) throws Exception {
-        if (ProcessorUtilities.isCIMode()) {
-            log.info("CI mode, lazy migration is disabled");
-            return;
-        }
-
         if (project == null) {
             project = ProjectManager.getInstance().getCurrentProject();
         }
@@ -983,11 +978,6 @@ public class MigrationToolService implements IMigrationToolService {
     }
     
     protected void executeLazyMigrationsInternal(Project project, Item item) throws Exception {
-        if (ProcessorUtilities.isCIMode()) {
-            log.info("CI mode, lazy migration is disabled");
-            return;
-        }
-
         if (project == null) {
             project = ProjectManager.getInstance().getCurrentProject();
         }
