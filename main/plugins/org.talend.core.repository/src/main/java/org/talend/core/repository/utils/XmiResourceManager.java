@@ -190,6 +190,9 @@ public class XmiResourceManager {
 
         property = (Property) EcoreUtil
                 .getObjectByType(propertyResource.getContents(), PropertiesPackage.eINSTANCE.getProperty());
+        if(property.eIsProxy()) {
+            EcoreUtil.resolveAll(property);
+        }
         return property;
     }
 
@@ -197,7 +200,11 @@ public class XmiResourceManager {
         URI propertyURI = property.eResource().getURI();
         unloadResources(property);
         Resource propertyResource = getResourceSet().getResource(propertyURI, true);
-        return (Property) EcoreUtil.getObjectByType(propertyResource.getContents(), PropertiesPackage.eINSTANCE.getProperty());
+        Property prop= (Property) EcoreUtil.getObjectByType(propertyResource.getContents(), PropertiesPackage.eINSTANCE.getProperty());
+        if(prop.eIsProxy()) {
+            EcoreUtil.resolveAll(prop);
+        }
+        return prop;
     }
 
     /**

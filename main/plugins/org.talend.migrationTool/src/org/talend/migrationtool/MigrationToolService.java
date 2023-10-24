@@ -124,7 +124,7 @@ public class MigrationToolService implements IMigrationToolService {
     private static final String MIGRATION_ORDER_PROP = "migration_order";
 
     private static final String MIGRATION_FAILED_PROP = "migration_failed";
-
+    
     public MigrationToolService() {
         doneThisSession = new ArrayList<IProjectMigrationTask>();
     }
@@ -1017,8 +1017,12 @@ public class MigrationToolService implements IMigrationToolService {
             return;
         }
         // execute migrations
-        IRepositoryService service = (IRepositoryService) GlobalServiceRegister.getDefault().getService(IRepositoryService.class);
-        final IProxyRepositoryFactory repFactory = service.getProxyRepositoryFactory();
+        // IRepositoryService migRepoService = (IRepositoryService)
+        // GlobalServiceRegister.getDefault().getService(IRepositoryService.class);
+        // final IProxyRepositoryFactory migRepoFactory = migRepoService.getProxyRepositoryFactory();
+        
+        ProxyRepositoryFactory migRepoFactory = ProxyRepositoryFactory.getInstance();
+        
         final Project projectMig = project;
         final List<IProjectMigrationTask> nonExecutedLazyMigrationList = nonExecutedLazyMigrationTasks;
         log
@@ -1031,7 +1035,7 @@ public class MigrationToolService implements IMigrationToolService {
             EmfResourcesFactoryReader.INSTANCE.addOption(ResourceOption.MIGRATION, true);
 
             RepositoryWorkUnit<Void> repositoryWorkUnit = new RepositoryWorkUnit<Void>(project, taskDesc) {
-
+                
                 @Override
                 public void run() throws PersistenceException {
                     final IWorkspaceRunnable op = new IWorkspaceRunnable() {
@@ -1039,9 +1043,22 @@ public class MigrationToolService implements IMigrationToolService {
                         @Override
                         public void run(IProgressMonitor monitor) throws CoreException {
                             List<String> failedMigrations = new ArrayList<String>();
+                            
+                            Item tempItem = item;
+                            
+                            // joblet was always unloaded unexpectedly
+                            if (tempItem.getProperty().eResource() == null) {
+                                try {
+                                    IRepositoryViewObject obj = migRepoFactory.getSpecificVersion(tempItem.getProperty().getId(), tempItem.getProperty().getVersion(), true);
+                                    tempItem = obj.getProperty().getItem();
+                                } catch (PersistenceException e) {
+                                    ExceptionHandler.process(e);
+                                }
+                            }
+                            
                             for (IProjectMigrationTask t : nonExecutedLazyMigrationList) {
                                 try {
-                                    ExecutionResult res = t.execute(projectMig, item);
+                                    ExecutionResult res = t.execute(projectMig, tempItem);
                                     t.setStatus(res);
                                     if (t.getStatus() == ExecutionResult.FAILURE) {
                                         failedMigrations.add(t.getId());
@@ -1050,32 +1067,29 @@ public class MigrationToolService implements IMigrationToolService {
                                     ExceptionHandler.process(e);
                                 }
                             }
-
-                            Item tempItem = item;
-                            if (item.getProperty().eResource() == null) { // In case some
-                                // migration task has
-                                // unloaded.
+                            
+                            
+                            if (tempItem.getProperty().eResource() == null) {
                                 try {
-                                    tempItem = (Item) repFactory.getSpecificVersion(item.getProperty().getId(), item.getProperty().getVersion(), true);
+                                    IRepositoryViewObject obj = migRepoFactory.getSpecificVersion(tempItem.getProperty().getId(), tempItem.getProperty().getVersion(), true);
+                                    tempItem = obj.getProperty().getItem();
                                 } catch (PersistenceException e) {
                                     ExceptionHandler.process(e);
                                 }
                             }
-                            
+
+                            Property prop = tempItem.getProperty();
                             // save latest migration order into properties
-                            tempItem
-                                    .getProperty()
-                                    .getAdditionalProperties()
-                                    .put(MIGRATION_ORDER_PROP, DATE_FORMATTER.format(nonExecutedLazyMigrationList.get(nonExecutedLazyMigrationList.size() - 1).getOrder()));
+                            prop.getAdditionalProperties().put(MIGRATION_ORDER_PROP, DATE_FORMATTER.format(nonExecutedLazyMigrationList.get(nonExecutedLazyMigrationList.size() - 1).getOrder()));
                             if (!failedMigrations.isEmpty()) {
                                 log
                                         .info("lazy migration tasks for project: " + projectMig.getTechnicalLabel() + ", item id: " + item.getProperty().getId() + ", item display name: "
-                                                + item.getProperty().getDisplayName() + ", failed migration size: " + failedMigrations.size());
-                                tempItem.getProperty().getAdditionalProperties().put(MIGRATION_FAILED_PROP, String.join(",", failedMigrations));
+                                                + tempItem.getProperty().getDisplayName() + ", failed migration size: " + failedMigrations.size());
+                                prop.getAdditionalProperties().put(MIGRATION_FAILED_PROP, String.join(",", failedMigrations));
                             }
-                            
+
                             try {
-                                repFactory.save(tempItem.getProperty());
+                                migRepoFactory.save(tempItem);
                             } catch (PersistenceException e) {
                                 ExceptionHandler.process(e);
                             }
@@ -1096,7 +1110,7 @@ public class MigrationToolService implements IMigrationToolService {
             };
             
             repositoryWorkUnit.setAvoidUnloadResources(true);
-            repFactory.executeRepositoryWorkUnit(repositoryWorkUnit);
+            migRepoFactory.executeRepositoryWorkUnit(repositoryWorkUnit);
         } finally {
             EmfResourcesFactoryReader.INSTANCE.removOption(ResourceOption.MIGRATION, false);
             EmfResourcesFactoryReader.INSTANCE.removOption(ResourceOption.MIGRATION, true);
