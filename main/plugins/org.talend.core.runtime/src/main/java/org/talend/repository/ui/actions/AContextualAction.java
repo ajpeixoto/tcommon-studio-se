@@ -806,22 +806,22 @@ public abstract class AContextualAction extends Action implements ITreeContextua
         return (ITreeContextualAction) super.clone();
     }
     
-//    protected void runLazyMigration() {
-//        Object object = ((IStructuredSelection) this.getRepositorySelection()).getFirstElement();
-//
-//        if (object instanceof RepositoryNode) {
-//            RepositoryNode node = (RepositoryNode) object;
-//            Item item = node.getObject().getProperty().getItem();
-//            if (item instanceof ProcessItem || item instanceof JobletProcessItem) {
-//                IMigrationToolService service = (IMigrationToolService) GlobalServiceRegister.getDefault().getService(IMigrationToolService.class);
-//                if (service != null) {
-//                    try {
-//                        service.executeLazyMigrations(null, item);
-//                    } catch (Exception e) {
-//                        MessageBoxExceptionHandler.process(e);
-//                    }
-//                }
-//            }
-//        }
-//    }
+    protected void runLazyMigration() {
+        Object object = ((IStructuredSelection) this.getRepositorySelection()).getFirstElement();
+
+        if (object instanceof RepositoryNode) {
+            RepositoryNode node = (RepositoryNode) object;
+            Item item = node.getObject().getProperty().getItem();
+            if (item instanceof ProcessItem || item instanceof JobletProcessItem) {
+                IMigrationToolService service = (IMigrationToolService) GlobalServiceRegister.getDefault().getService(IMigrationToolService.class);
+                if (service != null) {
+                    try {
+                        service.executeLazyMigrations(null, item);
+                    } catch (Exception e) {
+                        MessageBoxExceptionHandler.process(e);
+                    }
+                }
+            }
+        }
+    }
 }
