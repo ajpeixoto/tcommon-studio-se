@@ -87,6 +87,7 @@ public class MetadataManagmentUiService implements IMetadataManagmentUiService {
     }
 
     @Override
+    @Deprecated
     public boolean promptConfirmLauch(Shell shell, IContext context) {
         return ConnectionContextHelper.promptConfirmLauch(shell, context);
     }
@@ -94,6 +95,11 @@ public class MetadataManagmentUiService implements IMetadataManagmentUiService {
     @Override
     public boolean isPromptNeeded(List<IContext> contexts) {
         return ConnectionContextHelper.isPromptNeeded(contexts);
+    }
+
+    @Override
+    public boolean promptConfirmLauchIterateContexts(Shell shell, List<IContext> contexts, IContext context) {
+        return ConnectionContextHelper.promptConfirmLauchIterateContexts(shell, contexts, context);
     }
 
 }

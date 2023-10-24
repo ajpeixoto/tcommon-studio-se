@@ -1490,12 +1490,18 @@ public class MetadataConnectionUtils {
         // only when have context
         if (jobContext != null) {
             boolean promptConfirmLauch = false;
+            List<IContext> iContextLs = new ArrayList<IContext>();
             if (GlobalServiceRegister.getDefault().isServiceRegistered(IMetadataManagmentUiService.class)) {
                 IMetadataManagmentUiService mmUIService = GlobalServiceRegister.getDefault()
                         .getService(IMetadataManagmentUiService.class);
                 Shell shell = PlatformUI.getWorkbench().getDisplay().getActiveShell();
                 if (isDefaultContext) {
-                    promptConfirmLauch = mmUIService.promptConfirmLauch(shell, jobContext);
+                    List<ContextType> contexts = contextItem.getContext();
+                    for (ContextType contxType : contexts) {
+                        IContext context = ContextUtils.convert2IContext(contxType);
+                        iContextLs.add(context);
+                    }
+                    promptConfirmLauch = mmUIService.promptConfirmLauchIterateContexts(shell, iContextLs, jobContext);
                 } else {
                     promptConfirmLauch = mmUIService.promptConfirmLauch(shell, copyConnection, contextItem);
                 }
@@ -1506,7 +1512,7 @@ public class MetadataConnectionUtils {
                 if (isDefaultContext) {
                     // save the input prompt context values to cache
                     for (IContextParameter param : jobContext.getContextParameterList()) {
-                        JavaSqlFactory.savePromptConVars2Cache(connection, param);
+                        JavaSqlFactory.savePromptConVars2Cache(connection, param, iContextLs);
                     }
                     // set the input values to connection
                     JavaSqlFactory.setPromptContextValues(copyConnection);

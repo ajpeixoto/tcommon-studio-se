@@ -12,8 +12,12 @@
 // ============================================================================
 package org.talend.rcp.exportLogs;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -259,7 +263,7 @@ public class ExportLogsWizardPage extends WizardPage {
         File configFolder = new File(Platform.getConfigurationLocation().getURL().toURI());
         File configIniFile = new File(configFolder, "config.ini");
         if (configIniFile.exists()) {
-            zipLogFile(zipFile, tmpFolder, configIniFile.getCanonicalPath());
+            zipLogFileWithSensitiveDataHidden(zipFile, tmpFolder, configIniFile.getCanonicalPath());
         }
 
         File installFolder = new File(Platform.getInstallLocation().getURL().toURI());
@@ -292,10 +296,39 @@ public class ExportLogsWizardPage extends WizardPage {
                 }
             });
             for (File file : matchedFiles) {
-                zipLogFile(zipFile, tmpFolder, file.getCanonicalPath());
+                zipLogFileWithSensitiveDataHidden(zipFile, tmpFolder, file.getCanonicalPath());
             }
         } else {
-            zipLogFile(zipFile, tmpFolder, launcherIniFile.getCanonicalPath());
+            zipLogFileWithSensitiveDataHidden(zipFile, tmpFolder, launcherIniFile.getCanonicalPath());
+        }
+    }
+
+    private void zipLogFileWithSensitiveDataHidden(String zipFile, String tmpFolder, String logFile) {
+        String destFile = new File(tmpFolder + File.separator + new File(logFile).getName()).getAbsolutePath();
+        try (BufferedReader reader = new BufferedReader(new FileReader(logFile));
+                BufferedWriter writer = new BufferedWriter(new FileWriter(destFile))) {
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String processedLine = line;
+                int equalsIndex = line.indexOf('=');
+                if (equalsIndex != -1) {
+                    String key = line.substring(0, equalsIndex).trim();
+                    if (key.toLowerCase().contains("password")) {
+                        processedLine = key + "=" + "***";
+                    }
+                }
+                writer.write(processedLine);
+                writer.newLine();
+            }
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        }
+
+        try {
+            ZipToFile.zipFile(tmpFolder, zipFile);
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
         }
     }
 
@@ -521,7 +554,41 @@ public class ExportLogsWizardPage extends WizardPage {
         for (Entry<Object, Object> en : p.entrySet()) {
             sb.append(en.getKey() + "=" + en.getValue() + "\n"); //$NON-NLS-1$ //$NON-NLS-2$
         }
-        writeToFile(dest, ".sysConfig", sb); //$NON-NLS-1$
+        StringBuffer processedData = processSensitiveDataHidden(sb.toString());
+        writeToFile(dest, ".sysConfig", processedData); //$NON-NLS-1$
+    }
+
+    private StringBuffer processSensitiveDataHidden(String data) {
+        StringBuffer processedData = new StringBuffer();
+        while (true) {
+            String line;
+            int index = data.indexOf("\n");
+            if (index == -1) {
+                line = data.toString();
+                String processedLine = line;
+                int equalsIndex = line.indexOf('=');
+                if (equalsIndex != -1) {
+                    String key = line.substring(0, equalsIndex).trim();
+                    if (key.toLowerCase().contains("password")) {
+                        processedLine = key + "=" + "***";
+                    }
+                }
+                processedData.append(processedLine);
+                break;
+            }
+            line = data.substring(0, index);
+            String processedLine = line;
+            int equalsIndex = line.indexOf('=');
+            if (equalsIndex != -1) {
+                String key = line.substring(0, equalsIndex).trim();
+                if (key.toLowerCase().contains("password")) {
+                    processedLine = key + "=" + "***";
+                }
+            }
+            processedData.append(processedLine).append("\n");
+            data = data.substring(index + 1);
+        }
+        return processedData;
     }
 
     private void writeToFile(File dest, String fileName, StringBuffer sb) {
