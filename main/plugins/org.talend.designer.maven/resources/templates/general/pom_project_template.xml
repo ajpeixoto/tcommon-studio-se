@@ -81,6 +81,11 @@
                             <artifactId>maven-core</artifactId>
                             <version>3.8.1</version>
                         </dependency>
+                        <dependency>
+							<groupId>com.google.guava</groupId>
+							<artifactId>guava</artifactId>
+							<version>32.0.1-jre</version>
+						</dependency>
 					</dependencies>
 				</plugin>
 				<plugin>
@@ -155,6 +160,11 @@
                             <artifactId>maven-core</artifactId>
                             <version>3.8.1</version>
                         </dependency>
+                        <dependency>
+							<groupId>com.google.guava</groupId>
+							<artifactId>guava</artifactId>
+							<version>32.0.1-jre</version>
+						</dependency>
 					</dependencies>
 					<configuration>
 						<archive>
@@ -239,6 +249,11 @@
                             <artifactId>jsr305</artifactId>
                             <version>3.0.2</version>
                         </dependency>
+                         <dependency>
+							<groupId>com.google.guava</groupId>
+							<artifactId>guava</artifactId>
+							<version>32.0.1-jre</version>
+						</dependency>
 					</dependencies>
 				</plugin>
 				<plugin>
