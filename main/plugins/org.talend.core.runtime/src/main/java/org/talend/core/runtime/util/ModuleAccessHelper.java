@@ -111,7 +111,7 @@ public class ModuleAccessHelper {
         return Collections.emptySet();
     }
 
-    private static boolean allowJavaInternalAcess(Property property) {
+    public static boolean allowJavaInternalAcess(Property property) {
         String allow = System.getProperty(JavaUtils.ALLOW_JAVA_INTERNAL_ACCESS);
         if (allow != null) {
             return Boolean.valueOf(allow);

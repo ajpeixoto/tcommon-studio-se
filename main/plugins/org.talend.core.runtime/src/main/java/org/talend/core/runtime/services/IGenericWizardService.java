@@ -15,10 +15,14 @@ package org.talend.core.runtime.services;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IWorkbench;
 import org.talend.commons.ui.swt.actions.ITreeContextualAction;
 import org.talend.components.api.properties.ComponentProperties;
+import org.talend.core.GlobalServiceRegister;
 import org.talend.core.IService;
 import org.talend.core.model.metadata.Dbms;
 import org.talend.core.model.metadata.IMetadataTable;
@@ -31,6 +35,7 @@ import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.repository.model.RepositoryNode;
 
 /**
@@ -152,4 +157,17 @@ public interface IGenericWizardService extends IService {
     public String getDatabseNameByNode(IElement node);
 
     public Dbms getDbms4AdditionalJDBC(String typeName);
+    
+    public IWizard newSchemaWizard(IWorkbench workbench, boolean creation, IRepositoryViewObject object,
+            MetadataTable metadataTable, String[] existingNames, boolean forceReadOnly);
+
+    void openGenericWizard(String type, boolean creation, IPath path, String[] existingNames);
+
+    public static IGenericWizardService get() {
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericWizardService.class)) {
+            return GlobalServiceRegister.getDefault().getService(IGenericWizardService.class);
+        }
+        return null;
+    }
+    
 }

@@ -14,8 +14,11 @@ package org.talend.core.model.metadata.builder.database;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.Charset;
+import java.security.Provider;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.Driver;
@@ -79,6 +82,7 @@ import org.talend.core.prefs.SSLPreferenceConstants;
 import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.runtime.maven.MavenArtifact;
 import org.talend.core.runtime.maven.MavenUrlHelper;
+import org.talend.core.utils.ReflectionUtils;
 import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.designer.core.IDesignerCoreService;
 import org.talend.metadata.managment.connection.manager.HiveConnectionManager;
@@ -119,8 +123,12 @@ public class ExtractMetaDataUtils {
 
     private boolean ignoreTimeout = false;
 
-    private String[] ORACLE_SSL_JARS = new String[] { "oraclepki-12.2.0.1.jar", "osdt_cert-12.2.0.1.jar", //$NON-NLS-1$//$NON-NLS-2$
+    public static String[] ORACLE_SSL_JARS = new String[] { "oraclepki-12.2.0.1.jar", "osdt_cert-12.2.0.1.jar", //$NON-NLS-1$//$NON-NLS-2$
             "osdt_core-12.2.0.1.jar" }; //$NON-NLS-1$
+
+    public static String[] ORACLE_SSL_JARS_18_ABOVE =
+            new String[] { "oraclepki-19.19.0.0.jar", "osdt_cert-19.19.0.0.jar", //$NON-NLS-1$//$NON-NLS-2$
+    "osdt_core-19.19.0.0.jar" }; //$NON-NLS-1$
     
     private String ORACLE_NLS_JARS = "orai18n-19.19.0.0.jar";
 
@@ -969,7 +977,12 @@ public class ExtractMetaDataUtils {
                     if (EDatabaseTypeName.ORACLE_CUSTOM.getDisplayName().equals(dbType)
                             && StringUtils.isNotEmpty(additionalParams)) {
                         if (additionalParams.contains(SSLPreferenceConstants.TRUSTSTORE_TYPE)) {
-                             driverNames.addAll(Arrays.asList(ORACLE_SSL_JARS));
+                            //check oracle version to add different jars, ORACLE_SSL_JARS or ORACLE_SSL_JARS_18_ABOVE
+                            if(EDatabaseVersion4Drivers.ORACLE_18.getVersionValue().equals(dbVersion)) {
+                                driverNames.addAll(Arrays.asList(ORACLE_SSL_JARS_18_ABOVE));
+                            } else {
+                                driverNames.addAll(Arrays.asList(ORACLE_SSL_JARS));
+                            }
                         }
                         
                     } else if (SNOWFLAKE.equals(dbType)) { // $NON-NLS-1$
@@ -1213,6 +1226,11 @@ public class ExtractMetaDataUtils {
                     if (systemCharset != null && systemCharset.displayName() != null) {
                         info.put("charSet", systemCharset.displayName()); //$NON-NLS-1$
                     }
+                } else if (EDatabaseTypeName.ORACLE_CUSTOM.getDisplayName().equals(dbType)
+                        && !additionalParams.isEmpty()
+                        && additionalParams.contains(SSLPreferenceConstants.TRUSTSTORE_TYPE)) {
+                    // TDQ-21334 For tdqReportRun with Analysis on Custom_Oracle
+                    initOracleCustProperty(additionalParams, info);
                 }
                 connection = ((Driver) klazz.newInstance()).connect(url, info);
             } catch (ClassNotFoundException e) {
@@ -1238,6 +1256,19 @@ public class ExtractMetaDataUtils {
         }
 
         return conList;
+    }
+
+    private void initOracleCustProperty(String additionalParams, Properties info)
+            throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException,
+            InvocationTargetException, IOException {
+        System.setProperty("jsse.enableCBCProtection", "false");//$NON-NLS-1$//$NON-NLS-2$
+        Object pki = ReflectionUtils.newInstance("oracle.security.pki.OraclePKIProvider", //$NON-NLS-1$
+                this.getClass().getClassLoader(),
+                new Object[] {});
+        ReflectionUtils.invokeStaticMethod("java.security.Security", "insertProviderAt", //$NON-NLS-1$//$NON-NLS-2$
+                new Object[] { pki, 3 }, Provider.class, int.class);
+        additionalParams = additionalParams.replaceAll("&", "\n");//$NON-NLS-1$//$NON-NLS-2$
+        info.load(new java.io.ByteArrayInputStream(additionalParams.getBytes()));
     }
 
     private void setDriverPath(ILibraryManagerService librairesManagerService, List<String> jarPathList, String mvnURI)

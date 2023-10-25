@@ -174,6 +174,8 @@ public class ConnectionParameters {
     private Map<String, String> parameters;
 
     private String selectContext = null;
+    
+    private boolean isTacokitJDBC = false;
 
     /**
      * Sets the connectionComment.
@@ -916,5 +918,17 @@ public class ConnectionParameters {
     public void setSelectContext(String selectContext) {
         this.selectContext = selectContext;
     }
+
+    
+    public boolean isTacokitJDBC() {
+        return isTacokitJDBC;
+    }
+
+    
+    public void setTacokitJDBC(boolean isTacokitJDBC) {
+        this.isTacokitJDBC = isTacokitJDBC;
+    }
+    
+    
 
 }

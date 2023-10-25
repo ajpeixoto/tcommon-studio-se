@@ -149,6 +149,13 @@ public class JDBCDriverLoader {
         Connection connection = null;
         try {
             HotClassLoader loader = (HotClassLoader) classLoadersMap.get(dbType, dbVersion);
+            if(loader != null) {//for example, oracle custom connection, using ssl or not using different jars
+                URL[] urLs = loader.getURLs();
+                if(urLs != null && jarPath != null && urLs.length != jarPath.length) {
+                    driverShimCacheMap.remove(driverClassName, dbType, dbVersion);
+                    driverShimCacheMap.remove(driverClassName, dbType, dbVersion);
+                }
+            }
             if(driverShimCacheMap.containsKey(driverClassName, dbType, dbVersion)) {
                 wapperDriver = (DriverShim) driverShimCacheMap.get(driverClassName, dbType, dbVersion);
             } else {

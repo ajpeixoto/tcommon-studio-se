@@ -34,4 +34,6 @@ public class ContextTableConstants {
     public static final String LABEL_VALUE_NOT_MATCH_TYPE = "LABEL_VALUE_NOT_MATCH_TYPE";
 
     public static final int DEFAULT_COLUMN_COUNT = 8;
+
+    public static final String CONTEXT_DEFAULT = " (Default)";//$NON-NLS-1$
 }

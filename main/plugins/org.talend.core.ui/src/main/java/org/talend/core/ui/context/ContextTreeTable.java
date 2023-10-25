@@ -184,7 +184,7 @@ public class ContextTreeTable {
         ConfigRegistry configRegistry = new ConfigRegistry();
         ColumnGroupModel columnGroupModel = new ColumnGroupModel();
         configRegistry.registerConfigAttribute(SortConfigAttributes.SORT_COMPARATOR, DefaultComparator.getInstance());
-        String[] propertyNames = ContextRowDataListFixture.getPropertyNames(manager);
+        String[] propertyNames = ContextRowDataListFixture.getPropertyNameToLabels(manager);
         int comWidth = parent.getParent().getClientArea().width - 15;
         // the data source for the context
         if (propertyNames.length > 0) {
@@ -258,7 +258,8 @@ public class ContextTreeTable {
             final GridLayer gridLayer = new GridLayer(viewportLayer, sortHeaderLayer, rowHeaderLayer, cornerLayer);
 
             // config the column edit configuration
-            ContextValueLabelAccumulator labelAccumulator = new ContextValueLabelAccumulator(bodyDataLayer, bodyDataProvider, manager.getContextManager(), columnGroupModel);
+            ContextValueLabelAccumulator labelAccumulator = new ContextValueLabelAccumulator(bodyDataLayer, bodyDataProvider,
+                    manager.getContextManager(), manager);
             bodyDataLayer.setConfigLabelAccumulator(labelAccumulator);
             registerColumnLabels(labelAccumulator, ContextRowDataListFixture.getContexts(manager.getContextManager()));
 

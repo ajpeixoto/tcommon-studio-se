@@ -27,15 +27,8 @@ import org.eclipse.swt.graphics.Rectangle;
  */
 public class ContextColumnHeaderDecorator extends CellPainterWrapper {
 
-    private boolean uplift = true;
-
     public ContextColumnHeaderDecorator(ICellPainter interiorPainter) {
         super(interiorPainter);
-    }
-
-    public ContextColumnHeaderDecorator(ICellPainter interiorPainter, boolean uplift) {
-        super(interiorPainter);
-        this.uplift = uplift;
     }
 
     /*
@@ -54,14 +47,14 @@ public class ContextColumnHeaderDecorator extends CellPainterWrapper {
         // Save GC settings
         Color originalForeground = gc.getForeground();
 
-        gc.setForeground(uplift ? GUIHelper.COLOR_WIDGET_LIGHT_SHADOW : GUIHelper.COLOR_WIDGET_DARK_SHADOW);
+        gc.setForeground(GUIHelper.COLOR_WIDGET_LIGHT_SHADOW);
         gc.drawLine(adjustedCellBounds.x, adjustedCellBounds.y, adjustedCellBounds.x + adjustedCellBounds.width - 1,
                 adjustedCellBounds.y);
         gc.drawLine(adjustedCellBounds.x, adjustedCellBounds.y, adjustedCellBounds.x, adjustedCellBounds.y
                 + adjustedCellBounds.height - 1);
 
         // Down
-        gc.setForeground(uplift ? GUIHelper.COLOR_WIDGET_DARK_SHADOW : GUIHelper.COLOR_WIDGET_LIGHT_SHADOW);
+        gc.setForeground(GUIHelper.COLOR_WIDGET_LIGHT_SHADOW);
         gc.drawLine(adjustedCellBounds.x, adjustedCellBounds.y + adjustedCellBounds.height - 1, adjustedCellBounds.x
                 + adjustedCellBounds.width - 1, adjustedCellBounds.y + adjustedCellBounds.height - 1);
         gc.drawLine(adjustedCellBounds.x + adjustedCellBounds.width - 1, adjustedCellBounds.y, adjustedCellBounds.x

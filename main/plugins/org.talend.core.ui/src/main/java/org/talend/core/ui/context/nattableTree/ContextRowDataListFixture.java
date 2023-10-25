@@ -49,6 +49,29 @@ public class ContextRowDataListFixture {
         return contexts;
     }
 
+    public static String[] getPropertyNameToLabels(IContextModelManager manager) {
+        List<IContext> contexts = getContexts(manager.getContextManager());
+        IContext defaultContext = manager.getContextManager().getDefaultContext();
+        int columnCount = contexts.size() + 4;
+        String[] columnsName = new String[columnCount];
+        int i = 0;
+        columnsName[i++] = ContextTableConstants.COLUMN_NAME_PROPERTY;
+        columnsName[i++] = ContextTableConstants.COLUMN_TYPE_PROPERTY;
+        columnsName[i++] = ContextTableConstants.COLUMN_COMMENT_PROPERTY;
+        columnsName[i++] = ContextTableConstants.COLUMN_CHECK_PROPERTY;
+        if (contexts.size() > 0) {
+            for (IContext context : contexts) {
+                String contextName = context.getName();
+                if (contextName.equalsIgnoreCase(defaultContext.getName()) && !contextName.equalsIgnoreCase("Default")) { //$NON-NLS-1$
+                    contextName = contextName + ContextTableConstants.CONTEXT_DEFAULT;
+                }
+                columnsName[i++] = contextName;
+            }
+            return columnsName;
+        }
+        return columnsName;
+    }
+
     public static String[] getPropertyNames(IContextModelManager manager) {
         List<IContext> contexts = getContexts(manager.getContextManager());
         int columnCount = contexts.size() + 4;
@@ -60,7 +83,8 @@ public class ContextRowDataListFixture {
         columnsName[i++] = ContextTableConstants.COLUMN_CHECK_PROPERTY;
         if (contexts.size() > 0) {
             for (IContext context : contexts) {
-                columnsName[i++] = context.getName();
+                String contextName = context.getName();
+                columnsName[i++] = contextName;
             }
             return columnsName;
         }

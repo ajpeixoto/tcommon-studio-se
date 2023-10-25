@@ -552,4 +552,12 @@ public class PromptDialog extends SelectionDialog {
         return currentContext;
     }
 
+    public List<IContext> getiContexts() {
+        return iContexts;
+    }
+
+    public void setiContexts(List<IContext> iContexts) {
+        this.iContexts = iContexts;
+    }
+
 }
