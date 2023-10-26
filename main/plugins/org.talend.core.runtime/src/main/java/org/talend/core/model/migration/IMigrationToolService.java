@@ -103,16 +103,26 @@ public interface IMigrationToolService extends IService {
     
     public static final String SYS_PROP_EXEC_OLD_AS_LAZY_MIGRATIONS_BREAKS_DEFAULT = "8.0.0";
     
+    public static final String SYS_PROP_ENABLE_CI_LAZY_MIGRATIONS = "lazyMigrationCI";
+
+    public static final String SYS_PROP_ENABLE_CI_LAZY_MIGRATIONS_DEFAULT = "true";
+    
     public static final MigrationTaskExtensionEPReader MIGRATION_TASK_EXT_READER = new MigrationTaskExtensionEPReader();
 
+    
+    public static boolean isLazyMigrationEnabledForCI() {
+        String val = System.getProperty(SYS_PROP_ENABLE_CI_LAZY_MIGRATIONS, SYS_PROP_ENABLE_CI_LAZY_MIGRATIONS_DEFAULT);
+        return Boolean.parseBoolean(val);
+    }
+    
     public static boolean checkLazyMigrations() {
         String val = System.getProperty(SYS_PROP_CHECK_LAZY_MIGRATIONS, SYS_PROP_CHECK_LAZY_MIGRATIONS_DEFAULT);
-        return Boolean.parseBoolean(val);
+        return Boolean.parseBoolean(val) && isLazyMigraitonEnabled();
     }
 
     public static boolean execOldTaskAsLazy() {
         String val = System.getProperty(SYS_PROP_EXEC_OLD_AS_LAZY_MIGRATIONS, SYS_PROP_EXEC_OLD_AS_LAZY_MIGRATIONS_DEFAULT);
-        return Boolean.parseBoolean(val);
+        return Boolean.parseBoolean(val) && isLazyMigraitonEnabled();
     }
     
     public static String getExecOldTaskAsLazyBreaks() {
@@ -139,7 +149,7 @@ public interface IMigrationToolService extends IService {
     }
     
     public static boolean canRunAsLazy(IProjectMigrationTask t) {
-        if (IProcessor.isCIMode() || !execOldTaskAsLazy() || t.isLazy()) {
+        if (!execOldTaskAsLazy() || t.isLazy()) {
             return false;
         }
         if (t instanceof AbstractItemMigrationTask) {
@@ -148,6 +158,13 @@ public interface IMigrationToolService extends IService {
             }
         }
         return false;
+    }
+    
+    public static boolean isLazyMigraitonEnabled() {
+        if (IProcessor.isCIMode()) {
+            return isLazyMigrationEnabledForCI();
+        }
+        return true;
     }
 
 }

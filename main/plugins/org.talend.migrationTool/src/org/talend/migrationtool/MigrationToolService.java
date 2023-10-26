@@ -960,8 +960,8 @@ public class MigrationToolService implements IMigrationToolService {
     }
     
     public void executeLazyMigrations(Project project, Item item) throws Exception {
-        if (ProcessorUtilities.isCIMode()) {
-            log.info("CI mode, lazy migration is disabled");
+        if (!IMigrationToolService.isLazyMigraitonEnabled()) {
+            log.info("Lazy migration is disabled");
             return;
         }
         
@@ -990,6 +990,8 @@ public class MigrationToolService implements IMigrationToolService {
                 }
             }
             log.info("size of allLazyTasks after loading old migrations: " + allLazyTasks.size());
+            // need to sort again
+            sortMigrationTasks(allLazyTasks);
         }
         
         // filling bundleId
@@ -1030,19 +1032,6 @@ public class MigrationToolService implements IMigrationToolService {
             throw new IllegalArgumentException("item is not process item or joblet process item");
         }
        
-        // check whether needs to migrate or not
-//        List<IProjectMigrationTask> nonExecutedLazyMigrationTasks = null;
-//        Object migrationOrderObj = item.getProperty().getAdditionalProperties().get(MIGRATION_ORDER_PROP);
-//        if (migrationOrderObj != null) {
-//            try {
-//                Date migrationOrder = DATE_FORMATTER.parse(migrationOrderObj.toString());
-//                nonExecutedLazyMigrationTasks = getNonExecutedLazyMigrationTasks(allLazyTasks, migrationOrder);
-//            } catch (ParseException e) {
-//                ExceptionHandler.process(e);
-//            }
-//        } else {
-//            nonExecutedLazyMigrationTasks = allLazyTasks;
-//        }
         if (allLazyTasks == null || allLazyTasks.isEmpty()) {
             log
                     .info("No lazy migration tasks for project: " + project.getTechnicalLabel() + ", item id: " + item.getProperty().getId() + ", item display name: "
@@ -1054,7 +1043,6 @@ public class MigrationToolService implements IMigrationToolService {
         final IProxyRepositoryFactory migRepoFactory = migRepoService.getProxyRepositoryFactory();
         
         final Project projectMig = project;
-//        final List<IProjectMigrationTask> nonExecutedLazyMigrationList = nonExecutedLazyMigrationTasks;
         log
                 .info("lazy migration tasks for project: " + project.getTechnicalLabel() + ", item id: " + item.getProperty().getId() + ", item display name: " + item.getProperty().getDisplayName()
                         + ", size: " + allLazyTasks.size());
@@ -1162,13 +1150,6 @@ public class MigrationToolService implements IMigrationToolService {
             EmfResourcesFactoryReader.INSTANCE.removOption(ResourceOption.MIGRATION, false);
             EmfResourcesFactoryReader.INSTANCE.removOption(ResourceOption.MIGRATION, true);
         }
-    }
-    
-    private static List<IProjectMigrationTask> getNonExecutedLazyMigrationTasks(List<IProjectMigrationTask> allTasks, Date migrationOrder) {
-        if (allTasks == null || allTasks.isEmpty()) {
-            return null;
-        }
-        return allTasks.stream().filter(t -> t.getOrder().after(migrationOrder)).collect(Collectors.toList());
     }
     
     private static List<IProjectMigrationTask> getLazyMigrationTasks() {
