@@ -103,11 +103,6 @@ public abstract class AbstractItemMigrationTask extends AbstractMigrationTask im
 
     @Override
     public ExecutionResult execute(Project project, Item item) {
-        // remove lazy types from old task
-        if (IMigrationToolService.removeLazyTypesFromOldTask(this)) {
-            log.info("removed lazy types from old task: " + this.getId());
-        }
-        
         if (!getAllTypes().contains(ERepositoryObjectType.getItemType(item))) {
             return ExecutionResult.NOTHING_TO_DO;
         }
@@ -164,8 +159,14 @@ public abstract class AbstractItemMigrationTask extends AbstractMigrationTask im
      * */
     protected List<ERepositoryObjectType> getAllTypes() {
         List<ERepositoryObjectType> declaredTypes = getTypes();
-        ArrayList<ERepositoryObjectType> allTypes = new ArrayList<ERepositoryObjectType>(declaredTypes.size());
+        ArrayList<ERepositoryObjectType> allTypes = new ArrayList<ERepositoryObjectType>(declaredTypes);
         allTypes.addAll(getExtendedTypes());
+        
+        // remove lazy types from old task
+        if (!this.isLazy() && IMigrationToolService.canRunAsLazy(this)) {
+            allTypes.removeAll(ERepositoryObjectType.getAllTypesOfProcess2());
+            log.info("removed lazy types from old task: " + this.getId());
+        }
         return allTypes;
     }
 

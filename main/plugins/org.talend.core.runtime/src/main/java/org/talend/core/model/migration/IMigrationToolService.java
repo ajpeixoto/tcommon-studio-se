@@ -145,13 +145,5 @@ public interface IMigrationToolService extends IService {
         }
         return false;
     }
-    
-    public static boolean removeLazyTypesFromOldTask(IProjectMigrationTask t) {
-        if (!t.isLazy() && canRunAsLazy(t)) {
-            ((AbstractItemMigrationTask) t).getTypes().removeAll(ERepositoryObjectType.getAllTypesOfProcess2());
-            return true;
-        }
-        return false;
-    }
 
 }
