@@ -2837,7 +2837,7 @@ public class ProcessorUtilities {
     }
     
     public static boolean isCIMode() {
-        return Boolean.getBoolean("ci.mode");
+        return IProcessor.isCIMode();
     }
 
     public static void setExportConfig(boolean export) {

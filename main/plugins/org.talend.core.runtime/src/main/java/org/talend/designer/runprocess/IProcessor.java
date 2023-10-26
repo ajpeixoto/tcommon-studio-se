@@ -47,7 +47,9 @@ public interface IProcessor {
     public static final int STATES_EDIT = 0;
 
     public static final int STATES_RUNTIME = 1;
-
+    
+    public static final String SYS_PROP_CI_MODE = "ci.mode";
+    
     public void cleanBeforeGenerate(int options) throws ProcessorException;
 
     /**
@@ -339,5 +341,9 @@ public interface IProcessor {
     boolean isProcessUnloaded();
 
     void reloadProcess();
+    
+    public static boolean isCIMode() {
+        return Boolean.getBoolean(SYS_PROP_CI_MODE);
+    }
 
 }

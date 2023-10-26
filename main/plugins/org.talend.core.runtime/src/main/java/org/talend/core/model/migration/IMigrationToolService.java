@@ -26,6 +26,7 @@ import org.talend.core.model.properties.MigrationTask;
 import org.talend.migration.IProjectMigrationTask;
 import org.talend.migration.MigrationTaskExtensionEPReader;
 import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.designer.runprocess.IProcessor;
 
 /**
  * DOC smallet class global comment. Detailled comment <br/>
@@ -138,7 +139,7 @@ public interface IMigrationToolService extends IService {
     }
     
     public static boolean canRunAsLazy(IProjectMigrationTask t) {
-        if (!execOldTaskAsLazy() || t.isLazy()) {
+        if (IProcessor.isCIMode() || !execOldTaskAsLazy() || t.isLazy()) {
             return false;
         }
         if (t instanceof AbstractItemMigrationTask) {
