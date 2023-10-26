@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -2129,6 +2130,21 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
             }
         }
     }
+    
+    private void checkLazyMigrations() {
+        IMigrationToolService ms = null;
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(IMigrationToolService.class)) {
+            ms = GlobalServiceRegister.getDefault().getService(IMigrationToolService.class);
+        }
+        if (ms != null) {
+            Set<String> invalids = ms.validateLazyMigrations();
+            if (!invalids.isEmpty()) {
+                RuntimeException e = new RuntimeException("Invalid lazy migrations found! " + invalids.toString());
+                ExceptionHandler.process(e);
+                throw e;
+            }
+        }
+    }
 
     /**
      * DOC tang Comment method "logOnProject".
@@ -2248,6 +2264,9 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
                 } catch (Throwable e) {
                     ExceptionHandler.process(e);
                 }
+                
+                // check lazy migrations
+                checkLazyMigrations();
 
                 // Check reference project setting problems
                 checkReferenceProjectsProblems(project);

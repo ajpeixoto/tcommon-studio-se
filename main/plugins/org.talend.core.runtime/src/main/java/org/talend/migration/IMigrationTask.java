@@ -101,4 +101,8 @@ public interface IMigrationTask {
     
     public void setLazy(boolean isLazy);
 
+    public String getBundleSymbolicName();
+
+    public void setBundleSymbolicName(String bundleName);
+
 }

@@ -35,6 +35,8 @@ public abstract class AbstractMigrationTask implements IMigrationTask{
     private ExecutionResult status;
 
     private boolean isLazy = false;
+    
+    private String bundleName;
 
     /**
      * DOC smallet AbstractMigrationTask constructor comment.
@@ -115,5 +117,13 @@ public abstract class AbstractMigrationTask implements IMigrationTask{
     
     public void setLazy(boolean isLazy) {
         this.isLazy = isLazy;
+    }
+    
+    public String getBundleSymbolicName() {
+        return bundleName;
+    }
+
+    public void setBundleSymbolicName(String bundleName) {
+        this.bundleName = bundleName;
     }
 }

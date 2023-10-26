@@ -12,13 +12,21 @@
 // ============================================================================
 package org.talend.core.model.migration;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.talend.commons.utils.VersionUtils;
 import org.talend.core.IService;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.MigrationTask;
+import org.talend.migration.IProjectMigrationTask;
+import org.talend.core.model.repository.ERepositoryObjectType;
 
 /**
  * DOC smallet class global comment. Detailled comment <br/>
@@ -27,7 +35,7 @@ import org.talend.core.model.properties.MigrationTask;
  *
  */
 public interface IMigrationToolService extends IService {
-
+    
     public void executeWorspaceTasks();
 
     public void initNewProjectTasks(Project project);
@@ -74,5 +82,67 @@ public interface IMigrationToolService extends IService {
      * @param item given item
      */
     public void executeLazyMigrations(Project project, Item item) throws Exception;
+    
+    /**
+     * Validate all of lazy migration tasks whether lazy migration task was performed on other types of item except
+     * process items.
+     * 
+     * @return
+     */
+    public Set<String> validateLazyMigrations();
+    
+    public static final String SYS_PROP_CHECK_LAZY_MIGRATIONS = "lazyMigrationCheck";
+    
+    public static final String SYS_PROP_CHECK_LAZY_MIGRATIONS_DEFAULT = "true";
+
+    public static final String SYS_PROP_EXEC_OLD_AS_LAZY_MIGRATIONS = "execOldTaskAsLazy";
+
+    public static final String SYS_PROP_EXEC_OLD_AS_LAZY_MIGRATIONS_DEFAULT = "true";
+    
+    public static final String SYS_PROP_EXEC_OLD_AS_LAZY_MIGRATIONS_BREAKS = "execOldTaskAsLazyBreaks";
+    
+    public static final String SYS_PROP_EXEC_OLD_AS_LAZY_MIGRATIONS_BREAKS_DEFAULT = "8.0.0";
+
+    public static boolean checkLazyMigrations() {
+        String val = System.getProperty(SYS_PROP_CHECK_LAZY_MIGRATIONS, SYS_PROP_CHECK_LAZY_MIGRATIONS_DEFAULT);
+        return Boolean.parseBoolean(val);
+    }
+
+    public static boolean execOldTaskAsLazy() {
+        String val = System.getProperty(SYS_PROP_EXEC_OLD_AS_LAZY_MIGRATIONS, SYS_PROP_EXEC_OLD_AS_LAZY_MIGRATIONS_DEFAULT);
+        return Boolean.parseBoolean(val);
+    }
+    
+    public static String getExecOldTaskAsLazyBreaks() {
+        return System.getProperty(SYS_PROP_EXEC_OLD_AS_LAZY_MIGRATIONS_BREAKS, SYS_PROP_EXEC_OLD_AS_LAZY_MIGRATIONS_BREAKS_DEFAULT);
+    }
+    
+    public static boolean isLazyTypes(Collection<ERepositoryObjectType> types) {
+        Set<ERepositoryObjectType> ts = new HashSet<ERepositoryObjectType>(types);
+        List<ERepositoryObjectType> lts = ERepositoryObjectType.getAllTypesOfProcess2();
+        for (ERepositoryObjectType t : lts) {
+            if (ts.contains(t)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public static boolean canRunAsLazy(IProjectMigrationTask t) {
+        if (t instanceof AbstractItemMigrationTask) {
+            if (VersionUtils.compareTo(t.getBreaks(), getExecOldTaskAsLazyBreaks()) >= 0 && isLazyTypes(((AbstractItemMigrationTask) t).getTypes())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public static boolean removeLazyTypesFromOldTask(IProjectMigrationTask t) {
+        if (!t.isLazy() && canRunAsLazy(t)) {
+            ((AbstractItemMigrationTask) t).getTypes().removeAll(ERepositoryObjectType.getAllTypesOfProcess2());
+            return true;
+        }
+        return false;
+    }
 
 }

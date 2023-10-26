@@ -20,11 +20,15 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.text.ParseException;
@@ -47,6 +51,8 @@ import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.LoginException;
 import org.talend.commons.exception.PersistenceException;
@@ -57,6 +63,7 @@ import org.talend.commons.utils.VersionUtils;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.ICoreService;
 import org.talend.core.model.general.Project;
+import org.talend.core.model.migration.AbstractItemMigrationTask;
 import org.talend.core.model.migration.IMigrationToolService;
 import org.talend.core.model.process.JobInfo;
 import org.talend.core.model.properties.Item;
@@ -124,6 +131,8 @@ public class MigrationToolService implements IMigrationToolService {
     private static final String MIGRATION_ORDER_PROP = "migration_order";
 
     private static final String MIGRATION_FAILED_PROP = "migration_failed";
+    
+    private static final GregorianCalendar LAZY_MIGRATION_RELEASE_TIME = new GregorianCalendar(2023, 10, 10, 12, 0, 0);
     
     public MigrationToolService() {
         doneThisSession = new ArrayList<IProjectMigrationTask>();
@@ -951,6 +960,11 @@ public class MigrationToolService implements IMigrationToolService {
     }
     
     public void executeLazyMigrations(Project project, Item item) throws Exception {
+        if (ProcessorUtilities.isCIMode()) {
+            log.info("CI mode, lazy migration is disabled");
+            return;
+        }
+        
         if (project == null) {
             project = ProjectManager.getInstance().getCurrentProject();
         }
@@ -958,6 +972,37 @@ public class MigrationToolService implements IMigrationToolService {
             throw new IllegalArgumentException("item is not process item or joblet process item");
         }
 
+        // get all lazy tasks
+        List<IProjectMigrationTask> allLazyTasks = getLazyMigrationTasks();
+        if (allLazyTasks == null || allLazyTasks.isEmpty()) {
+            log.info("No lazy migration tasks found!");
+            return;
+        }
+        
+        // execute old migration tasks as lazy migrations
+        if (IMigrationToolService.execOldTaskAsLazy()) {
+            log.info("size of allLazyTasks: " + allLazyTasks.size());
+            // load old migration tasks
+            List<IProjectMigrationTask> allNonLazyTasks = getNonLazyMigrationTasks();
+            for (IProjectMigrationTask t : allNonLazyTasks) {
+                if (IMigrationToolService.canRunAsLazy(t)) {
+                    allLazyTasks.add(t);
+                }
+            }
+            log.info("size of allLazyTasks after loading old migrations: " + allLazyTasks.size());
+        }
+        
+        // filling bundleId
+        for (IProjectMigrationTask t : allLazyTasks) {
+            Bundle b = FrameworkUtil.getBundle(t.getClass());
+            if (b == null) {
+                t.setBundleSymbolicName(MIGRATION_ORDER_PROP);
+                log.info("Can not find bundle for task: " + t.getId());
+            } else {
+                t.setBundleSymbolicName(b.getSymbolicName());
+            }
+        }
+        
         // get all of children
         final List<Item> targetedItems = new ArrayList<Item>();
         targetedItems.add(item);
@@ -973,51 +1018,46 @@ public class MigrationToolService implements IMigrationToolService {
         }
 
         for (Item targetItem : targetedItems) {
-            executeLazyMigrationsInternal(project, targetItem);
+            executeLazyMigrationsInternal(allLazyTasks, project, targetItem);
         }
     }
     
-    protected void executeLazyMigrationsInternal(Project project, Item item) throws Exception {
+    protected void executeLazyMigrationsInternal(final List<IProjectMigrationTask> allLazyTasks, Project project, Item item) throws Exception {
         if (project == null) {
             project = ProjectManager.getInstance().getCurrentProject();
         }
         if (!(item instanceof ProcessItem || item instanceof JobletProcessItem)) {
             throw new IllegalArgumentException("item is not process item or joblet process item");
         }
-        
-        // get all lazy tasks
-        List<IProjectMigrationTask> allLazyTasks = getLazyMigrationTasks();
+       
         // check whether needs to migrate or not
-        List<IProjectMigrationTask> nonExecutedLazyMigrationTasks = null;
-        Object migrationOrderObj = item.getProperty().getAdditionalProperties().get(MIGRATION_ORDER_PROP);
-        if (migrationOrderObj != null) {
-            try {
-                Date migrationOrder = DATE_FORMATTER.parse(migrationOrderObj.toString());
-                nonExecutedLazyMigrationTasks = getNonExecutedLazyMigrationTasks(allLazyTasks, migrationOrder);
-            } catch (ParseException e) {
-                ExceptionHandler.process(e);
-            }
-        } else {
-            nonExecutedLazyMigrationTasks = allLazyTasks;
-        }
-        if (nonExecutedLazyMigrationTasks == null || nonExecutedLazyMigrationTasks.isEmpty()) {
+//        List<IProjectMigrationTask> nonExecutedLazyMigrationTasks = null;
+//        Object migrationOrderObj = item.getProperty().getAdditionalProperties().get(MIGRATION_ORDER_PROP);
+//        if (migrationOrderObj != null) {
+//            try {
+//                Date migrationOrder = DATE_FORMATTER.parse(migrationOrderObj.toString());
+//                nonExecutedLazyMigrationTasks = getNonExecutedLazyMigrationTasks(allLazyTasks, migrationOrder);
+//            } catch (ParseException e) {
+//                ExceptionHandler.process(e);
+//            }
+//        } else {
+//            nonExecutedLazyMigrationTasks = allLazyTasks;
+//        }
+        if (allLazyTasks == null || allLazyTasks.isEmpty()) {
             log
                     .info("No lazy migration tasks for project: " + project.getTechnicalLabel() + ", item id: " + item.getProperty().getId() + ", item display name: "
                             + item.getProperty().getDisplayName());
             return;
         }
         // execute migrations
-        // IRepositoryService migRepoService = (IRepositoryService)
-        // GlobalServiceRegister.getDefault().getService(IRepositoryService.class);
-        // final IProxyRepositoryFactory migRepoFactory = migRepoService.getProxyRepositoryFactory();
-        
-        ProxyRepositoryFactory migRepoFactory = ProxyRepositoryFactory.getInstance();
+        IRepositoryService migRepoService = (IRepositoryService) GlobalServiceRegister.getDefault().getService(IRepositoryService.class);
+        final IProxyRepositoryFactory migRepoFactory = migRepoService.getProxyRepositoryFactory();
         
         final Project projectMig = project;
-        final List<IProjectMigrationTask> nonExecutedLazyMigrationList = nonExecutedLazyMigrationTasks;
+//        final List<IProjectMigrationTask> nonExecutedLazyMigrationList = nonExecutedLazyMigrationTasks;
         log
                 .info("lazy migration tasks for project: " + project.getTechnicalLabel() + ", item id: " + item.getProperty().getId() + ", item display name: " + item.getProperty().getDisplayName()
-                        + ", size: " + nonExecutedLazyMigrationList.size());
+                        + ", size: " + allLazyTasks.size());
         String taskDesc = "executeLazyMigrations on project: " + project.getTechnicalLabel();
         log.trace(taskDesc);
         try {
@@ -1045,13 +1085,27 @@ public class MigrationToolService implements IMigrationToolService {
                                     ExceptionHandler.process(e);
                                 }
                             }
-                            
-                            for (IProjectMigrationTask t : nonExecutedLazyMigrationList) {
+                            Map<String, Date> migrationOrderMap = new HashMap<String, Date>();
+                            for (IProjectMigrationTask t : allLazyTasks) {
+                                Object migrationOrderObj = item.getProperty().getAdditionalProperties().get(t.getBundleSymbolicName());
+                                if (migrationOrderObj != null) {
+                                    try {
+                                        Date migrationOrder = DATE_FORMATTER.parse(migrationOrderObj.toString());
+                                        if (!t.getOrder().after(migrationOrder)) {
+                                            // already executed
+                                            continue;
+                                        }
+                                    } catch (ParseException e) {
+                                        ExceptionHandler.process(e);
+                                    }
+                                }
                                 try {
                                     ExecutionResult res = t.execute(projectMig, tempItem);
                                     t.setStatus(res);
                                     if (t.getStatus() == ExecutionResult.FAILURE) {
                                         failedMigrations.add(t.getId());
+                                    } else {
+                                        migrationOrderMap.put(t.getBundleSymbolicName(), t.getOrder());
                                     }
                                 } catch (Exception e) {
                                     ExceptionHandler.process(e);
@@ -1070,7 +1124,10 @@ public class MigrationToolService implements IMigrationToolService {
 
                             Property prop = tempItem.getProperty();
                             // save latest migration order into properties
-                            prop.getAdditionalProperties().put(MIGRATION_ORDER_PROP, DATE_FORMATTER.format(nonExecutedLazyMigrationList.get(nonExecutedLazyMigrationList.size() - 1).getOrder()));
+                            migrationOrderMap.forEach((k, v) -> {
+                                prop.getAdditionalProperties().put(k, DATE_FORMATTER.format(v));
+                            });
+                            
                             if (!failedMigrations.isEmpty()) {
                                 log
                                         .info("lazy migration tasks for project: " + projectMig.getTechnicalLabel() + ", item id: " + item.getProperty().getId() + ", item display name: "
@@ -1079,7 +1136,7 @@ public class MigrationToolService implements IMigrationToolService {
                             }
 
                             try {
-                                migRepoFactory.save(tempItem);
+                                migRepoFactory.save(tempItem.getProperty());
                             } catch (PersistenceException e) {
                                 ExceptionHandler.process(e);
                             }
@@ -1115,16 +1172,40 @@ public class MigrationToolService implements IMigrationToolService {
     }
     
     private static List<IProjectMigrationTask> getLazyMigrationTasks() {
-        List<IProjectMigrationTask> ret = new ArrayList<IProjectMigrationTask>();
         List<IProjectMigrationTask> lazyTasks = GetTasksHelper.getProjectTasks(null, true);
-        if (lazyTasks != null && !lazyTasks.isEmpty()) {
-            ret.addAll(lazyTasks);
-        }
-        
         // sort
-        sortMigrationTasks(ret);
-
-        return ret;
+        sortMigrationTasks(lazyTasks);
+        return lazyTasks;
+    }
+    
+    private static List<IProjectMigrationTask> getNonLazyMigrationTasks() {
+        List<IProjectMigrationTask> nonLazyTasks = GetTasksHelper.getProjectTasks(null, false);
+        // sort
+        sortMigrationTasks(nonLazyTasks);
+        return nonLazyTasks;
     }
 
+    public Set<String> validateLazyMigrations() {
+        Set<String> invalids = new HashSet<String>();
+        if (!IMigrationToolService.checkLazyMigrations()) {
+            return invalids;
+        }
+        List<IProjectMigrationTask> allLazyTasks = getLazyMigrationTasks();
+        for (IProjectMigrationTask t : allLazyTasks) {
+            if (t instanceof AbstractItemMigrationTask) {
+                // only validate new lazy migrations added after lazy migration system releases
+                if (!t.getOrder().after(LAZY_MIGRATION_RELEASE_TIME.getTime())) {
+                    continue;
+                }
+                AbstractItemMigrationTask at = (AbstractItemMigrationTask) t;
+                // though we can not guarantee that the migration task is lazy,
+                // at least this migration task may modify other things such as context or metadata etc.
+                if (!IMigrationToolService.isLazyTypes(at.getTypes())) {
+                    invalids.add(at.getId());
+                }
+            }
+        }
+
+        return invalids;
+    }
 }

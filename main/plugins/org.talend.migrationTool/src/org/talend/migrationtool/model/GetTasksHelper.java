@@ -26,6 +26,7 @@ import org.talend.commons.utils.workbench.extensions.ExtensionPointLimiterImpl;
 import org.talend.commons.utils.workbench.extensions.IExtensionPointLimiter;
 import org.talend.core.model.properties.MigrationTask;
 import org.talend.core.model.utils.MigrationUtil;
+import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.migration.IMigrationTask;
 import org.talend.migration.IProjectMigrationTask;
 import org.talend.migration.IWorkspaceMigrationTask;
@@ -112,7 +113,7 @@ public class GetTasksHelper {
                         String version = configurationElement.getAttribute("version"); //$NON-NLS-1$
                         String breaks = configurationElement.getAttribute("breaks"); //$NON-NLS-1$
                         String isLazy = configurationElement.getAttribute("isLazy");
-                        if (Boolean.parseBoolean(isLazy)) {
+                        if (!isCIMode() && Boolean.parseBoolean(isLazy)) {
                             return null;
                         }
                         return MigrationUtil.createMigrationTask(id, version, breaks, MigrationUtil.DEFAULT_STATUS);
@@ -162,8 +163,14 @@ public class GetTasksHelper {
                 }
             }
         };
-
-        return provider.createInstances().stream().filter(t -> t.isLazy() == isLazy).collect(Collectors.toList());
+        return provider.createInstances().stream().filter(t -> {
+            if (isCIMode()) {
+                return true;
+            } else {
+                return t.isLazy() == isLazy;
+            }
+        }).collect(Collectors.toList());
+//        return provider.createInstances().stream().filter(t -> t.isLazy() == isLazy).collect(Collectors.toList());
     }
 
     public static List<IWorkspaceMigrationTask> getWorkspaceTasks() {
@@ -208,5 +215,9 @@ public class GetTasksHelper {
         }
 
         return currentAction;
+    }
+    
+    private static boolean isCIMode() {
+        return ProcessorUtilities.isCIMode();
     }
 }
