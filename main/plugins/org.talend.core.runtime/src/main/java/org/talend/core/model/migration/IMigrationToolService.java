@@ -18,14 +18,13 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.talend.commons.utils.VersionUtils;
 import org.talend.core.IService;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.MigrationTask;
 import org.talend.migration.IProjectMigrationTask;
+import org.talend.migration.MigrationTaskExtensionEPReader;
 import org.talend.core.model.repository.ERepositoryObjectType;
 
 /**
@@ -102,6 +101,8 @@ public interface IMigrationToolService extends IService {
     public static final String SYS_PROP_EXEC_OLD_AS_LAZY_MIGRATIONS_BREAKS = "execOldTaskAsLazyBreaks";
     
     public static final String SYS_PROP_EXEC_OLD_AS_LAZY_MIGRATIONS_BREAKS_DEFAULT = "8.0.0";
+    
+    public static final MigrationTaskExtensionEPReader MIGRATION_TASK_EXT_READER = new MigrationTaskExtensionEPReader();
 
     public static boolean checkLazyMigrations() {
         String val = System.getProperty(SYS_PROP_CHECK_LAZY_MIGRATIONS, SYS_PROP_CHECK_LAZY_MIGRATIONS_DEFAULT);
@@ -119,6 +120,14 @@ public interface IMigrationToolService extends IService {
     
     public static boolean isLazyTypes(Collection<ERepositoryObjectType> types) {
         Set<ERepositoryObjectType> ts = new HashSet<ERepositoryObjectType>(types);
+        Set<ERepositoryObjectType> extTypes = MIGRATION_TASK_EXT_READER.getObjectTypeExtensions(ERepositoryObjectType.getAllTypesOfProcess2());
+        ts.removeAll(ERepositoryObjectType.getAllTypesOfProcess2());
+        ts.removeAll(extTypes);
+        return ts.size() == 0;
+    }
+    
+    public static boolean containLazyTypes(Collection<ERepositoryObjectType> types) {
+        Set<ERepositoryObjectType> ts = new HashSet<ERepositoryObjectType>(types);
         List<ERepositoryObjectType> lts = ERepositoryObjectType.getAllTypesOfProcess2();
         for (ERepositoryObjectType t : lts) {
             if (ts.contains(t)) {
@@ -130,7 +139,7 @@ public interface IMigrationToolService extends IService {
     
     public static boolean canRunAsLazy(IProjectMigrationTask t) {
         if (t instanceof AbstractItemMigrationTask) {
-            if (VersionUtils.compareTo(t.getBreaks(), getExecOldTaskAsLazyBreaks()) >= 0 && isLazyTypes(((AbstractItemMigrationTask) t).getTypes())) {
+            if (VersionUtils.compareTo(t.getBreaks(), getExecOldTaskAsLazyBreaks()) >= 0 && containLazyTypes(((AbstractItemMigrationTask) t).getTypes())) {
                 return true;
             }
         }
