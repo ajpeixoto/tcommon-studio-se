@@ -138,6 +138,9 @@ public interface IMigrationToolService extends IService {
     }
     
     public static boolean canRunAsLazy(IProjectMigrationTask t) {
+        if (!execOldTaskAsLazy() || t.isLazy()) {
+            return false;
+        }
         if (t instanceof AbstractItemMigrationTask) {
             if (VersionUtils.compareTo(t.getBreaks(), getExecOldTaskAsLazyBreaks()) >= 0 && containLazyTypes(((AbstractItemMigrationTask) t).getTypes())) {
                 return true;

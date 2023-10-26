@@ -163,7 +163,7 @@ public abstract class AbstractItemMigrationTask extends AbstractMigrationTask im
         allTypes.addAll(getExtendedTypes());
         
         // remove lazy types from old task
-        if (!this.isLazy() && IMigrationToolService.canRunAsLazy(this)) {
+        if (IMigrationToolService.canRunAsLazy(this)) {
             allTypes.removeAll(ERepositoryObjectType.getAllTypesOfProcess2());
             log.info("removed lazy types from old task: " + this.getId());
         }
