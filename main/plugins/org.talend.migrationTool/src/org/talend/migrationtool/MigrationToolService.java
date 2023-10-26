@@ -132,7 +132,7 @@ public class MigrationToolService implements IMigrationToolService {
 
     private static final String MIGRATION_FAILED_PROP = "migration_failed";
     
-    private static final GregorianCalendar LAZY_MIGRATION_RELEASE_TIME = new GregorianCalendar(2023, 10, 10, 12, 0, 0);
+//    private static final GregorianCalendar LAZY_MIGRATION_RELEASE_TIME = new GregorianCalendar(2023, 10, 10, 12, 0, 0);
     
     public MigrationToolService() {
         doneThisSession = new ArrayList<IProjectMigrationTask>();
@@ -1193,10 +1193,6 @@ public class MigrationToolService implements IMigrationToolService {
         List<IProjectMigrationTask> allLazyTasks = getLazyMigrationTasks();
         for (IProjectMigrationTask t : allLazyTasks) {
             if (t instanceof AbstractItemMigrationTask) {
-                // only validate new lazy migrations added after lazy migration system releases
-                if (!t.getOrder().after(LAZY_MIGRATION_RELEASE_TIME.getTime())) {
-                    continue;
-                }
                 AbstractItemMigrationTask at = (AbstractItemMigrationTask) t;
                 // though we can not guarantee that the migration task is lazy,
                 // at least this migration task may modify other things such as context or metadata etc.

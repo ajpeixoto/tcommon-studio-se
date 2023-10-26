@@ -165,6 +165,10 @@ public class GetTasksHelper {
         };
         return provider.createInstances().stream().filter(t -> {
             if (isCIMode()) {
+                if(isLazy) {
+                    // CI mode no lazy tasks
+                    return false;
+                }
                 return true;
             } else {
                 return t.isLazy() == isLazy;
