@@ -12,7 +12,7 @@
 // ============================================================================
 package org.talend.core.model.utils;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 import org.talend.core.model.metadata.builder.connection.ConnectionFactory;
@@ -81,7 +81,7 @@ public class UpdateRepositoryHelperTest {
         contextItem.setState(contextItemState);
         contextItem.setDefaultContext("Default");
 
-        assertEquals("Context:testContext", UpdateRepositoryHelper.getRepositorySourceName(contextItem));
+        assertEquals("Context variable:testContext", UpdateRepositoryHelper.getRepositorySourceName(contextItem));
 
     }
 }

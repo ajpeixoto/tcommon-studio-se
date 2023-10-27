@@ -319,7 +319,8 @@ public class LibraryDataService {
             libraryObj.setPomMissing(true);
         }
         if (!is4Parent) {
-            libraryObj.setType(String.valueOf(properties.get("type"))); //$NON-NLS-1$
+            String type = String.valueOf(properties.get("type"));
+            libraryObj.setType(MavenConstants.PACKAGING_BUNDLE.equalsIgnoreCase(type) ? MavenConstants.PACKAGING_JAR : type); //$NON-NLS-1$
         }
         int licenseCount = 0;
         if (properties.containsKey("license.count")) { //$NON-NLS-1$

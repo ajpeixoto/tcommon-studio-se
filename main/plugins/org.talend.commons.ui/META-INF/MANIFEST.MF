@@ -23,7 +23,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.talend.libraries.ui,
  org.eclipse.ui.workbench,
  org.talend.studio.studio-utils,
- org.apache.commons.lang3
+ org.apache.commons.lang3,
+ org.eclipse.jface.notifications
 Eclipse-LazyStart: true
 Bundle-Vendor: .Talend SA.
 Export-Package: org.talend.commons.ui.command,
@@ -31,6 +32,7 @@ Export-Package: org.talend.commons.ui.command,
  org.talend.commons.ui.gmf.util,
  org.talend.commons.ui.html,
  org.talend.commons.ui.i18n,
+ org.talend.commons.ui.nofitication,
  org.talend.commons.ui.swt.actions,
  org.talend.commons.ui.swt.advanced.composite,
  org.talend.commons.ui.swt.advanced.dataeditor,

@@ -41,4 +41,5 @@ public interface IRepositoryContextHandler {
     public void revertPropertiesForContextMode(Connection connection, ContextType contextType);
 
     public Set<String> getConAdditionPropertiesForContextMode(Connection conn);
+
 }

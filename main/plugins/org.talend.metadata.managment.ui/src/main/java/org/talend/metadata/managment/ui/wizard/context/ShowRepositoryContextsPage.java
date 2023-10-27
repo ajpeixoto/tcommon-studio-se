@@ -66,7 +66,7 @@ public class ShowRepositoryContextsPage extends WizardPage {
 
     public ShowRepositoryContextsPage(Set<ContextItem> contextItems, int step) {
         super(Messages.getString("ReuseRepositoryContext.name")); //$NON-NLS-1$
-        setTitle(Messages.getString("ShowRepositoryContextPage.title")); //$NON-NLS-1$
+        setTitle(Messages.getString("ShowRepositoryContextPage.context.title")); //$NON-NLS-1$
         this.contextItemList = contextItems;
         this.step = step;
     }
@@ -110,14 +110,14 @@ public class ShowRepositoryContextsPage extends WizardPage {
                 setErrorMessage(null);
             } else {
                 setPageComplete(false);
-                setErrorMessage(Messages.getString("ShowRepositoryContextPage.warnMsg")); //$NON-NLS-1$
+                setErrorMessage(Messages.getString("ShowRepositoryContextPage.context.warnMsg")); //$NON-NLS-1$
             }
         }
     }
 
     private void createDescriptionIn(Composite sashForm) {
         Text descriptionText = new Text(sashForm, SWT.BORDER | SWT.WRAP);
-        descriptionText.setText(Messages.getString("ShowRepositoryContextPage.SelectReuseContext")); //$NON-NLS-1$
+        descriptionText.setText(Messages.getString("ShowRepositoryContextPage.context.SelectReuseContext")); //$NON-NLS-1$
         descriptionText.setEditable(false);
         GridData gd = new GridData(GridData.FILL_BOTH);
         gd.widthHint = 100;
@@ -126,7 +126,7 @@ public class ShowRepositoryContextsPage extends WizardPage {
 
     private void createTreeViewer(Composite parent) {
         Group treeViewrGroup = new Group(parent, SWT.NONE);
-        treeViewrGroup.setText(Messages.getString("ShowRepositoryContextPage.aviableContexts")); //$NON-NLS-1$
+        treeViewrGroup.setText(Messages.getString("ShowRepositoryContextPage.context.aviableContexts")); //$NON-NLS-1$
         GridLayout layoutGroup = new GridLayout();
         layoutGroup.numColumns = 1;
         treeViewrGroup.setLayout(layoutGroup);

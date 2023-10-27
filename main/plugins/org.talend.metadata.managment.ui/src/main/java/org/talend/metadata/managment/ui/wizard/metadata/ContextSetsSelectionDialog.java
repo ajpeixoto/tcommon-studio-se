@@ -227,7 +227,7 @@ public class ContextSetsSelectionDialog extends SelectionDialog {
         inner.setLayoutData(gridData);
 
         Group group = new Group(inner, SWT.NONE);
-        group.setText(Messages.getString("ContextSetsSelectionDialog.ContextSets")); //$NON-NLS-1$
+        group.setText(Messages.getString("ContextSetsSelectionDialog.ContextEnvironments")); //$NON-NLS-1$
         gridLayout = new GridLayout();
         gridLayout.horizontalSpacing = 10;
         group.setLayout(new GridLayout(2, false));

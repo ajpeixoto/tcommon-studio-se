@@ -164,6 +164,7 @@
     <genClasses ecoreClass="properties.ecore#//RegExFileConnectionItem"/>
     <genClasses ecoreClass="properties.ecore#//CSVFileConnectionItem"/>
     <genClasses ecoreClass="properties.ecore#//DatabaseConnectionItem"/>
+    <genClasses ecoreClass="properties.ecore#//TacokitDatabaseConnectionItem"/>
     <genClasses ecoreClass="properties.ecore#//SAPConnectionItem"/>
     <genClasses ecoreClass="properties.ecore#//XmlFileConnectionItem"/>
     <genClasses ecoreClass="properties.ecore#//LdifFileConnectionItem"/>

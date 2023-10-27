@@ -1,6 +1,7 @@
+package org.talend.metadata.managment.ui.model;
 // ============================================================================
 //
-// Copyright (C) 2006-2022 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -10,21 +11,17 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.core.services;
 
-import org.eclipse.jface.window.WindowManager;
+public class AbsConnParamName implements IConnParamName {
 
-/**
- * @author bhe created on Oct 28, 2022
- *
- */
-public class NotificationService implements INotificationService {
+    protected String name;
 
-    private WindowManager manager = new WindowManager();
+    public String getName() {
+        return name;
+    }
 
-    @Override
-    public WindowManager getNotificationWindowManager() {
-        return manager;
+    public void setName(String name) {
+        this.name = name;
     }
 
 }

@@ -706,12 +706,18 @@ public class ImportBasicHandler extends AbstractImportExecutableHandler {
                 .getMigrationTasksToApplyPerProject();
 
         String importedProjectLabel = importedProject.getTechnicalLabel();
-        if (migrationTasksStatusPerProject.containsKey(importedProjectLabel)) {
-            if (migrationTasksStatusPerProject.get(importedProjectLabel)) {
-                importItem.setMigrationTasksToApply(migrationTasksToApplyPerProject.get(importedProjectLabel));
+        String importedProjectVersion = importedProject.getProductVersion();
+        String key = null;
+        if (importedProjectVersion != null) {
+            key = importedProjectLabel + "@" + importedProjectVersion;
+        }
+
+        if (key != null && migrationTasksStatusPerProject.containsKey(key)) {
+            if (migrationTasksStatusPerProject.get(key)) {
+                importItem.setMigrationTasksToApply(migrationTasksToApplyPerProject.get(key));
                 return true;
             } else {
-                String message = Messages.getString("AbstractImportHandler_cannotImportMessage", importedProjectLabel); //$NON-NLS-1$
+                String message = Messages.getString("AbstractImportHandler_cannotImportMessage", key); //$NON-NLS-1$
                 importItem.addError(message);
                 return false;
             }
@@ -733,14 +739,15 @@ public class ImportBasicHandler extends AbstractImportExecutableHandler {
                 importItem.setMigrationTasksToApply(currentProjectMigrationTasks);
                 migrationTasks = currentProjectMigrationTasks;
                 canApplyMigration = true;
-                migrationTasksStatusPerProject.put(importedProjectLabel, true);
             } else {
                 String message = Messages.getString("AbstractImportHandler_cannotImportMessage", importedProjectLabel); //$NON-NLS-1$
                 importItem.addError(message);
                 log.info("'" + importItem.getItemName() + "' " + message); //$NON-NLS-1$ //$NON-NLS-2$
-                migrationTasksStatusPerProject.put(importedProjectLabel, false);
             }
-            migrationTasksToApplyPerProject.put(importedProjectLabel, migrationTasks);
+            if (key != null) {
+                migrationTasksStatusPerProject.put(key, canApplyMigration);
+                migrationTasksToApplyPerProject.put(key, migrationTasks);
+            }
         }
         return canApplyMigration;
     }

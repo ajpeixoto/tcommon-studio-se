@@ -362,6 +362,15 @@ public class MetadataColumn implements IMetadataColumn, Cloneable {
         return this.comment;
     }
 
+    int rowNum = 0;
+
+    public int getRowNum() {
+        return rowNum;
+    };
+
+    public void setRowNum(int value) {
+        this.rowNum = value;
+    }
     /*
      * (non-Javadoc)
      *

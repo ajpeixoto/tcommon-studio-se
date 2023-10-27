@@ -49,12 +49,12 @@ public enum EConnectionParameterName {
     // TDQ-17294~
 
     GENERIC_TABLENAME("tableSelection.tablename"),//$NON-NLS-1$
-    GENERIC_USERNAME("connection.userPassword.userId"),//$NON-NLS-1$
-    GENERIC_PASSWORD("connection.userPassword.password"),//$NON-NLS-1$
-    GENERIC_URL("connection.jdbcUrl"),//$NON-NLS-1$
-    GENERIC_DRIVER_JAR("connection.driverTable"),//$NON-NLS-1$
-    GENERIC_DRIVER_CLASS("connection.driverClass"), //$NON-NLS-1$
-    GENERIC_MAPPING_FILE("mappingFile"); //$NON-NLS-1$
+    GENERIC_USERNAME("configuration.userId"), //$NON-NLS-1$
+    GENERIC_PASSWORD("configuration.password"), //$NON-NLS-1$
+    GENERIC_URL("configuration.jdbcUrl"), //$NON-NLS-1$
+    GENERIC_DRIVER_JAR("configuration.jdbcDriver"), //$NON-NLS-1$
+    GENERIC_DRIVER_CLASS("configuration.jdbcClass"), //$NON-NLS-1$
+    GENERIC_MAPPING_FILE("configuration.dbMapping"); //$NON-NLS-1$
 
 
     private String displayName;

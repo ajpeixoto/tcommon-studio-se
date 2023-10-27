@@ -181,6 +181,25 @@ public class MetadataTableEditorView extends AbstractMetadataTableEditorView<IMe
         };
     }
 
+    int rowNum = 0;
+
+    @Override
+    protected IBeanPropertyAccessors<IMetadataColumn, Integer> getRowNumAccessor() {
+        return new IBeanPropertyAccessors<IMetadataColumn, Integer>() {
+
+            @Override
+            public Integer get(IMetadataColumn bean) {
+                return bean.getRowNum();
+            }
+
+            @Override
+            public void set(IMetadataColumn bean, Integer value) {
+                bean.setRowNum(value);
+            }
+
+        };
+    }
+
     @Override
     protected IBeanPropertyAccessors<IMetadataColumn, String> getCommentAccessor() {
         return new IBeanPropertyAccessors<IMetadataColumn, String>() {
