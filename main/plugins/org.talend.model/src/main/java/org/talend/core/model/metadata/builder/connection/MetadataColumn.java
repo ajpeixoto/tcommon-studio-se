@@ -370,4 +370,8 @@ public interface MetadataColumn extends AbstractMetadataObject, Field {
      */
     void setRelationshipType(String value);
 
+    Integer getRowNum();
+
+    void setRowNum(Integer value);
+
 } // MetadataColumn
