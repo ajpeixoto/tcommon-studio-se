@@ -451,7 +451,10 @@ public final class JavaSqlFactory {
     }
 
     private static void setPromptContextPassword(DatabaseConnection dbConn) {
-        String promptConVarsMapKey = getPromptConVarsMapKey(dbConn, dbConn.getRawPassword());
+        // format like: Default-_NtX8IG5LEe6Fac08UAbwqg-context.context_jdbcmysql21_password
+        String variableName =
+                dbConn instanceof TacokitDatabaseConnection ? dbConn.getRawPassword() : dbConn.getPassword();
+        String promptConVarsMapKey = getPromptConVarsMapKey(dbConn, variableName);
         if (promptContextVars.containsKey(promptConVarsMapKey)) {
             dbConn.setRawPassword(promptContextVars.get(promptConVarsMapKey));
         }
