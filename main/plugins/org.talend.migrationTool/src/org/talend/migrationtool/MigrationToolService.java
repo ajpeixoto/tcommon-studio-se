@@ -986,6 +986,7 @@ public class MigrationToolService implements IMigrationToolService {
             List<IProjectMigrationTask> allNonLazyTasks = getNonLazyMigrationTasks();
             for (IProjectMigrationTask t : allNonLazyTasks) {
                 if (IMigrationToolService.canRunAsLazy(t)) {
+                    t.setLazy(true);
                     allLazyTasks.add(t);
                 }
             }
