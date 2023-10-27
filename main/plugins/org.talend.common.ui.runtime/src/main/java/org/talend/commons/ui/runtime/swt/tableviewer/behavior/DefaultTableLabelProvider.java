@@ -69,6 +69,10 @@ public class DefaultTableLabelProvider implements ITableLabelProvider, ITableCol
                     returnValue = defaultValue;
                 }
             } else {
+                if ("ID_COLUMN_ROW_NUM".equals(column.getId())) {
+                    int indexOf = this.tableViewerCreator.getInputList().indexOf(element);
+                    AccessorUtils.set(column, element, indexOf + 1);
+                }
                 Object value = AccessorUtils.get(element, column);
                 CellEditor cellEditor = column.getCellEditor();
                 CellEditorValueAdapter retrieverValue = column.getCellEditorValueAdapter();

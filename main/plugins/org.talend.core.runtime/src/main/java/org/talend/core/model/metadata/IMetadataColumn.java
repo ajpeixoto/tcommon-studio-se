@@ -109,6 +109,10 @@ public interface IMetadataColumn {
 
     public void setComment(String comment);
 
+    public int getRowNum();
+
+    public void setRowNum(int value);
+
     public IMetadataColumn clone();
 
     public IMetadataColumn clone(boolean withCustoms);
