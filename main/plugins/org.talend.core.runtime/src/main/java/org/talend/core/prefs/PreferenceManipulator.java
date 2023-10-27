@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.preference.IPersistentPreferenceStore;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.PlatformUI;
@@ -229,6 +230,11 @@ public final class PreferenceManipulator implements ITalendCorePrefConstants {
     }
 
     public void setLastProject(String project) {
+        if (StringUtils.isEmpty(project)) {
+            RuntimeException e = new RuntimeException("setLastProject project is empty!");
+            ExceptionHandler.process(e);
+            throw e;
+        }
         store.setValue(LAST_USED_PROJECT, project);
         save();
     }
