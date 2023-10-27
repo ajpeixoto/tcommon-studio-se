@@ -29,6 +29,7 @@ import org.talend.core.model.metadata.builder.connection.impl.MetadataColumnImpl
 import org.talend.core.model.metadata.types.TypesManager;
 import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.ui.proposal.JavaSimpleDateFormatProposalProvider;
+
 import orgomg.cwm.objectmodel.core.TaggedValue;
 
 /**
@@ -573,5 +574,23 @@ public class MetadataEmfTableEditorView extends AbstractMetadataTableEditorView<
     protected IBeanPropertyAccessors<MetadataColumn, Boolean> getUsefulAccessor() {
         // TODO Auto-generated method stub
         return null;
+    }
+
+
+    @Override
+    protected IBeanPropertyAccessors<MetadataColumn, Integer> getRowNumAccessor() {
+        return new IBeanPropertyAccessors<MetadataColumn, Integer>() {
+
+            @Override
+            public Integer get(MetadataColumn bean) {
+                return bean.getRowNum();
+            }
+
+            @Override
+            public void set(MetadataColumn bean, Integer value) {
+                bean.setRowNum(value);
+            }
+
+        };
     }
 }
