@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -29,7 +28,6 @@ import java.util.Set;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -974,10 +972,6 @@ public class MigrationToolService implements IMigrationToolService {
 
         // get all lazy tasks
         List<IProjectMigrationTask> allLazyTasks = getLazyMigrationTasks();
-        if (allLazyTasks == null || allLazyTasks.isEmpty()) {
-            log.info("No lazy migration tasks found!");
-            return;
-        }
         
         // execute old migration tasks as lazy migrations
         if (IMigrationToolService.execOldTaskAsLazy()) {
@@ -993,6 +987,11 @@ public class MigrationToolService implements IMigrationToolService {
             log.info("size of allLazyTasks after loading old migrations: " + allLazyTasks.size());
             // need to sort again
             sortMigrationTasks(allLazyTasks);
+        }
+
+        if (allLazyTasks == null || allLazyTasks.isEmpty()) {
+            log.info("No lazy migration tasks found!");
+            return;
         }
         
         // filling bundleId
