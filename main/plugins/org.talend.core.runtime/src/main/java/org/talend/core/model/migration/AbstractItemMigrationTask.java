@@ -104,6 +104,7 @@ public abstract class AbstractItemMigrationTask extends AbstractMigrationTask im
     @Override
     public ExecutionResult execute(Project project, Item item) {
         if (!getAllTypes().contains(ERepositoryObjectType.getItemType(item))) {
+            ExceptionHandler.logDebug("item id: " + item.getProperty().getId() + ", item displayName: " + item.getProperty().getDisplayName() + ", skipped task: " + this.getId());
             return ExecutionResult.NOTHING_TO_DO;
         }
         setProject(project);
@@ -165,7 +166,7 @@ public abstract class AbstractItemMigrationTask extends AbstractMigrationTask im
         // remove lazy types from old task
         if (IMigrationToolService.canRunAsLazy(this)) {
             allTypes.removeAll(ERepositoryObjectType.getAllTypesOfProcess2());
-            log.info("removed lazy types from old task: " + this.getId());
+            ExceptionHandler.logDebug("removed lazy types from old task: " + this.getId());
         }
         return allTypes;
     }
