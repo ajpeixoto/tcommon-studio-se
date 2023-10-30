@@ -48,7 +48,10 @@ import org.talend.commons.report.ItemsReportUtil;
 import org.talend.commons.utils.io.FilesUtils;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.general.Project;
+import org.talend.core.model.migration.IMigrationToolService;
 import org.talend.core.model.properties.Item;
+import org.talend.core.model.properties.JobletProcessItem;
+import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.runtime.CoreRuntimePlugin;
@@ -74,6 +77,19 @@ public class ItemAnalysisReportManager {
     }
 
     private AtomicBoolean inGenerating = new AtomicBoolean(false);
+    
+    private static void executeLazyMigrations(Project project, Item item) {
+        if (!(item instanceof ProcessItem || item instanceof JobletProcessItem)) {
+            return;
+        }
+
+        IMigrationToolService service = GlobalServiceRegister.getDefault().getService(IMigrationToolService.class);
+        try {
+            service.executeLazyMigrations(project, item);
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        }
+    }
 
     public List<AnalysisReportRecorder> executeAnalysisTask(Project project) {
         IRepositoryService service = GlobalServiceRegister.getDefault().getService(IRepositoryService.class);
@@ -96,6 +112,10 @@ public class ItemAnalysisReportManager {
                 List<IRepositoryViewObject> objects = repFactory.getAll(project, type, true, true);
                 for (IRepositoryViewObject object : objects) {
                     Item item = object.getProperty().getItem();
+                    
+                    // execute all of migrations before analysis
+                    executeLazyMigrations(project, item);
+                    
                     for (IItemAnalysisTask analysisTask : analysisTasks) {
                         try {
                             List<AnalysisReportRecorder> recorder = analysisTask.execute(item);
