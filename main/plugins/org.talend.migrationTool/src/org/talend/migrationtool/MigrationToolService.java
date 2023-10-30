@@ -1043,9 +1043,7 @@ public class MigrationToolService implements IMigrationToolService {
         final IProxyRepositoryFactory migRepoFactory = migRepoService.getProxyRepositoryFactory();
         
         final Project projectMig = project;
-        log
-                .info("lazy migration tasks for project: " + project.getTechnicalLabel() + ", item id: " + item.getProperty().getId() + ", item display name: " + item.getProperty().getDisplayName()
-                        + ", size: " + allLazyTasks.size());
+       
         String taskDesc = "executeLazyMigrations on project: " + project.getTechnicalLabel();
         log.trace(taskDesc);
         try {
@@ -1074,6 +1072,7 @@ public class MigrationToolService implements IMigrationToolService {
                                 }
                             }
                             Map<String, Date> migrationOrderMap = new HashMap<String, Date>();
+                            int execNum = 0;
                             for (IProjectMigrationTask t : allLazyTasks) {
                                 Object migrationOrderObj = item.getProperty().getAdditionalProperties().get(t.getBundleSymbolicName());
                                 if (migrationOrderObj != null) {
@@ -1087,6 +1086,7 @@ public class MigrationToolService implements IMigrationToolService {
                                         ExceptionHandler.process(e);
                                     }
                                 }
+                                execNum++;
                                 try {
                                     ExecutionResult res = t.execute(projectMig, tempItem);
                                     t.setStatus(res);
@@ -1110,6 +1110,10 @@ public class MigrationToolService implements IMigrationToolService {
                                 }
                             }
 
+                            log
+                            .info("lazy migration tasks for project: " + projectMig.getTechnicalLabel() + ", item id: " + tempItem.getProperty().getId() + ", item display name: " + tempItem.getProperty().getDisplayName()
+                                    + ", size: " + execNum);
+                            
                             Property prop = tempItem.getProperty();
                             // save latest migration order into properties
                             migrationOrderMap.forEach((k, v) -> {
