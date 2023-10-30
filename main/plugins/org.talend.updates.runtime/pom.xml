@@ -165,6 +165,14 @@
 									<overWrite>false</overWrite>
 									<outputDirectory>${project.basedir}/tmp/org/apache/maven/maven-bom/4.0.0-alpha-5</outputDirectory>
 								</artifactItem>
+								<artifactItem>
+									<groupId>org.codehaus.plexus</groupId>
+									<artifactId>plexus-io</artifactId>
+									<version>3.2.0</version>
+									<type>jar</type>
+									<overWrite>false</overWrite>
+									<outputDirectory>${project.basedir}/tmp/org/codehaus/plexus/plexus-io/3.2.0</outputDirectory>
+								</artifactItem>
 							</artifactItems>
 							<outputDirectory>${project.basedir}/tmp</outputDirectory>
 						</configuration>
