@@ -697,8 +697,7 @@ public class DatabaseWizard extends CheckLastVersionRepositoryWizard implements 
     }
 
    
-    protected boolean handleDatabaseUpdate(IMetadataConnection metadataConnection, ITDQRepositoryService tdqRepService)
-            throws Exception {
+    private boolean handleDatabaseUpdate(IMetadataConnection metadataConnection, ITDQRepositoryService tdqRepService) throws Exception {
         
          TypedReturnCode<Boolean> handleDatabasePart = handleDatabasePart(metadataConnection, tdqRepService);
          if(!handleDatabasePart.isOk()) {

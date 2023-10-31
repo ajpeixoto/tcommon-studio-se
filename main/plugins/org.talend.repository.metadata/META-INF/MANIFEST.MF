@@ -37,10 +37,7 @@ Require-Bundle: org.apache.commons.lang,
  org.apache.xerces,
  org.talend.hadoop.distribution,
  org.talend.repository,
- org.talend.designer.mapper,
- org.eclipse.core.databinding.observable,
- org.eclipse.jface.databinding,
- org.eclipse.core.databinding
+ org.talend.designer.mapper
 Bundle-ActivationPolicy: lazy
 Bundle-Localization: plugin
 Export-Package: org.talend.repository.metadata,
@@ -70,6 +67,4 @@ Export-Package: org.talend.repository.metadata,
  org.talend.repository.ui.wizards.metadata.table.database,
  org.talend.repository.ui.wizards.metadata.table.files
 Bundle-Vendor: .Talend SA.
-Import-Package: org.talend.designer.core.model.components,
- org.talend.designer.core.ui.editor.process,
- org.talend.hadoop.distribution
+Import-Package: org.talend.hadoop.distribution
