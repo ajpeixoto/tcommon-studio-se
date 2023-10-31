@@ -13,6 +13,30 @@
    </extension>
 
    <extension
+         point="org.eclipse.ui.views">
+      <view
+            category="org.talend.core.root"
+            class="org.talend.repository.metadata.ui.view.ReferencesView"
+            icon="icons/process_icon.png"
+            id="org.talend.repository.metadata.ui.view.ReferencesView"
+            name="References"
+            restorable="false">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="*">
+         <view
+               id="org.talend.repository.metadata.ui.view.ReferencesView"
+               minimized="false"
+               relationship="stack"
+               relative="org.talend.designer.runprocess.ui.views.processview"
+               visible="false">
+         </view>
+      </perspectiveExtension>
+   </extension>
+   <extension
          point="org.talend.core.runtime.service">
       <Service
             class="org.talend.repository.metadata.MetadataService"
@@ -103,6 +127,14 @@
             isReadAction="true"
             level="10"
             name="Metadata/Create connection">
+      </Action>
+      <Action
+            class="org.talend.repository.metadata.ui.actions.metadata.ShowReferencesAction"
+            id="org.talend.repository.actions.showreferences"
+            isEditAction="false"
+            isReadAction="true"
+            level="10"
+            name="Metadata/Show references">
       </Action>
       <Action
             class="org.talend.repository.metadata.ui.actions.metadata.CreateTableAction"
