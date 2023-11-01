@@ -43,9 +43,9 @@
 					<dbType type="BIT" default="true" />				
 				</talendType>
 				<talendType type="id_Byte">
-					<dbType type="TINYINT" default="true" />
+					<dbType type="INT" default="true" />
 					<dbType type="BIGINT" />
-					<dbType type="INT" />
+					<dbType type="TINYINT" />
 					<dbType type="SMALLINT" />			
 				</talendType>
 				<talendType type="id_byte[]">
@@ -204,8 +204,8 @@
 					<talendType type="id_Date" default="true" />
 				</dbType>
 				<dbType type="TINYINT">
-					<talendType type="id_Byte" default="true" />
-					<talendType type="id_Integer"/>
+					<talendType type="id_Integer" default="true" />
+					<talendType type="id_Byte"/>
 					<talendType type="id_Long"/>
 					<talendType type="id_Short"/>
 				</dbType>
