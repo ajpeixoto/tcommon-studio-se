@@ -65,9 +65,11 @@ import org.talend.core.model.general.ILibrariesService;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.general.ModuleNeeded.ELibraryInstallStatus;
 import org.talend.core.model.general.Project;
+import org.talend.core.model.migration.IMigrationToolService;
 import org.talend.core.model.process.JobInfo;
 import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.Item;
+import org.talend.core.model.properties.JobletProcessItem;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.ProjectReference;
 import org.talend.core.model.properties.Property;
@@ -706,6 +708,8 @@ public class AggregatorPomsHelper {
             allItems = objects.stream().map(object -> object.getProperty().getItem()).collect(Collectors.toSet());
         }
 
+        runLazyMigrations(allItems);
+        
         int size = 3 + allItems.size();
         monitor.setTaskName("Synchronize all poms"); //$NON-NLS-1$
         monitor.beginTask("", size); //$NON-NLS-1$
@@ -889,6 +893,24 @@ public class AggregatorPomsHelper {
         }
         LOGGER.info("syncAllPomsWithoutProgress, done");
         monitor.done();
+    }
+    
+    private static void runLazyMigrations(Set<Item> items) {
+
+        LOGGER.info("runLazyMigrations, items size: " + items.size());
+        
+        IMigrationToolService service = GlobalServiceRegister.getDefault().getService(IMigrationToolService.class);
+
+        for (Item item : items) {
+            if (!(item instanceof ProcessItem || item instanceof JobletProcessItem)) {
+                continue;
+            }
+            try {
+                service.executeLazyMigrations(null, item);
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
+            }
+        }
     }
 
     // TODO move this method to esb repository and call by IService.
