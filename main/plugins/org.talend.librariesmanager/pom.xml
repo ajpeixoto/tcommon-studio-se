@@ -34,7 +34,7 @@
 	</repositories>
 
 	<properties>
-		<studioIndexVersion>${project.version}</studioIndexVersion>
+		<studioIndexVersion>8.0.1-TUP40250-SNAPSHOT</studioIndexVersion>
 		<talend.nexus.host>https://artifacts-oss.talend.com</talend.nexus.host>
         <talend.nexus.host.oss>https://artifacts-oss.talend.com</talend.nexus.host.oss>
         <tycho.buildtimestamp.format>${timestamp}</tycho.buildtimestamp.format>
