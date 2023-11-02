@@ -33,6 +33,7 @@ import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
 import org.talend.core.model.metadata.builder.connection.DelimitedFileConnection;
 import org.talend.core.model.metadata.builder.connection.MDMConnection;
+import org.talend.core.model.metadata.builder.connection.TacokitDatabaseConnection;
 import org.talend.core.model.metadata.builder.database.dburl.SupportDBUrlStore;
 import org.talend.core.model.metadata.builder.database.dburl.SupportDBUrlType;
 import org.talend.core.model.process.IContext;
@@ -336,6 +337,13 @@ public final class JavaSqlFactory {
         if (Platform.isRunning()) {
             DatabaseConnection dbConn = SwitchHelpers.DATABASECONNECTION_SWITCH.doSwitch(conn);
             if (dbConn != null) {
+                // for TCK JDBC
+                // username,password, jdbcUrl,jdbcDriver,jdbcClass
+                if (dbConn instanceof TacokitDatabaseConnection) {
+                    setPromptContextUrl(dbConn);
+                    setPromptContextDriverClass(dbConn);
+                    setPromptContextDriverJarPath(dbConn);
+                }
                 setPromptContextPassword(dbConn);
                 setPromptContextUsername(dbConn);
                 setPromptContextServerName(dbConn);
@@ -443,7 +451,10 @@ public final class JavaSqlFactory {
     }
 
     private static void setPromptContextPassword(DatabaseConnection dbConn) {
-        String promptConVarsMapKey = getPromptConVarsMapKey(dbConn, dbConn.getPassword());
+        // format like: Default-_NtX8IG5LEe6Fac08UAbwqg-context.context_jdbcmysql21_password
+        String variableName =
+                dbConn instanceof TacokitDatabaseConnection ? dbConn.getRawPassword() : dbConn.getPassword();
+        String promptConVarsMapKey = getPromptConVarsMapKey(dbConn, variableName);
         if (promptContextVars.containsKey(promptConVarsMapKey)) {
             dbConn.setRawPassword(promptContextVars.get(promptConVarsMapKey));
         }
@@ -453,6 +464,27 @@ public final class JavaSqlFactory {
         String promptConVarsMapKey = getPromptConVarsMapKey(dbConn, dbConn.getUsername());
         if (promptContextVars.containsKey(promptConVarsMapKey)) {
             dbConn.setUsername(promptContextVars.get(promptConVarsMapKey));
+        }
+    }
+
+    private static void setPromptContextUrl(DatabaseConnection dbConn) {
+        String promptConVarsMapKey = getPromptConVarsMapKey(dbConn, dbConn.getURL());
+        if (promptContextVars.containsKey(promptConVarsMapKey)) {
+            dbConn.setURL(promptContextVars.get(promptConVarsMapKey));
+        }
+    }
+
+    private static void setPromptContextDriverClass(DatabaseConnection dbConn) {
+        String promptConVarsMapKey = getPromptConVarsMapKey(dbConn, dbConn.getDriverClass());
+        if (promptContextVars.containsKey(promptConVarsMapKey)) {
+            dbConn.setDriverClass(promptContextVars.get(promptConVarsMapKey));
+        }
+    }
+
+    private static void setPromptContextDriverJarPath(DatabaseConnection dbConn) {
+        String promptConVarsMapKey = getPromptConVarsMapKey(dbConn, dbConn.getDriverJarPath());
+        if (promptContextVars.containsKey(promptConVarsMapKey)) {
+            dbConn.setDriverJarPath(promptContextVars.get(promptConVarsMapKey));
         }
     }
 

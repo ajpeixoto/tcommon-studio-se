@@ -69,6 +69,7 @@ import org.talend.core.model.properties.SalesforceSchemaConnectionItem;
 import org.talend.core.model.properties.SnippetItem;
 import org.talend.core.model.properties.SnippetVariable;
 import org.talend.core.model.properties.TDQItem;
+import org.talend.core.model.properties.TacokitDatabaseConnectionItem;
 import org.talend.core.model.properties.ValidationRulesConnectionItem;
 import org.talend.core.model.properties.WSDLSchemaConnectionItem;
 import org.talend.core.model.properties.XmlFileConnectionItem;
@@ -597,6 +598,14 @@ public class ERepositoryObjectType extends DynaEnum<ERepositoryObjectType> {
             .valueOf("METADATA_SAP_BW_INFOOBJECT"); //$NON-NLS-1$
 
     public final static ERepositoryObjectType JDBC = ERepositoryObjectType.valueOf("JDBC"); //$NON-NLS-1$
+    
+    public static final ERepositoryObjectType METADATA_TACOKIT_JDBC = ERepositoryObjectType
+            .valueOf("repository.metadata.tacokit.jdbc.jdbcdatastore"); //$NON-NLS-1$
+
+    /**
+     * <font color="red">This value may be <b>null</b> if Snowflake is not installed, <b>should add NPE check</b></font>
+     */
+    public final static ERepositoryObjectType SNOWFLAKE = ERepositoryObjectType.valueOf("Snowflake"); //$NON-NLS-1$
 
     private static Map<String, ERepositoryObjectType> typeCacheById = new HashMap<String, ERepositoryObjectType>();
 
@@ -1079,6 +1088,10 @@ public class ERepositoryObjectType extends DynaEnum<ERepositoryObjectType> {
             @Override
             public Object caseDatabaseConnectionItem(DatabaseConnectionItem object) {
                 return METADATA_CONNECTIONS;
+            }
+            
+            public Object caseTacokitDatabaseConnectionItem(TacokitDatabaseConnectionItem object) {
+                return METADATA_TACOKIT_JDBC;
             }
 
             @Override

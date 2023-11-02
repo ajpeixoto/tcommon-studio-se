@@ -183,6 +183,7 @@
   <eClassifiers xsi:type="ecore:EClass" name="RegExFileConnectionItem" eSuperTypes="#//ConnectionItem"/>
   <eClassifiers xsi:type="ecore:EClass" name="CSVFileConnectionItem" eSuperTypes="#//DelimitedFileConnectionItem"/>
   <eClassifiers xsi:type="ecore:EClass" name="DatabaseConnectionItem" eSuperTypes="#//ConnectionItem"/>
+  <eClassifiers xsi:type="ecore:EClass" name="TacokitDatabaseConnectionItem" eSuperTypes="#//DatabaseConnectionItem"/>
   <eClassifiers xsi:type="ecore:EClass" name="SAPConnectionItem" eSuperTypes="#//ConnectionItem"/>
   <eClassifiers xsi:type="ecore:EClass" name="XmlFileConnectionItem" eSuperTypes="#//ConnectionItem"/>
   <eClassifiers xsi:type="ecore:EClass" name="LdifFileConnectionItem" eSuperTypes="#//ConnectionItem"/>

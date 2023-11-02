@@ -151,7 +151,7 @@ public class CreateTableAction extends AbstractCreateTableAction {
             createFilePositionalTableWizard(node, false);
         } else if (ERepositoryObjectType.METADATA_FILE_DELIMITED.equals(nodeType)) {
             createFileDelimitedTableWizard(node, false);
-        } else if (ERepositoryObjectType.METADATA_CONNECTIONS.equals(nodeType)) {
+        } else if (ERepositoryObjectType.METADATA_CONNECTIONS.equals(nodeType) || ERepositoryObjectType.METADATA_TACOKIT_JDBC.equals(nodeType)) {
             createDatabaseTableWizard(node, false);
         } else if (ERepositoryObjectType.METADATA_FILE_REGEXP.equals(nodeType)) {
             createFileRegexpTableWizard(node, false);

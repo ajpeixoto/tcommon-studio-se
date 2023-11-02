@@ -56,6 +56,7 @@ import org.talend.core.model.metadata.builder.connection.RowSeparator;
 import org.talend.core.model.metadata.builder.connection.SAPConnection;
 import org.talend.core.model.metadata.builder.connection.SalesforceSchemaConnection;
 import org.talend.core.model.metadata.builder.connection.SchemaTarget;
+import org.talend.core.model.metadata.builder.connection.TacokitDatabaseConnection;
 import org.talend.core.model.metadata.builder.connection.WSDLSchemaConnection;
 import org.talend.core.model.metadata.builder.connection.XmlFileConnection;
 import org.talend.core.model.metadata.builder.connection.XmlXPathLoopDescriptor;
@@ -69,12 +70,15 @@ import org.talend.core.model.process.IExternalNode;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.properties.DatabaseConnectionItem;
+import org.talend.core.model.properties.TacokitDatabaseConnectionItem;
 import org.talend.core.model.repository.DragAndDropManager;
+import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.model.utils.IDragAndDropServiceHandler;
 import org.talend.core.runtime.i18n.Messages;
 import org.talend.core.runtime.services.IGenericDBService;
 import org.talend.core.runtime.services.IGenericWizardService;
+import org.talend.core.service.ITCKUIService;
 import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.cwm.helper.ConnectionHelper;
 import org.talend.cwm.helper.PackageHelper;
@@ -126,8 +130,50 @@ public class ComponentToRepositoryProperty {
         if (propertyParam == null) {
             return false;
         }
+        if (connectionItem instanceof TacokitDatabaseConnectionItem) {
+            DatabaseConnection connection = (DatabaseConnection) ((DatabaseConnectionItem) connectionItem).getConnection();
+            IElementParameter para = node.getElementParameter("PROPERTY"); //$NON-NLS-1$
+            if (para != null) {
+                if (para.getRepositoryValue().contains("|") && para.getRepositoryValue().split("\\|")[1]
+                        .equals(ERepositoryObjectType.METADATA_TACOKIT_JDBC.getKey())) {
+                    ERepositoryObjectType jdbcType = ITCKUIService.get().getTCKJDBCType();
+                    connection.setDatabaseType(jdbcType.getLabel());
+                    connection.setProductId(jdbcType.getLabel());
+                    // additional JDBC e.g. Delta Lake
+                    if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericWizardService.class)) {
+                        IGenericWizardService service = GlobalServiceRegister.getDefault()
+                                .getService(IGenericWizardService.class);
+                        if (service != null) {
+                            String database = service.getDatabseNameByNode(node);
+                            if (StringUtils.isNotBlank(database) && service.getIfAdditionalJDBCDBType(database)) {
+                                connection.setProductId(database);
+                            }
+                        }
+                    }
 
-        if (connectionItem instanceof DatabaseConnectionItem) {
+                    String realProduct = null;
+                    String driverClass = getParameterValue(connection, node,
+                            node.getElementParameter(TacokitDatabaseConnection.KEY_DATASTORE_DRIVER_CLASS));
+                    List<EDatabase4DriverClassName> driverClasses = EDatabase4DriverClassName.indexOfByDriverClass(driverClass);
+                    if (driverClasses.size() > 0) { // use the first one
+                        realProduct = driverClasses.get(0).getDbType().getProduct();
+                    } else {
+                        realProduct = EDatabaseTypeName.MYSQL.getProduct();
+                    }
+                    if (MetadataTalendType.getDefaultDbmsFromProduct(realProduct) != null) {
+                        String mapping = MetadataTalendType.getDefaultDbmsFromProduct(realProduct).getId();
+                        connection.setDbmsId(mapping);
+                    }
+                    // set default mapping for additional jdbc
+                    if (IGenericWizardService.get() != null) {
+                        Dbms dbms4AdditionalJDBC = IGenericWizardService.get().getDbms4AdditionalJDBC(connection.getProductId());
+                        if (dbms4AdditionalJDBC != null) {
+                            connection.setDbmsId(dbms4AdditionalJDBC.getId());
+                        }
+                    }
+                }
+            }
+        } else if (connectionItem instanceof DatabaseConnectionItem) {
             // add url instance ------DataStringConnection
             DatabaseConnection conn = (DatabaseConnection) ((DatabaseConnectionItem) connectionItem).getConnection();
             // see bug in 18011, set url and driver_jar.
@@ -380,9 +426,11 @@ public class ComponentToRepositoryProperty {
                     connection.setProductId(EDatabaseTypeName.PLUSPSQL.getProduct());
                 }
                 // jdbc
-                if (para.getRepositoryValue().endsWith(EDatabaseTypeName.GENERAL_JDBC.getProduct())) {
-                    connection.setDatabaseType(EDatabaseTypeName.GENERAL_JDBC.getProduct());
-                    connection.setProductId(EDatabaseTypeName.GENERAL_JDBC.getProduct());
+                if (para.getRepositoryValue().contains("|") && para.getRepositoryValue().split("\\|")[1]
+                        .equals(ERepositoryObjectType.METADATA_TACOKIT_JDBC.getKey())) {
+                    ERepositoryObjectType jdbcType = ITCKUIService.get().getTCKJDBCType();
+                    connection.setDatabaseType(jdbcType.getLabel());
+                    connection.setProductId(jdbcType.getLabel());
 
                     // additional JDBC e.g. Delta Lake
                     if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericWizardService.class)) {
@@ -394,9 +442,7 @@ public class ComponentToRepositoryProperty {
                                 connection.setProductId(database);
                             }
                         }
-
                     }
-
                 }
                 // vertica output component have no TYPE ElementParameter .
                 if (para.getRepositoryValue().endsWith(EDatabaseTypeName.VERTICA.getProduct())) {

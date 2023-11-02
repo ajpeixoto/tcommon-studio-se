@@ -17,6 +17,7 @@ import java.util.List;
 import org.talend.core.CorePlugin;
 import org.talend.core.database.EDatabaseTypeName;
 import org.talend.core.language.LanguageManager;
+import org.talend.core.model.metadata.builder.connection.TacokitDatabaseConnection;
 import org.talend.core.model.metadata.query.GenerateQueryFactory;
 import org.talend.core.model.metadata.query.IQueryGenerator;
 import org.talend.core.model.process.EParameterFieldType;
@@ -408,22 +409,14 @@ public class QueryUtil {
             if(param == null){
                 param = node.getElementParameterFromField(EParameterFieldType.NAME_SELECTION_REFERENCE);
             }
+            if(param == null){
+                param = node.getElementParameter(TacokitDatabaseConnection.KEY_DATASET_TABLE_NAME);
+            }
             if (param != null && param.isShow(node.getElementParameters())) {
                 return (String) param.getValue();
             }
         }
         return null;
-    }
-
-    private static String getDbName(Element node) {
-        String dbName = null;
-        if (node != null) { // for job settings extra.(feature 2710)
-            IElementParameter param = node.getElementParameter("DBNAME");
-            if (param != null && param.isShow(node.getElementParameters())) {
-                dbName = TalendTextUtils.removeQuotes((String) param.getValue());
-            }
-        }
-        return dbName;
     }
 
     private static String checkAndConcatString(String str1, String str2) {

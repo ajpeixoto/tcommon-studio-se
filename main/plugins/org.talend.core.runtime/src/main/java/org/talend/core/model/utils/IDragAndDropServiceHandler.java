@@ -119,9 +119,9 @@ public interface IDragAndDropServiceHandler {
      * @param paramName
      * @return
      */
-    public boolean isGenericRepositoryValue(List<ComponentProperties> componentProperties, String paramName);
+    public boolean isGenericRepositoryValue(Connection connection, List<ComponentProperties> componentProperties, String paramName);
 
-    public Object getGenericRepositoryValue(List<ComponentProperties> componentProperties, String paramName);
+    public Object getGenericRepositoryValue(Connection connection, List<ComponentProperties> componentProperties, String paramName);
 
-    public boolean isGenericPropertiesValue(String paramName);
+    public boolean isGenericPropertiesValue(Connection connection, String paramName);
 }
