@@ -84,6 +84,21 @@
 			<artifactId>plexus-archiver</artifactId>
 			<version>4.8.0</version>
 		</dependency>
+        <dependency>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-io</artifactId>
+            <version>3.2.0</version>
+            <exclusions><!--  fix CVE to plexus-io:3.2.0-->
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>junit</groupId>
+                    <artifactId>junit</artifactId>
+                </exclusion>                            
+            </exclusions>
+        </dependency>
 		<dependency>
 			<groupId>org.codehaus.plexus</groupId>
 			<artifactId>plexus-xml</artifactId>
