@@ -374,7 +374,12 @@ public class AggregatorPomsHelperTest {
         String jobGroupId = PomIdsHelper.getJobGroupId(jobProperty);
         String jobVersion = PomIdsHelper.getJobVersion(jobProperty);
 
-        helper.syncAllPomsWithoutProgress(new NullProgressMonitor());
+        System.setProperty("ci.mode", "true");
+        try {
+            helper.syncAllPomsWithoutProgress(new NullProgressMonitor());
+        } finally {
+            System.setProperty("ci.mode", "false");
+        }
 
         // check project pom.
         IFile projectPomFile = new AggregatorPomsHelper().getProjectRootPom();
