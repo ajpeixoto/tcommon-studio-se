@@ -187,10 +187,10 @@
        <RepositoryComponent
              name="GENERAL_JDBC"
              withSchema="true"
-             input="tJDBCInput"
-             output="tJDBCOutput">
+             input="JDBCInput"
+             output="JDBCOutput">
           <Item
-                clazz="org.talend.core.model.properties.DatabaseConnectionItem">
+                clazz="org.talend.core.model.properties.TacokitDatabaseConnectionItem">
           </Item>
           <DBType
                 type="GENERAL_JDBC">

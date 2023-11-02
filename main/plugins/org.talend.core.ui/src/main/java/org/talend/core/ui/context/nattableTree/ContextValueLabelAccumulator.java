@@ -48,6 +48,9 @@ public class ContextValueLabelAccumulator extends ColumnOverrideLabelAccumulator
     public void accumulateConfigLabels(LabelStack configLabels, int columnPosition, int rowPosition) {
         super.accumulateConfigLabels(configLabels, columnPosition, rowPosition);
         boolean isAddedValueNotMatchStyle = false;
+        if (modelManager.getProcess() == null) {
+            return;
+        }
         String currentColumnName = ContextRowDataListFixture.getPropertyNamesAsList(modelManager).get(columnPosition);
         ContextTreeNode rowNode = ((GlazedListsDataProvider<ContextTreeNode>) dataProvider).getList().get(rowPosition);
         if (configLabels.contains(ContextTableConstants.COLUMN_CONTEXT_VALUE)) {

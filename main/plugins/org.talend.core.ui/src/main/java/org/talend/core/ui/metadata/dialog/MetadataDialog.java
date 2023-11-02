@@ -210,10 +210,12 @@ public class MetadataDialog extends Dialog {
             if (component.isSupportDbType() || component.getOriginalFamilyName().startsWith(DATABASE_LABEL)
                     || eltComponent || isEBCDIC) {
                 dbComponent = !isEBCDIC;
-                for (IElementParameter currentParam : node.getElementParameters()) {
-                    if (currentParam.getFieldType().equals(EParameterFieldType.MAPPING_TYPE)) {
-                        metaView.setCurrentDbms((String) currentParam.getValue());
-                        hasMappingType = true;
+                if (!isNewFram) {
+                    for (IElementParameter currentParam : node.getElementParameters()) {
+                        if (currentParam.getFieldType().equals(EParameterFieldType.MAPPING_TYPE)) {
+                            metaView.setCurrentDbms((String) currentParam.getValue());
+                            hasMappingType = true;
+                        }
                     }
                 }
 

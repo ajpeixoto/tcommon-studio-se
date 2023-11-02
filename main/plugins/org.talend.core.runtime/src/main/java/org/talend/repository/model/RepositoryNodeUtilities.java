@@ -262,6 +262,9 @@ public class RepositoryNodeUtilities {
         }
         RepositoryNode node = null;
         IRepositoryNode nodeFromType = view.getRoot().getRootRepositoryNode(curNode.getRepositoryObjectType());
+        if (curNode.getRepositoryObjectType() == ERepositoryObjectType.METADATA_TACOKIT_JDBC) {
+            nodeFromType = view.getRoot().getRootRepositoryNode(ERepositoryObjectType.METADATA_CONNECTIONS);
+        }
         if (nodeFromType != null) {
             node = getRepositoryNode(nodeFromType, curNode, view, expanded);
         }
