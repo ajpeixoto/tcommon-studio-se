@@ -1132,6 +1132,29 @@ public class MigrationToolService implements IMigrationToolService {
                             } catch (PersistenceException e) {
                                 ExceptionHandler.process(e);
                             }
+                            
+                            if (GlobalServiceRegister.getDefault().isServiceRegistered(ICoreTisService.class)) {
+                                if (tempItem.getProperty().eResource() == null) { // In case some
+                                                                                  // migration task has
+                                                                                  // unloaded.
+                                    IRepositoryViewObject obj;
+                                    try {
+                                        obj = migRepoFactory.getSpecificVersion(tempItem.getProperty().getId(), tempItem.getProperty().getVersion(), true);
+                                        tempItem = obj.getProperty().getItem();
+                                    } catch (PersistenceException e) {
+                                        ExceptionHandler.process(e);
+                                    }
+                                }
+                                if (tempItem.getProperty().eResource() != null) {
+                                    ICoreTisService service = GlobalServiceRegister.getDefault()
+                                            .getService(ICoreTisService.class);
+                                    try {
+                                        service.afterImport(tempItem.getProperty());
+                                    } catch (PersistenceException e) {
+                                        ExceptionHandler.process(e);
+                                    }
+                                }
+                            }
                         }
                     };
                     
