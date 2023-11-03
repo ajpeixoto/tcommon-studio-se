@@ -8,6 +8,7 @@ Bundle-Localization: plugin
 Bundle-Vendor: .Talend SA.
 Export-Package: org.json.simple,
  org.talend.analysistask,
+ org.talend.commons.report,
  org.talend.commons.utils.generation,
  org.talend.commons.utils.io,
  org.talend.commons.utils.workbench.resources,
