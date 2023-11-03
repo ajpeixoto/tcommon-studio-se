@@ -41,6 +41,8 @@ public interface ITCKUIService extends IService {
 
     Wizard createTCKWizard(String type, IPath path, boolean isNew);
 
+    Wizard editTCKWizard(RepositoryNode node);
+
     public static ITCKUIService get() {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ITCKUIService.class)) {
             return GlobalServiceRegister.getDefault().getService(ITCKUIService.class);

@@ -92,6 +92,7 @@ import org.talend.core.repository.model.repositoryObject.SAPIDocRepositoryObject
 import org.talend.core.repository.model.repositoryObject.SalesforceModuleRepositoryObject;
 import org.talend.core.repository.recyclebin.RecycleBinManager;
 import org.talend.core.repository.ui.utils.ProjectRepositoryNodeCache;
+import org.talend.core.repository.utils.RepositoryNodeManager;
 import org.talend.core.runtime.services.IGenericDBService;
 import org.talend.core.runtime.services.IGenericService;
 import org.talend.core.runtime.services.IGenericWizardService;
@@ -647,7 +648,9 @@ public class ProjectRepositoryNode extends RepositoryNode implements IProjectRep
                     }
                 }
             }
-
+            if (RepositoryNodeManager.isSnowflake(currentType)) {
+                continue;
+            }
             if (currentType != null) {
                 buildFolders(rootNode, currentType, folderPath, rootNode);
             }
@@ -820,7 +823,7 @@ public class ProjectRepositoryNode extends RepositoryNode implements IProjectRep
      * @return
      */
     private RepositoryNode getFolder(ERepositoryObjectType currentType, String path, List<IRepositoryNode> rootNodes) {
-        if (RepositoryNodeUtilities.isGenericDBExtraType(currentType)) {
+        if (RepositoryNodeUtilities.isGenericDBExtraType(currentType) || RepositoryNodeManager.isSnowflake(currentType)) {
             currentType = ERepositoryObjectType.METADATA_CONNECTIONS;
         }
         if (path == null || path.isEmpty()) {

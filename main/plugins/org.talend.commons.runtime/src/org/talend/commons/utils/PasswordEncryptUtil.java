@@ -128,13 +128,6 @@ public class PasswordEncryptUtil {
     }
 
     /**
-     * Test whether input data is encrypted
-     */
-    public static boolean isEncrypted(String src) {
-        return src != null && REG_ENCRYPTED_DATA.matcher(src).matches();
-    }
-
-    /**
      *
      * DOC ggu Comment method "getPasswordDisplay".
      *

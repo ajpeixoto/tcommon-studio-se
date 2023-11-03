@@ -1177,22 +1177,6 @@ public final class ConnectionContextHelper {
         return addedVars;
     }
 
-    private static boolean isListEmpty(final String list) {
-        return list == null || list.isEmpty() || "[]".equals(list) || "[{}]".equals(list);
-    }
-
-    private static final Pattern BRACKETS_PATTERN = Pattern.compile("^\\[|\\]$");
-
-    private static String trimBrackets(final String str) {
-        return BRACKETS_PATTERN.matcher(str).replaceAll("");
-    }
-
-    private static final Pattern CURLY_BRACKETS_PATTERN = Pattern.compile("^\\{|\\}$");
-
-    private static String trimCurlyBrackets(final String str) {
-        return CURLY_BRACKETS_PATTERN.matcher(str).replaceAll("");
-    }
-
     /**
      * DOC zli Comment method "addContextVarForJob".
      *
