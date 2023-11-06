@@ -59,7 +59,6 @@ public class QueryUtil {
                 case ORACLEFORSID:
                 case ORACLESN:
                 case PSQL:
-                case PLUSPSQL:
                 case AS400:
                 case ACCESS:
                 case MYSQL:
