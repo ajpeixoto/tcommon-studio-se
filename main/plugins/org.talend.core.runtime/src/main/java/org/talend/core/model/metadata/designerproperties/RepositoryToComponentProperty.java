@@ -1180,7 +1180,6 @@ public class RepositoryToComponentProperty {
                         || EDatabaseConnTemplate.ORACLE_CUSTOM.getDBDisplayName().equals(databaseType)
                         || EDatabaseConnTemplate.ORACLEFORSID.getDBDisplayName().equals(databaseType)
                         || EDatabaseConnTemplate.ORACLESN.getDBDisplayName().equals(databaseType)
-                        || EDatabaseConnTemplate.PLUSPSQL.getDBDisplayName().equals(databaseType)
                         || EDatabaseConnTemplate.PSQL.getDBDisplayName().equals(databaseType)
                         || EDatabaseConnTemplate.SAPHana.getDBDisplayName().equals(databaseType)
                         || EDatabaseConnTemplate.MSSQL.getDBDisplayName().equals(databaseType)) {

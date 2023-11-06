@@ -4962,7 +4962,6 @@ public class DatabaseForm extends AbstractForm {
                 || EDatabaseConnTemplate.MYSQL.getDBDisplayName().equals(getConnectionDBType())
                 || EDatabaseConnTemplate.AMAZON_AURORA.getDBDisplayName().equals(getConnectionDBType())
                 || EDatabaseConnTemplate.HIVE.getDBDisplayName().equals(getConnectionDBType())
-                || EDatabaseConnTemplate.PLUSPSQL.getDBDisplayName().equals(getConnectionDBType())
                 || EDatabaseConnTemplate.VERTICA.getDBDisplayName().equals(getConnectionDBType())
                 || EDatabaseConnTemplate.PSQL.getDBDisplayName().equals(getConnectionDBType())
                 || EDatabaseConnTemplate.MSSQL.getDBDisplayName().equals(getConnectionDBType())
@@ -5897,9 +5896,6 @@ public class DatabaseForm extends AbstractForm {
             dbVersionCombo.getCombo().setItems(versions);
             dbVersionCombo.setHideWidgets(!isSAS);
         } else if (dbType.equals(EDatabaseConnTemplate.PSQL.getDBDisplayName())) {
-            dbVersionCombo.getCombo().setItems(versions);
-            dbVersionCombo.setHideWidgets(false);
-        } else if (dbType.equals(EDatabaseConnTemplate.PLUSPSQL.getDBDisplayName())) {
             dbVersionCombo.getCombo().setItems(versions);
             dbVersionCombo.setHideWidgets(false);
         } else if (dbType.equals(EDatabaseConnTemplate.SAPHana.getDBDisplayName())) {
@@ -6913,7 +6909,6 @@ public class DatabaseForm extends AbstractForm {
                         && (isOracle || isAS400 || isMySQL || isAmazonAurora || isVertica || isSAS || isImpala || isMsSQL
                                 || isSybase || isGreenplum
                                 || EDatabaseConnTemplate.PSQL.getDBTypeName().equals(getConnectionDBType())
-                                || EDatabaseConnTemplate.PLUSPSQL.getDBTypeName().equals(getConnectionDBType())
                                 || EDatabaseConnTemplate.ACCESS.getDBTypeName().equals(getConnectionDBType()) || EDatabaseConnTemplate.MSSQL05_08
                                 .getDBDisplayName().equals(getConnectionDBType())));
         usernameText.setEditable(visible);
@@ -7799,7 +7794,7 @@ public class DatabaseForm extends AbstractForm {
         if (version != null && dbTypeList.size() > 1) {
             EDatabaseTypeName dbType = EDatabaseTypeName.getTypeFromDbType(getConnection().getDatabaseType());
             if (dbType == null || dbType.equals(EDatabaseTypeName.ACCESS) || dbType.equals(EDatabaseTypeName.PSQL)
-                    || dbType.equals(EDatabaseTypeName.PLUSPSQL) || dbType.equals(EDatabaseTypeName.IMPALA)) {
+                    || dbType.equals(EDatabaseTypeName.IMPALA)) {
                 // no version check for these dbs
                 return null;
             }

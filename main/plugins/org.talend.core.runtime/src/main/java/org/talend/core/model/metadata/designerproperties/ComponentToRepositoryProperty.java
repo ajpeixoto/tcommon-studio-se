@@ -420,11 +420,6 @@ public class ComponentToRepositoryProperty {
                     connection.setDatabaseType(EDatabaseTypeName.GREENPLUM.getDisplayName());
                     connection.setProductId(EDatabaseTypeName.GREENPLUM.getProduct());
                 }
-                // PostgresPlus
-                if (para.getRepositoryValue().endsWith(EDatabaseTypeName.PLUSPSQL.getProduct())) {
-                    connection.setDatabaseType(EDatabaseTypeName.PLUSPSQL.getDisplayName());
-                    connection.setProductId(EDatabaseTypeName.PLUSPSQL.getProduct());
-                }
                 // jdbc
                 if (para.getRepositoryValue().contains("|") && para.getRepositoryValue().split("\\|")[1]
                         .equals(ERepositoryObjectType.METADATA_TACOKIT_JDBC.getKey())) {
@@ -472,11 +467,7 @@ public class ComponentToRepositoryProperty {
             connection.setDatabaseType(EDatabaseTypeName.PSQL.getDisplayName());
             connection.setProductId(EDatabaseTypeName.PSQL.getProduct());
         }
-        // PlusSql
-        else if (EDatabaseTypeName.PLUSPSQL.getProduct().equalsIgnoreCase((String) parameter.getValue())) {
-            connection.setDatabaseType(EDatabaseTypeName.PLUSPSQL.getDisplayName());
-            connection.setProductId(EDatabaseTypeName.PLUSPSQL.getProduct());
-        }
+
         // DB2
         else if (EDatabaseTypeName.IBMDB2.getProduct().equalsIgnoreCase(((String) parameter.getValue()).replace(' ', '_'))) {
             connection.setDatabaseType(EDatabaseTypeName.IBMDB2.getDisplayName());
@@ -818,9 +809,6 @@ public class ComponentToRepositoryProperty {
         if (connection.getDatabaseType().equals(EDatabaseTypeName.PSQL.getDisplayName())) {
             setDatabaseValueForPSQL(connection, node, param);
         }
-        if (connection.getDatabaseType().equals(EDatabaseTypeName.PLUSPSQL.getDisplayName())) {
-            setDatabaseValueForPLUSPSQL(connection, node, param);
-        }
         if (connection.getDatabaseType().equals(EDatabaseTypeName.SYBASEASE.getDisplayName())
                 || connection.getDatabaseType().equals(EDatabaseTypeName.SYBASEIQ.getDisplayName())) {
             setDatabaseValueForSysbase(connection, node, param);
@@ -988,15 +976,6 @@ public class ComponentToRepositoryProperty {
         }
     }
 
-    private static void setDatabaseValueForPLUSPSQL(DatabaseConnection connection, INode node, IElementParameter param) {
-        if ("DB_VERSION".equals(param.getRepositoryValue())) { //$NON-NLS-1$
-            String value = getParameterValue(connection, node, param);
-            String dbVersionName = EDatabaseVersion4Drivers.getDbVersionName(EDatabaseTypeName.PLUSPSQL, value);
-            if (value != null) {
-                connection.setDbVersionString(dbVersionName);
-            }
-        }
-    }
     private static void setDatabaseValueForSysbase(DatabaseConnection connection, INode node, IElementParameter param) {
         if ("DB_VERSION".equals(param.getRepositoryValue())) { //$NON-NLS-1$
             String value = getParameterValue(connection, node, param); // $NON-NLS-1$
