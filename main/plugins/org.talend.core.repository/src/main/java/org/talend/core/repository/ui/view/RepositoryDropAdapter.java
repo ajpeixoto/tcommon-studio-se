@@ -62,6 +62,7 @@ import org.talend.core.repository.ui.actions.CopyObjectAction;
 import org.talend.core.repository.ui.actions.MoveObjectAction;
 import org.talend.core.repository.utils.AbstractResourceChangesService;
 import org.talend.core.repository.utils.ConvertJobsUtil;
+import org.talend.core.repository.utils.RepositoryNodeManager;
 import org.talend.core.repository.utils.TDQServiceRegister;
 import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.service.ITransformService;
@@ -379,7 +380,7 @@ public class RepositoryDropAdapter extends PluginDropAdapter {
         if (target == null) {
             return false;
         }
-        super.validateDrop(target, operation, transferType);
+        // super.validateDrop(target, operation, transferType);
         boolean isValid = true;
         Set<IResource> parents = new HashSet<IResource>();
         for (Object obj : ((StructuredSelection) getViewer().getSelection()).toArray()) {
@@ -455,6 +456,24 @@ public class RepositoryDropAdapter extends PluginDropAdapter {
                         if (ENodeType.SYSTEM_FOLDER == targetRN.getType() || ENodeType.SIMPLE_FOLDER == targetRN.getType()) {
                             if (targetRN.getContentType() == ERepositoryObjectType.PROCESS_MR
                                     || targetRN.getContentType() == ERepositoryObjectType.PROCESS_STORM) {
+                                return isValid = true;
+                            }
+                        }
+                    }
+                } else if (object.getRepositoryObjectType() == ERepositoryObjectType.METADATA_TACOKIT_JDBC) {
+                    if (target instanceof RepositoryNode) {
+                        RepositoryNode targetRN = (RepositoryNode) target;
+                        if (ENodeType.SYSTEM_FOLDER == targetRN.getType() || ENodeType.SIMPLE_FOLDER == targetRN.getType()) {
+                            if (targetRN.getContentType() == ERepositoryObjectType.METADATA_CONNECTIONS) {
+                                return isValid = true;
+                            }
+                        }
+                    }
+                } else if (RepositoryNodeManager.isSnowflake(object.getRepositoryObjectType())) {
+                    if (target instanceof RepositoryNode) {
+                        RepositoryNode targetRN = (RepositoryNode) target;
+                        if (ENodeType.SYSTEM_FOLDER == targetRN.getType() || ENodeType.SIMPLE_FOLDER == targetRN.getType()) {
+                            if (targetRN.getContentType() == ERepositoryObjectType.METADATA_CONNECTIONS) {
                                 return isValid = true;
                             }
                         }

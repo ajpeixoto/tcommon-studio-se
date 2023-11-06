@@ -27,7 +27,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.EMap;
-import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.dialogs.IPageChangeProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
@@ -119,6 +119,8 @@ public class DatabaseWizard extends CheckLastVersionRepositoryWizard implements 
 
     private static Logger log = Logger.getLogger(DatabaseWizard.class);
 
+    private String dbType;
+
     private PropertiesWizardPage propertiesWizardPage;
 
     private DatabaseWizardPage databaseWizardPage;
@@ -156,95 +158,6 @@ public class DatabaseWizard extends CheckLastVersionRepositoryWizard implements 
     private ConnectionItem originalConnectionItem;
 
     private ContextType originalSelectedContextType;
-
-    /**
-     * Constructor for DatabaseWizard. Analyse Iselection to extract DatabaseConnection and the pathToSave. Start the
-     * Lock Strategy.
-     *
-     * @param selection
-     * @param existingNames
-     */
-    public DatabaseWizard(IWorkbench workbench, boolean creation, ISelection selection, String[] existingNames) {
-        super(workbench, creation);
-        this.selection = selection;
-        this.existingNames = existingNames;
-        setNeedsProgressMonitor(true);
-
-        // RepositoryNode node = null;
-        Object obj = ((IStructuredSelection) selection).getFirstElement();
-        if (obj instanceof RepositoryNode) {
-            node = (RepositoryNode) obj;
-        } else {
-            return;
-        }
-
-        switch (node.getType()) {
-        case SIMPLE_FOLDER:
-        case REPOSITORY_ELEMENT:
-            pathToSave = RepositoryNodeUtilities.getPath(node);
-            break;
-        case SYSTEM_FOLDER:
-            pathToSave = new Path(""); //$NON-NLS-1$
-            break;
-        }
-
-        switch (node.getType()) {
-        case SIMPLE_FOLDER:
-        case SYSTEM_FOLDER:
-            connection = ConnectionFactory.eINSTANCE.createDatabaseConnection();
-            connectionProperty = PropertiesFactory.eINSTANCE.createProperty();
-            connectionProperty.setAuthor(((RepositoryContext) CoreRuntimePlugin.getInstance().getContext()
-                    .getProperty(Context.REPOSITORY_CONTEXT_KEY)).getUser());
-            connectionProperty.setVersion(VersionUtils.DEFAULT_VERSION);
-            connectionProperty.setStatusCode(""); //$NON-NLS-1$
-
-            connectionItem = PropertiesFactory.eINSTANCE.createDatabaseConnectionItem();
-            connectionItem.setProperty(connectionProperty);
-            connectionItem.setConnection(connection);
-            break;
-
-        case REPOSITORY_ELEMENT:
-            connection = ((ConnectionItem) node.getObject().getProperty().getItem()).getConnection();
-            connectionProperty = node.getObject().getProperty();
-            connectionItem = (ConnectionItem) node.getObject().getProperty().getItem();
-            propertyId = connectionProperty.getId();
-            // set the repositoryObject, lock and set isRepositoryObjectEditable
-            setRepositoryObject(node.getObject());
-            isRepositoryObjectEditable();
-            initLockStrategy();
-            break;
-        }
-        if (!creation) {
-            this.originaleObjectLabel = this.connectionItem.getProperty().getDisplayName();
-            this.originalVersion = this.connectionItem.getProperty().getVersion();
-            this.originalDescription = this.connectionItem.getProperty().getDescription();
-            this.originalPurpose = this.connectionItem.getProperty().getPurpose();
-            this.originalStatus = this.connectionItem.getProperty().getStatusCode();
-
-            if (this.connection != null && (this.connection instanceof DatabaseConnection)) {
-                this.originalSid = ((DatabaseConnection)this.connection).getSID();
-                this.originalUiSchema = ((DatabaseConnection)this.connection).getUiSchema();
-            }
-        }
-
-        repFactory = ProxyRepositoryFactory.getInstance();
-        if (creation) {
-            propertyId = repFactory.getNextId();
-            connectionProperty.setId(propertyId);
-        } else {
-            propertyId = connectionProperty.getId();
-        }
-        connection.setId(propertyId);
-
-        // initialize the context mode
-        ContextItem checkContextMode = ConnectionContextHelper.checkContextMode(connectionItem);
-        this.originalConnectionItem = connectionItem;
-        if (checkContextMode != null) {
-            ContextItem contextItem = ContextUtils.getContextItemById2(connectionItem.getConnection().getContextId());
-            originalSelectedContextType = ContextUtils
-                    .getContextTypeByName(contextItem, connectionItem.getConnection().getContextName(), false);
-        }
-    }
 
     /**
      * Constructor for DatabaseWizard. Analyse Iselection to extract DatabaseConnection and the pathToSave. Start the
@@ -388,6 +301,10 @@ public class DatabaseWizard extends CheckLastVersionRepositoryWizard implements 
         propertiesWizardPage = new Step0WizardPage(connectionProperty, pathToSave, ERepositoryObjectType.METADATA_CONNECTIONS,
                 !isRepositoryObjectEditable(), creation);
         databaseWizardPage = new DatabaseWizardPage(connectionItem, isRepositoryObjectEditable(), existingNames);
+        if (dbType == null) {
+            dbType = databaseWizardPage.getDisplayConnectionDBType();
+            databaseWizardPage.setDbType(dbType);
+        }
 
         if (creation) {
             propertiesWizardPage.setTitle(Messages.getString("DatabaseWizardPage.titleCreate.Step1")); //$NON-NLS-1$
@@ -410,6 +327,15 @@ public class DatabaseWizard extends CheckLastVersionRepositoryWizard implements 
         }
         addPage(propertiesWizardPage);
         addPage(databaseWizardPage);
+
+        if (IPageChangeProvider.class.isInstance(getContainer())) {
+            IPageChangeProvider.class.cast(getContainer()).addPageChangedListener(e -> {
+                if (e.getSelectedPage() == databaseWizardPage) {
+                    databaseWizardPage.setDbType(dbType);
+                    databaseWizardPage.updateByDBSelection();
+                }
+            });
+        }
     }
 
     private String getHadoopPropertiesString(List<HashMap<String, Object>> hadoopPrperties) throws JSONException {
@@ -1189,10 +1115,15 @@ public class DatabaseWizard extends CheckLastVersionRepositoryWizard implements 
         return null;
     }
 
+    public void setDbType(String dbType) {
+        this.dbType = dbType;
+    }
+
     private String getDBType(ConnectionItem item){
         if(item.getConnection() instanceof DatabaseConnection){
             return ((DatabaseConnection)item.getConnection()).getDatabaseType();
         }
         return item.getTypeName();
     }
+
 }

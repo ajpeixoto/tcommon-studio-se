@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.ui.PlatformUI;
@@ -30,12 +32,15 @@ import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.repository.RepositoryManager;
 import org.talend.core.repository.i18n.Messages;
 import org.talend.core.repository.model.JobletReferenceBean;
+import org.talend.core.repository.model.ProjectRepositoryNode;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.model.repositoryObject.MetadataTableRepositoryObject;
 import org.talend.core.repository.ui.actions.metadata.CopyToGenericSchemaHelper;
 import org.talend.core.repository.ui.dialog.JobletReferenceDialog;
 import org.talend.core.repository.utils.AbstractResourceChangesService;
+import org.talend.core.repository.utils.RepositoryNodeManager;
 import org.talend.core.repository.utils.TDQServiceRegister;
+import org.talend.repository.ProjectManager;
 import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.model.IRepositoryNode;
 import org.talend.repository.model.IRepositoryNode.ENodeType;
@@ -155,8 +160,11 @@ public class MoveObjectAction {
             switch (targetNode.getType()) {
             case SYSTEM_FOLDER:
             case SIMPLE_FOLDER:
-                boolean booleanValue = ((ERepositoryObjectType) targetNode.getProperties(EProperties.CONTENT_TYPE))
-                        .equals(sourceNode.getProperties(EProperties.CONTENT_TYPE));
+                ERepositoryObjectType sourceType = (ERepositoryObjectType) sourceNode.getProperties(EProperties.CONTENT_TYPE);
+                ERepositoryObjectType targetType = (ERepositoryObjectType) targetNode.getProperties(EProperties.CONTENT_TYPE);
+                boolean booleanValue = sourceType == targetType || (ERepositoryObjectType.METADATA_CONNECTIONS == targetType
+                        && (ERepositoryObjectType.METADATA_TACOKIT_JDBC == sourceType
+                                || RepositoryNodeManager.isSnowflake(sourceType)));
                 if (isGenericSchema) {
                     return true;
                 } else {
@@ -274,7 +282,9 @@ public class MoveObjectAction {
             targetPath = (targetNode == null ? new Path("") : RepositoryNodeUtilities.getPath(targetNode)); //$NON-NLS-1$
         }
         List<IRepositoryViewObject> objectToMoves = new ArrayList<IRepositoryViewObject>();
+        List<IRepositoryViewObject> snowflakeToMove = new ArrayList<>();
         Map<IRepositoryViewObject, IPath> map = new HashMap<IRepositoryViewObject, IPath>();
+        Map<IRepositoryViewObject, IPath> snowflakeMap = new HashMap<>();
         IProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
         for (RepositoryNode sourceNode : nodeList) {
             IPath sourcePath = RepositoryNodeUtilities.getPath(sourceNode);
@@ -298,6 +308,18 @@ public class MoveObjectAction {
                         // Move :
                         if (isGenericSchema) {
                             CopyToGenericSchemaHelper.copyToGenericSchema(factory, objectToMove, targetPath);
+                        } else if (RepositoryNodeManager.isSnowflake(sourceNode.getObjectType())
+                                && ERepositoryObjectType.METADATA_CONNECTIONS == targetNode.getContentType()
+                                && (ENodeType.SYSTEM_FOLDER == targetNode.getType()
+                                        || ENodeType.SIMPLE_FOLDER == targetNode.getType())) {
+                            if (!ProjectRepositoryNode.class.isInstance(targetNode.getParent())
+                                    && targetNode.getObject() != null) {
+                                factory.createFolder(ERepositoryObjectType.SNOWFLAKE,
+                                        RepositoryNodeUtilities.getPath(targetNode.getParent()),
+                                        targetNode.getObject().getProperty().getLabel());
+                            }
+                            snowflakeToMove.add(objectToMove);
+                            snowflakeMap.put(objectToMove, sourcePath);
                         } else {
                             // MOD gdbu 2011-9-29 TDQ-3546
                             ERepositoryObjectType repositoryObjectType = objectToMove.getRepositoryObjectType();
@@ -325,6 +347,18 @@ public class MoveObjectAction {
                 // Source is a folder :
                 ERepositoryObjectType sourceType = (ERepositoryObjectType) sourceNode.getProperties(EProperties.CONTENT_TYPE);
                 factory.moveFolder(sourceType, sourcePath, targetPath);
+
+                if (ERepositoryObjectType.SNOWFLAKE != null) {
+                    String snowflakePath = ERepositoryObjectType.getFolderName(ERepositoryObjectType.SNOWFLAKE);
+                    if (!sourcePath.isEmpty()) {
+                        snowflakePath += IPath.SEPARATOR + sourcePath.toString();
+                    }
+                    IProject project = ResourceUtils.getProject(ProjectManager.getInstance().getCurrentProject());
+                    IFolder folder = ResourceUtils.getFolder(project, snowflakePath, false);
+                    if (folder.exists() && folder.members().length > 0) {
+                        factory.moveFolder(ERepositoryObjectType.SNOWFLAKE, sourcePath, targetPath);
+                    }
+                }
             }
         }
         if (objectToMoves.size() > 0) {
@@ -334,6 +368,10 @@ public class MoveObjectAction {
                 objectArray[i] = obj;
             }
             factory.moveObjectMulti(objectArray, targetPath, map);
+        }
+        if (!snowflakeToMove.isEmpty()) {
+            factory.moveObjectMulti(snowflakeToMove.toArray(new IRepositoryViewObject[] {}),
+                    RepositoryNodeUtilities.getPath(targetNode), snowflakeMap);
         }
     }
 

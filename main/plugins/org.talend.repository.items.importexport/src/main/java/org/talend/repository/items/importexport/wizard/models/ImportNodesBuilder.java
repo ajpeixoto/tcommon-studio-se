@@ -282,7 +282,9 @@ public class ImportNodesBuilder {
     }
 
     private TypeImportNode findAndCreateParentTypeNode(ProjectImportNode projectNode, ERepositoryObjectType curType) {
-
+        if (curType == ERepositoryObjectType.METADATA_TACOKIT_JDBC || curType == ERepositoryObjectType.SNOWFLAKE) {
+            curType = ERepositoryObjectType.METADATA_CONNECTIONS;
+        }
         ERepositoryObjectType parentParentType = ERepositoryObjectType.findParentType(curType);
         if (parentParentType == null) { // is root type, try to find from project node
             TypeImportNode typeImportNode = findAndCreateTypeNode(projectNode, curType, true);

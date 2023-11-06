@@ -16,21 +16,21 @@ import org.talend.core.model.properties.PropertiesPackage;
  */
 public class BigQueryConnectionItemImpl extends ConnectionItemImpl implements BigQueryConnectionItem {
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	protected BigQueryConnectionItemImpl() {
-		super();
-	}
+        super();
+    }
 
 	/**
-	 * <!-- begin-user-doc -->
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	protected EClass eStaticClass() {
-		return PropertiesPackage.Literals.BIG_QUERY_CONNECTION_ITEM;
-	}
+        return PropertiesPackage.Literals.BIG_QUERY_CONNECTION_ITEM;
+    }
 
 } //BigQueryConnectionItemImpl

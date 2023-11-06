@@ -15,13 +15,13 @@ import org.eclipse.emf.ecore.EObject;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link org.talend.core.model.properties.ProjectReference#getProject <em>Project</em>}</li>
  *   <li>{@link org.talend.core.model.properties.ProjectReference#getBranch <em>Branch</em>}</li>
  *   <li>{@link org.talend.core.model.properties.ProjectReference#getReferencedProject <em>Referenced Project</em>}</li>
  *   <li>{@link org.talend.core.model.properties.ProjectReference#getReferencedBranch <em>Referenced Branch</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.talend.core.model.properties.PropertiesPackage#getProjectReference()
  * @model
