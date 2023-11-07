@@ -809,10 +809,9 @@ public class AggregatorPomsHelper {
 	                    		childJobProperty.getAdditionalProperties().remove(MavenConstants.NAME_PUBLISH_AS_SNAPSHOT);
 	                    	}
 
-	                    	if ("ROUTE".equalsIgnoreCase(routeBuildType) || null == routeBuildType) {
+	                    	
+	                    	if (!ProcessUtils.isRoutelet(item.getProperty())) {
 	                    		childJobProperty.getAdditionalProperties().put(TalendProcessArgumentConstant.ARG_BUILD_TYPE, "OSGI");
-	                    	} else {
-	                    		childJobProperty.getAdditionalProperties().put(TalendProcessArgumentConstant.ARG_BUILD_TYPE, "Standalone");
 	                    	}
 	                    	
 	                    	runProcessService.generatePom(childJob.getProcessItem(), TalendProcessOptionConstants.GENERATE_POM_NO_FILTER);

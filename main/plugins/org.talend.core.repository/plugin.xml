@@ -420,18 +420,7 @@
                 type="ORACLESN">
           </DBType>
        </RepositoryComponent>
-       <RepositoryComponent
-             name="PLUSPSQL"
-             withSchema="true"
-             input="tPostgresPlusInput"
-             output="tPostgresPlusOutput">
-          <Item
-                clazz="org.talend.core.model.properties.DatabaseConnectionItem">
-          </Item>
-          <DBType
-                type="PLUSPSQL">
-          </DBType>
-       </RepositoryComponent>
+
        <RepositoryComponent
              name="PSQL"
              withSchema="true"
