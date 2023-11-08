@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.eclipse.gef.commands.Command;
 import org.talend.commons.ui.runtime.i18n.Messages;
+import org.talend.commons.ui.runtime.swt.tableviewer.TableViewerCreatorNotModifiable;
 import org.talend.commons.ui.swt.extended.table.ExtendedTableModel;
 
 /**
@@ -88,6 +89,11 @@ public class ExtendedTableAddCommand extends Command implements IExtendedTableCo
         // }
 
         extendedTable.addAll(indexStartAdd, beansToAdd);
+        // when not lazy load need to do refresh to refresh the row number
+        if (!TableViewerCreatorNotModifiable.getRecommandLazyLoad()
+                && !TableViewerCreatorNotModifiable.isLazyLoadingEnabled()) {
+            extendedTable.getTableViewer().refresh();
+        }
 
     }
 
