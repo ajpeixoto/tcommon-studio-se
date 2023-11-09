@@ -194,9 +194,21 @@ public class ConnParameterKeys {
 
     public static final String CONN_PARA_KEY_WEB_HCAT_JOB_RESULT_FOLDER = "CONN_PARA_KEY_WEB_HCAT_JOB_RESULT_FOLDER"; //$NON-NLS-1$
 
+    public static final String CONN_PARA_KEY_HDI_AUTH_MODE = "CONN_PARA_KEY_HDI_AUTH_MODE"; //$NON-NLS-1$
+    
     public static final String CONN_PARA_KEY_HDI_USERNAME = "CONN_PARA_KEY_HDI_USERNAME"; //$NON-NLS-1$
 
     public static final String CONN_PARA_KEY_HDI_PASSWORD = "CONN_PARA_KEY_HDI_PASSWORD"; //$NON-NLS-1$
+    
+    public static final String CONN_PARA_KEY_HDI_DIRECTORY_ID = "CONN_PARA_KEY_HDI_DIRECTORY_ID"; //$NON-NLS-1$
+    
+    public static final String CONN_PARA_KEY_HDI_APPLICATION_ID = "CONN_PARA_KEY_HDI_APPLICATION_ID"; //$NON-NLS-1$
+    
+    public static final String CONN_PARA_KEY_HDI_CLIENT_KEY = "CONN_PARA_KEY_HDI_CLIENT_KEY"; //$NON-NLS-1$
+    
+    public static final String CONN_PARA_KEY_USE_HDI_CLIENT_CERTIFICATE = "CONN_PARA_KEY_USE_HDI_CLIENT_CERTIFICATE"; //$NON-NLS-1$
+    
+    public static final String CONN_PARA_KEY_HDI_CLIENT_CERTIFICATE = "CONN_PARA_KEY_HDI_CLIENT_CERTIFICATE"; //$NON-NLS-1$
 
     public static final String CONN_PARA_KEY_AZURE_HDINSIGHT_STORAGE = "CONN_PARA_KEY_AZURE_HDINSIGHT_STORAGE"; //$NON-NLS-1$
 
