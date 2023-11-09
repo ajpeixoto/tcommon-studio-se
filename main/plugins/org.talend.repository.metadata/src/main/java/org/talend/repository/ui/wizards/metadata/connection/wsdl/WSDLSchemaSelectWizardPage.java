@@ -102,11 +102,12 @@ public class WSDLSchemaSelectWizardPage extends WSDLSchemaWizardPage {
             if (node != null) {
                 IElementParameter elementParameter = node.getElementParameter("PROPERTY"); //$NON-NLS-1$
                 if (elementParameter != null) {
-                    if ("WSDL".equals(elementParameter.getRepositoryValue())) { //$NON-NLS-1$
+                    String repositoryValue = elementParameter.calcRepositoryValue();
+                    if ("WSDL".equals(repositoryValue)) { //$NON-NLS-1$
                         lockSelectButton = true;
                         isWsdl = true;
                         ((WSDLSchemaConnection) connectionItem.getConnection()).setIsInputModel(true);
-                    } else if ("WEBSERVICE".equals(elementParameter.getRepositoryValue())) { //$NON-NLS-1$
+                    } else if ("WEBSERVICE".equals(repositoryValue)) { //$NON-NLS-1$
                         lockSelectButton = true;
                         isWsdl = false;
                         ((WSDLSchemaConnection) connectionItem.getConnection()).setIsInputModel(false);
