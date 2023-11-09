@@ -92,8 +92,12 @@ public class ExtendedNodeConnectionContextUtils {
         HDIPassword,
         KeyAzureHost,
         KeyAzureContainer,
+        HDIAuthType,
         KeyAzuresUser,
         KeyAzurePassword,
+        HDIClientId,
+        HDIDirectoryId,
+        HDISecretKey,
         KeyAzureDeployBlob,
         
         // Azure Synapse param
