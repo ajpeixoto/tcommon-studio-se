@@ -271,6 +271,7 @@ public class ExternalNodeComponentHandler extends AbstractComponentHandler {
                     value = eleObj.toString();
                 }
 
+                String repositoryValue = null;
                 if (elemparameter.getName().equals(EParameterFieldType.PROPERTY_TYPE.getName())
                         && value.equals(IHTMLDocConstants.REPOSITORY)) {
                     String repositoryValueForPropertyType = getRepositoryValueForPropertyType(copyElementParameterList,
@@ -298,8 +299,8 @@ public class ExternalNodeComponentHandler extends AbstractComponentHandler {
                 // value = checkString(type.getListItemsDisplayName()[index]);
                 // }
 
-                else if (elemparameter.getRepositoryValue() != null
-                        && elemparameter.getRepositoryValue().toUpperCase().contains("PASSWORD") //$NON-NLS-1$
+                else if ((repositoryValue = elemparameter.calcRepositoryValue()) != null
+                        && repositoryValue.toUpperCase().contains("PASSWORD") //$NON-NLS-1$
                         || EParameterFieldType.isPassword(elemparameter.getFieldType())) {
                     value = ParameterValueUtil.getValue4Doc(elemparameter).toString();
                 }
