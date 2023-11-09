@@ -21,6 +21,7 @@ import org.talend.core.language.LanguageManager;
 import org.talend.core.model.metadata.IMetadataColumn;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.QueryUtil;
+import org.talend.core.model.metadata.builder.connection.TacokitDatabaseConnection;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
@@ -143,6 +144,9 @@ public abstract class AbstractQueryGenerator implements IQueryGenerator {
             IElementParameter param = elem.getElementParameterFromField(EParameterFieldType.DBTABLE);
             if(param == null){
                 param = elem.getElementParameterFromField(EParameterFieldType.NAME_SELECTION_REFERENCE);
+            }   
+            if(param == null){
+                param = elem.getElementParameter(TacokitDatabaseConnection.KEY_DATASET_TABLE_NAME);
             }
             if (param != null) {
                 if (param.isShow(elem.getElementParameters())) {
@@ -219,7 +223,7 @@ public abstract class AbstractQueryGenerator implements IQueryGenerator {
     protected String getSchema(IElement elem) {
         if (elem != null) {
             for (IElementParameter param : elem.getElementParameters()) {
-                if ("SCHEMA".equals(param.getRepositoryValue())) { //$NON-NLS-1$
+                if ("SCHEMA".equals(param.calcRepositoryValue())) { //$NON-NLS-1$
                     if (param.isShow(elem.getElementParameters())) {
                         String value = (String) param.getValue();
                         if (value != null) {

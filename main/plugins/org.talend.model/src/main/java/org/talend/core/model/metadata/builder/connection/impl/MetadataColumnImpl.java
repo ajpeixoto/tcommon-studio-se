@@ -21,6 +21,7 @@ import org.talend.core.model.metadata.builder.connection.MetadataColumn;
 import org.talend.core.model.metadata.builder.connection.MetadataTable;
 import org.talend.cwm.helper.ColumnHelper;
 import org.talend.cwm.helper.SwitchHelpers;
+
 import orgomg.cwm.analysis.transformation.ClassifierFeatureMap;
 import orgomg.cwm.analysis.transformation.FeatureMap;
 import orgomg.cwm.analysis.transformation.TransformationPackage;
@@ -2019,5 +2020,18 @@ public class MetadataColumnImpl extends AbstractMetadataObjectImpl implements Me
     public String getName() {
         // MOD yyi 2011-06-23 22700: override the method for flatfile column
         return null == super.getName() ? this.getId() : super.getName();
+    }
+
+    // didn't add rowNum into emf model attribute because it's not used for emf value .only used to set row number when
+    // show in the meta table. It will still be kept when re-generate emf model . PLEASE DON'T REMOVE IT MANUALLY
+    int rowNum = 0;
+    @Override
+    public Integer getRowNum() {
+        return rowNum;
+    }
+
+    @Override
+    public void setRowNum(Integer value) {
+        rowNum = value;
     }
 } // MetadataColumnImpl

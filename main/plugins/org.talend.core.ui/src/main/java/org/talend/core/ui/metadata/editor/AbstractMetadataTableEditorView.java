@@ -109,6 +109,8 @@ public abstract class AbstractMetadataTableEditorView<B> extends AbstractDataTab
 
     public static final String ID_COLUMN_USEFUL = "ID_COLUMN_USEFUL";
 
+    public static final String ID_COLUMN_ROW_NUM = "ID_COLUMN_ROW_NUM";
+
     protected boolean showDbColumnName, showOriginalLength;
 
     protected boolean showDbTypeColumn;
@@ -231,12 +233,7 @@ public abstract class AbstractMetadataTableEditorView<B> extends AbstractDataTab
     @Override
     protected void createColumns(TableViewerCreator<B> tableViewerCreator, Table table) {
         // //////////////////////////////////////////////////////////////////////////////////////
-        tableViewerCreator.setReadOnly(false);
-        TableViewerCreatorColumn column = new TableViewerCreatorColumn(tableViewerCreator);
-        column.setTitle(""); //$NON-NLS-1$
-        column.setDefaultInternalValue(""); //$NON-NLS-1$
-        column.setWidth(15);
-
+        configureRowNumColumn(tableViewerCreator);
         if (isRepository) {
             configureUsefulColumn(tableViewerCreator);
         }
@@ -331,6 +328,21 @@ public abstract class AbstractMetadataTableEditorView<B> extends AbstractDataTab
             configureRelationshipType(tableViewerCreator);
             configureRelatedEntity(tableViewerCreator);
         }
+    }
+
+    protected abstract IBeanPropertyAccessors<B, Integer> getRowNumAccessor();
+
+    protected void configureRowNumColumn(TableViewerCreator<B> tableViewerCreator) {
+        TableViewerCreatorColumn column;
+        column = new TableViewerCreatorColumn(tableViewerCreator);
+        column.setTitle("");
+        column.setToolTipHeader("");
+        column.setId(ID_COLUMN_ROW_NUM);
+        column.setBeanPropertyAccessors(getRowNumAccessor());
+        column.setWeight(5);
+        column.setModifiable(false);
+        column.setMinimumWidth(10);
+        column.setSortable(true);
     }
 
     protected void configureUsefulColumn(TableViewerCreator<B> tableViewerCreator) {

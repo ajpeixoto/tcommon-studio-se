@@ -21,13 +21,15 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.talend.analysistask.ItemAnalysisReportManager;
 import org.talend.commons.exception.ExceptionHandler;
@@ -84,11 +86,23 @@ public class MigrationReportAccessDialog extends Dialog {
         migrationInfoLayout.marginLeft = 10;
         migrationInfoArea.setLayout(migrationInfoLayout);
         createMessageLabel(migrationInfoArea, Messages.getString("MigrationReportAccessDialog.migrateSuccess"));
-        Link accessLink = new Link(migrationInfoArea, SWT.NONE);
-        accessLink.setText(Messages.getString("MigrationReportAccessDialog.completeReportAvailable") + " <a>"
-                + Messages.getString("MigrationReportAccessDialog.accessReport") + "</a> .");
-        accessLink.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL | GridData.FILL_VERTICAL));
-        accessLink.addSelectionListener(new SelectionAdapter() {
+
+        Composite noteComp = new Composite(migrationInfoArea, SWT.NONE);
+        noteComp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
+        noteComp.setLayout(new FormLayout());
+        Label noteLabel = new Label(noteComp, SWT.NONE);
+        noteLabel.setText(Messages.getString("MigrationReportAccessDialog.completeReportAvailable"));
+        FormData noteLabelFormData = new FormData();
+        noteLabelFormData.bottom = new FormAttachment(100, -5);
+        noteLabelFormData.left = new FormAttachment(0, 0);
+        noteLabel.setLayoutData(noteLabelFormData);
+        Button browseBtn = new Button(noteComp, SWT.NONE);
+        browseBtn.setText(Messages.getString("MigrationReportAccessDialog.accessBrowse"));
+        FormData linkFormData = new FormData();
+        linkFormData.top = new FormAttachment(0, 0);
+        linkFormData.left = new FormAttachment(noteLabel, 5);
+        browseBtn.setLayoutData(linkFormData);
+        browseBtn.addSelectionListener(new SelectionAdapter() {
 
             @Override
             public void widgetSelected(SelectionEvent e) {

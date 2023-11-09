@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.swt.widgets.Composite;
 import org.talend.components.api.properties.ComponentProperties;
+import org.talend.core.GlobalServiceRegister;
 import org.talend.core.IService;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.builder.connection.Connection;
@@ -67,5 +68,12 @@ public interface IGenericDBService extends IService{
     public void updateCompPropertiesForContextMode(Connection connection, Map<String, String> contextVarMap);
 
     public List<ERepositoryObjectType> getAllGenericMetadataDBRepositoryType();
+
+    public static IGenericDBService get() {
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericDBService.class)) {
+            return GlobalServiceRegister.getDefault().getService(IGenericDBService.class);
+        }
+        return null;
+    }
 
 }

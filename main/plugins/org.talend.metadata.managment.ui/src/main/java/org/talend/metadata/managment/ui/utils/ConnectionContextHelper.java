@@ -59,6 +59,7 @@ import org.talend.core.model.metadata.builder.connection.LdifFileConnection;
 import org.talend.core.model.metadata.builder.connection.MDMConnection;
 import org.talend.core.model.metadata.builder.connection.SAPConnection;
 import org.talend.core.model.metadata.builder.connection.SalesforceSchemaConnection;
+import org.talend.core.model.metadata.builder.connection.TacokitDatabaseConnection;
 import org.talend.core.model.metadata.builder.connection.WSDLSchemaConnection;
 import org.talend.core.model.metadata.builder.connection.XmlFileConnection;
 import org.talend.core.model.metadata.builder.database.JavaSqlFactory;
@@ -102,6 +103,7 @@ import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
 import org.talend.designer.core.model.utils.emf.talendfile.impl.ContextTypeImpl;
 import org.talend.metadata.managment.ui.dialog.PromptDialog;
 import org.talend.metadata.managment.ui.i18n.Messages;
+import org.talend.metadata.managment.ui.model.AbsConnParamName;
 import org.talend.metadata.managment.ui.model.IConnParamName;
 import org.talend.metadata.managment.ui.utils.DBConnectionContextUtils.EDBParamName;
 import org.talend.metadata.managment.ui.utils.ExtendedNodeConnectionContextUtils.EHadoopParamName;
@@ -289,7 +291,7 @@ public final class ConnectionContextHelper {
         List<IContextParameter> varList = null;
         if(conn.getCompProperties() != null){
             varList = ExtendedNodeConnectionContextUtils.getContextVariables(label, conn, paramSet);
-        }else if (conn instanceof DatabaseConnection) {
+        }else if (conn instanceof DatabaseConnection && !(conn instanceof TacokitDatabaseConnection)) {
             varList = DBConnectionContextUtils.getDBVariables(label, (DatabaseConnection) conn, paramSet);
         } else if (conn instanceof FileConnection) {
             varList = FileConnectionContextUtils.getFileVariables(label, (FileConnection) conn, paramSet);
@@ -348,8 +350,8 @@ public final class ConnectionContextHelper {
             if (param instanceof EHadoopParamName) {
                 varList.add(((EHadoopParamName) param).name());
             }
-            if (param instanceof GenericConnParamName) {
-                varList.add(((GenericConnParamName) param).getName());
+            if (param instanceof AbsConnParamName) {
+                varList.add(((AbsConnParamName) param).getName());
             }
         }
     }
@@ -385,7 +387,7 @@ public final class ConnectionContextHelper {
             for (AdditionalConnectionProperty sapProperty : sapConn.getAdditionalProperties()) {
                 varList.add(sapProperty.getPropertyName());
             }
-        } else if (currentConnection instanceof DatabaseConnection) {
+        } else if (currentConnection instanceof DatabaseConnection && !(currentConnection instanceof TacokitDatabaseConnection)) {
             DatabaseConnection dbConn = (DatabaseConnection) currentConnection;
             List<Map<String, Object>> hadoopPropertiesList = DBConnectionContextUtils.getHiveOrHbaseHadoopProperties(dbConn);
             if (!hadoopPropertiesList.isEmpty()) {
@@ -415,11 +417,10 @@ public final class ConnectionContextHelper {
         if (connectionItem == null || contextItem == null) {
             return;
         }
-
         Connection conn = connectionItem.getConnection();
         if(conn.getCompProperties() != null){
             ExtendedNodeConnectionContextUtils.setConnectionPropertiesForContextMode(defaultContextName, conn, paramSet);
-        }else if (conn instanceof DatabaseConnection) {
+        }else if (conn instanceof DatabaseConnection && !(conn instanceof TacokitDatabaseConnection)) {
             DBConnectionContextUtils.setPropertiesForContextMode(defaultContextName, (DatabaseConnection) conn, contextItem,
                     paramSet, map);
             // DBConnectionContextUtils.updateConnectionParam((DatabaseConnection) conn, map);
@@ -466,7 +467,7 @@ public final class ConnectionContextHelper {
         Connection conn = connectionItem.getConnection();
         if(conn.getCompProperties() != null){
             ExtendedNodeConnectionContextUtils.setConnectionPropertiesForExistContextMode(conn, paramSet, modelMap);
-        }else if (conn instanceof DatabaseConnection) {
+        }else if (conn instanceof DatabaseConnection && !(conn instanceof TacokitDatabaseConnection)) {
             DBConnectionContextUtils.setPropertiesForExistContextMode((DatabaseConnection) conn, paramSet, modelMap);
         } else if (conn instanceof FileConnection) {
             FileConnectionContextUtils.setPropertiesForExistContextMode((FileConnection) conn, paramSet, modelMap);
@@ -640,7 +641,10 @@ public final class ConnectionContextHelper {
         }
         IProcess process = node.getProcess();
         if (process instanceof IProcess2) {
-            addContextForElementParameters((IProcess2) process, connItem, node.getElementParameters(), null, ignoreContextMode);
+            Map<Object, Object> contextMap = new HashMap<Object, Object>();
+            contextMap.put("NODE", (INode) node);
+            addContextForElementParameters((IProcess2) process, connItem, node.getElementParameters(), null,
+                    ignoreContextMode, contextMap);
         }
     }
 
@@ -658,7 +662,8 @@ public final class ConnectionContextHelper {
         if (process == null || connItem == null) {
             return;
         }
-        addContextForElementParameters(process, connItem, process.getElementParameters(), category, ignoreContextMode);
+        addContextForElementParameters(process, connItem, process.getElementParameters(), category, ignoreContextMode,
+                new HashMap<Object, Object>());
     }
 
     /**
@@ -673,7 +678,7 @@ public final class ConnectionContextHelper {
      */
     private static void addContextForElementParameters(final IProcess2 process, final ConnectionItem connItem,
             List<? extends IElementParameter> elementParameters, final EComponentCategory category,
-            final boolean ignoreContextMode) {
+            final boolean ignoreContextMode, Map<Object, Object> contextData) {
         if (connItem == null || elementParameters == null || process == null) {
             return;
         }
@@ -686,7 +691,7 @@ public final class ConnectionContextHelper {
         Connection connection = connItem.getConnection();
         if (connection != null && connection.isContextMode()) {
             // get the context variables from the node parameters.
-            Set<String> neededVars = retrieveContextVar(elementParameters, connection, category);
+            Set<String> neededVars = retrieveContextVar(elementParameters, connection, category, contextData);
             boolean isGeneric = isGenericConnection(connection);
             Map<String, String> renamedMap = ContextUtils.getContextParamterRenamedMap(process.getProperty().getItem());
             if (neededVars != null && !neededVars.isEmpty() || isGeneric) {
@@ -1116,9 +1121,17 @@ public final class ConnectionContextHelper {
                 continue;
             }
             if (category == null || category == param.getCategory()) {
-                String repositoryValue = param.getRepositoryValue();
+                String repositoryValue = param.calcRepositoryValue();
                 if (repositoryValue != null) {
-                    Object objectValue = RepositoryToComponentProperty.getValue(connection, repositoryValue, null, null, contextData);
+                    String componentName = null;
+                    if (contextData != null) {
+                        Object node = contextData.get("NODE");
+                        if (node instanceof INode) {
+                            componentName = ((INode) node).getComponent().getName();
+                        }
+                    }
+                    Object objectValue = RepositoryToComponentProperty.getValue(connection, repositoryValue, null,
+                            componentName, contextData);
 
                     if (objectValue != null) {
                         if (objectValue instanceof List) {
@@ -2043,7 +2056,7 @@ public final class ConnectionContextHelper {
         Connection conn = connItem.getConnection();
         if(conn.getCompProperties() != null){
             ExtendedNodeConnectionContextUtils.revertPropertiesForContextMode(conn, contextType);
-        }else if (conn instanceof DatabaseConnection) {
+        }else if (conn instanceof DatabaseConnection && !(conn instanceof TacokitDatabaseConnection)) {
             DBConnectionContextUtils.revertPropertiesForContextMode((DatabaseConnection) conn, contextType);
         } else if (conn instanceof FileConnection) {
             FileConnectionContextUtils.revertPropertiesForContextMode((FileConnection) conn, contextType);
@@ -2287,7 +2300,7 @@ public final class ConnectionContextHelper {
         Assert.isNotNull(context);
         // Prompt for context values ?
         for (IContextParameter parameter : context.getContextParameterList()) {
-            if (parameter.isPromptNeeded()) {
+            if (parameter.isPromptNeeded() || ContextUtils.isPromptNeeded(contexts, parameter.getName())) {
                 nbValues++;
                 break;
             }

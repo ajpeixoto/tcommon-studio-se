@@ -52,6 +52,7 @@ import org.talend.core.model.metadata.builder.connection.MDMConnection;
 import org.talend.core.model.metadata.builder.connection.MetadataColumn;
 import org.talend.core.model.metadata.builder.connection.MetadataTable;
 import org.talend.core.model.metadata.builder.connection.SAPBWTable;
+import org.talend.core.model.metadata.builder.connection.TacokitDatabaseConnection;
 import org.talend.core.prefs.SSLPreferenceConstants;
 import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.utils.KeywordsValidator;
@@ -784,5 +785,18 @@ public final class ConvertionHelper {
             ExceptionHandler.process(e);
         }
         return entryString;
+    }
+
+    public static DatabaseConnection fillJDBCParams4TacokitDatabaseConnection(Connection conn) {
+        if (conn instanceof TacokitDatabaseConnection) {
+            TacokitDatabaseConnection tacokitDatabaseConnection = (TacokitDatabaseConnection) (conn);
+            if (tacokitDatabaseConnection.getDbmsId() == null) {
+                String trueDbType = getDbTypeByClassNameAndDriverJar(tacokitDatabaseConnection.getDriverClass(), null);
+                String product = EDatabaseTypeName.getTypeFromDisplayName(trueDbType).getProduct();
+                String mapping = MetadataTalendType.getDefaultDbmsFromProduct(product).getId();
+                tacokitDatabaseConnection.setDbmsId(mapping);
+            }
+        }
+        return (DatabaseConnection) conn;
     }
 }

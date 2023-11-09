@@ -24,7 +24,9 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.core.GlobalServiceRegister;
 import org.talend.core.IService;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.properties.Item;
@@ -87,6 +89,13 @@ public interface IDetectCVEService extends IService {
      * Clear CVE cache
      */
     void clearCache();
+
+    public static IDetectCVEService get() {
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(IDetectCVEService.class)) {
+            return GlobalServiceRegister.getDefault().getService(IDetectCVEService.class);
+        }
+        return null;
+    }
 
     public static String mavenUri2GAV(String uri) {
         if (MavenUrlHelper.isMvnUrl(uri)) {
@@ -1009,7 +1018,7 @@ public interface IDetectCVEService extends IService {
             this.version = ver;
         }
 
-        private Date parseVersion() {
+        public Date parseVersion() {
             String ver = version;
             if (ver != null) {
                 if (ver.startsWith("R")) {
@@ -1019,7 +1028,10 @@ public interface IDetectCVEService extends IService {
                 try {
                     return df.parse(ver);
                 } catch (ParseException e) {
-                    ExceptionHandler.process(e);
+                    if (CommonsPlugin.isDebugMode()) {
+                        // avoid too much log
+                        ExceptionHandler.process(e);
+                    }
                 }
             }
             return null;

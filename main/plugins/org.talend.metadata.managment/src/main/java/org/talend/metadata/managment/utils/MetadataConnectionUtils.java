@@ -58,6 +58,7 @@ import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
 import org.talend.core.model.metadata.builder.connection.MDMConnection;
 import org.talend.core.model.metadata.builder.connection.MetadataColumn;
+import org.talend.core.model.metadata.builder.connection.TacokitDatabaseConnection;
 import org.talend.core.model.metadata.builder.database.DriverShim;
 import org.talend.core.model.metadata.builder.database.ExtractMetaDataUtils;
 import org.talend.core.model.metadata.builder.database.IDriverService;
@@ -1480,7 +1481,8 @@ public class MetadataConnectionUtils {
         if (!Platform.isRunning() || !connection.isContextMode()) {
             return connection;
         }
-        Connection copyConnection = deepCopy(connection);
+        Connection copyConnection = deepCopyAll(connection);
+
         JavaSqlFactory.haveSetPromptContextVars = false;
         ContextItem contextItem = ContextUtils.getContextItemById2(connection.getContextId());
         // only consider the connection currently used context
@@ -1520,6 +1522,18 @@ public class MetadataConnectionUtils {
             }
         }
         JavaSqlFactory.haveSetPromptContextVars = true;
+        return copyConnection;
+    }
+
+    /**
+     * DOC msjian Comment method "deepCopyAll".
+     * @param connection
+     * @return
+     */
+    public static Connection deepCopyAll(Connection connection) {
+        Connection copyConnection = deepCopy(connection);
+        HashMap cloneProperties = (HashMap) connection.getProperties().clone();
+        copyConnection.setProperties(cloneProperties);
         return copyConnection;
     }
 

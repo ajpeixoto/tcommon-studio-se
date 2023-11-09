@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
-import org.talend.core.model.context.ContextUtils;
 import org.talend.core.model.context.JobContextManager;
 import org.talend.core.model.context.JobContextParameter;
 import org.talend.core.model.metadata.builder.connection.ConnectionPackage;
@@ -26,8 +25,6 @@ import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
 import org.talend.core.model.metadata.types.JavaTypesManager;
 import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IContextParameter;
-import org.talend.core.model.properties.ContextItem;
-import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
 
 /**
  * created by mzhao on Nov 12, 2012 Detailled comment
@@ -77,17 +74,8 @@ public class JavaSqlFactoryTest {
     public void testPromptPassword() {
         DatabaseConnection conn = getConnection();
         JobContextManager contextManager = getContextManager();
-        ContextItem contextItem = ContextUtils.getContextItemById2(conn.getContextId());
-        List<ContextType> contexts = contextItem.getContext();
-        List<IContext> iContextLs = new ArrayList<IContext>();
-        if (contexts != null) {
-            for (ContextType contxType : contexts) {
-                IContext context = ContextUtils.convert2IContext(contxType);
-                iContextLs.add(context);
-            }
-        }
         for (IContextParameter contextParam : contextManager.getDefaultContext().getContextParameterList()) {
-            JavaSqlFactory.savePromptConVars2Cache(conn, contextParam, iContextLs);
+            JavaSqlFactory.savePromptConVars2Cache(conn, contextParam, new ArrayList<IContext>());
         }
         JavaSqlFactory.haveSetPromptContextVars = true;
         String pwd = JavaSqlFactory.getPassword(conn);
