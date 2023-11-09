@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
@@ -148,7 +149,7 @@ public class ModuleAccessHelper {
         Set<JobInfo> allJobInfos = new HashSet<>();
         allJobInfos.add(new JobInfo(mainJobItem, mainJobItem.getProcess().getDefaultContext()));
         allJobInfos.addAll(processor.getBuildChildrenJobsAndJoblets());
-        return ModuleAccessHelper.getModuleAccessVMArgs(property, allJobInfos);
+        return getModuleAccessVMArgs(property, allJobInfos);
     }
 
     @SuppressWarnings("unchecked")
@@ -193,6 +194,9 @@ public class ModuleAccessHelper {
                                 .anyMatch(p -> ((ElementParameterType) p).getField() != null
                                         && EParameterFieldType.TECHNICAL.getName().equals(((ElementParameterType) p).getField())
                                         && ((ElementParameterType) p).getName().equals("TACOKIT_COMPONENT_ID")));
+                if (!hasTck) {
+                    hasTck = hasExtraSettings(parameters);
+                }
             }
         }
         if (hasTck) {
@@ -204,6 +208,26 @@ public class ModuleAccessHelper {
         }
 
         return vmArgs;
+    }
+
+    private static boolean hasExtraSettings(EList<ElementParameterType> parameters) {
+        Map<String, String> paramMap = parameters.stream().filter(p -> p.getName() != null && p.getValue() != null)
+                .collect(Collectors.toMap(ElementParameterType::getName, ElementParameterType::getValue, (a1, a2) -> a1));
+        // Implicit context
+        if (Boolean.valueOf(paramMap.getOrDefault("IMPLICIT_TCONTEXTLOAD", "false"))
+                && Boolean.valueOf(paramMap.getOrDefault("FROM_DATABASE_FLAG_IMPLICIT_CONTEXT", "false"))
+                && "JDBCInput".equals(paramMap.get("DB_TYPE_IMPLICIT_CONTEXT"))) {
+            return true;
+        }
+        // Stats&Logs
+        if ((Boolean.valueOf(paramMap.getOrDefault("ON_STATCATCHER_FLAG", "false"))
+                || Boolean.valueOf(paramMap.getOrDefault("ON_LOGCATCHER_FLAG", "false"))
+                || Boolean.valueOf(paramMap.getOrDefault("ON_METERCATCHER_FLAG", "false")))
+                && Boolean.valueOf(paramMap.getOrDefault("ON_DATABASE_FLAG", "false"))
+                && "JDBCOutput".equals(paramMap.get("DB_TYPE"))) {
+            return true;
+        }
+        return false;
     }
 
     public static void reset() {
