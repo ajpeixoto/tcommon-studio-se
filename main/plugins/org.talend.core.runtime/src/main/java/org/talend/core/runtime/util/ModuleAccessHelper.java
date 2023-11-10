@@ -211,6 +211,9 @@ public class ModuleAccessHelper {
     }
 
     private static boolean hasExtraSettings(EList<ElementParameterType> parameters) {
+        if (parameters == null) {
+            return false;
+        }
         Map<String, String> paramMap = parameters.stream().filter(p -> p.getName() != null && p.getValue() != null)
                 .collect(Collectors.toMap(ElementParameterType::getName, ElementParameterType::getValue, (a1, a2) -> a1));
         // Implicit context
