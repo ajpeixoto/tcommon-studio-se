@@ -1121,7 +1121,7 @@ public final class ConnectionContextHelper {
                 continue;
             }
             if (category == null || category == param.getCategory()) {
-                String repositoryValue = param.getRepositoryValue();
+                String repositoryValue = param.calcRepositoryValue();
                 if (repositoryValue != null) {
                     String componentName = null;
                     if (contextData != null) {

@@ -223,7 +223,7 @@ public abstract class AbstractQueryGenerator implements IQueryGenerator {
     protected String getSchema(IElement elem) {
         if (elem != null) {
             for (IElementParameter param : elem.getElementParameters()) {
-                if ("SCHEMA".equals(param.getRepositoryValue())) { //$NON-NLS-1$
+                if ("SCHEMA".equals(param.calcRepositoryValue())) { //$NON-NLS-1$
                     if (param.isShow(elem.getElementParameters())) {
                         String value = (String) param.getValue();
                         if (value != null) {

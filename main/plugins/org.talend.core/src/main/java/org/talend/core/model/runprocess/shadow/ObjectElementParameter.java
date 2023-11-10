@@ -361,7 +361,7 @@ public class ObjectElementParameter implements IElementParameter {
      * @see org.talend.core.model.process.IElementParameter#getRepositoryValue()
      */
     @Override
-    public String getRepositoryValue() {
+    public String calcRepositoryValue() {
         return null;
     }
 
