@@ -55,3 +55,4 @@ Export-Package: org.apache.xmlbeans,
 Bundle-ActivationPolicy: lazy
 Eclipse-BundleShape: dir
 Require-Bundle: org.slf4j.api
+Automatic-Module-Name: org.talend.libraries.apache.xml

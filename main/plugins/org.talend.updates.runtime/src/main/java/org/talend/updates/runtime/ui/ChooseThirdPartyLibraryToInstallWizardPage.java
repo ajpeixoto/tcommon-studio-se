@@ -15,7 +15,7 @@ package org.talend.updates.runtime.ui;
 import java.util.Set;
 
 import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.core.databinding.beans.PojoProperties;
+import org.eclipse.core.databinding.beans.typed.PojoProperties;
 import org.eclipse.core.databinding.observable.IObservable;
 import org.eclipse.core.databinding.observable.masterdetail.IObservableFactory;
 import org.eclipse.core.databinding.observable.set.IObservableSet;
@@ -26,13 +26,14 @@ import org.eclipse.core.databinding.property.Properties;
 import org.eclipse.core.databinding.property.value.IValueProperty;
 import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
 import org.eclipse.jface.databinding.viewers.ObservableSetTreeContentProvider;
-import org.eclipse.jface.databinding.viewers.ViewersObservables;
+import org.eclipse.jface.databinding.viewers.typed.ViewerProperties;
 import org.eclipse.jface.databinding.wizard.WizardPageSupport;
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ICheckStateListener;
+import org.eclipse.jface.viewers.ICheckable;
 import org.eclipse.jface.viewers.ITreeViewerListener;
 import org.eclipse.jface.viewers.TreeExpansionEvent;
 import org.eclipse.jface.viewers.Viewer;
@@ -240,9 +241,9 @@ public class ChooseThirdPartyLibraryToInstallWizardPage extends WizardPage {
 
     protected DataBindingContext initDataBindings() {
         dbc = new DataBindingContext();
-
+        
         // bind selecting of the check boxes to the selected extra features set in the model
-        dbc.bindSet(ViewersObservables.observeCheckedElements(checkboxTreeViewer, ExtraFeature.class),
+        dbc.bindSet(ViewerProperties.<CheckboxTreeViewer, ExtraFeature>checkedElements(ExtraFeature.class).observe(checkboxTreeViewer),
                 thirdPartyLibrariesModel.selectedExtraFeatures);
 
         // add a validator for feature selection because SetObservable does not provide any validator.

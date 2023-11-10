@@ -47,3 +47,4 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui.ide,
  org.talend.cwm.mip
 Bundle-ActivationPolicy: lazy
+Automatic-Module-Name: org.talend.cwm.mip.editor

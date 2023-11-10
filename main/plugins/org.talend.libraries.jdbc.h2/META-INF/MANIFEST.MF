@@ -155,3 +155,4 @@ Export-Package: org.h2,
    org.h2.engine"
 Bundle-ActivationPolicy: lazy
 Eclipse-BundleShape: dir  
+Automatic-Module-Name: org.talend.libraries.jdbc.h2

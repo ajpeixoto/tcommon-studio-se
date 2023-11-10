@@ -13,6 +13,8 @@
 package org.talend.designer.maven.aether.util;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.file.Files;
@@ -273,7 +275,11 @@ public class DynamicDistributionAetherUtils {
             }
         }
         if (pomFile != null) {
-            return MavenPlugin.getMavenModelManager().readMavenModel(pomFile);
+        	Model m = null;
+        	try(InputStream is = new FileInputStream(pomFile)){
+        		m = MavenPlugin.getMavenModelManager().readMavenModel(is);
+        	}
+        	return m;
         } else {
             return null;
         }

@@ -61,6 +61,8 @@ import org.talend.designer.maven.template.MavenTemplateManager;
 import org.talend.designer.runprocess.IProcessor;
 import org.talend.repository.ProjectManager;
 import org.talend.utils.io.FilesUtils;
+import java.io.FileInputStream;
+import java.io.InputStream;
 
 /**
  * DOC ggu class global comment. Detailled comment
@@ -317,26 +319,26 @@ public class PomUtilTest {
     }
 
     @Test
-    public void test_generatePom_nullType() throws CoreException {
+    public void test_generatePom_nullType() throws Exception {
         doTestGeneratePom(null);
     }
 
     @Test
-    public void test_generatePom_emptyType() throws CoreException {
+    public void test_generatePom_emptyType() throws Exception {
         doTestGeneratePom("");
     }
 
     @Test
-    public void test_generatePom_jarType() throws CoreException {
+    public void test_generatePom_jarType() throws Exception {
         doTestGeneratePom("jar");
     }
 
     @Test
-    public void test_generatePom_zipType() throws CoreException {
+    public void test_generatePom_zipType() throws Exception {
         doTestGeneratePom("zip");
     }
 
-    private void doTestGeneratePom(String type) throws CoreException {
+    private void doTestGeneratePom(String type) throws Exception {
         MavenArtifact artifact = new MavenArtifact();
         artifact.setArtifactId("testJar");
         artifact.setGroupId("org.talend.libraries");
@@ -346,9 +348,11 @@ public class PomUtilTest {
         File pomFile = new File(generatedPom);
 
         Assert.assertTrue(pomFile.exists());
-
-        Model model = MavenPlugin.getMaven().readModel(pomFile);
-
+        
+        Model model = null;
+        try(InputStream is = new FileInputStream(pomFile)){
+        	model = MavenPlugin.getMavenModelManager().readMavenModel(is);
+        }
         Assert.assertEquals("org.talend.libraries", model.getGroupId());
         Assert.assertEquals("testJar", model.getArtifactId());
         Assert.assertEquals("6.4.1", model.getVersion());
@@ -367,26 +371,26 @@ public class PomUtilTest {
     }
 
     @Test
-    public void test_generatePom2_nullType() throws CoreException {
+    public void test_generatePom2_nullType() throws Exception {
         doTestGeneratePom2(null);
     }
 
     @Test
-    public void test_generatePom2_emptyType() throws CoreException {
+    public void test_generatePom2_emptyType() throws Exception {
         doTestGeneratePom2("");
     }
 
     @Test
-    public void test_generatePom2_jarType() throws CoreException {
+    public void test_generatePom2_jarType() throws Exception {
         doTestGeneratePom2("jar");
     }
 
     @Test
-    public void test_generatePom2_zipType() throws CoreException {
+    public void test_generatePom2_zipType() throws Exception {
         doTestGeneratePom2("zip");
     }
 
-    private void doTestGeneratePom2(String type) throws CoreException {
+    private void doTestGeneratePom2(String type) throws Exception {
         MavenArtifact artifact = new MavenArtifact();
         artifact.setArtifactId("testJar");
         artifact.setGroupId("org.talend.libraries");
@@ -396,8 +400,11 @@ public class PomUtilTest {
         File pomFile = new File(generatedPom);
 
         Assert.assertTrue(pomFile.exists());
-
-        Model model = MavenPlugin.getMaven().readModel(pomFile);
+        
+        Model model = null;
+        try(InputStream is = new FileInputStream(pomFile)){
+        	model = MavenPlugin.getMavenModelManager().readMavenModel(is);
+        }
 
         Assert.assertEquals("org.talend.libraries", model.getGroupId());
         Assert.assertEquals("testJar", model.getArtifactId());

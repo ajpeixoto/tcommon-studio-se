@@ -6,3 +6,4 @@ Bundle-Version: 8.8.8.qualifier
 Eclipse-LazyStart: true
 Bundle-Vendor: .Talend SA.
 Require-Bundle: org.eclipse.ui,org.eclipse.core.runtime,org.eclipse.help.webapp
+Automatic-Module-Name: org.talend.help.external

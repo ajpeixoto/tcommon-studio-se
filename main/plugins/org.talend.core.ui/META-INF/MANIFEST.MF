@@ -54,7 +54,8 @@ Require-Bundle: org.apache.commons.lang,
  org.apache.commons.lang3,
  org.apache.commons.codec,
  org.eclipse.jface.notifications,
- org.eclipse.swt
+ org.eclipse.swt,
+ javax.inject
 Import-Package: org.eclipse.jdt.internal.ui.workingsets
 Export-Package: org.talend.core.ui,
  org.talend.core.ui.actions,

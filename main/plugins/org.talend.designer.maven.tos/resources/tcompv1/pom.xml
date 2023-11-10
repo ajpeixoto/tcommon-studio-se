@@ -135,6 +135,7 @@
                         </goals>
                         <configuration>
                             <includeScope>runtime</includeScope>
+                            <excludeGroupIds>p2.eclipse-plugin,org.talend.studio</excludeGroupIds>
                             <outputDirectory>${basedir}/../tmp/repository</outputDirectory>
                             <useRepositoryLayout>true</useRepositoryLayout>
                         </configuration>

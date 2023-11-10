@@ -18,7 +18,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -110,15 +112,20 @@ public class AggregatorPomsHelperTest {
         try {
             IFile pomFile = helper.getProjectRootPom();
             assertFalse(helper.needInstallRootPom(pomFile));
-            Model model = MavenPlugin.getMaven().readModel(pomFile.getLocation().toFile());
+            Model model = MavenPlugin.getMavenModelManager().readMavenModel(pomFile);
             String mvnUrl = MavenUrlHelper.generateMvnUrl(model.getGroupId(), model.getArtifactId(), model.getVersion(),
                     MavenConstants.PACKAGING_POM, null);
             MavenArtifact artifact = MavenUrlHelper.parseMvnUrl(mvnUrl);
             String artifactPath = PomUtil.getAbsArtifactPath(artifact);
 
             installedPomFile = new File(artifactPath);
-            modelBak = MavenPlugin.getMaven().readModel(installedPomFile);
-            Model installedModel = MavenPlugin.getMaven().readModel(installedPomFile);
+            try(InputStream is = new FileInputStream(installedPomFile)){
+            	modelBak = MavenPlugin.getMavenModelManager().readMavenModel(is);
+            }
+            Model installedModel = null;
+            try(InputStream is2 = new FileInputStream(installedPomFile)) {
+            	installedModel = MavenPlugin.getMavenModelManager().readMavenModel(is2);
+            }
 
             // test ci-builder
             Plugin mojo = installedModel.getBuild().getPlugins().stream()
@@ -287,8 +294,11 @@ public class AggregatorPomsHelperTest {
 
     private void validatePomContent(File pomFile, String groupId, String parentGroupId, String version, String parentVersion,
             List<String> modules, List<ProjectReference> references)
-            throws CoreException {
-        Model model = MavenPlugin.getMaven().readModel(pomFile);
+            throws Exception {
+    	Model model = null;
+    	try(InputStream is = new FileInputStream(pomFile)){
+    		model = MavenPlugin.getMavenModelManager().readMavenModel(is);
+    	}
         assertEquals(groupId, model.getGroupId());
         assertEquals(version, model.getVersion());
         if (parentGroupId != null) {

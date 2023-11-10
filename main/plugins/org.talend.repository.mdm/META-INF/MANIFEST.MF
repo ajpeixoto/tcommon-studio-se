@@ -37,3 +37,4 @@ Bundle-ActivationPolicy: lazy
 Bundle-Vendor: .Talend SA.
 Bundle-ClassPath: .
 Import-Package: org.eclipse.gef.commands
+Automatic-Module-Name: org.talend.repository.mdm

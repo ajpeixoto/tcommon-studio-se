@@ -21,8 +21,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -39,7 +41,6 @@ import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.m2e.core.MavenPlugin;
 import org.eclipse.m2e.core.internal.IMavenConstants;
 import org.eclipse.m2e.core.project.IProjectConfigurationManager;
-import org.eclipse.m2e.core.project.ProjectImportConfiguration;
 import org.osgi.service.prefs.BackingStoreException;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.utils.generation.JavaUtils;
@@ -53,23 +54,30 @@ import org.talend.designer.maven.model.TalendMavenConstants;
 @SuppressWarnings("restriction")
 public class MavenProjectUtils {
 
-    public static void enableMavenNature(IProgressMonitor monitor, IProject project) {
-        IProjectConfigurationManager projectConfigurationManager = MavenPlugin.getProjectConfigurationManager();
-        ProjectImportConfiguration importConfiguration = new ProjectImportConfiguration();
-        try {
-            projectConfigurationManager.enableMavenNature(project, importConfiguration.getResolverConfiguration(), monitor);
-            changeClasspath(monitor, project);
-            IJavaProject javaProject = JavaCore.create(project);
-            clearProjectIndenpendComplianceSettings(javaProject);
-        } catch (CoreException e) {
-            ExceptionHandler.process(e);
-        }
-    }
+	public static void enableMavenNature(IProgressMonitor monitor, IProject project) {
+		try {
+			IProjectDescription projectDescription = project.getDescription();
+			if (!project.hasNature(IMavenConstants.NATURE_ID)) {
+				projectDescription
+						.setNatureIds(ArrayUtils.add(projectDescription.getNatureIds(), IMavenConstants.NATURE_ID));
+				project.setDescription(projectDescription, monitor);
+				changeClasspath(monitor, project);
+				IJavaProject javaProject = JavaCore.create(project);
+				clearProjectIndenpendComplianceSettings(javaProject);
+			}
+		} catch (CoreException e) {
+			ExceptionHandler.process(e);
+		}
+	}
 
     public static void disableMavenNature(IProgressMonitor monitor, IProject project) {
         try {
-            IProjectConfigurationManager projectConfigurationManager = MavenPlugin.getProjectConfigurationManager();
-            projectConfigurationManager.disableMavenNature(project, monitor);
+        	IProjectDescription projectDescription = project.getDescription();
+			if (project.hasNature(IMavenConstants.NATURE_ID)) {
+				projectDescription
+				.setNatureIds(ArrayUtils.removeElement(projectDescription.getNatureIds(), IMavenConstants.NATURE_ID));
+				project.setDescription(projectDescription, monitor);				
+			}
         } catch (CoreException e) {
             ExceptionHandler.process(e);
         }

@@ -17,11 +17,12 @@ import java.util.Set;
 
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
-import org.eclipse.core.databinding.beans.PojoObservables;
+import org.eclipse.core.databinding.beans.typed.PojoProperties;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.observable.value.SelectObservableValue;
 import org.eclipse.core.databinding.observable.value.WritableValue;
-import org.eclipse.jface.databinding.swt.SWTObservables;
+import org.eclipse.jface.databinding.swt.ISWTObservableValue;
+import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.jface.databinding.wizard.WizardPageSupport;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -141,7 +142,7 @@ public class ChooseUpdateSitesWizardPage extends WizardPage {
         {
             DataBindingContext defaultRemoteBC = new DataBindingContext();
             // define default Repo bindings
-            IObservableValue btnDefaultRemoteSitesObserveSelection = SWTObservables.observeSelection(btnDefaultRemoteSites);
+            IObservableValue btnDefaultRemoteSitesObserveSelection = WidgetProperties.buttonSelection().observe(btnDefaultRemoteSites);
             featureRepoLocationTypeObservable.addOption(UpdateSiteLocationType.DEFAULT_REPO,
                     btnDefaultRemoteSitesObserveSelection);
             // fake binding to trigger an update of the defaultRemoteBC validation to reset the validation message
@@ -156,15 +157,15 @@ public class ChooseUpdateSitesWizardPage extends WizardPage {
             UpdateValueStrategy afterConvertRemoteRepoValidator = new UpdateValueStrategy()
                     .setAfterConvertValidator(updateWizardModel.new RemoteRepoURIValidator());
             // bind selection to model value
-            IObservableValue btnCustomUpdateSiteObserveSelection = SWTObservables.observeSelection(btnCustomUpdateSite);
+            IObservableValue btnCustomUpdateSiteObserveSelection = WidgetProperties.buttonSelection().observe(btnCustomUpdateSite);
             featureRepoLocationTypeObservable.addOption(UpdateSiteLocationType.REMOTE_REPO, btnCustomUpdateSiteObserveSelection);
             // bind selection to enable text field
-            IObservableValue textObserveEnabled = SWTObservables.observeEnabled(CustomSiteText);
+            IObservableValue textObserveEnabled = WidgetProperties.enabled().observe(CustomSiteText);
             remoteRepoBC.bindValue(textObserveEnabled, btnCustomUpdateSiteObserveSelection, null, null);
             // bind text modification to model with validation
-            IObservableValue customSiteTextObserveText = SWTObservables.observeText(CustomSiteText, SWT.Modify);
+            ISWTObservableValue<String> customSiteTextObserveText = WidgetProperties.text(SWT.Modify).observe(CustomSiteText);
             remoteRepoBC.bindValue(customSiteTextObserveText,
-                    PojoObservables.observeValue(updateWizardModel, "featureRepositories.remoteRepoUriStr"), //$NON-NLS-1$
+            		PojoProperties.value("featureRepositories.remoteRepoUriStr").observe(updateWizardModel), //$NON-NLS-1$
                     afterConvertRemoteRepoValidator, null);
             // bind the validation messages to the wizard page
             WizardPageSupport.create(this, remoteRepoBC);
@@ -176,19 +177,19 @@ public class ChooseUpdateSitesWizardPage extends WizardPage {
                     .setAfterConvertValidator(updateWizardModel.new LocalRepoFolderValidator());
 
             // bind selection to model
-            IObservableValue btnLocalFolderObserveSelection = SWTObservables.observeSelection(btnLocalFolder);
+            IObservableValue btnLocalFolderObserveSelection = WidgetProperties.buttonSelection().observe(btnLocalFolder);
             featureRepoLocationTypeObservable.addOption(UpdateSiteLocationType.LOCAL_FOLDER, btnLocalFolderObserveSelection);
 
             // bind selection to text fiedl enabled
-            IObservableValue localFolderTextObserveEnabled = SWTObservables.observeEnabled(localFolderText);
+            IObservableValue localFolderTextObserveEnabled =  WidgetProperties.enabled().observe(localFolderText);
             localRepoBC.bindValue(localFolderTextObserveEnabled, btnLocalFolderObserveSelection, null, null);
             // bind selection to browse button enabled
-            IObservableValue localFolderBrowseButtonObserveEnabled = SWTObservables.observeEnabled(localFolderBrowseButton);
+            IObservableValue localFolderBrowseButtonObserveEnabled = WidgetProperties.enabled().observe(localFolderBrowseButton);
             localRepoBC.bindValue(localFolderBrowseButtonObserveEnabled, btnLocalFolderObserveSelection, null, null);
             // bind text field to model
-            IObservableValue localFolderTextObserveText = SWTObservables.observeText(localFolderText, SWT.Modify);
+            IObservableValue localFolderTextObserveText = WidgetProperties.text(SWT.Modify).observe(localFolderText);
             localRepoBC.bindValue(localFolderTextObserveText,
-                    PojoObservables.observeValue(updateWizardModel, "featureRepositories.localRepoPathStr"), //$NON-NLS-1$
+                    PojoProperties.value("featureRepositories.localRepoPathStr").observe(updateWizardModel), //$NON-NLS-1$
                     afterConvertLocalFolderValidator, null);
             //
             // bind the validation messages to the wizard page
@@ -196,7 +197,7 @@ public class ChooseUpdateSitesWizardPage extends WizardPage {
         }
         DataBindingContext radioBC = new DataBindingContext();
         radioBC.bindValue(featureRepoLocationTypeObservable,
-                PojoObservables.observeValue(updateWizardModel, "featureRepositories.updateSiteLocationType")); //$NON-NLS-1$
+        		PojoProperties.value("featureRepositories.updateSiteLocationType").observe(updateWizardModel)); //$NON-NLS-1$
 
     }
 

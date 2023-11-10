@@ -3,3 +3,4 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Developpement
 Bundle-SymbolicName: org.talend.developpement
 Bundle-Version: 8.8.8.qualifier
+Automatic-Module-Name: org.talend.developpement

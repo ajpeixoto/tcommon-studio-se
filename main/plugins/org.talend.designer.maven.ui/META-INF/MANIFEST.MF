@@ -35,3 +35,4 @@ Export-Package: org.talend.designer.maven.ui.setting.project.initializer,
  org.talend.designer.maven.ui.setting.repository.page,
  org.talend.designer.maven.ui.setting.repository.tester,
  org.talend.designer.maven.ui.utils
+Automatic-Module-Name: org.talend.designer.maven.ui

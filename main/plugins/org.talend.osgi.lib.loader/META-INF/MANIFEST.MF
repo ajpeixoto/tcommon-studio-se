@@ -8,4 +8,5 @@ Export-Package: org.talend.osgi.hook,
  org.talend.osgi.hook.maven,
  org.talend.osgi.hook.notification
 ExtensionBundle-Activator: org.talend.osgi.configurator.OsgiLoaderActivator
+Automatic-Module-Name: org.talend.osgi.lib.loader
 

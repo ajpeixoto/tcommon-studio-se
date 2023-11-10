@@ -23,6 +23,7 @@ import org.eclipse.core.runtime.dynamichelpers.IExtensionTracker;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.Preference;
+import org.eclipse.e4.ui.internal.workbench.UIExtensionTracker;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.MUIElement;
 import org.eclipse.e4.ui.model.application.ui.advanced.MPerspective;
@@ -46,8 +47,9 @@ import org.eclipse.ui.internal.WorkbenchPage;
 import org.eclipse.ui.internal.e4.compatibility.ModeledPageLayout;
 import org.eclipse.ui.internal.menus.MenuHelper;
 import org.eclipse.ui.internal.registry.PerspectiveDescriptor;
-import org.eclipse.ui.internal.registry.UIExtensionTracker;
+import org.osgi.framework.FrameworkUtil;
 import org.talend.core.GlobalServiceRegister;
+import org.talend.core.ui.CoreUIPlugin;
 import org.talend.core.ui.branding.IBrandingConfiguration;
 import org.talend.core.ui.branding.IBrandingService;
 
@@ -94,7 +96,7 @@ public class RestoreAllRegisteredPerspectivesProvider {
 
     protected IExtensionTracker getExtensionTracker(Display display) {
         if (fTracker == null) {
-            fTracker = new UIExtensionTracker(display);
+            fTracker = new UIExtensionTracker(display,CoreUIPlugin.getDefault().getLog());
         }
         return fTracker;
     }

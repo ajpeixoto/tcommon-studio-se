@@ -1,5 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
+Automatic-Module-Name: org.talend.libraries.apache.http
 Bundle-Name: Http
 Bundle-SymbolicName: org.talend.libraries.apache.http
 Bundle-Version: 8.8.8.qualifier

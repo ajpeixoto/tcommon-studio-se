@@ -37,6 +37,9 @@ public class DownloadModuleRunnableWithLicenseDialog extends DownloadModuleRunna
         this.shell = shell;
 
     }
+    protected Shell getShell() {
+		return shell;
+	}
 
     /*
      * (non-Javadoc)

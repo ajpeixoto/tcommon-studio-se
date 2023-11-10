@@ -4,7 +4,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Cloud sign on util
 Bundle-SymbolicName: org.talend.signon.util;singleton:=true
 Bundle-Version: 8.8.8.qualifier
-Eclipse-LazyStart: true
+Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
  lib/commons-exec.jar
 Bundle-Vendor: .Talend SA.

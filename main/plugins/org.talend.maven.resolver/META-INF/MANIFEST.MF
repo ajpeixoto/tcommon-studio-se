@@ -9,3 +9,4 @@ Require-Bundle: org.eclipse.core.runtime,
  org.ops4j.pax.url.mvn
 Bundle-ActivationPolicy: lazy
 Import-Package: org.talend.osgi.hook.maven
+Automatic-Module-Name: org.talend.maven.resolver

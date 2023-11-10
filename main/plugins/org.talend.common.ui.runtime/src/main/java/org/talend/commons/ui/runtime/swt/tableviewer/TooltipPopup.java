@@ -55,7 +55,7 @@ public final class TooltipPopup {
         private boolean visible;
 
         public Popup(Shell parent) {
-            super(parent, SWT.ON_TOP, false, false, false, false, null, null);
+            super(parent, SWT.ON_TOP, false, false, false, false, false, null, null);
         }
 
         @Override

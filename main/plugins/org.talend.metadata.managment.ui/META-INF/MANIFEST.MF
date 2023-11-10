@@ -59,3 +59,4 @@ Export-Package: org.talend.metadata.managment.ui,
  org.talend.metadata.managment.ui.wizard.metadata.xml.node,
  org.talend.metadata.managment.ui.wizard.metadata.xml.utils,
  org.talend.metadata.managment.ui.wizard.process
+Automatic-Module-Name: org.talend.metadata.managment.ui

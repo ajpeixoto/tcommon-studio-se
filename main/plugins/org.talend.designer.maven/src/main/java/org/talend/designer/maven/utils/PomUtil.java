@@ -1006,15 +1006,17 @@ public class PomUtil {
     }
 
     public static void removeAllDependenciesFromPom(File pomFile, MavenArtifact ma) throws Exception {
-        Model pomModel = MavenPlugin.getMavenModelManager().readMavenModel(pomFile);
-        pomModel.setParent(null);
-        pomModel.setGroupId(ma.getGroupId());
-        pomModel.setArtifactId(ma.getArtifactId());
-        pomModel.setVersion(ma.getVersion());
-        pomModel.setDependencies(Collections.EMPTY_LIST);
-        pomModel.setDependencyManagement(null);
-        pomModel.setProfiles(Collections.EMPTY_LIST);
-        savePom(new NullProgressMonitor(), pomModel, pomFile);
+    	try(InputStream is = new FileInputStream(pomFile)){
+    		Model pomModel = MavenPlugin.getMavenModelManager().readMavenModel(is);
+    		pomModel.setParent(null);
+    		pomModel.setGroupId(ma.getGroupId());
+    		pomModel.setArtifactId(ma.getArtifactId());
+    		pomModel.setVersion(ma.getVersion());
+    		pomModel.setDependencies(Collections.EMPTY_LIST);
+    		pomModel.setDependencyManagement(null);
+    		pomModel.setProfiles(Collections.EMPTY_LIST);
+    		savePom(new NullProgressMonitor(), pomModel, pomFile);
+    	}
     }
 
     private final static FileFilter lastUpdatedFilter = new FileFilter() {

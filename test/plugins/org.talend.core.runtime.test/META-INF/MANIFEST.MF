@@ -4,10 +4,10 @@ Bundle-Name: Test
 Bundle-SymbolicName: org.talend.core.runtime.test;singleton:=true
 Bundle-Version: 8.8.8.qualifier
 Fragment-Host: org.talend.core.runtime
-Require-Bundle: org.junit;bundle-version="4.11.0",
+Require-Bundle: org.junit,
  org.apache.commons.io,
  org.talend.utils,
  org.talend.testutils,
  org.talend.components.common,
- javax.xml.soap
+ jakarta.xml.soap-api
 Import-Package: org.talend.core.repository.model

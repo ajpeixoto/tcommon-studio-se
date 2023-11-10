@@ -67,7 +67,7 @@ public final class TalendCodeProjectUtil {
                     if (!p.isOpen()) {
                         p.open(monitor);
                     }
-                    addTalendNature(p, TalendJobNature.ID, monitor);
+                    addTalendNature(p, monitor);
                 }
 
             };

@@ -32,3 +32,4 @@ Export-Package: org.talend.themes.core.elements.constants,
  org.talend.themes.core.elements.utils,
  org.talend.themes.core.elements.widgets
 Import-Package: org.w3c.css.sac
+Automatic-Module-Name: org.talend.themes.core

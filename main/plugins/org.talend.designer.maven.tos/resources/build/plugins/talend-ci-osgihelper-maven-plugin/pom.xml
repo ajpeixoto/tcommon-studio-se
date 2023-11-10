@@ -48,7 +48,8 @@
 						<configuration>
 							<addParentPoms>true</addParentPoms>
 							<copyPom>true</copyPom>
-							<includeScope>compile</includeScope>
+							<includeScope>runtime</includeScope>
+							<excludeGroupIds>p2.eclipse-plugin,org.talend.studio</excludeGroupIds>
 							<outputDirectory>${basedir}/../../../tmp/repository</outputDirectory>
 							<useRepositoryLayout>true</useRepositoryLayout>
 						</configuration>

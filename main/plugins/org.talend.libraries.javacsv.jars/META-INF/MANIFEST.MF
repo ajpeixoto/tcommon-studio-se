@@ -6,3 +6,4 @@ Bundle-Version: 8.8.8.qualifier
 Bundle-ClassPath: .,lib/javacsv.jar
 Fragment-Host: org.talend.libraries.javacsv
 Eclipse-BundleShape: dir
+Automatic-Module-Name: org.talend.libraries.javacsv.jars

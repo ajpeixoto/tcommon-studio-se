@@ -17,6 +17,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
@@ -142,7 +144,10 @@ public class MavenRepoSynchronizerTest {
         Assert.assertTrue("sync lib for M2 repository failure", libFile.exists());
         Assert.assertTrue(pomFile.exists());
 
-        Model model = MavenPlugin.getMaven().readModel(pomFile);
+        Model model = null;
+        try(InputStream is = new FileInputStream(pomFile)){
+        	model = MavenPlugin.getMavenModelManager().readMavenModel(is);
+        }
         assertNotNull(model);
         assertFalse(model.getDependencies().isEmpty());
         Dependency dependency = model.getDependencies().get(0);
@@ -174,8 +179,10 @@ public class MavenRepoSynchronizerTest {
 
         Assert.assertTrue("sync lib for M2 repository failure", libFile.exists());
         Assert.assertTrue(pomFile.exists());
-
-        Model model = MavenPlugin.getMaven().readModel(pomFile);
+        Model model = null;
+        try(InputStream is = new FileInputStream (pomFile)){
+        	model = MavenPlugin.getMavenModelManager().readMavenModel(is);
+        }
         Assert.assertNotNull(model);
         if (pomDesc != null) {
             Assert.assertNotEquals(pomDesc, model.getDescription());// won't be original one.

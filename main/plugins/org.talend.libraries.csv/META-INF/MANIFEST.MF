@@ -11,3 +11,4 @@ Export-Package: com.talend.csv,
  org.skife.csv
 Bundle-ActivationPolicy: lazy
 Eclipse-BundleShape: dir
+Automatic-Module-Name: org.talend.libraries.csv

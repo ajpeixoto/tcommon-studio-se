@@ -25,6 +25,7 @@ import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
@@ -161,7 +162,7 @@ abstract public class DownloadModuleRunnable implements IRunnableWithProgress {
                 public void run() {
                     AcceptModuleLicensesWizard licensesWizard = new AcceptModuleLicensesWizard(toDownload);
                     AcceptModuleLicensesWizardDialog wizardDialog = new AcceptModuleLicensesWizardDialog(
-                            PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), licensesWizard, toDownload, monitor);
+                    		getShell(), licensesWizard, toDownload, monitor);
                     wizardDialog.setPageSize(700, 380);
                     wizardDialog.create();
                     if (wizardDialog.open() != Window.OK) {
@@ -175,7 +176,9 @@ abstract public class DownloadModuleRunnable implements IRunnableWithProgress {
         return accepted.get();
     }
 
-    /**
+
+	protected abstract Shell getShell();
+	/**
      * DOC sgandon Comment method "acceptLicence".
      *
      * @param module

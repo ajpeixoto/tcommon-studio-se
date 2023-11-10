@@ -57,3 +57,4 @@ Import-Package: org.eclipse.gef.commands,
 Bundle-Activator: org.talend.commons.ui.runtime.CommonUIPlugin
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: .Talend SA.
+Automatic-Module-Name: org.talend.common.ui.runtime

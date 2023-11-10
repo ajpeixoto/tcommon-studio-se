@@ -74,3 +74,4 @@ Export-Package: org.jfree,
 Require-Bundle: org.eclipse.swt;bundle-version="3.4.0";resolution:=optional
 Bundle-ActivationPolicy: lazy
 Eclipse-BundleShape: dir
+Automatic-Module-Name: org.talend.libraries.jfreechart

@@ -250,11 +250,6 @@ public abstract class MavenCommandLauncher {
                         "-l " + MavenLaunchUtils.quote(generatedLog.toPortableString()) + " " //$NON-NLS-1$ //$NON-NLS-2$
                                 + workingCopy.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, "")); //$NON-NLS-1$
             }
-            // Use Maven 2 Legacy Local Repository behavior if offline
-            if (MavenPlugin.getMavenConfiguration().isOffline()) {
-                workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS,
-                        "-llr " + workingCopy.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, "")); //$NON-NLS-1$ //$NON-NLS-2$
-            }
 
             if (skipCIBuilder) {
                 programArgs = workingCopy.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, ""); //$NON-NLS-1$

@@ -30,3 +30,4 @@ Export-Package: org.talend.repository.items.importexport.handlers,
  org.talend.repository.items.importexport.handlers.model,
  org.talend.repository.items.importexport.manager,
  org.talend.repository.items.importexport.wizard.models
+Automatic-Module-Name: org.talend.repository.items.importexport

@@ -20,3 +20,4 @@ Bundle-Vendor: .Talend SA.
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.talend.librariesmanager,
  org.talend.libraries.jboss
+Automatic-Module-Name: org.talend.libraries.persist.lookup

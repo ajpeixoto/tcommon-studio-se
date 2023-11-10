@@ -118,7 +118,8 @@ public class TalendMavenLaunchDelegate extends JavaLaunchDelegate implements Mav
         this.programArguments = null;
 
         try {
-            this.launchSupport = MavenRuntimeLaunchSupport.create(configuration, launch, monitor);
+        	
+            this.launchSupport = MavenRuntimeLaunchSupport.create(configuration, monitor);
             this.extensionsSupport = MavenLaunchExtensionsSupport.create(configuration, launch);
 
             log.info("" + getWorkingDirectory(configuration)); //$NON-NLS-1$

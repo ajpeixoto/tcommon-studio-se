@@ -26,6 +26,7 @@ import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.talend.commons.utils.VersionUtils;
 import org.talend.core.model.general.ModuleToInstall;
 import org.talend.core.runtime.maven.MavenConstants;
@@ -92,6 +93,12 @@ public class TalendWebServiceUpdateExtraFeature implements ExtraFeature {
             protected boolean acceptLicence(ModuleToInstall module) {
                 return TalendWebServiceUpdateExtraFeature.acceptLicence( module );
             }
+
+			@Override
+			protected Shell getShell() {
+				// TODO Auto-generated method stub
+				return null;
+			}
         };
         downloadModule.setShowErrorInDialog(false);
         downloadModule.run( progress );

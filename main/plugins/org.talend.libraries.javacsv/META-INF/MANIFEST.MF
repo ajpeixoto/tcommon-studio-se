@@ -8,3 +8,4 @@ Bundle-ClassPath: .,
  lib/javacsv.jar
 Export-Package: com.csvreader
 Eclipse-BundleShape: dir
+Automatic-Module-Name: org.talend.libraries.javacsv

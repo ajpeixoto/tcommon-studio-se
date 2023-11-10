@@ -1,5 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
+Automatic-Module-Name: org.talend.designer.maven.aether
 Bundle-Name: Aether
 Bundle-SymbolicName: org.talend.designer.maven.aether
 Bundle-Version: 8.8.8.qualifier

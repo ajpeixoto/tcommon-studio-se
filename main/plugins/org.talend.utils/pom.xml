@@ -9,13 +9,6 @@
 	</parent>
 	<artifactId>org.talend.utils</artifactId>
 	<packaging>eclipse-plugin</packaging>
-	<dependencies>
-        <dependency>
-            <groupId>org.talend.studio</groupId>
-            <artifactId>studio-utils</artifactId>
-            <version>${studio-utils.version}</version>
-        </dependency>
-	</dependencies>
 	<build>
 		<plugins>
 			<plugin>
