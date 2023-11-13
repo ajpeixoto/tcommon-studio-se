@@ -182,7 +182,6 @@ public class ConvertionHelperTest {
         ConnectionHelper.setAuthor("test@talend.com", dbProvider); //$NON-NLS-1$
         ConnectionHelper.setDevStatus("DEV", dbProvider); //$NON-NLS-1$
         ConnectionHelper.setVersion("1.1", dbProvider); //$NON-NLS-1$
-        ConnectionHelper.setUniverse("", dbProvider); //$NON-NLS-1$
         return true;
     }
 
