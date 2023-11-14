@@ -229,10 +229,6 @@ public class MDMWizard extends RepositoryWizard implements INewWizard {
                 connectionProperty.setId(nextId);
                 factory.create(connectionItem, propertiesWizardPage.getDestinationPath());
 
-                // feature 17159
-                if (tdqRepService != null) {
-                    tdqRepService.fillMetadata(connectionItem);
-                }
             } else {
                 connectionItem.getConnection().setLabel(connectionProperty.getDisplayName());
                 connectionItem.getConnection().setName(connectionProperty.getDisplayName());

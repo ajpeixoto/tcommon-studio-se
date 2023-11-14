@@ -241,15 +241,6 @@ public final class SwitchHelpers {
         }
     };
 
-    public static final ConnectionSwitch<MDMConnection> MDMCONNECTION_SWITCH = new ConnectionSwitch<MDMConnection>() {
-
-        @Override
-        public MDMConnection caseMDMConnection(MDMConnection object) {
-            return object;
-        }
-
-    };
-
     public static final ConnectionSwitch<MetadataColumn> METADATA_COLUMN_SWITCH = new ConnectionSwitch<MetadataColumn>() {
 
         @Override
