@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2023 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -12,5 +12,9 @@
 // ============================================================================
 package org.talend.designer.codegen;
 
-public interface IStandaloneMicroserviceCodeGeneratorService extends IMicroserviceCodeGeneratorService {
+/**
+ * DOC yyan class global comment.
+ *
+ */
+public interface IMicroserviceStandaloneCodeGeneratorService extends IMicroserviceCodeGeneratorService {
 }
