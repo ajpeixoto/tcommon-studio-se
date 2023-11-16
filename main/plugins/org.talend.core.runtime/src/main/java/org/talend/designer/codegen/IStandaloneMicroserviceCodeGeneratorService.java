@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2023 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -12,15 +12,5 @@
 // ============================================================================
 package org.talend.designer.codegen;
 
-import org.talend.core.model.process.IProcess;
-
-/**
- * DOC yyan class global comment.
- *
- * For ESB microservice type export, only for SOAP and REST date service(job)
- */
-public interface IStandaloneMicroserviceCodeGeneratorService extends ICodeGeneratorService {
-
-    boolean validProcess(IProcess process);
-
+public interface IStandaloneMicroserviceCodeGeneratorService extends IMicroserviceCodeGeneratorService {
 }
