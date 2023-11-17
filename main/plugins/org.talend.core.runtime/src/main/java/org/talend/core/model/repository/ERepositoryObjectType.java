@@ -559,6 +559,16 @@ public class ERepositoryObjectType extends DynaEnum<ERepositoryObjectType> {
     /**
      * <font color="red">This value may be <b>null</b> in some licenses, <b>should add NPE check</b></font>
      */
+    public final static ERepositoryObjectType PROCESS_REST_MS = ERepositoryObjectType.valueOf("REST_MS"); //$NON-NLS-1$
+
+    /**
+     * <font color="red">This value may be <b>null</b> in some licenses, <b>should add NPE check</b></font>
+     */
+    public final static ERepositoryObjectType PROCESS_REST_STANDALONE_MS = ERepositoryObjectType.valueOf("REST_STANDALONE_MS"); //$NON-NLS-1$
+
+    /**
+     * <font color="red">This value may be <b>null</b> in some licenses, <b>should add NPE check</b></font>
+     */
     public final static ERepositoryObjectType PROCESS_ROUTELET = ERepositoryObjectType.valueOf("ROUTELET"); //$NON-NLS-1$
 
     /**
