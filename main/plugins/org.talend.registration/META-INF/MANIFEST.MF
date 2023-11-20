@@ -20,8 +20,7 @@ Export-Package: org.talend.registration,
  org.talend.registration.license,
  org.talend.registration.register,
  org.talend.registration.register.proxy,
- org.talend.registration.wizards.license,
- org.talend.registration.wizards.register
+ org.talend.registration.wizards.license
 Bundle-ClassPath: .
 Bundle-Activator: org.talend.registration.RegistrationPlugin
 Bundle-ActivationPolicy: lazy

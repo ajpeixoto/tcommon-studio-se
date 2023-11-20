@@ -24,6 +24,7 @@ import org.talend.core.model.metadata.builder.connection.ConnectionPackage;
 
 import org.talend.core.model.properties.ArtifactNotification;
 import org.talend.core.model.properties.BRMSConnectionItem;
+import org.talend.core.model.properties.BigQueryConnectionItem;
 import org.talend.core.model.properties.BusinessProcessItem;
 import org.talend.core.model.properties.ByteArray;
 import org.talend.core.model.properties.CSVFileConnectionItem;
@@ -118,6 +119,7 @@ import org.talend.core.model.properties.SpagoBiServer;
 import org.talend.core.model.properties.StatAndLogsSettings;
 import org.talend.core.model.properties.Status;
 import org.talend.core.model.properties.TDQItem;
+import org.talend.core.model.properties.TacokitDatabaseConnectionItem;
 import org.talend.core.model.properties.TalendTrigger;
 import org.talend.core.model.properties.TaskExecutionHistory;
 import org.talend.core.model.properties.TechnicalVariable;
@@ -332,6 +334,13 @@ public class PropertiesPackageImpl extends EPackageImpl implements PropertiesPac
      * @generated
      */
     private EClass databaseConnectionItemEClass = null;
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    private EClass tacokitDatabaseConnectionItemEClass = null;
 
     /**
      * <!-- begin-user-doc -->
@@ -899,6 +908,13 @@ public class PropertiesPackageImpl extends EPackageImpl implements PropertiesPac
      * @generated
      */
     private EClass routinesJarItemEClass = null;
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    private EClass bigQueryConnectionItemEClass = null;
 
     /**
      * <!-- begin-user-doc -->
@@ -2095,6 +2111,15 @@ public class PropertiesPackageImpl extends EPackageImpl implements PropertiesPac
      */
     public EClass getDatabaseConnectionItem() {
         return databaseConnectionItemEClass;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EClass getTacokitDatabaseConnectionItem() {
+        return tacokitDatabaseConnectionItemEClass;
     }
 
     /**
@@ -6242,6 +6267,15 @@ public class PropertiesPackageImpl extends EPackageImpl implements PropertiesPac
      * <!-- end-user-doc -->
      * @generated
      */
+    public EClass getBigQueryConnectionItem() {
+        return bigQueryConnectionItemEClass;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
     public EClass getReferenceFileItem() {
         return referenceFileItemEClass;
     }
@@ -6484,6 +6518,8 @@ public class PropertiesPackageImpl extends EPackageImpl implements PropertiesPac
         csvFileConnectionItemEClass = createEClass(CSV_FILE_CONNECTION_ITEM);
 
         databaseConnectionItemEClass = createEClass(DATABASE_CONNECTION_ITEM);
+
+        tacokitDatabaseConnectionItemEClass = createEClass(TACOKIT_DATABASE_CONNECTION_ITEM);
 
         sapConnectionItemEClass = createEClass(SAP_CONNECTION_ITEM);
 
@@ -7031,6 +7067,8 @@ public class PropertiesPackageImpl extends EPackageImpl implements PropertiesPac
         routinesJarItemEClass = createEClass(ROUTINES_JAR_ITEM);
         createEReference(routinesJarItemEClass, ROUTINES_JAR_ITEM__ROUTINES_JAR_TYPE);
 
+        bigQueryConnectionItemEClass = createEClass(BIG_QUERY_CONNECTION_ITEM);
+
         // Create enums
         folderTypeEEnum = createEEnum(FOLDER_TYPE);
         userProjectAuthorizationTypeEEnum = createEEnum(USER_PROJECT_AUTHORIZATION_TYPE);
@@ -7085,6 +7123,7 @@ public class PropertiesPackageImpl extends EPackageImpl implements PropertiesPac
         regExFileConnectionItemEClass.getESuperTypes().add(this.getConnectionItem());
         csvFileConnectionItemEClass.getESuperTypes().add(this.getDelimitedFileConnectionItem());
         databaseConnectionItemEClass.getESuperTypes().add(this.getConnectionItem());
+        tacokitDatabaseConnectionItemEClass.getESuperTypes().add(this.getDatabaseConnectionItem());
         sapConnectionItemEClass.getESuperTypes().add(this.getConnectionItem());
         xmlFileConnectionItemEClass.getESuperTypes().add(this.getConnectionItem());
         ldifFileConnectionItemEClass.getESuperTypes().add(this.getConnectionItem());
@@ -7123,6 +7162,7 @@ public class PropertiesPackageImpl extends EPackageImpl implements PropertiesPac
         referenceFileItemEClass.getESuperTypes().add(this.getReferenceItem());
         pigudfItemEClass.getESuperTypes().add(this.getRoutineItem());
         routinesJarItemEClass.getESuperTypes().add(this.getItem());
+        bigQueryConnectionItemEClass.getESuperTypes().add(this.getConnectionItem());
 
         // Initialize classes and features; add operations and parameters
         initEClass(projectEClass, Project.class, "Project", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -7263,6 +7303,8 @@ public class PropertiesPackageImpl extends EPackageImpl implements PropertiesPac
         initEClass(csvFileConnectionItemEClass, CSVFileConnectionItem.class, "CSVFileConnectionItem", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
         initEClass(databaseConnectionItemEClass, DatabaseConnectionItem.class, "DatabaseConnectionItem", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+
+        initEClass(tacokitDatabaseConnectionItemEClass, TacokitDatabaseConnectionItem.class, "TacokitDatabaseConnectionItem", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
         initEClass(sapConnectionItemEClass, SAPConnectionItem.class, "SAPConnectionItem", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
@@ -7809,6 +7851,8 @@ public class PropertiesPackageImpl extends EPackageImpl implements PropertiesPac
 
         initEClass(routinesJarItemEClass, RoutinesJarItem.class, "RoutinesJarItem", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
         initEReference(getRoutinesJarItem_RoutinesJarType(), this.getRoutinesJarType(), null, "routinesJarType", null, 0, 1, RoutinesJarItem.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+        initEClass(bigQueryConnectionItemEClass, BigQueryConnectionItem.class, "BigQueryConnectionItem", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
         // Initialize enums and add enum literals
         initEEnum(folderTypeEEnum, FolderType.class, "FolderType");

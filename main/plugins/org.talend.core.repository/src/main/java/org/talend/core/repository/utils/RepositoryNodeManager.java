@@ -155,4 +155,8 @@ public class RepositoryNodeManager {
         return isTacokit;
     }
 
+    public static boolean isSnowflake(ERepositoryObjectType type) {
+        return ERepositoryObjectType.SNOWFLAKE != null && ERepositoryObjectType.SNOWFLAKE == type;
+    }
+
 }

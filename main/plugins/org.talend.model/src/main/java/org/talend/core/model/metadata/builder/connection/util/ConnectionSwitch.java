@@ -374,6 +374,33 @@ public class ConnectionSwitch<T> {
                 result = defaultCase(theEObject);
             return result;
         }
+        case ConnectionPackage.TACOKIT_DATABASE_CONNECTION: {
+            TacokitDatabaseConnection tacokitDatabaseConnection = (TacokitDatabaseConnection) theEObject;
+            T result = caseTacokitDatabaseConnection(tacokitDatabaseConnection);
+            if (result == null)
+                result = caseDatabaseConnection(tacokitDatabaseConnection);
+            if (result == null)
+                result = caseConnection(tacokitDatabaseConnection);
+            if (result == null)
+                result = caseAbstractMetadataObject(tacokitDatabaseConnection);
+            if (result == null)
+                result = caseDataProvider(tacokitDatabaseConnection);
+            if (result == null)
+                result = caseDataManager(tacokitDatabaseConnection);
+            if (result == null)
+                result = caseElement(tacokitDatabaseConnection);
+            if (result == null)
+                result = caseDeployedComponent(tacokitDatabaseConnection);
+            if (result == null)
+                result = casePackage(tacokitDatabaseConnection);
+            if (result == null)
+                result = caseNamespace(tacokitDatabaseConnection);
+            if (result == null)
+                result = caseModelElement(tacokitDatabaseConnection);
+            if (result == null)
+                result = defaultCase(theEObject);
+            return result;
+        }
         case ConnectionPackage.SAP_CONNECTION: {
             SAPConnection sapConnection = (SAPConnection) theEObject;
             T result = caseSAPConnection(sapConnection);
@@ -1179,6 +1206,31 @@ public class ConnectionSwitch<T> {
                 result = defaultCase(theEObject);
             return result;
         }
+        case ConnectionPackage.BIG_QUERY_CONNECTION: {
+            BigQueryConnection bigQueryConnection = (BigQueryConnection) theEObject;
+            T result = caseBigQueryConnection(bigQueryConnection);
+            if (result == null)
+                result = caseConnection(bigQueryConnection);
+            if (result == null)
+                result = caseAbstractMetadataObject(bigQueryConnection);
+            if (result == null)
+                result = caseDataProvider(bigQueryConnection);
+            if (result == null)
+                result = caseDataManager(bigQueryConnection);
+            if (result == null)
+                result = caseElement(bigQueryConnection);
+            if (result == null)
+                result = caseDeployedComponent(bigQueryConnection);
+            if (result == null)
+                result = casePackage(bigQueryConnection);
+            if (result == null)
+                result = caseNamespace(bigQueryConnection);
+            if (result == null)
+                result = caseModelElement(bigQueryConnection);
+            if (result == null)
+                result = defaultCase(theEObject);
+            return result;
+        }
         default:
             return defaultCase(theEObject);
         }
@@ -1333,6 +1385,21 @@ public class ConnectionSwitch<T> {
      * @generated
      */
     public T caseDatabaseConnection(DatabaseConnection object) {
+        return null;
+    }
+
+    /**
+     * Returns the result of interpreting the object as an instance of '<em>Tacokit Database Connection</em>'.
+     * <!-- begin-user-doc -->
+     * This implementation returns null;
+     * returning a non-null result will terminate the switch.
+     * <!-- end-user-doc -->
+     * @param object the target of the switch.
+     * @return the result of interpreting the object as an instance of '<em>Tacokit Database Connection</em>'.
+     * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+     * @generated
+     */
+    public T caseTacokitDatabaseConnection(TacokitDatabaseConnection object) {
         return null;
     }
 
@@ -1906,6 +1973,21 @@ public class ConnectionSwitch<T> {
      * @generated
      */
     public T caseSAPBWTableField(SAPBWTableField object) {
+        return null;
+    }
+
+    /**
+     * Returns the result of interpreting the object as an instance of '<em>Big Query Connection</em>'.
+     * <!-- begin-user-doc -->
+     * This implementation returns null;
+     * returning a non-null result will terminate the switch.
+     * <!-- end-user-doc -->
+     * @param object the target of the switch.
+     * @return the result of interpreting the object as an instance of '<em>Big Query Connection</em>'.
+     * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+     * @generated
+     */
+    public T caseBigQueryConnection(BigQueryConnection object) {
         return null;
     }
 

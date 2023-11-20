@@ -73,6 +73,7 @@ public class PropertiesFactoryImpl extends EFactoryImpl implements PropertiesFac
             case PropertiesPackage.REG_EX_FILE_CONNECTION_ITEM: return createRegExFileConnectionItem();
             case PropertiesPackage.CSV_FILE_CONNECTION_ITEM: return createCSVFileConnectionItem();
             case PropertiesPackage.DATABASE_CONNECTION_ITEM: return createDatabaseConnectionItem();
+            case PropertiesPackage.TACOKIT_DATABASE_CONNECTION_ITEM: return createTacokitDatabaseConnectionItem();
             case PropertiesPackage.SAP_CONNECTION_ITEM: return createSAPConnectionItem();
             case PropertiesPackage.XML_FILE_CONNECTION_ITEM: return createXmlFileConnectionItem();
             case PropertiesPackage.LDIF_FILE_CONNECTION_ITEM: return createLdifFileConnectionItem();
@@ -154,6 +155,7 @@ public class PropertiesFactoryImpl extends EFactoryImpl implements PropertiesFac
             case PropertiesPackage.PIGUDF_ITEM: return createPigudfItem();
             case PropertiesPackage.ROUTINES_JAR_TYPE: return createRoutinesJarType();
             case PropertiesPackage.ROUTINES_JAR_ITEM: return createRoutinesJarItem();
+            case PropertiesPackage.BIG_QUERY_CONNECTION_ITEM: return createBigQueryConnectionItem();
             default:
                 throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
         }
@@ -381,6 +383,16 @@ public class PropertiesFactoryImpl extends EFactoryImpl implements PropertiesFac
     public DatabaseConnectionItem createDatabaseConnectionItem() {
         DatabaseConnectionItemImpl databaseConnectionItem = new DatabaseConnectionItemImpl();
         return databaseConnectionItem;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public TacokitDatabaseConnectionItem createTacokitDatabaseConnectionItem() {
+        TacokitDatabaseConnectionItemImpl tacokitDatabaseConnectionItem = new TacokitDatabaseConnectionItemImpl();
+        return tacokitDatabaseConnectionItem;
     }
 
     /**
@@ -1109,6 +1121,16 @@ public class PropertiesFactoryImpl extends EFactoryImpl implements PropertiesFac
     public RoutinesJarItem createRoutinesJarItem() {
         RoutinesJarItemImpl routinesJarItem = new RoutinesJarItemImpl();
         return routinesJarItem;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public BigQueryConnectionItem createBigQueryConnectionItem() {
+        BigQueryConnectionItemImpl bigQueryConnectionItem = new BigQueryConnectionItemImpl();
+        return bigQueryConnectionItem;
     }
 
     /**

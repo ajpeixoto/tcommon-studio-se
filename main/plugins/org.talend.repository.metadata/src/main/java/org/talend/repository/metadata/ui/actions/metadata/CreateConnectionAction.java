@@ -16,11 +16,13 @@ import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.window.Window;
+import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
-import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.image.ECoreImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.commons.ui.runtime.image.OverlayImageProvider;
@@ -37,6 +39,9 @@ import org.talend.core.model.update.RepositoryUpdateManager;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.ui.actions.metadata.AbstractCreateAction;
 import org.talend.core.runtime.services.IGenericDBService;
+import org.talend.core.runtime.services.IGenericWizardService;
+import org.talend.core.service.ITCKUIService;
+import org.talend.metadata.managment.ui.wizard.RepositoryWizard;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.metadata.i18n.Messages;
 import org.talend.repository.model.IProxyRepositoryFactory;
@@ -46,6 +51,7 @@ import org.talend.repository.model.RepositoryNode;
 import org.talend.repository.model.RepositoryNodeUtilities;
 import org.talend.repository.ui.views.IRepositoryView;
 import org.talend.repository.ui.wizards.metadata.connection.database.DatabaseWizard;
+import org.talend.repository.ui.wizards.metadata.connection.database.NewDatabaseWizard;
 
 /**
  * Action used to create a new connection.<br/>
@@ -185,13 +191,33 @@ public class CreateConnectionAction extends AbstractCreateAction {
                 ExceptionHandler.process(e);
             }
         }
-
-        DatabaseWizard databaseWizard;
-        if (isToolbar()) {
-            databaseWizard = new DatabaseWizard(PlatformUI.getWorkbench(), creation, node, getExistingNames());
-            databaseWizard.setToolBar(true);
+        Wizard databaseWizard;
+        if (creation) {
+            NewDatabaseWizard newDatabaseWizard = new NewDatabaseWizard(PlatformUI.getWorkbench(), creation, isToolbar(), node);
+            WizardDialog wizardDialog = new WizardDialog(Display.getCurrent().getActiveShell(), newDatabaseWizard);
+            wizardDialog.setPageSize(780, 540);
+            wizardDialog.create();
+            int returnCode = wizardDialog.open();
+            if (returnCode == Window.CANCEL) {
+                return;
+            }
+            String selectedDBType = newDatabaseWizard.getSelectedDBType();
+            if (IGenericWizardService.get() != null && ERepositoryObjectType.SNOWFLAKE != null
+                    && ERepositoryObjectType.SNOWFLAKE.getLabel().equals(selectedDBType)) {
+                IGenericWizardService.get().openGenericWizard(selectedDBType, true, pathToSave, getExistingNames());
+                return;
+            }
+            if ((ITCKUIService.get() != null && ITCKUIService.get().getTCKJDBCType().getLabel().equals(selectedDBType))
+                    || IGenericWizardService.get().getIfAdditionalJDBCDBType(selectedDBType)) {
+                databaseWizard = ITCKUIService.get().createTCKWizard(selectedDBType, pathToSave);
+            } else {
+                databaseWizard = new DatabaseWizard(getWorkbench(), creation, node, getExistingNames());
+                DatabaseWizard.class.cast(databaseWizard).setToolBar(isToolbar());
+                DatabaseWizard.class.cast(databaseWizard).setDbType(selectedDBType);
+            }
         } else {
-            databaseWizard = new DatabaseWizard(PlatformUI.getWorkbench(), creation, node, getExistingNames());
+            databaseWizard = new DatabaseWizard(getWorkbench(), creation, node, getExistingNames());
+            DatabaseWizard.class.cast(databaseWizard).setToolBar(isToolbar());
         }
 
         // Open the Wizard
@@ -200,8 +226,9 @@ public class CreateConnectionAction extends AbstractCreateAction {
         wizardDialog.setPageSize(780, 540);
         wizardDialog.create();
         wizardDialog.open();
-        connItem = databaseWizard.getConnectionItem();
-
+        if (RepositoryWizard.class.isInstance(databaseWizard)) {
+            connItem = RepositoryWizard.class.cast(databaseWizard).getConnectionItem();
+        }
     }
 
     @Override
@@ -219,10 +246,12 @@ public class CreateConnectionAction extends AbstractCreateAction {
         if(dbService != null){
             isExtraType = dbService.getExtraTypes().contains(nodeType);
         }
+
         if (!ERepositoryObjectType.METADATA_CONNECTIONS.equals(nodeType) && !isExtraType) {
             setEnabled(false);
             return;
         }
+        
         IProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
         switch (node.getType()) {
         case SIMPLE_FOLDER:

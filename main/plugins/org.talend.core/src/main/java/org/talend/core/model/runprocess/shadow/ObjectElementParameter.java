@@ -361,7 +361,7 @@ public class ObjectElementParameter implements IElementParameter {
      * @see org.talend.core.model.process.IElementParameter#getRepositoryValue()
      */
     @Override
-    public String getRepositoryValue() {
+    public String calcRepositoryValue() {
         return null;
     }
 
@@ -1065,4 +1065,16 @@ public class ObjectElementParameter implements IElementParameter {
         this.originEncryptedValue = value;
         
     }
+
+	@Override
+	public void setDescription(String description) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getDescription() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

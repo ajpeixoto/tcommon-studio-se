@@ -262,6 +262,9 @@ public class RepositoryNodeUtilities {
         }
         RepositoryNode node = null;
         IRepositoryNode nodeFromType = view.getRoot().getRootRepositoryNode(curNode.getRepositoryObjectType());
+        if (curNode.getRepositoryObjectType() == ERepositoryObjectType.METADATA_TACOKIT_JDBC) {
+            nodeFromType = view.getRoot().getRootRepositoryNode(ERepositoryObjectType.METADATA_CONNECTIONS);
+        }
         if (nodeFromType != null) {
             node = getRepositoryNode(nodeFromType, curNode, view, expanded);
         }
@@ -512,6 +515,7 @@ public class RepositoryNodeUtilities {
                     || curType == ERepositoryObjectType.METADATA_FILE_RULES
                     || curType == ERepositoryObjectType.METADATA_FILE_LINKRULES
                     || curType == ERepositoryObjectType.METADATA_SAPCONNECTIONS
+                    || curType == ERepositoryObjectType.METADATA_BIGQUERYCONNECTIONS
                     || curType == ERepositoryObjectType.METADATA_HEADER_FOOTER) {
                 tmpType = ERepositoryObjectType.METADATA;
             } else if (curType == ERepositoryObjectType.ROUTINES || curType == ERepositoryObjectType.SNIPPETS) {
@@ -714,7 +718,7 @@ public class RepositoryNodeUtilities {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericWizardService.class)) {
             wizardService = GlobalServiceRegister.getDefault().getService(IGenericWizardService.class);
         }
-        if (wizardService != null && wizardService.isGenericType(type)) {
+        if (wizardService != null && wizardService.isGenericType(type) || ERepositoryObjectType.METADATA_TACOKIT_JDBC == type) {
             return getGenericSchemaNode(connection, tableName);
         }
         if (repType == ERepositoryObjectType.METADATA_CON_QUERY) {

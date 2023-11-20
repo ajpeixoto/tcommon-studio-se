@@ -178,6 +178,11 @@ public class ConnectionAdapterFactory extends AdapterFactoryImpl {
         }
 
         @Override
+        public Adapter caseTacokitDatabaseConnection(TacokitDatabaseConnection object) {
+            return createTacokitDatabaseConnectionAdapter();
+        }
+
+        @Override
         public Adapter caseSAPConnection(SAPConnection object) {
             return createSAPConnectionAdapter();
         }
@@ -410,6 +415,11 @@ public class ConnectionAdapterFactory extends AdapterFactoryImpl {
         @Override
         public Adapter caseSAPBWTableField(SAPBWTableField object) {
             return createSAPBWTableFieldAdapter();
+        }
+
+        @Override
+        public Adapter caseBigQueryConnection(BigQueryConnection object) {
+            return createBigQueryConnectionAdapter();
         }
 
         @Override
@@ -662,6 +672,20 @@ public class ConnectionAdapterFactory extends AdapterFactoryImpl {
      * @generated
      */
     public Adapter createDatabaseConnectionAdapter() {
+        return null;
+    }
+
+    /**
+     * Creates a new adapter for an object of class '{@link org.talend.core.model.metadata.builder.connection.TacokitDatabaseConnection <em>Tacokit Database Connection</em>}'.
+     * <!-- begin-user-doc -->
+     * This default implementation returns null so that we can easily ignore cases;
+     * it's useful to ignore a case when inheritance will catch all the cases anyway.
+     * <!-- end-user-doc -->
+     * @return the new adapter.
+     * @see org.talend.core.model.metadata.builder.connection.TacokitDatabaseConnection
+     * @generated
+     */
+    public Adapter createTacokitDatabaseConnectionAdapter() {
         return null;
     }
 
@@ -1254,6 +1278,20 @@ public class ConnectionAdapterFactory extends AdapterFactoryImpl {
      * @generated
      */
     public Adapter createSAPBWTableFieldAdapter() {
+        return null;
+    }
+
+    /**
+     * Creates a new adapter for an object of class '{@link org.talend.core.model.metadata.builder.connection.BigQueryConnection <em>Big Query Connection</em>}'.
+     * <!-- begin-user-doc -->
+     * This default implementation returns null so that we can easily ignore cases;
+     * it's useful to ignore a case when inheritance will catch all the cases anyway.
+     * <!-- end-user-doc -->
+     * @return the new adapter.
+     * @see org.talend.core.model.metadata.builder.connection.BigQueryConnection
+     * @generated
+     */
+    public Adapter createBigQueryConnectionAdapter() {
         return null;
     }
 

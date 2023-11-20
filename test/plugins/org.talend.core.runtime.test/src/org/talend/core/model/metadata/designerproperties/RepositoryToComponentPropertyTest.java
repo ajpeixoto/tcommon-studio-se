@@ -99,7 +99,7 @@ public class RepositoryToComponentPropertyTest {
 
         IElementParameter parameter = mock(IElementParameter.class);
         when(parameter.getName()).thenReturn("MAPPING");
-        when(parameter.getRepositoryValue()).thenReturn("XML_MAPPING");
+        when(parameter.calcRepositoryValue()).thenReturn("XML_MAPPING");
         when(parameter.getValue()).thenReturn(table);
         when(parameter.getListRepositoryItems()).thenReturn(new String[] { "", "XML_QUERY", null });
         when(parameter.getListItemsDisplayCodeName()).thenReturn(new String[] { "SCHEMA_COLUMN", "QUERY", "NODECHECK" });

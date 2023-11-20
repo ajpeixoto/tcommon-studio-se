@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.Path;
@@ -47,6 +48,7 @@ import org.talend.core.model.metadata.MultiSchemasUtil;
 import org.talend.core.model.metadata.builder.ConvertionHelper;
 import org.talend.core.model.metadata.builder.connection.AdditionalConnectionProperty;
 import org.talend.core.model.metadata.builder.connection.BRMSConnection;
+import org.talend.core.model.metadata.builder.connection.BigQueryConnection;
 import org.talend.core.model.metadata.builder.connection.Concept;
 import org.talend.core.model.metadata.builder.connection.ConceptTarget;
 import org.talend.core.model.metadata.builder.connection.Connection;
@@ -74,6 +76,7 @@ import org.talend.core.model.metadata.builder.connection.SAPFunctionUnit;
 import org.talend.core.model.metadata.builder.connection.SalesforceModuleUnit;
 import org.talend.core.model.metadata.builder.connection.SalesforceSchemaConnection;
 import org.talend.core.model.metadata.builder.connection.SchemaTarget;
+import org.talend.core.model.metadata.builder.connection.TacokitDatabaseConnection;
 import org.talend.core.model.metadata.builder.connection.WSDLParameter;
 import org.talend.core.model.metadata.builder.connection.WSDLSchemaConnection;
 import org.talend.core.model.metadata.builder.connection.XMLFileNode;
@@ -147,6 +150,10 @@ public class RepositoryToComponentProperty {
 
         if (connection instanceof SAPConnection) {
             return getSAPValue((SAPConnection) connection, value);
+        }
+        
+        if (connection instanceof BigQueryConnection) {
+            return getBigQueryValue((BigQueryConnection) connection, value, table);
         }
 
         if (connection instanceof SalesforceSchemaConnection) {
@@ -454,6 +461,62 @@ public class RepositoryToComponentProperty {
                 return TalendQuoteUtils.addQuotes(dbParameters);
             }
         }
+        return null;
+    }
+    
+    public static Object getBigQueryValue(BigQueryConnection connection, String value, IMetadataTable table) {
+        if ("SERVICE_ACCOUNT_CREDENTIALS_FILE".equals(value)) {
+            if (isContextMode(connection, connection.getServiceAccountCredentialsFile())) {
+                return connection.getServiceAccountCredentialsFile();
+            } else {
+                return TalendQuoteUtils.addQuotes(connection.getServiceAccountCredentialsFile());
+            }
+        } else if ("PROJECT_ID".equals(value)) {
+            if (isContextMode(connection, connection.getProjectId())) {
+                return connection.getProjectId();
+            } else {
+                return TalendQuoteUtils.addQuotes(connection.getProjectId());
+            }
+        } else if ("USE_REGION_ENDPOINT".equals(value)) {
+            return connection.isUseRegionEndpoint();
+        } else if ("REGION_ENDPOINT_BQ".equals(value)) {
+            if (isContextMode(connection, connection.getRegionEndpoint())) {
+                return connection.getRegionEndpoint();
+            } else {
+                return TalendQuoteUtils.addQuotes(connection.getRegionEndpoint());
+            }
+        } else if ("DATASET".equals(value)) {
+            if(table!=null) {
+                Map<String, String> properties = table.getAdditionalProperties();
+                if(properties!=null) {
+                    String dataSet = properties.get("dataSet");
+                    if (isContextMode(connection, dataSet)) {
+                        return dataSet;
+                    } else {
+                        return TalendQuoteUtils.addQuotes(dataSet);
+                    }
+                }
+            }
+        } else if ("QUERY".equals(value)) {
+            if(table!=null) {
+                Map<String, String> properties = table.getAdditionalProperties();
+                if(properties!=null) {
+                    String dataSet = properties.get("dataSet");
+                    String tableName = table.getLabel();
+                    if(dataSet!=null && tableName!=null) {
+                        List<IMetadataColumn> columns = table.getListColumns();
+                        StringBuilder strBuilder = new StringBuilder();
+                        strBuilder.append("SELECT");
+                        if(columns!=null) {
+                            strBuilder.append(columns.stream().map(column -> column.getOriginalDbColumnName()).collect(Collectors.joining(",", " ", " ")));
+                        }
+                        strBuilder.append("FROM ").append(dataSet).append('.').append(tableName);
+                        return TalendQuoteUtils.addQuotes(strBuilder.toString());
+                    }
+                }
+            }
+        }
+        
         return null;
     }
 
@@ -972,6 +1035,9 @@ public class RepositoryToComponentProperty {
                 return typeByProduct;
             }
         }
+        if (connection instanceof TacokitDatabaseConnection) {
+            return getTacokitDatabaseConnectionValue((TacokitDatabaseConnection)connection, value, table, targetComponent);
+        }
         if (value.equals("FRAMEWORK_TYPE")) { //$NON-NLS-1$
             if (isContextMode(connection, databaseType)) {
                 if (databaseType.equals("JavaDB Embeded")) { //$NON-NLS-1$
@@ -1114,7 +1180,6 @@ public class RepositoryToComponentProperty {
                         || EDatabaseConnTemplate.ORACLE_CUSTOM.getDBDisplayName().equals(databaseType)
                         || EDatabaseConnTemplate.ORACLEFORSID.getDBDisplayName().equals(databaseType)
                         || EDatabaseConnTemplate.ORACLESN.getDBDisplayName().equals(databaseType)
-                        || EDatabaseConnTemplate.PLUSPSQL.getDBDisplayName().equals(databaseType)
                         || EDatabaseConnTemplate.PSQL.getDBDisplayName().equals(databaseType)
                         || EDatabaseConnTemplate.SAPHana.getDBDisplayName().equals(databaseType)
                         || EDatabaseConnTemplate.MSSQL.getDBDisplayName().equals(databaseType)) {
@@ -1255,7 +1320,7 @@ public class RepositoryToComponentProperty {
             }
             return value2;
 
-        }
+        }     
         
         if(value.equals("SUPPORT_NLS")) {
             return connection.isSupportNLS();
@@ -1830,6 +1895,122 @@ public class RepositoryToComponentProperty {
         }
         return null;
     }
+    
+    private static Object getTacokitDatabaseConnectionValue(TacokitDatabaseConnection connection, String value,
+            IMetadataTable table, String targetComponent) {
+        if (TacokitDatabaseConnection.KEY_DATASTORE_URL.equals(value)
+                || TacokitDatabaseConnection.KEY_SP_DATASTORE_URL.equals(value)
+                || TacokitDatabaseConnection.KEY_URL.equals(value) || "URL".equals(value)) {
+            return getAppropriateValue(connection, connection.getURL());
+        }
+        if (TacokitDatabaseConnection.KEY_DATASTORE_HOST.equals(value)
+                || TacokitDatabaseConnection.KEY_SP_DATASTORE_HOST.equals(value)
+                || TacokitDatabaseConnection.KEY_HOST.equals(value)) {
+            return getAppropriateValue(connection, connection.getServerName());
+        }
+        if (TacokitDatabaseConnection.KEY_DATASTORE_PORT.equals(value)
+                || TacokitDatabaseConnection.KEY_SP_DATASTORE_PORT.equals(value)
+                || TacokitDatabaseConnection.KEY_PORT.equals(value)) {
+            return getAppropriateValue(connection, connection.getPort());
+        }
+        if (TacokitDatabaseConnection.KEY_DRIVER.equals(value)) {
+            return connection.getDrivers();
+        }
+        if (TacokitDatabaseConnection.KEY_DATASTORE_DRIVER.equals(value) || "DRIVER_JAR".equals(value)) {
+            List<Map<String, Object>> drivers = new ArrayList<Map<String, Object>>();
+            // map to datastore key
+            for (Map<String, Object> map : connection.getDrivers()) {
+                HashMap<String, Object> newMap = new HashMap<String, Object>();
+                for (Map.Entry<String, Object> entry : map.entrySet()) {
+                    if (TacokitDatabaseConnection.KEY_DRIVER_PATH.equals(entry.getKey()) || TacokitDatabaseConnection.KEY_DATASTORE_DRIVER_PATH.equals(entry.getKey())) {
+                        newMap.put(TacokitDatabaseConnection.KEY_DATASTORE_DRIVER_PATH, entry.getValue());
+                    }
+                }
+                drivers.add(newMap);
+            }
+            return drivers;
+        }
+        if (TacokitDatabaseConnection.KEY_SP_DATASTORE_DRIVER.equals(value)) {
+            List<Map<String, Object>> drivers = new ArrayList<>();
+            for (Map<String, Object> map : connection.getDrivers()) {
+                HashMap<String, Object> newMap = new HashMap<>();
+                for (Map.Entry<String, Object> entry : map.entrySet()) {
+                    if (TacokitDatabaseConnection.KEY_DRIVER_PATH.equals(entry.getKey())
+                            || TacokitDatabaseConnection.KEY_SP_DATASTORE_DRIVER_PATH.equals(entry.getKey())) {
+                        newMap.put(TacokitDatabaseConnection.KEY_SP_DATASTORE_DRIVER_PATH, entry.getValue());
+                    }
+                }
+                drivers.add(newMap);
+            }
+            return drivers;
+        }
+        if (TacokitDatabaseConnection.KEY_DATASTORE_DRIVER_CLASS.equals(value)
+                || TacokitDatabaseConnection.KEY_SP_DATASTORE_DRIVER_CLASS.equals(value)
+                || TacokitDatabaseConnection.KEY_DRIVER_CLASS.equals(value) || "DRIVER_CLASS".equals(value)) {
+            return getAppropriateValue(connection, connection.getDriverClass());
+        }
+        if (TacokitDatabaseConnection.KEY_DATASTORE_USER_ID.equals(value)
+                || TacokitDatabaseConnection.KEY_SP_DATASTORE_USER_ID.equals(value)
+                || TacokitDatabaseConnection.KEY_USER_ID.equals(value) || "USERNAME".equals(value)) {
+            return getAppropriateValue(connection, connection.getUsername());
+        }
+        if (TacokitDatabaseConnection.KEY_DATASTORE_PASSWORD.equals(value)
+                || TacokitDatabaseConnection.KEY_SP_DATASTORE_PASSWORD.equals(value)
+                || TacokitDatabaseConnection.KEY_PASSWORD.equals(value) || "PASSWORD".equals(value)) {
+            return getAppropriateValue(connection, connection.getRawPassword());
+        }
+        if (TacokitDatabaseConnection.KEY_DATASTORE_DATABASE_MAPPING.equals(value)
+                || TacokitDatabaseConnection.KEY_SP_DATASTORE_DATABASE_MAPPING.equals(value)
+                || TacokitDatabaseConnection.KEY_DATABASE_MAPPING.equals(value)) {
+            return getAppropriateValue(connection, connection.getDatabaseMappingFile());
+        }
+        if (TacokitDatabaseConnection.KEY_DATASTORE_DATASOURCE_ALIAS.equals(value)
+                || TacokitDatabaseConnection.KEY_SP_DATASTORE_DATASOURCE_ALIAS.equals(value)
+                || TacokitDatabaseConnection.KEY_DATASOURCE_ALIAS.equals(value)) {
+            return getAppropriateValue(connection, connection.getDatasourceAlias());
+        }
+        if (TacokitDatabaseConnection.KEY_DATASTORE_USE_SHARED_DB_CONNECTION.equals(value)
+                || TacokitDatabaseConnection.KEY_SP_DATASTORE_USE_SHARED_DB_CONNECTION.equals(value)
+                || TacokitDatabaseConnection.KEY_USE_SHARED_DB_CONNECTION.equals(value)) {
+            return connection.useSharedDBConnection();
+        }
+        if (TacokitDatabaseConnection.KEY_DATASTORE_SHARED_DB_CONNECTION.equals(value)
+                || TacokitDatabaseConnection.KEY_SP_DATASTORE_SHARED_DB_CONNECTION.equals(value)
+                || TacokitDatabaseConnection.KEY_SHARED_DB_CONNECTION.equals(value)) {
+            return getAppropriateValue(connection, connection.getSharedDBConnectionName());
+        }
+        if (TacokitDatabaseConnection.KEY_DATASTORE_USE_DATASOURCE.equals(value)
+                || TacokitDatabaseConnection.KEY_SP_DATASTORE_USE_DATASOURCE.equals(value)
+                || TacokitDatabaseConnection.KEY_USE_DATASOURCE.equals(value)) {
+            return connection.useDatasourceAlias();
+        }
+        if (TacokitDatabaseConnection.KEY_DATASTORE_AUTHENTICATION_TYPE.equals(value)
+                || TacokitDatabaseConnection.KEY_SP_DATASTORE_AUTHENTICATION_TYPE.equals(value)
+                || TacokitDatabaseConnection.KEY_AUTHENTICATION_TYPE.equals(value)) {
+            return getAppropriateValue(connection, connection.getAuthenticationType());
+        }
+        if (TacokitDatabaseConnection.KEY_DATASTORE_USE_AUTO_COMMIT.equals(value)
+                || TacokitDatabaseConnection.KEY_SP_DATASTORE_USE_AUTO_COMMIT.equals(value)
+                || TacokitDatabaseConnection.KEY_USE_AUTO_COMMIT.equals(value)) {
+            return connection.useAutoCommit();
+        }
+        if (TacokitDatabaseConnection.KEY_DATASTORE_AUTO_COMMIT.equals(value)
+                || TacokitDatabaseConnection.KEY_SP_DATASTORE_AUTO_COMMIT.equals(value)
+                || TacokitDatabaseConnection.KEY_AUTO_COMMIT.equals(value)) {
+            return connection.autoCommit();
+        }
+        if (TacokitDatabaseConnection.KEY_DATASTORE_ENABLE_DB_TYPE.equals(value)
+                || TacokitDatabaseConnection.KEY_SP_DATASTORE_ENABLE_DB_TYPE.equals(value)
+                || TacokitDatabaseConnection.KEY_ENABLE_DB_TYPE.equals(value)) {
+            return connection.enableDBType();
+        }
+        if (TacokitDatabaseConnection.KEY_DATASTORE_DB_TYPE.equals(value)
+                || TacokitDatabaseConnection.KEY_SP_DATASTORE_DB_TYPE.equals(value)
+                || TacokitDatabaseConnection.KEY_DB_TYPE.equals(value)) {
+            return connection.getDatabaseType();
+        }
+        return connection.getPropertyValue(value);
+    }
 
     private static String getAppropriateValue(Connection connection, String rawValue) {
         if (isContextMode(connection, rawValue)) {
@@ -1837,17 +2018,6 @@ public class RepositoryToComponentProperty {
         } else {
             return TalendQuoteUtils.addQuotesIfNotExist(rawValue);
         }
-    }
-
-    /**
-     * DOC nrousseau Comment method "getDatabaseValue".
-     *
-     * @param connection
-     * @param value
-     * @return
-     */
-    private static Object getDatabaseValue(DatabaseConnection connection, String value) {
-        return getDatabaseValue(connection, value, null, null);
     }
 
     private static boolean isContextMode(Connection connection, String value) {
@@ -3053,7 +3223,7 @@ public class RepositoryToComponentProperty {
             String paramName) {
         for (IDragAndDropServiceHandler handler : DragAndDropManager.getHandlers()) {
             if (handler.canHandle(connection)) {
-                return handler.isGenericRepositoryValue(componentProperties, paramName);
+                return handler.isGenericRepositoryValue(connection, componentProperties, paramName);
             }
         }
         return false;
@@ -3063,7 +3233,7 @@ public class RepositoryToComponentProperty {
             String paramName) {
         for (IDragAndDropServiceHandler handler : DragAndDropManager.getHandlers()) {
             if (handler.canHandle(connection)) {
-                return handler.getGenericRepositoryValue(componentProperties, paramName);
+                return handler.getGenericRepositoryValue(connection, componentProperties, paramName);
             }
         }
         return null;

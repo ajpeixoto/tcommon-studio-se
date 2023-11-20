@@ -21,6 +21,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.gef.commands.Command;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
+import org.talend.commons.ui.runtime.swt.tableviewer.TableViewerCreatorNotModifiable;
 import org.talend.commons.ui.swt.extended.table.ExtendedTableModel;
 import org.talend.core.model.metadata.IMetadataColumn;
 import org.talend.core.model.metadata.MetadataSchema;
@@ -68,7 +69,11 @@ public class MetadataImportXmlCommand extends Command {
             extendedTableModel.removeAll(removed);
             added = MetadataSchema.initializeColumns(file);
             extendedTableModel.addAll(added);
-
+            // when not lazy load need to do refresh to refresh the row number
+            if (!TableViewerCreatorNotModifiable.getRecommandLazyLoad()
+                    && !TableViewerCreatorNotModifiable.isLazyLoadingEnabled()) {
+                extendedTableModel.getTableViewer().refresh();
+            }
         } catch (ParserConfigurationException e) {
             ExceptionHandler.process(e);
         } catch (SAXException e) {

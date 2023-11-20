@@ -92,6 +92,8 @@ public class PromptDialog extends SelectionDialog {
 
     private Composite child;
 
+    private List<IContext> iContexts = new ArrayList<IContext>();
+
     public PromptDialog(Shell parentShell, IContext context) {
         super(parentShell);
         initDialog(context, canCancel, Messages.getString("ContextSetsSelectionDialog.Messages")); //$NON-NLS-1$
@@ -123,22 +125,26 @@ public class PromptDialog extends SelectionDialog {
 
     private void initSets() {
         if (source != null) {
+            iContexts.clear();
             if (source instanceof ContextItem) {
                 ContextItem contextItem = (ContextItem) source;
                 List<ContextType> contexts = contextItem.getContext();
                 String repositoryContextId = contextItem.getProperty().getId();
                 defalutContext = contextItem.getDefaultContext();
                 for (ContextType contextType : contexts) {
+                    IContext iContext = ContextUtils.convert2IContext(contextType, repositoryContextId).clone();
+                    iContexts.add(iContext);
                     String name = contextType.getName();
                     if (name.equalsIgnoreCase(defalutContext)) {
                         name = name + DEFAULT_FLAG;
                         selectedContext = name;
-                        currentContext = ContextUtils.convert2IContext(contextType, repositoryContextId).clone();
+                        currentContext = iContext;
                     }
                     contextSetsList.add(name);
                 }
             } else if (source instanceof List) {
                 List<IContext> contexts = (List<IContext>) source;
+                iContexts = contexts;
                 for (IContext context : contexts) {
                     String name = context.getName();
                     if (name.equalsIgnoreCase(defalutContext)) {
@@ -150,6 +156,7 @@ public class PromptDialog extends SelectionDialog {
                 }
             } else if (source instanceof IContext) {
                 currentContext = (IContext) source;
+                iContexts.add(currentContext);
             }
         }
     }
@@ -234,7 +241,14 @@ public class PromptDialog extends SelectionDialog {
         promptGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         // Prompt for context values ?
         for (final IContextParameter parameter : currentContext.getContextParameterList()) {
+            boolean isPromptNeeded = false;
             if (parameter.isPromptNeeded()) {
+                isPromptNeeded = true;
+            } else if (ContextUtils.isPromptNeeded(iContexts, parameter.getName())) {
+                parameter.setPromptNeeded(true);
+                isPromptNeeded = true;
+            }
+            if (isPromptNeeded) {
                 if (DefaultCellEditorFactory.isBoolean(parameter.getType())) {
                     final Composite composite2 = new Composite(promptGroup, SWT.NONE);
                     final GridLayout gridLayout = new GridLayout(2, false);
@@ -492,6 +506,9 @@ public class PromptDialog extends SelectionDialog {
         for (IContextParameter parameter : currentContext.getContextParameterList()) {
             if (parameter.isPromptNeeded()) {
                 nbParams++;
+            } else if (ContextUtils.isPromptNeeded(iContexts, parameter.getName())) {
+                parameter.setPromptNeeded(true);
+                nbParams++;
             }
         }
         Point dialogSize = new Point(X_POSITION, Math.min((height * nbParams) + Y_POSITION, 400));
@@ -533,6 +550,14 @@ public class PromptDialog extends SelectionDialog {
 
     public IContext getCurrentContext() {
         return currentContext;
+    }
+
+    public List<IContext> getiContexts() {
+        return iContexts;
+    }
+
+    public void setiContexts(List<IContext> iContexts) {
+        this.iContexts = iContexts;
     }
 
 }

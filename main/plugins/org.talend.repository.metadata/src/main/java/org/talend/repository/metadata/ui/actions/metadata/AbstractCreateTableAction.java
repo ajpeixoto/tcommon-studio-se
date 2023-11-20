@@ -17,11 +17,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.IJobChangeEvent;
-import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -29,7 +24,6 @@ import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.progress.UIJob;
 import org.talend.commons.exception.LoginException;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.core.GlobalServiceRegister;
@@ -58,6 +52,7 @@ import org.talend.core.model.metadata.builder.database.ExtractMetaDataFromDataBa
 import org.talend.core.model.metadata.builder.database.ExtractMetaDataUtils;
 import org.talend.core.model.metadata.builder.database.JavaSqlFactory;
 import org.talend.core.model.metadata.connection.hive.HiveModeInfo;
+import org.talend.core.model.properties.BigQueryConnectionItem;
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.properties.DatabaseConnectionItem;
 import org.talend.core.model.properties.DelimitedFileConnectionItem;
@@ -80,6 +75,7 @@ import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.ui.actions.metadata.AbstractCreateAction;
 import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.runtime.services.IGenericDBService;
+import org.talend.core.service.IBigQueryProviderService;
 import org.talend.core.service.ISAPProviderService;
 import org.talend.cwm.helper.ConnectionHelper;
 import org.talend.cwm.helper.PackageHelper;
@@ -725,6 +721,37 @@ public abstract class AbstractCreateTableAction extends AbstractCreateAction {
                     IWizard sapWizard = sapService.newWizard(PlatformUI.getWorkbench(), creation, node, getExistingNames());
                     if (sapWizard != null) {
                         WizardDialog wizardDialog = new WizardDialog(Display.getCurrent().getActiveShell(), sapWizard);
+                        handleWizard(node, wizardDialog);
+                    }
+                }
+            }
+        }
+    }
+    
+    public void createBigQuerySchemaWizard(RepositoryNode node, final boolean forceReadOnly) {
+        boolean creation = false;
+        if (node.getType() == ENodeType.REPOSITORY_ELEMENT) {
+            ERepositoryObjectType nodeType = (ERepositoryObjectType) node.getProperties(EProperties.CONTENT_TYPE);
+
+            BigQueryConnectionItem item = null;
+            if (nodeType == ERepositoryObjectType.METADATA_CON_TABLE) {
+                item = (BigQueryConnectionItem) node.getObject().getProperty().getItem();
+                creation = false;
+            } else if (nodeType == ERepositoryObjectType.METADATA_BIGQUERYCONNECTIONS) {
+                item = (BigQueryConnectionItem) node.getObject().getProperty().getItem();
+                creation = true;
+            } else {
+                return;
+            }
+            initContextMode(item);
+
+            IBigQueryProviderService bigqueryService = null;
+            if (GlobalServiceRegister.getDefault().isServiceRegistered(IBigQueryProviderService.class)) {
+            	bigqueryService = GlobalServiceRegister.getDefault().getService(IBigQueryProviderService.class);
+                if (bigqueryService != null) {
+                    IWizard bigqueryWizard = bigqueryService.newWizard(PlatformUI.getWorkbench(), creation, node, getExistingNames());
+                    if (bigqueryWizard != null) {
+                        WizardDialog wizardDialog = new WizardDialog(Display.getCurrent().getActiveShell(), bigqueryWizard);
                         handleWizard(node, wizardDialog);
                     }
                 }

@@ -2207,6 +2207,13 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
                     ExceptionHandler.process(e);
                 }
                 
+                if (IHadoopDistributionService.get() != null) {
+                    try {
+                        IHadoopDistributionService.get().checkAndMigrateDistributionProxyCredential(project);
+                    } catch (Exception e) {
+                        ExceptionHandler.process(e);
+                    }
+                }
                 // init dynamic distirbution after `beforeLogon`, before loading libraries.
                 initDynamicDistribution(monitor);
                 

@@ -14,13 +14,13 @@ package org.talend.core.ui.context.nattableTree;
 
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsDataProvider;
-import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
 import org.talend.core.model.process.IContextManager;
 import org.talend.core.model.process.IContextParameter;
 import org.talend.core.ui.context.ContextTreeTable.ContextTreeNode;
+import org.talend.core.ui.context.IContextModelManager;
 import org.talend.core.ui.context.model.ContextTabChildModel;
 import org.talend.core.ui.context.model.table.ContextTableConstants;
 import org.talend.core.ui.context.model.table.ContextTableTabParentModel;
@@ -30,34 +30,38 @@ import org.talend.core.ui.utils.ContextTypeValidator;
 public class ContextValueLabelAccumulator extends ColumnOverrideLabelAccumulator {
 
     private IDataProvider dataProvider;
-    private ColumnGroupModel columnGroupModel;
+
     private IContextManager manager;
 
-    public ContextValueLabelAccumulator(ILayer layer, IDataProvider dataProvider, IContextManager manager, ColumnGroupModel columnGroupModel) {
+    private IContextModelManager modelManager;
+
+    public ContextValueLabelAccumulator(ILayer layer, IDataProvider dataProvider, IContextManager manager,
+            IContextModelManager modelManager) {
         super(layer);
         this.dataProvider = dataProvider;
         this.manager = manager;
-        this.columnGroupModel = columnGroupModel;
+        this.modelManager = modelManager;
     }
 
    
     @Override
     public void accumulateConfigLabels(LabelStack configLabels, int columnPosition, int rowPosition) {
         super.accumulateConfigLabels(configLabels, columnPosition, rowPosition);
-        boolean isAddedValueNotMatchStyle = false;        
+        boolean isAddedValueNotMatchStyle = false;
+        if (modelManager.getProcess() == null) {
+            return;
+        }
+        String currentColumnName = ContextRowDataListFixture.getPropertyNamesAsList(modelManager).get(columnPosition);
         ContextTreeNode rowNode = ((GlazedListsDataProvider<ContextTreeNode>) dataProvider).getList().get(rowPosition);
         if (configLabels.contains(ContextTableConstants.COLUMN_CONTEXT_VALUE)) {
-            if (columnGroupModel != null && columnGroupModel.isPartOfAGroup(columnPosition)) {
-                String columnGroupName = columnGroupModel.getColumnGroupByIndex(columnPosition).getName();
-                IContextParameter realPara = ContextNatTableUtils.getRealParameter(manager, columnGroupName, rowNode.getTreeData());
-                if (realPara != null) {
-                    boolean isValid = ContextTypeValidator.isMatchType(realPara.getType(), realPara.getValue());
-                    if (isValid) {
-                        configLabels.remove(ContextTableConstants.LABEL_VALUE_NOT_MATCH_TYPE);
-                    } else {
-                        configLabels.addLabel(ContextTableConstants.LABEL_VALUE_NOT_MATCH_TYPE);
-                        isAddedValueNotMatchStyle = true;
-                    }
+            IContextParameter realPara = ContextNatTableUtils.getRealParameter(manager, currentColumnName, rowNode.getTreeData());
+            if (realPara != null) {
+                boolean isValid = ContextTypeValidator.isMatchType(realPara.getType(), realPara.getValue());
+                if (isValid) {
+                    configLabels.remove(ContextTableConstants.LABEL_VALUE_NOT_MATCH_TYPE);
+                } else {
+                    configLabels.addLabel(ContextTableConstants.LABEL_VALUE_NOT_MATCH_TYPE);
+                    isAddedValueNotMatchStyle = true;
                 }
             }
         }

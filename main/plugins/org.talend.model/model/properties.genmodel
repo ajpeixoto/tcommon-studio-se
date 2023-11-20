@@ -164,6 +164,7 @@
     <genClasses ecoreClass="properties.ecore#//RegExFileConnectionItem"/>
     <genClasses ecoreClass="properties.ecore#//CSVFileConnectionItem"/>
     <genClasses ecoreClass="properties.ecore#//DatabaseConnectionItem"/>
+    <genClasses ecoreClass="properties.ecore#//TacokitDatabaseConnectionItem"/>
     <genClasses ecoreClass="properties.ecore#//SAPConnectionItem"/>
     <genClasses ecoreClass="properties.ecore#//XmlFileConnectionItem"/>
     <genClasses ecoreClass="properties.ecore#//LdifFileConnectionItem"/>
@@ -689,5 +690,6 @@
     <genClasses ecoreClass="properties.ecore#//RoutinesJarItem">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference properties.ecore#//RoutinesJarItem/routinesJarType"/>
     </genClasses>
+    <genClasses ecoreClass="properties.ecore#//BigQueryConnectionItem"/>
   </genPackages>
 </genmodel:GenModel>

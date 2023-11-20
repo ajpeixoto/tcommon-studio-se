@@ -90,10 +90,9 @@ public class PropertiesAdapterFactory extends AdapterFactoryImpl {
             public Object caseLinkType(LinkType object) {
                 return createLinkTypeAdapter();
             }
-
-        public Object caseBusinessProcessItem(BusinessProcessItem object) {
-            return createBusinessProcessItemAdapter();
-        }
+            public Object caseBusinessProcessItem(BusinessProcessItem object) {
+                return createBusinessProcessItemAdapter();
+            }
             public Object caseFileItem(FileItem object) {
                 return createFileItemAdapter();
             }
@@ -129,6 +128,9 @@ public class PropertiesAdapterFactory extends AdapterFactoryImpl {
             }
             public Object caseDatabaseConnectionItem(DatabaseConnectionItem object) {
                 return createDatabaseConnectionItemAdapter();
+            }
+            public Object caseTacokitDatabaseConnectionItem(TacokitDatabaseConnectionItem object) {
+                return createTacokitDatabaseConnectionItemAdapter();
             }
             public Object caseSAPConnectionItem(SAPConnectionItem object) {
                 return createSAPConnectionItemAdapter();
@@ -375,6 +377,9 @@ public class PropertiesAdapterFactory extends AdapterFactoryImpl {
             }
             public Object caseRoutinesJarItem(RoutinesJarItem object) {
                 return createRoutinesJarItemAdapter();
+            }
+            public Object caseBigQueryConnectionItem(BigQueryConnectionItem object) {
+                return createBigQueryConnectionItemAdapter();
             }
             public Object defaultCase(EObject object) {
                 return createEObjectAdapter();
@@ -675,6 +680,20 @@ public class PropertiesAdapterFactory extends AdapterFactoryImpl {
      * @generated
      */
     public Adapter createDatabaseConnectionItemAdapter() {
+        return null;
+    }
+
+    /**
+     * Creates a new adapter for an object of class '{@link org.talend.core.model.properties.TacokitDatabaseConnectionItem <em>Tacokit Database Connection Item</em>}'.
+     * <!-- begin-user-doc -->
+     * This default implementation returns null so that we can easily ignore cases;
+     * it's useful to ignore a case when inheritance will catch all the cases anyway.
+     * <!-- end-user-doc -->
+     * @return the new adapter.
+     * @see org.talend.core.model.properties.TacokitDatabaseConnectionItem
+     * @generated
+     */
+    public Adapter createTacokitDatabaseConnectionItemAdapter() {
         return null;
     }
 
@@ -1672,6 +1691,20 @@ public class PropertiesAdapterFactory extends AdapterFactoryImpl {
      * @generated
      */
     public Adapter createRoutinesJarItemAdapter() {
+        return null;
+    }
+
+    /**
+     * Creates a new adapter for an object of class '{@link org.talend.core.model.properties.BigQueryConnectionItem <em>Big Query Connection Item</em>}'.
+     * <!-- begin-user-doc -->
+     * This default implementation returns null so that we can easily ignore cases;
+     * it's useful to ignore a case when inheritance will catch all the cases anyway.
+     * <!-- end-user-doc -->
+     * @return the new adapter.
+     * @see org.talend.core.model.properties.BigQueryConnectionItem
+     * @generated
+     */
+    public Adapter createBigQueryConnectionItemAdapter() {
         return null;
     }
 

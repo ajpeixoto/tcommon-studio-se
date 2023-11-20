@@ -4962,7 +4962,6 @@ public class DatabaseForm extends AbstractForm {
                 || EDatabaseConnTemplate.MYSQL.getDBDisplayName().equals(getConnectionDBType())
                 || EDatabaseConnTemplate.AMAZON_AURORA.getDBDisplayName().equals(getConnectionDBType())
                 || EDatabaseConnTemplate.HIVE.getDBDisplayName().equals(getConnectionDBType())
-                || EDatabaseConnTemplate.PLUSPSQL.getDBDisplayName().equals(getConnectionDBType())
                 || EDatabaseConnTemplate.VERTICA.getDBDisplayName().equals(getConnectionDBType())
                 || EDatabaseConnTemplate.PSQL.getDBDisplayName().equals(getConnectionDBType())
                 || EDatabaseConnTemplate.MSSQL.getDBDisplayName().equals(getConnectionDBType())
@@ -5338,7 +5337,8 @@ public class DatabaseForm extends AbstractForm {
 
                         getConnection().setDbVersionString(version.getVersionValue());
 
-                        showOracleSupportNLS(isSupportNLSOracleVersion(dbVersionCombo.getText()));
+                        boolean supportNLSOracleVersion = oracleVersionEnable() && isSupportNLSOracleVersion(dbVersionCombo.getText());
+                        showOracleSupportNLS(supportNLSOracleVersion, supportNLSOracleVersion);
                         
                     }
                     urlConnectionStringText.setText(getStringConnection());
@@ -5898,9 +5898,6 @@ public class DatabaseForm extends AbstractForm {
         } else if (dbType.equals(EDatabaseConnTemplate.PSQL.getDBDisplayName())) {
             dbVersionCombo.getCombo().setItems(versions);
             dbVersionCombo.setHideWidgets(false);
-        } else if (dbType.equals(EDatabaseConnTemplate.PLUSPSQL.getDBDisplayName())) {
-            dbVersionCombo.getCombo().setItems(versions);
-            dbVersionCombo.setHideWidgets(false);
         } else if (dbType.equals(EDatabaseConnTemplate.SAPHana.getDBDisplayName())) {
             dbVersionCombo.setHideWidgets(true);
         }else if (dbType.equals(EDatabaseConnTemplate.SYBASEASE_16_SA.getDBDisplayName())) {
@@ -6447,6 +6444,10 @@ public class DatabaseForm extends AbstractForm {
             if (EDatabaseVersion4Drivers.ORACLE_12.name().equals(getConnection().getDbVersionString())) {
                 return true;
             }
+            
+            if(EDatabaseVersion4Drivers.ORACLE_18.name().equals(getConnection().getDbVersionString())) {
+                return true;
+            }
         }
         return false;
     }
@@ -6908,7 +6909,6 @@ public class DatabaseForm extends AbstractForm {
                         && (isOracle || isAS400 || isMySQL || isAmazonAurora || isVertica || isSAS || isImpala || isMsSQL
                                 || isSybase || isGreenplum
                                 || EDatabaseConnTemplate.PSQL.getDBTypeName().equals(getConnectionDBType())
-                                || EDatabaseConnTemplate.PLUSPSQL.getDBTypeName().equals(getConnectionDBType())
                                 || EDatabaseConnTemplate.ACCESS.getDBTypeName().equals(getConnectionDBType()) || EDatabaseConnTemplate.MSSQL05_08
                                 .getDBDisplayName().equals(getConnectionDBType())));
         usernameText.setEditable(visible);
@@ -6991,7 +6991,7 @@ public class DatabaseForm extends AbstractForm {
             showIfHiveMetastore();
             showIfSupportEncryption();
             showIfAuthentication();
-            showOracleSupportNLS(isOracle && isSupportNLSOracleVersion(dbVersionCombo.getText()));
+            showOracleSupportNLS(oracleVersionEnable() && isSupportNLSOracleVersion(dbVersionCombo.getText()), visible);
             hideHiveExecutionFields(!doSupportTez());
 
             urlConnectionStringText.setEditable(!visible);
@@ -7309,7 +7309,7 @@ public class DatabaseForm extends AbstractForm {
         compositeGroupDbSettings.layout();
     }
 
-    private void showOracleSupportNLS(boolean show) {
+    private void showOracleSupportNLS(boolean show, boolean editable) {
         GridData layoutData = (GridData) supportNLSContainer.getLayoutData();
         layoutData.exclude = !show;
         supportNLSContainer.setLayoutData(layoutData);
@@ -7318,6 +7318,8 @@ public class DatabaseForm extends AbstractForm {
         if(!show) {
             isOracleSupportNLS.setSelection(false);
             getConnection().setSupportNLS(false);
+        } else {
+            isOracleSupportNLS.setEnabled(editable);
         }
         supportNLSContainer.getParent().layout();
     }
@@ -7792,7 +7794,7 @@ public class DatabaseForm extends AbstractForm {
         if (version != null && dbTypeList.size() > 1) {
             EDatabaseTypeName dbType = EDatabaseTypeName.getTypeFromDbType(getConnection().getDatabaseType());
             if (dbType == null || dbType.equals(EDatabaseTypeName.ACCESS) || dbType.equals(EDatabaseTypeName.PSQL)
-                    || dbType.equals(EDatabaseTypeName.PLUSPSQL) || dbType.equals(EDatabaseTypeName.IMPALA)) {
+                    || dbType.equals(EDatabaseTypeName.IMPALA)) {
                 // no version check for these dbs
                 return null;
             }

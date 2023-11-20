@@ -22,6 +22,7 @@ import org.eclipse.emf.ecore.impl.EPackageImpl;
 import org.talend.core.model.metadata.builder.connection.AbstractMetadataObject;
 import org.talend.core.model.metadata.builder.connection.AdditionalConnectionProperty;
 import org.talend.core.model.metadata.builder.connection.BRMSConnection;
+import org.talend.core.model.metadata.builder.connection.BigQueryConnection;
 import org.talend.core.model.metadata.builder.connection.CDCConnection;
 import org.talend.core.model.metadata.builder.connection.CDCType;
 import org.talend.core.model.metadata.builder.connection.Concept;
@@ -81,6 +82,7 @@ import org.talend.core.model.metadata.builder.connection.SalesforceModuleUnit;
 import org.talend.core.model.metadata.builder.connection.SalesforceSchemaConnection;
 import org.talend.core.model.metadata.builder.connection.SchemaTarget;
 import org.talend.core.model.metadata.builder.connection.SubscriberTable;
+import org.talend.core.model.metadata.builder.connection.TacokitDatabaseConnection;
 import org.talend.core.model.metadata.builder.connection.ValidationRulesConnection;
 import org.talend.core.model.metadata.builder.connection.WSDLParameter;
 import org.talend.core.model.metadata.builder.connection.WSDLSchemaConnection;
@@ -195,6 +197,13 @@ public class ConnectionPackageImpl extends EPackageImpl implements ConnectionPac
      * @generated
      */
     private EClass databaseConnectionEClass = null;
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    private EClass tacokitDatabaseConnectionEClass = null;
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -467,6 +476,13 @@ public class ConnectionPackageImpl extends EPackageImpl implements ConnectionPac
      * @generated
      */
     private EClass sapbwTableFieldEClass = null;
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    private EClass bigQueryConnectionEClass = null;
 
     /**
      * <!-- begin-user-doc -->
@@ -1569,6 +1585,15 @@ public class ConnectionPackageImpl extends EPackageImpl implements ConnectionPac
      */
     public EAttribute getDatabaseConnection_SupportNLS() {
         return (EAttribute) databaseConnectionEClass.getEStructuralFeatures().get(26);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EClass getTacokitDatabaseConnection() {
+        return tacokitDatabaseConnectionEClass;
     }
 
     /**
@@ -4144,6 +4169,51 @@ public class ConnectionPackageImpl extends EPackageImpl implements ConnectionPac
      * <!-- end-user-doc -->
      * @generated
      */
+    public EClass getBigQueryConnection() {
+        return bigQueryConnectionEClass;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EAttribute getBigQueryConnection_ServiceAccountCredentialsFile() {
+        return (EAttribute) bigQueryConnectionEClass.getEStructuralFeatures().get(0);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EAttribute getBigQueryConnection_ProjectId() {
+        return (EAttribute) bigQueryConnectionEClass.getEStructuralFeatures().get(1);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EAttribute getBigQueryConnection_UseRegionEndpoint() {
+        return (EAttribute) bigQueryConnectionEClass.getEStructuralFeatures().get(2);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EAttribute getBigQueryConnection_RegionEndpoint() {
+        return (EAttribute) bigQueryConnectionEClass.getEStructuralFeatures().get(3);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
     public EClass getSAPTable() {
         return sapTableEClass;
     }
@@ -4536,6 +4606,8 @@ public class ConnectionPackageImpl extends EPackageImpl implements ConnectionPac
         createEReference(databaseConnectionEClass, DATABASE_CONNECTION__PARAMETERS);
         createEAttribute(databaseConnectionEClass, DATABASE_CONNECTION__SUPPORT_NLS);
 
+        tacokitDatabaseConnectionEClass = createEClass(TACOKIT_DATABASE_CONNECTION);
+
         sapConnectionEClass = createEClass(SAP_CONNECTION);
         createEAttribute(sapConnectionEClass, SAP_CONNECTION__HOST);
         createEAttribute(sapConnectionEClass, SAP_CONNECTION__USERNAME);
@@ -4916,6 +4988,12 @@ public class ConnectionPackageImpl extends EPackageImpl implements ConnectionPac
         sapbwTableFieldEClass = createEClass(SAPBW_TABLE_FIELD);
         createEAttribute(sapbwTableFieldEClass, SAPBW_TABLE_FIELD__LOGICAL_NAME);
 
+        bigQueryConnectionEClass = createEClass(BIG_QUERY_CONNECTION);
+        createEAttribute(bigQueryConnectionEClass, BIG_QUERY_CONNECTION__SERVICE_ACCOUNT_CREDENTIALS_FILE);
+        createEAttribute(bigQueryConnectionEClass, BIG_QUERY_CONNECTION__PROJECT_ID);
+        createEAttribute(bigQueryConnectionEClass, BIG_QUERY_CONNECTION__USE_REGION_ENDPOINT);
+        createEAttribute(bigQueryConnectionEClass, BIG_QUERY_CONNECTION__REGION_ENDPOINT);
+
         // Create enums
         fileFormatEEnum = createEEnum(FILE_FORMAT);
         fieldSeparatorEEnum = createEEnum(FIELD_SEPARATOR);
@@ -4994,6 +5072,7 @@ public class ConnectionPackageImpl extends EPackageImpl implements ConnectionPac
         ebcdicConnectionEClass.getESuperTypes().add(this.getFileConnection());
         mdmConnectionEClass.getESuperTypes().add(this.getConnection());
         databaseConnectionEClass.getESuperTypes().add(this.getConnection());
+        tacokitDatabaseConnectionEClass.getESuperTypes().add(this.getDatabaseConnection());
         sapConnectionEClass.getESuperTypes().add(this.getConnection());
         sapFunctionUnitEClass.getESuperTypes().add(this.getAbstractMetadataObject());
         sapiDocUnitEClass.getESuperTypes().add(this.getAbstractMetadataObject());
@@ -5027,6 +5106,7 @@ public class ConnectionPackageImpl extends EPackageImpl implements ConnectionPac
         sapTableFieldEClass.getESuperTypes().add(this.getMetadataColumn());
         sapbwTableEClass.getESuperTypes().add(this.getSAPTable());
         sapbwTableFieldEClass.getESuperTypes().add(this.getSAPTableField());
+        bigQueryConnectionEClass.getESuperTypes().add(this.getConnection());
 
         // Initialize classes and features; add operations and parameters
         initEClass(metadataEClass, Metadata.class, "Metadata", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -5317,6 +5397,9 @@ public class ConnectionPackageImpl extends EPackageImpl implements ConnectionPac
         initEAttribute(getDatabaseConnection_SupportNLS(), ecorePackage.getEBoolean(), "supportNLS", "false", 0, 1,
                 DatabaseConnection.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
                 !IS_DERIVED, IS_ORDERED);
+
+        initEClass(tacokitDatabaseConnectionEClass, TacokitDatabaseConnection.class, "TacokitDatabaseConnection", !IS_ABSTRACT,
+                !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
         initEClass(sapConnectionEClass, SAPConnection.class, "SAPConnection", !IS_ABSTRACT, !IS_INTERFACE,
                 IS_GENERATED_INSTANCE_CLASS);
@@ -6235,6 +6318,21 @@ public class ConnectionPackageImpl extends EPackageImpl implements ConnectionPac
         initEAttribute(getSAPBWTableField_LogicalName(), ecorePackage.getEString(), "logicalName", null, 0, 1,
                 SAPBWTableField.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED,
                 IS_ORDERED);
+
+        initEClass(bigQueryConnectionEClass, BigQueryConnection.class, "BigQueryConnection", !IS_ABSTRACT, !IS_INTERFACE,
+                IS_GENERATED_INSTANCE_CLASS);
+        initEAttribute(getBigQueryConnection_ServiceAccountCredentialsFile(), ecorePackage.getEString(),
+                "ServiceAccountCredentialsFile", null, 0, 1, BigQueryConnection.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+                !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEAttribute(getBigQueryConnection_ProjectId(), ecorePackage.getEString(), "ProjectId", null, 0, 1,
+                BigQueryConnection.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+                !IS_DERIVED, IS_ORDERED);
+        initEAttribute(getBigQueryConnection_UseRegionEndpoint(), ecorePackage.getEBoolean(), "UseRegionEndpoint", null, 0, 1,
+                BigQueryConnection.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+                !IS_DERIVED, IS_ORDERED);
+        initEAttribute(getBigQueryConnection_RegionEndpoint(), ecorePackage.getEString(), "RegionEndpoint", null, 0, 1,
+                BigQueryConnection.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+                !IS_DERIVED, IS_ORDERED);
 
         // Initialize enums and add enum literals
         initEEnum(fileFormatEEnum, FileFormat.class, "FileFormat");

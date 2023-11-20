@@ -33,7 +33,7 @@ public enum EDatabaseVersion4Drivers {
     ACCESS_2007(new DbVersion4Drivers(EDatabaseTypeName.ACCESS, "Access 2007", "Access_2007")), //$NON-NLS-1$ //$NON-NLS-2$
     // oracle
     ORACLE_18(new DbVersion4Drivers(new EDatabaseTypeName[] { EDatabaseTypeName.ORACLEFORSID, EDatabaseTypeName.ORACLESN,
-            EDatabaseTypeName.ORACLE_OCI, EDatabaseTypeName.ORACLE_CUSTOM }, "Oracle 18 and above", "ORACLE_18", "ojdbc8-19.3.0.0.jar")),
+            EDatabaseTypeName.ORACLE_OCI, EDatabaseTypeName.ORACLE_CUSTOM }, "Oracle 18 and above", "ORACLE_18", "ojdbc8-19.19.0.0.jar")),
     ORACLE_12(new DbVersion4Drivers(new EDatabaseTypeName[] { EDatabaseTypeName.ORACLEFORSID, EDatabaseTypeName.ORACLESN,
             EDatabaseTypeName.ORACLE_OCI, EDatabaseTypeName.ORACLE_CUSTOM }, "Oracle 12 (Deprecated)", "ORACLE_12",
             "ojdbc7.jar")),
@@ -79,8 +79,8 @@ public enum EDatabaseVersion4Drivers {
     MSSQL_PROP(new DbVersion4Drivers(EDatabaseTypeName.MSSQL,
             "Microsoft", "MSSQL_PROP", //$NON-NLS-1$ //$NON-NLS-2$
             new String[] { "mssql-jdbc.jar", "slf4j-api-1.7.34.jar", "slf4j-reload4j-1.7.34.jar", "msal4j-1.11.0.jar", //$NON-NLS-1$
-                    "oauth2-oidc-sdk-9.7.jar", "reload4j-1.2.22.jar", "jackson-core-2.13.4.jar",
-                    "jackson-databind-2.13.4.2.jar", "jackson-annotations-2.13.4.jar", "jcip-annotations-1.0-1.jar",
+                    "oauth2-oidc-sdk-9.7.jar", "reload4j-1.2.22.jar", "jackson-core-2.14.3.jar",
+                    "jackson-databind-2.14.3.jar", "jackson-annotations-2.14.3.jar", "jcip-annotations-1.0-1.jar",
                     "json-smart-2.4.11.jar", "nimbus-jose-jwt-9.22.jar", "accessors-smart-2.4.11.jar", "asm-9.5.jar",
                     "content-type-2.1.jar", "lang-tag-1.5.jar" })),
 
@@ -93,12 +93,9 @@ public enum EDatabaseVersion4Drivers {
     GREENPLUM_PSQL(new DbVersion4Drivers(EDatabaseTypeName.GREENPLUM,"PostgreSQL", "POSTGRESQL", "postgresql-8.4-703.jdbc4.jar")), //$NON-NLS-1$
     GREENPLUM(new DbVersion4Drivers(EDatabaseTypeName.GREENPLUM,"Greenplum", "GREENPLUM", "greenplum-5.1.4.000275.jar")), //$NON-NLS-1$
 //    PSQL_V10(new DbVersion4Drivers(EDatabaseTypeName.PSQL, "v10", "V10", "postgresql-42.2.5.jar")),
-    PSQL_V9_X(new DbVersion4Drivers(EDatabaseTypeName.PSQL, "v9 and later", "V9_X", "postgresql-42.2.26.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-    PSQL_PRIOR_TO_V9(new DbVersion4Drivers(EDatabaseTypeName.PSQL, "Prior to v9", "PRIOR_TO_V9", "postgresql-8.4-703.jdbc4.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    PSQL_V9_X(new DbVersion4Drivers(EDatabaseTypeName.PSQL, "v9 and later", "V9_X", "postgresql-42.6.0.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    PSQL_PRIOR_TO_V9(new DbVersion4Drivers(EDatabaseTypeName.PSQL, "Prior to v9 (Deprecated)", "PRIOR_TO_V9", "postgresql-8.4-703.jdbc4.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
-    PLUSPSQL_PRIOR_TO_V9(new DbVersion4Drivers(EDatabaseTypeName.PLUSPSQL,
-            "Prior to v9", "PRIOR_TO_V9", "postgresql-8.4-703.jdbc4.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-    PLUSPSQL_V9_X(new DbVersion4Drivers(EDatabaseTypeName.PLUSPSQL, "v9 and later", "V9_X", "postgresql-42.2.26.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     IBMDB2(new DbVersion4Drivers(EDatabaseTypeName.IBMDB2, new String[] { "db2jcc4.jar", "db2jcc_license_cu.jar", //$NON-NLS-1$ //$NON-NLS-2$
             "db2jcc_license_cisuz.jar" })), //$NON-NLS-1$
     IBMDB2ZOS(new DbVersion4Drivers(EDatabaseTypeName.IBMDB2ZOS, new String[] { "db2jcc4.jar", "db2jcc_license_cu.jar", //$NON-NLS-1$ //$NON-NLS-2$
@@ -153,9 +150,9 @@ public enum EDatabaseVersion4Drivers {
     REDSHIFT(new DbVersion4Drivers(EDatabaseTypeName.REDSHIFT, "redshift", "REDSHIFT", //$NON-NLS-1$ //$NON-NLS-2$
             new String[]{ "redshift-jdbc42-no-awssdk-1.2.55.1083.jar", "antlr4-runtime-4.8-1.jar" })), //$NON-NLS-1$ //$NON-NLS-2$
     REDSHIFT_SSO(new DbVersion4Drivers(EDatabaseTypeName.REDSHIFT_SSO, "redshift sso", "REDSHIFT_SSO", //$NON-NLS-1$ //$NON-NLS-2$
-            new String[] { "redshift-jdbc42-no-awssdk-1.2.55.1083.jar", "antlr4-runtime-4.8-1.jar", "jackson-core-2.13.4.jar", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                    "jackson-databind-2.13.4.2.jar", "jackson-annotations-2.13.4.jar", "httpcore-4.4.13.jar", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                    "httpclient-4.5.13.jar", "joda-time-2.8.1.jar", "commons-logging-1.2.jar", "commons-codec-1.14.jar", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$//$NON-NLS-4$
+            new String[] { "redshift-jdbc42-no-awssdk-1.2.55.1083.jar", "antlr4-runtime-4.8-1.jar", "jackson-core-2.14.3.jar", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    "jackson-databind-2.14.3.jar", "jackson-annotations-2.14.3.jar", "httpcore-4.4.13.jar", "httpclient-4.5.13.jar", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$//$NON-NLS-4$
+                    "joda-time-2.8.1.jar", "commons-logging-1.2.jar", "commons-codec-1.14.jar", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                     "aws-java-sdk-redshift-internal-1.12.x.jar", "aws-java-sdk-core-1.12.315.jar", //$NON-NLS-1$ //$NON-NLS-2$
                     "aws-java-sdk-sts-1.12.315.jar", "aws-java-sdk-redshift-1.12.315.jar", "jmespath-java-1.12.315.jar" })), //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
 

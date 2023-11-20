@@ -189,6 +189,7 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference metadata.ecore#//DatabaseConnection/parameters"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute metadata.ecore#//DatabaseConnection/supportNLS"/>
     </genClasses>
+    <genClasses ecoreClass="metadata.ecore#//TacokitDatabaseConnection"/>
     <genClasses ecoreClass="metadata.ecore#//SAPConnection">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute metadata.ecore#//SAPConnection/Host"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute metadata.ecore#//SAPConnection/Username"/>
@@ -573,6 +574,12 @@
     </genClasses>
     <genClasses ecoreClass="metadata.ecore#//SAPBWTableField">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute metadata.ecore#//SAPBWTableField/logicalName"/>
+    </genClasses>
+    <genClasses ecoreClass="metadata.ecore#//BigQueryConnection">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute metadata.ecore#//BigQueryConnection/ServiceAccountCredentialsFile"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute metadata.ecore#//BigQueryConnection/ProjectId"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute metadata.ecore#//BigQueryConnection/UseRegionEndpoint"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute metadata.ecore#//BigQueryConnection/RegionEndpoint"/>
     </genClasses>
     <nestedGenPackages prefix="cwm" basePackage="org.talend" disposableProviderFactory="true"
         ecorePackage="metadata.ecore#//cwm">

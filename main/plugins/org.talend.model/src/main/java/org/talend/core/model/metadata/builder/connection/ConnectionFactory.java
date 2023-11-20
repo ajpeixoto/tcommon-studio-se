@@ -96,6 +96,15 @@ public interface ConnectionFactory extends EFactory {
     DatabaseConnection createDatabaseConnection();
 
     /**
+     * Returns a new object of class '<em>Tacokit Database Connection</em>'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return a new object of class '<em>Tacokit Database Connection</em>'.
+     * @generated
+     */
+    TacokitDatabaseConnection createTacokitDatabaseConnection();
+
+    /**
      * Returns a new object of class '<em>SAP Connection</em>'.
      * <!-- begin-user-doc --> <!-- end-user-doc -->
      * @return a new object of class '<em>SAP Connection</em>'.
@@ -442,6 +451,15 @@ public interface ConnectionFactory extends EFactory {
      * @generated
      */
     SAPBWTableField createSAPBWTableField();
+
+    /**
+     * Returns a new object of class '<em>Big Query Connection</em>'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return a new object of class '<em>Big Query Connection</em>'.
+     * @generated
+     */
+    BigQueryConnection createBigQueryConnection();
 
     /**
      * Returns a new object of class '<em>SAP Table</em>'.

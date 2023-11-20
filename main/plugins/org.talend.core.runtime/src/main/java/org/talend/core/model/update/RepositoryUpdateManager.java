@@ -102,6 +102,7 @@ import org.talend.designer.core.model.utils.emf.talendfile.ContextParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
 import org.talend.designer.runprocess.ItemCacheManager;
 import org.talend.repository.model.IProxyRepositoryFactory;
+import org.talend.repository.model.IRepositoryNode;
 import org.talend.repository.model.IRepositoryService;
 import org.talend.repository.model.RepositoryNode;
 
@@ -770,6 +771,15 @@ public abstract class RepositoryUpdateManager {
                 updateConnectionContextParam((ConnectionItem) item, citem, valueMap);
             }
         }
+        
+        List<IRepositoryViewObject> bigqueryConnList = FACTORY.getAll(ERepositoryObjectType.METADATA_BIGQUERYCONNECTIONS, true);
+        for (IRepositoryViewObject obj : bigqueryConnList) {
+            Item item = obj.getProperty().getItem();
+            if (item instanceof ConnectionItem) {
+                updateConnectionContextParam((ConnectionItem) item, citem, valueMap);
+            }
+        }
+        
         for (String updateType : UpdateRepositoryHelper.getAllHadoopConnectionTypes()) {
             List<IRepositoryViewObject> hadoopConnList = FACTORY
                     .getAll(ERepositoryObjectType.valueOf(ERepositoryObjectType.class, updateType), true);
@@ -1914,7 +1924,7 @@ public abstract class RepositoryUpdateManager {
         return updateQueryObject(query, true, false);
     }
 
-    public static boolean updateQuery(Query query, RepositoryNode node) {
+    public static boolean updateQuery(Query query, IRepositoryNode node) {
         return updateQueryObject(query, true, false, node);
     }
 
@@ -1956,7 +1966,7 @@ public abstract class RepositoryUpdateManager {
         return repositoryUpdateManager.doWork(show, onlySimpleShow);
     }
 
-    private static boolean updateQueryObject(Object parameter, boolean show, boolean onlySimpleShow, RepositoryNode node) {
+    private static boolean updateQueryObject(Object parameter, boolean show, boolean onlySimpleShow, IRepositoryNode node) {
         Item item = node.getObject().getProperty().getItem();
         List<Relation> relations = null;
         if (parameter instanceof Query) {

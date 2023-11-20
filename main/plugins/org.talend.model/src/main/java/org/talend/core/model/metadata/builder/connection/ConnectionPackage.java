@@ -5257,13 +5257,664 @@ public interface ConnectionPackage extends EPackage {
     int DATABASE_CONNECTION_FEATURE_COUNT = CONNECTION_FEATURE_COUNT + 27;
 
     /**
+     * The meta object id for the '{@link org.talend.core.model.metadata.builder.connection.impl.TacokitDatabaseConnectionImpl <em>Tacokit Database Connection</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see org.talend.core.model.metadata.builder.connection.impl.TacokitDatabaseConnectionImpl
+     * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getTacokitDatabaseConnection()
+     * @generated
+     */
+    int TACOKIT_DATABASE_CONNECTION = 11;
+
+    /**
+     * The feature id for the '<em><b>Name</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__NAME = DATABASE_CONNECTION__NAME;
+
+    /**
+     * The feature id for the '<em><b>Visibility</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__VISIBILITY = DATABASE_CONNECTION__VISIBILITY;
+
+    /**
+     * The feature id for the '<em><b>Client Dependency</b></em>' reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__CLIENT_DEPENDENCY = DATABASE_CONNECTION__CLIENT_DEPENDENCY;
+
+    /**
+     * The feature id for the '<em><b>Supplier Dependency</b></em>' reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__SUPPLIER_DEPENDENCY = DATABASE_CONNECTION__SUPPLIER_DEPENDENCY;
+
+    /**
+     * The feature id for the '<em><b>Constraint</b></em>' reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__CONSTRAINT = DATABASE_CONNECTION__CONSTRAINT;
+
+    /**
+     * The feature id for the '<em><b>Namespace</b></em>' container reference.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__NAMESPACE = DATABASE_CONNECTION__NAMESPACE;
+
+    /**
+     * The feature id for the '<em><b>Importer</b></em>' reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__IMPORTER = DATABASE_CONNECTION__IMPORTER;
+
+    /**
+     * The feature id for the '<em><b>Stereotype</b></em>' reference.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__STEREOTYPE = DATABASE_CONNECTION__STEREOTYPE;
+
+    /**
+     * The feature id for the '<em><b>Tagged Value</b></em>' containment reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__TAGGED_VALUE = DATABASE_CONNECTION__TAGGED_VALUE;
+
+    /**
+     * The feature id for the '<em><b>Document</b></em>' reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__DOCUMENT = DATABASE_CONNECTION__DOCUMENT;
+
+    /**
+     * The feature id for the '<em><b>Description</b></em>' reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__DESCRIPTION = DATABASE_CONNECTION__DESCRIPTION;
+
+    /**
+     * The feature id for the '<em><b>Responsible Party</b></em>' reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__RESPONSIBLE_PARTY = DATABASE_CONNECTION__RESPONSIBLE_PARTY;
+
+    /**
+     * The feature id for the '<em><b>Element Node</b></em>' reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__ELEMENT_NODE = DATABASE_CONNECTION__ELEMENT_NODE;
+
+    /**
+     * The feature id for the '<em><b>Set</b></em>' reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__SET = DATABASE_CONNECTION__SET;
+
+    /**
+     * The feature id for the '<em><b>Rendered Object</b></em>' reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__RENDERED_OBJECT = DATABASE_CONNECTION__RENDERED_OBJECT;
+
+    /**
+     * The feature id for the '<em><b>Vocabulary Element</b></em>' reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__VOCABULARY_ELEMENT = DATABASE_CONNECTION__VOCABULARY_ELEMENT;
+
+    /**
+     * The feature id for the '<em><b>Measurement</b></em>' reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__MEASUREMENT = DATABASE_CONNECTION__MEASUREMENT;
+
+    /**
+     * The feature id for the '<em><b>Change Request</b></em>' reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__CHANGE_REQUEST = DATABASE_CONNECTION__CHANGE_REQUEST;
+
+    /**
+     * The feature id for the '<em><b>Dasdl Property</b></em>' reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__DASDL_PROPERTY = DATABASE_CONNECTION__DASDL_PROPERTY;
+
+    /**
+     * The feature id for the '<em><b>Properties</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @deprecated See {@link org.talend.core.model.metadata.builder.connection.AbstractMetadataObject#getProperties() model documentation} for details.
+     * @generated
+     * @ordered
+     */
+    @Deprecated
+    int TACOKIT_DATABASE_CONNECTION__PROPERTIES = DATABASE_CONNECTION__PROPERTIES;
+
+    /**
+     * The feature id for the '<em><b>Id</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__ID = DATABASE_CONNECTION__ID;
+
+    /**
+     * The feature id for the '<em><b>Comment</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__COMMENT = DATABASE_CONNECTION__COMMENT;
+
+    /**
+     * The feature id for the '<em><b>Label</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__LABEL = DATABASE_CONNECTION__LABEL;
+
+    /**
+     * The feature id for the '<em><b>Read Only</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__READ_ONLY = DATABASE_CONNECTION__READ_ONLY;
+
+    /**
+     * The feature id for the '<em><b>Synchronised</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__SYNCHRONISED = DATABASE_CONNECTION__SYNCHRONISED;
+
+    /**
+     * The feature id for the '<em><b>Divergency</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__DIVERGENCY = DATABASE_CONNECTION__DIVERGENCY;
+
+    /**
+     * The feature id for the '<em><b>Owned Element</b></em>' containment reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__OWNED_ELEMENT = DATABASE_CONNECTION__OWNED_ELEMENT;
+
+    /**
+     * The feature id for the '<em><b>Imported Element</b></em>' reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__IMPORTED_ELEMENT = DATABASE_CONNECTION__IMPORTED_ELEMENT;
+
+    /**
+     * The feature id for the '<em><b>Data Manager</b></em>' reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__DATA_MANAGER = DATABASE_CONNECTION__DATA_MANAGER;
+
+    /**
+     * The feature id for the '<em><b>Pathname</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__PATHNAME = DATABASE_CONNECTION__PATHNAME;
+
+    /**
+     * The feature id for the '<em><b>Machine</b></em>' container reference.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__MACHINE = DATABASE_CONNECTION__MACHINE;
+
+    /**
+     * The feature id for the '<em><b>Deployed Software System</b></em>' reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__DEPLOYED_SOFTWARE_SYSTEM = DATABASE_CONNECTION__DEPLOYED_SOFTWARE_SYSTEM;
+
+    /**
+     * The feature id for the '<em><b>Component</b></em>' reference.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__COMPONENT = DATABASE_CONNECTION__COMPONENT;
+
+    /**
+     * The feature id for the '<em><b>Is Case Sensitive</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__IS_CASE_SENSITIVE = DATABASE_CONNECTION__IS_CASE_SENSITIVE;
+
+    /**
+     * The feature id for the '<em><b>Client Connection</b></em>' reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__CLIENT_CONNECTION = DATABASE_CONNECTION__CLIENT_CONNECTION;
+
+    /**
+     * The feature id for the '<em><b>Data Package</b></em>' reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__DATA_PACKAGE = DATABASE_CONNECTION__DATA_PACKAGE;
+
+    /**
+     * The feature id for the '<em><b>Resource Connection</b></em>' containment reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__RESOURCE_CONNECTION = DATABASE_CONNECTION__RESOURCE_CONNECTION;
+
+    /**
+     * The feature id for the '<em><b>Version</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__VERSION = DATABASE_CONNECTION__VERSION;
+
+    /**
+     * The feature id for the '<em><b>Queries</b></em>' containment reference.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__QUERIES = DATABASE_CONNECTION__QUERIES;
+
+    /**
+     * The feature id for the '<em><b>Context Mode</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__CONTEXT_MODE = DATABASE_CONNECTION__CONTEXT_MODE;
+
+    /**
+     * The feature id for the '<em><b>Context Id</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__CONTEXT_ID = DATABASE_CONNECTION__CONTEXT_ID;
+
+    /**
+     * The feature id for the '<em><b>Context Name</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__CONTEXT_NAME = DATABASE_CONNECTION__CONTEXT_NAME;
+
+    /**
+     * The feature id for the '<em><b>Comp Properties</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__COMP_PROPERTIES = DATABASE_CONNECTION__COMP_PROPERTIES;
+
+    /**
+     * The feature id for the '<em><b>Database Type</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__DATABASE_TYPE = DATABASE_CONNECTION__DATABASE_TYPE;
+
+    /**
+     * The feature id for the '<em><b>Driver Jar Path</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__DRIVER_JAR_PATH = DATABASE_CONNECTION__DRIVER_JAR_PATH;
+
+    /**
+     * The feature id for the '<em><b>Driver Class</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__DRIVER_CLASS = DATABASE_CONNECTION__DRIVER_CLASS;
+
+    /**
+     * The feature id for the '<em><b>URL</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__URL = DATABASE_CONNECTION__URL;
+
+    /**
+     * The feature id for the '<em><b>Db Version String</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__DB_VERSION_STRING = DATABASE_CONNECTION__DB_VERSION_STRING;
+
+    /**
+     * The feature id for the '<em><b>Port</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__PORT = DATABASE_CONNECTION__PORT;
+
+    /**
+     * The feature id for the '<em><b>Username</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__USERNAME = DATABASE_CONNECTION__USERNAME;
+
+    /**
+     * The feature id for the '<em><b>Password</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__PASSWORD = DATABASE_CONNECTION__PASSWORD;
+
+    /**
+     * The feature id for the '<em><b>Server Name</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__SERVER_NAME = DATABASE_CONNECTION__SERVER_NAME;
+
+    /**
+     * The feature id for the '<em><b>Datasource Name</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__DATASOURCE_NAME = DATABASE_CONNECTION__DATASOURCE_NAME;
+
+    /**
+     * The feature id for the '<em><b>File Field Name</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__FILE_FIELD_NAME = DATABASE_CONNECTION__FILE_FIELD_NAME;
+
+    /**
+     * The feature id for the '<em><b>SID</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__SID = DATABASE_CONNECTION__SID;
+
+    /**
+     * The feature id for the '<em><b>Sql Synthax</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__SQL_SYNTHAX = DATABASE_CONNECTION__SQL_SYNTHAX;
+
+    /**
+     * The feature id for the '<em><b>String Quote</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__STRING_QUOTE = DATABASE_CONNECTION__STRING_QUOTE;
+
+    /**
+     * The feature id for the '<em><b>Null Char</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__NULL_CHAR = DATABASE_CONNECTION__NULL_CHAR;
+
+    /**
+     * The feature id for the '<em><b>Dbms Id</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__DBMS_ID = DATABASE_CONNECTION__DBMS_ID;
+
+    /**
+     * The feature id for the '<em><b>Product Id</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__PRODUCT_ID = DATABASE_CONNECTION__PRODUCT_ID;
+
+    /**
+     * The feature id for the '<em><b>DB Root Path</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__DB_ROOT_PATH = DATABASE_CONNECTION__DB_ROOT_PATH;
+
+    /**
+     * The feature id for the '<em><b>Additional Params</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__ADDITIONAL_PARAMS = DATABASE_CONNECTION__ADDITIONAL_PARAMS;
+
+    /**
+     * The feature id for the '<em><b>Standard SQL</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__STANDARD_SQL = DATABASE_CONNECTION__STANDARD_SQL;
+
+    /**
+     * The feature id for the '<em><b>System SQL</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__SYSTEM_SQL = DATABASE_CONNECTION__SYSTEM_SQL;
+
+    /**
+     * The feature id for the '<em><b>Cdc Conns</b></em>' containment reference.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__CDC_CONNS = DATABASE_CONNECTION__CDC_CONNS;
+
+    /**
+     * The feature id for the '<em><b>Cdc Type Mode</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__CDC_TYPE_MODE = DATABASE_CONNECTION__CDC_TYPE_MODE;
+
+    /**
+     * The feature id for the '<em><b>SQL Mode</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__SQL_MODE = DATABASE_CONNECTION__SQL_MODE;
+
+    /**
+     * The feature id for the '<em><b>Ui Schema</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__UI_SCHEMA = DATABASE_CONNECTION__UI_SCHEMA;
+
+    /**
+     * The feature id for the '<em><b>Parameters</b></em>' map.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__PARAMETERS = DATABASE_CONNECTION__PARAMETERS;
+
+    /**
+     * The feature id for the '<em><b>Support NLS</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION__SUPPORT_NLS = DATABASE_CONNECTION__SUPPORT_NLS;
+
+    /**
+     * The number of structural features of the '<em>Tacokit Database Connection</em>' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int TACOKIT_DATABASE_CONNECTION_FEATURE_COUNT = DATABASE_CONNECTION_FEATURE_COUNT + 0;
+
+    /**
      * The meta object id for the '{@link org.talend.core.model.metadata.builder.connection.impl.SAPConnectionImpl <em>SAP Connection</em>}' class.
      * <!-- begin-user-doc --> <!-- end-user-doc -->
      * @see org.talend.core.model.metadata.builder.connection.impl.SAPConnectionImpl
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getSAPConnection()
      * @generated
      */
-    int SAP_CONNECTION = 11;
+    int SAP_CONNECTION = 12;
 
     /**
      * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -5789,7 +6440,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getSAPFunctionUnit()
      * @generated
      */
-    int SAP_FUNCTION_UNIT = 12;
+    int SAP_FUNCTION_UNIT = 13;
 
     /**
      * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -6127,7 +6778,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getSAPIDocUnit()
      * @generated
      */
-    int SAPI_DOC_UNIT = 13;
+    int SAPI_DOC_UNIT = 14;
 
     /**
      * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -6424,7 +7075,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getSAPFunctionParameterColumn()
      * @generated
      */
-    int SAP_FUNCTION_PARAMETER_COLUMN = 14;
+    int SAP_FUNCTION_PARAMETER_COLUMN = 15;
 
     /**
      * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -6714,7 +7365,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getSAPFunctionParameterTable()
      * @generated
      */
-    int SAP_FUNCTION_PARAMETER_TABLE = 15;
+    int SAP_FUNCTION_PARAMETER_TABLE = 16;
 
     /**
      * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -6963,7 +7614,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getInputSAPFunctionParameterTable()
      * @generated
      */
-    int INPUT_SAP_FUNCTION_PARAMETER_TABLE = 16;
+    int INPUT_SAP_FUNCTION_PARAMETER_TABLE = 17;
 
     /**
      * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -7221,7 +7872,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getOutputSAPFunctionParameterTable()
      * @generated
      */
-    int OUTPUT_SAP_FUNCTION_PARAMETER_TABLE = 17;
+    int OUTPUT_SAP_FUNCTION_PARAMETER_TABLE = 18;
 
     /**
      * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -7479,7 +8130,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getRegexpFileConnection()
      * @generated
      */
-    int REGEXP_FILE_CONNECTION = 18;
+    int REGEXP_FILE_CONNECTION = 19;
 
     /**
      * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -8041,7 +8692,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getXmlFileConnection()
      * @generated
      */
-    int XML_FILE_CONNECTION = 19;
+    int XML_FILE_CONNECTION = 20;
 
     /**
      * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -8540,7 +9191,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getSchemaTarget()
      * @generated
      */
-    int SCHEMA_TARGET = 20;
+    int SCHEMA_TARGET = 21;
 
     /**
      * The feature id for the '<em><b>Relative XPath Query</b></em>' attribute.
@@ -8584,7 +9235,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getQueriesConnection()
      * @generated
      */
-    int QUERIES_CONNECTION = 21;
+    int QUERIES_CONNECTION = 22;
 
     /**
      * The feature id for the '<em><b>Connection</b></em>' container reference.
@@ -8620,7 +9271,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getQuery()
      * @generated
      */
-    int QUERY = 22;
+    int QUERY = 23;
 
     /**
      * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -8884,7 +9535,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getLdifFileConnection()
      * @generated
      */
-    int LDIF_FILE_CONNECTION = 23;
+    int LDIF_FILE_CONNECTION = 24;
 
     /**
      * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -9312,7 +9963,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getFileExcelConnection()
      * @generated
      */
-    int FILE_EXCEL_CONNECTION = 24;
+    int FILE_EXCEL_CONNECTION = 25;
 
     /**
      * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -9951,7 +10602,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getXmlXPathLoopDescriptor()
      * @generated
      */
-    int XML_XPATH_LOOP_DESCRIPTOR = 25;
+    int XML_XPATH_LOOP_DESCRIPTOR = 26;
 
     /**
      * The feature id for the '<em><b>Limit Boucle</b></em>' attribute.
@@ -10004,7 +10655,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getGenericSchemaConnection()
      * @generated
      */
-    int GENERIC_SCHEMA_CONNECTION = 26;
+    int GENERIC_SCHEMA_CONNECTION = 27;
 
     /**
      * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -10409,7 +11060,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getLDAPSchemaConnection()
      * @generated
      */
-    int LDAP_SCHEMA_CONNECTION = 27;
+    int LDAP_SCHEMA_CONNECTION = 28;
 
     /**
      * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -10984,7 +11635,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getWSDLSchemaConnection()
      * @generated
      */
-    int WSDL_SCHEMA_CONNECTION = 28;
+    int WSDL_SCHEMA_CONNECTION = 29;
 
     /**
      * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -11506,7 +12157,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getSalesforceSchemaConnection()
      * @generated
      */
-    int SALESFORCE_SCHEMA_CONNECTION = 29;
+    int SALESFORCE_SCHEMA_CONNECTION = 30;
 
     /**
      * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -12096,7 +12747,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getCDCConnection()
      * @generated
      */
-    int CDC_CONNECTION = 30;
+    int CDC_CONNECTION = 31;
 
     /**
      * The feature id for the '<em><b>Connection</b></em>' container reference.
@@ -12132,7 +12783,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getCDCType()
      * @generated
      */
-    int CDC_TYPE = 31;
+    int CDC_TYPE = 32;
 
     /**
      * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -12404,7 +13055,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getSubscriberTable()
      * @generated
      */
-    int SUBSCRIBER_TABLE = 32;
+    int SUBSCRIBER_TABLE = 33;
 
     /**
      * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -12916,7 +13567,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getSAPTestInputParameterTable()
      * @generated
      */
-    int SAP_TEST_INPUT_PARAMETER_TABLE = 33;
+    int SAP_TEST_INPUT_PARAMETER_TABLE = 34;
 
     /**
      * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -13174,7 +13825,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getConcept()
      * @generated
      */
-    int CONCEPT = 34;
+    int CONCEPT = 35;
 
     /**
      * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -13756,7 +14407,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getConceptTarget()
      * @generated
      */
-    int CONCEPT_TARGET = 35;
+    int CONCEPT_TARGET = 36;
 
     /**
      * The feature id for the '<em><b>Schema</b></em>' container reference. <!-- begin-user-doc --> <!-- end-user-doc
@@ -13800,7 +14451,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getHL7Connection()
      * @generated
      */
-    int HL7_CONNECTION = 36;
+    int HL7_CONNECTION = 37;
 
     /**
      * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -14389,7 +15040,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getHeaderFooterConnection()
      * @generated
      */
-    int HEADER_FOOTER_CONNECTION = 37;
+    int HEADER_FOOTER_CONNECTION = 38;
 
     /**
      * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -14809,7 +15460,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getXMLFileNode()
      * @generated
      */
-    int XML_FILE_NODE = 38;
+    int XML_FILE_NODE = 39;
 
     /**
      * The feature id for the '<em><b>XML Path</b></em>' attribute.
@@ -14875,7 +15526,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getWSDLParameter()
      * @generated
      */
-    int WSDL_PARAMETER = 39;
+    int WSDL_PARAMETER = 40;
 
     /**
      * The feature id for the '<em><b>Element</b></em>' attribute.
@@ -14944,7 +15595,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getGenericPackage()
      * @generated
      */
-    int GENERIC_PACKAGE = 40;
+    int GENERIC_PACKAGE = 41;
 
     /**
      * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -15153,7 +15804,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getHL7FileNode()
      * @generated
      */
-    int HL7_FILE_NODE = 41;
+    int HL7_FILE_NODE = 42;
 
     /**
      * The feature id for the '<em><b>File Path</b></em>' attribute.
@@ -15220,7 +15871,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getFTPConnection()
      * @generated
      */
-    int FTP_CONNECTION = 42;
+    int FTP_CONNECTION = 43;
 
     /**
      * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -15817,7 +16468,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getBRMSConnection()
      * @generated
      */
-    int BRMS_CONNECTION = 43;
+    int BRMS_CONNECTION = 44;
 
     /**
      * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -16306,7 +16957,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getConditionType()
      * @generated
      */
-    int CONDITION_TYPE = 45;
+    int CONDITION_TYPE = 46;
 
     /**
      * The meta object id for the '{@link org.talend.core.model.metadata.builder.connection.impl.ValidationRulesConnectionImpl <em>Validation Rules Connection</em>}' class.
@@ -16316,7 +16967,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getValidationRulesConnection()
      * @generated
      */
-    int VALIDATION_RULES_CONNECTION = 44;
+    int VALIDATION_RULES_CONNECTION = 45;
 
     /**
      * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -16913,7 +17564,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getInnerJoinMap()
      * @generated
      */
-    int INNER_JOIN_MAP = 46;
+    int INNER_JOIN_MAP = 47;
 
     /**
      * The feature id for the '<em><b>Key</b></em>' attribute.
@@ -16950,7 +17601,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getEDIFACTConnection()
      * @generated
      */
-    int EDIFACT_CONNECTION = 47;
+    int EDIFACT_CONNECTION = 48;
 
     /**
      * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -17385,7 +18036,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getEDIFACTColumn()
      * @generated
      */
-    int EDIFACT_COLUMN = 48;
+    int EDIFACT_COLUMN = 49;
 
     /**
      * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -17959,7 +18610,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getSalesforceModuleUnit()
      * @generated
      */
-    int SALESFORCE_MODULE_UNIT = 49;
+    int SALESFORCE_MODULE_UNIT = 50;
 
     /**
      * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -18250,7 +18901,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getAdditionalProperties()
      * @generated
      */
-    int ADDITIONAL_PROPERTIES = 50;
+    int ADDITIONAL_PROPERTIES = 51;
 
     /**
      * The feature id for the '<em><b>Key</b></em>' attribute.
@@ -18287,7 +18938,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getSAPTableField()
      * @generated
      */
-    int SAP_TABLE_FIELD = 52;
+    int SAP_TABLE_FIELD = 53;
 
     /**
      * The meta object id for the '{@link org.talend.core.model.metadata.builder.connection.impl.SAPTableImpl <em>SAP Table</em>}' class.
@@ -18297,7 +18948,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getSAPTable()
      * @generated
      */
-    int SAP_TABLE = 51;
+    int SAP_TABLE = 52;
 
     /**
      * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -19345,7 +19996,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getSAPFunctionParameter()
      * @generated
      */
-    int SAP_FUNCTION_PARAMETER = 53;
+    int SAP_FUNCTION_PARAMETER = 54;
 
     /**
      * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -19436,7 +20087,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getSAPFunctionParamData()
      * @generated
      */
-    int SAP_FUNCTION_PARAM_DATA = 54;
+    int SAP_FUNCTION_PARAM_DATA = 55;
 
     /**
      * The feature id for the '<em><b>Input Root</b></em>' containment reference.
@@ -19473,7 +20124,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getAdditionalConnectionProperty()
      * @generated
      */
-    int ADDITIONAL_CONNECTION_PROPERTY = 55;
+    int ADDITIONAL_CONNECTION_PROPERTY = 56;
 
     /**
      * The feature id for the '<em><b>Property Name</b></em>' attribute.
@@ -19510,7 +20161,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getSAPBWTable()
      * @generated
      */
-    int SAPBW_TABLE = 56;
+    int SAPBW_TABLE = 57;
 
     /**
      * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -20048,7 +20699,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getSAPBWTableField()
      * @generated
      */
-    int SAPBW_TABLE_FIELD = 57;
+    int SAPBW_TABLE_FIELD = 58;
 
     /**
      * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -20624,13 +21275,457 @@ public interface ConnectionPackage extends EPackage {
     int SAPBW_TABLE_FIELD_FEATURE_COUNT = SAP_TABLE_FIELD_FEATURE_COUNT + 1;
 
     /**
+     * The meta object id for the '{@link org.talend.core.model.metadata.builder.connection.impl.BigQueryConnectionImpl <em>Big Query Connection</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see org.talend.core.model.metadata.builder.connection.impl.BigQueryConnectionImpl
+     * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getBigQueryConnection()
+     * @generated
+     */
+    int BIG_QUERY_CONNECTION = 59;
+
+    /**
+     * The feature id for the '<em><b>Name</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BIG_QUERY_CONNECTION__NAME = CONNECTION__NAME;
+
+    /**
+     * The feature id for the '<em><b>Visibility</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BIG_QUERY_CONNECTION__VISIBILITY = CONNECTION__VISIBILITY;
+
+    /**
+     * The feature id for the '<em><b>Client Dependency</b></em>' reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BIG_QUERY_CONNECTION__CLIENT_DEPENDENCY = CONNECTION__CLIENT_DEPENDENCY;
+
+    /**
+     * The feature id for the '<em><b>Supplier Dependency</b></em>' reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BIG_QUERY_CONNECTION__SUPPLIER_DEPENDENCY = CONNECTION__SUPPLIER_DEPENDENCY;
+
+    /**
+     * The feature id for the '<em><b>Constraint</b></em>' reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BIG_QUERY_CONNECTION__CONSTRAINT = CONNECTION__CONSTRAINT;
+
+    /**
+     * The feature id for the '<em><b>Namespace</b></em>' container reference.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BIG_QUERY_CONNECTION__NAMESPACE = CONNECTION__NAMESPACE;
+
+    /**
+     * The feature id for the '<em><b>Importer</b></em>' reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BIG_QUERY_CONNECTION__IMPORTER = CONNECTION__IMPORTER;
+
+    /**
+     * The feature id for the '<em><b>Stereotype</b></em>' reference.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BIG_QUERY_CONNECTION__STEREOTYPE = CONNECTION__STEREOTYPE;
+
+    /**
+     * The feature id for the '<em><b>Tagged Value</b></em>' containment reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BIG_QUERY_CONNECTION__TAGGED_VALUE = CONNECTION__TAGGED_VALUE;
+
+    /**
+     * The feature id for the '<em><b>Document</b></em>' reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BIG_QUERY_CONNECTION__DOCUMENT = CONNECTION__DOCUMENT;
+
+    /**
+     * The feature id for the '<em><b>Description</b></em>' reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BIG_QUERY_CONNECTION__DESCRIPTION = CONNECTION__DESCRIPTION;
+
+    /**
+     * The feature id for the '<em><b>Responsible Party</b></em>' reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BIG_QUERY_CONNECTION__RESPONSIBLE_PARTY = CONNECTION__RESPONSIBLE_PARTY;
+
+    /**
+     * The feature id for the '<em><b>Element Node</b></em>' reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BIG_QUERY_CONNECTION__ELEMENT_NODE = CONNECTION__ELEMENT_NODE;
+
+    /**
+     * The feature id for the '<em><b>Set</b></em>' reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BIG_QUERY_CONNECTION__SET = CONNECTION__SET;
+
+    /**
+     * The feature id for the '<em><b>Rendered Object</b></em>' reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BIG_QUERY_CONNECTION__RENDERED_OBJECT = CONNECTION__RENDERED_OBJECT;
+
+    /**
+     * The feature id for the '<em><b>Vocabulary Element</b></em>' reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BIG_QUERY_CONNECTION__VOCABULARY_ELEMENT = CONNECTION__VOCABULARY_ELEMENT;
+
+    /**
+     * The feature id for the '<em><b>Measurement</b></em>' reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BIG_QUERY_CONNECTION__MEASUREMENT = CONNECTION__MEASUREMENT;
+
+    /**
+     * The feature id for the '<em><b>Change Request</b></em>' reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BIG_QUERY_CONNECTION__CHANGE_REQUEST = CONNECTION__CHANGE_REQUEST;
+
+    /**
+     * The feature id for the '<em><b>Dasdl Property</b></em>' reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BIG_QUERY_CONNECTION__DASDL_PROPERTY = CONNECTION__DASDL_PROPERTY;
+
+    /**
+     * The feature id for the '<em><b>Properties</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @deprecated See {@link org.talend.core.model.metadata.builder.connection.AbstractMetadataObject#getProperties() model documentation} for details.
+     * @generated
+     * @ordered
+     */
+    @Deprecated
+    int BIG_QUERY_CONNECTION__PROPERTIES = CONNECTION__PROPERTIES;
+
+    /**
+     * The feature id for the '<em><b>Id</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BIG_QUERY_CONNECTION__ID = CONNECTION__ID;
+
+    /**
+     * The feature id for the '<em><b>Comment</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BIG_QUERY_CONNECTION__COMMENT = CONNECTION__COMMENT;
+
+    /**
+     * The feature id for the '<em><b>Label</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BIG_QUERY_CONNECTION__LABEL = CONNECTION__LABEL;
+
+    /**
+     * The feature id for the '<em><b>Read Only</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BIG_QUERY_CONNECTION__READ_ONLY = CONNECTION__READ_ONLY;
+
+    /**
+     * The feature id for the '<em><b>Synchronised</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BIG_QUERY_CONNECTION__SYNCHRONISED = CONNECTION__SYNCHRONISED;
+
+    /**
+     * The feature id for the '<em><b>Divergency</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BIG_QUERY_CONNECTION__DIVERGENCY = CONNECTION__DIVERGENCY;
+
+    /**
+     * The feature id for the '<em><b>Owned Element</b></em>' containment reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BIG_QUERY_CONNECTION__OWNED_ELEMENT = CONNECTION__OWNED_ELEMENT;
+
+    /**
+     * The feature id for the '<em><b>Imported Element</b></em>' reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BIG_QUERY_CONNECTION__IMPORTED_ELEMENT = CONNECTION__IMPORTED_ELEMENT;
+
+    /**
+     * The feature id for the '<em><b>Data Manager</b></em>' reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BIG_QUERY_CONNECTION__DATA_MANAGER = CONNECTION__DATA_MANAGER;
+
+    /**
+     * The feature id for the '<em><b>Pathname</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BIG_QUERY_CONNECTION__PATHNAME = CONNECTION__PATHNAME;
+
+    /**
+     * The feature id for the '<em><b>Machine</b></em>' container reference.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BIG_QUERY_CONNECTION__MACHINE = CONNECTION__MACHINE;
+
+    /**
+     * The feature id for the '<em><b>Deployed Software System</b></em>' reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BIG_QUERY_CONNECTION__DEPLOYED_SOFTWARE_SYSTEM = CONNECTION__DEPLOYED_SOFTWARE_SYSTEM;
+
+    /**
+     * The feature id for the '<em><b>Component</b></em>' reference.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BIG_QUERY_CONNECTION__COMPONENT = CONNECTION__COMPONENT;
+
+    /**
+     * The feature id for the '<em><b>Is Case Sensitive</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BIG_QUERY_CONNECTION__IS_CASE_SENSITIVE = CONNECTION__IS_CASE_SENSITIVE;
+
+    /**
+     * The feature id for the '<em><b>Client Connection</b></em>' reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BIG_QUERY_CONNECTION__CLIENT_CONNECTION = CONNECTION__CLIENT_CONNECTION;
+
+    /**
+     * The feature id for the '<em><b>Data Package</b></em>' reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BIG_QUERY_CONNECTION__DATA_PACKAGE = CONNECTION__DATA_PACKAGE;
+
+    /**
+     * The feature id for the '<em><b>Resource Connection</b></em>' containment reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BIG_QUERY_CONNECTION__RESOURCE_CONNECTION = CONNECTION__RESOURCE_CONNECTION;
+
+    /**
+     * The feature id for the '<em><b>Version</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BIG_QUERY_CONNECTION__VERSION = CONNECTION__VERSION;
+
+    /**
+     * The feature id for the '<em><b>Queries</b></em>' containment reference.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BIG_QUERY_CONNECTION__QUERIES = CONNECTION__QUERIES;
+
+    /**
+     * The feature id for the '<em><b>Context Mode</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BIG_QUERY_CONNECTION__CONTEXT_MODE = CONNECTION__CONTEXT_MODE;
+
+    /**
+     * The feature id for the '<em><b>Context Id</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BIG_QUERY_CONNECTION__CONTEXT_ID = CONNECTION__CONTEXT_ID;
+
+    /**
+     * The feature id for the '<em><b>Context Name</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BIG_QUERY_CONNECTION__CONTEXT_NAME = CONNECTION__CONTEXT_NAME;
+
+    /**
+     * The feature id for the '<em><b>Comp Properties</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BIG_QUERY_CONNECTION__COMP_PROPERTIES = CONNECTION__COMP_PROPERTIES;
+
+    /**
+     * The feature id for the '<em><b>Service Account Credentials File</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BIG_QUERY_CONNECTION__SERVICE_ACCOUNT_CREDENTIALS_FILE = CONNECTION_FEATURE_COUNT + 0;
+
+    /**
+     * The feature id for the '<em><b>Project Id</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BIG_QUERY_CONNECTION__PROJECT_ID = CONNECTION_FEATURE_COUNT + 1;
+
+    /**
+     * The feature id for the '<em><b>Use Region Endpoint</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BIG_QUERY_CONNECTION__USE_REGION_ENDPOINT = CONNECTION_FEATURE_COUNT + 2;
+
+    /**
+     * The feature id for the '<em><b>Region Endpoint</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BIG_QUERY_CONNECTION__REGION_ENDPOINT = CONNECTION_FEATURE_COUNT + 3;
+
+    /**
+     * The number of structural features of the '<em>Big Query Connection</em>' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BIG_QUERY_CONNECTION_FEATURE_COUNT = CONNECTION_FEATURE_COUNT + 4;
+
+    /**
      * The meta object id for the '{@link org.talend.core.model.metadata.builder.connection.FileFormat <em>File Format</em>}' enum.
      * <!-- begin-user-doc --> <!-- end-user-doc -->
      * @see org.talend.core.model.metadata.builder.connection.FileFormat
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getFileFormat()
      * @generated
      */
-    int FILE_FORMAT = 58;
+    int FILE_FORMAT = 60;
 
     /**
      * The meta object id for the '{@link org.talend.core.model.metadata.builder.connection.FieldSeparator <em>Field Separator</em>}' enum.
@@ -20639,7 +21734,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getFieldSeparator()
      * @generated
      */
-    int FIELD_SEPARATOR = 59;
+    int FIELD_SEPARATOR = 61;
 
     /**
      * The meta object id for the '{@link org.talend.core.model.metadata.builder.connection.Escape <em>Escape</em>}' enum.
@@ -20648,7 +21743,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getEscape()
      * @generated
      */
-    int ESCAPE = 60;
+    int ESCAPE = 62;
 
     /**
      * The meta object id for the '{@link org.talend.core.model.metadata.builder.connection.RowSeparator <em>Row Separator</em>}' enum.
@@ -20657,7 +21752,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getRowSeparator()
      * @generated
      */
-    int ROW_SEPARATOR = 61;
+    int ROW_SEPARATOR = 63;
 
     /**
      * The meta object id for the '{@link org.talend.core.model.metadata.builder.connection.MDMConnectionProtocol <em>MDM Connection Protocol</em>}' enum.
@@ -20666,7 +21761,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getMDMConnectionProtocol()
      * @generated
      */
-    int MDM_CONNECTION_PROTOCOL = 62;
+    int MDM_CONNECTION_PROTOCOL = 64;
 
     /**
      * The meta object id for the '{@link org.talend.core.model.metadata.builder.connection.MdmConceptType <em>Mdm Concept Type</em>}' enum.
@@ -20676,7 +21771,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getMdmConceptType()
      * @generated
      */
-    int MDM_CONCEPT_TYPE = 63;
+    int MDM_CONCEPT_TYPE = 65;
 
     /**
      * The meta object id for the '{@link org.talend.core.model.metadata.builder.connection.RuleType <em>Rule Type</em>}' enum.
@@ -20686,7 +21781,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getRuleType()
      * @generated
      */
-    int RULE_TYPE = 64;
+    int RULE_TYPE = 66;
 
     /**
      * The meta object id for the '{@link org.talend.core.model.metadata.builder.connection.Function <em>Function</em>}' enum.
@@ -20696,7 +21791,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getFunction()
      * @generated
      */
-    int FUNCTION = 65;
+    int FUNCTION = 67;
 
     /**
      * The meta object id for the '{@link org.talend.core.model.metadata.builder.connection.Operator <em>Operator</em>}' enum.
@@ -20706,7 +21801,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getOperator()
      * @generated
      */
-    int OPERATOR = 66;
+    int OPERATOR = 68;
 
     /**
      * The meta object id for the '{@link org.talend.core.model.metadata.builder.connection.LogicalOperator <em>Logical Operator</em>}' enum.
@@ -20716,7 +21811,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getLogicalOperator()
      * @generated
      */
-    int LOGICAL_OPERATOR = 67;
+    int LOGICAL_OPERATOR = 69;
 
     /**
      * The meta object id for the '<em>Map</em>' data type.
@@ -20725,7 +21820,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getMap()
      * @generated
      */
-    int MAP = 68;
+    int MAP = 70;
 
     /**
      * The meta object id for the '<em>List</em>' data type.
@@ -20734,7 +21829,7 @@ public interface ConnectionPackage extends EPackage {
      * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getList()
      * @generated
      */
-    int LIST = 69;
+    int LIST = 71;
 
     /**
      * Returns the meta object for class '{@link org.talend.core.model.metadata.builder.connection.Metadata <em>Metadata</em>}'.
@@ -21915,6 +23010,16 @@ public interface ConnectionPackage extends EPackage {
      * @generated
      */
     EAttribute getDatabaseConnection_SupportNLS();
+
+    /**
+     * Returns the meta object for class '{@link org.talend.core.model.metadata.builder.connection.TacokitDatabaseConnection <em>Tacokit Database Connection</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for class '<em>Tacokit Database Connection</em>'.
+     * @see org.talend.core.model.metadata.builder.connection.TacokitDatabaseConnection
+     * @generated
+     */
+    EClass getTacokitDatabaseConnection();
 
     /**
      * Returns the meta object for class '{@link org.talend.core.model.metadata.builder.connection.SAPConnection <em>SAP Connection</em>}'.
@@ -25250,6 +26355,60 @@ public interface ConnectionPackage extends EPackage {
     EAttribute getSAPBWTableField_LogicalName();
 
     /**
+     * Returns the meta object for class '{@link org.talend.core.model.metadata.builder.connection.BigQueryConnection <em>Big Query Connection</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for class '<em>Big Query Connection</em>'.
+     * @see org.talend.core.model.metadata.builder.connection.BigQueryConnection
+     * @generated
+     */
+    EClass getBigQueryConnection();
+
+    /**
+     * Returns the meta object for the attribute '{@link org.talend.core.model.metadata.builder.connection.BigQueryConnection#getServiceAccountCredentialsFile <em>Service Account Credentials File</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the attribute '<em>Service Account Credentials File</em>'.
+     * @see org.talend.core.model.metadata.builder.connection.BigQueryConnection#getServiceAccountCredentialsFile()
+     * @see #getBigQueryConnection()
+     * @generated
+     */
+    EAttribute getBigQueryConnection_ServiceAccountCredentialsFile();
+
+    /**
+     * Returns the meta object for the attribute '{@link org.talend.core.model.metadata.builder.connection.BigQueryConnection#getProjectId <em>Project Id</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the attribute '<em>Project Id</em>'.
+     * @see org.talend.core.model.metadata.builder.connection.BigQueryConnection#getProjectId()
+     * @see #getBigQueryConnection()
+     * @generated
+     */
+    EAttribute getBigQueryConnection_ProjectId();
+
+    /**
+     * Returns the meta object for the attribute '{@link org.talend.core.model.metadata.builder.connection.BigQueryConnection#isUseRegionEndpoint <em>Use Region Endpoint</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the attribute '<em>Use Region Endpoint</em>'.
+     * @see org.talend.core.model.metadata.builder.connection.BigQueryConnection#isUseRegionEndpoint()
+     * @see #getBigQueryConnection()
+     * @generated
+     */
+    EAttribute getBigQueryConnection_UseRegionEndpoint();
+
+    /**
+     * Returns the meta object for the attribute '{@link org.talend.core.model.metadata.builder.connection.BigQueryConnection#getRegionEndpoint <em>Region Endpoint</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the attribute '<em>Region Endpoint</em>'.
+     * @see org.talend.core.model.metadata.builder.connection.BigQueryConnection#getRegionEndpoint()
+     * @see #getBigQueryConnection()
+     * @generated
+     */
+    EAttribute getBigQueryConnection_RegionEndpoint();
+
+    /**
      * Returns the meta object for class '{@link org.talend.core.model.metadata.builder.connection.SAPTable <em>SAP Table</em>}'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -26486,6 +27645,16 @@ public interface ConnectionPackage extends EPackage {
          * @generated
          */
         EAttribute DATABASE_CONNECTION__SUPPORT_NLS = eINSTANCE.getDatabaseConnection_SupportNLS();
+
+        /**
+         * The meta object literal for the '{@link org.talend.core.model.metadata.builder.connection.impl.TacokitDatabaseConnectionImpl <em>Tacokit Database Connection</em>}' class.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @see org.talend.core.model.metadata.builder.connection.impl.TacokitDatabaseConnectionImpl
+         * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getTacokitDatabaseConnection()
+         * @generated
+         */
+        EClass TACOKIT_DATABASE_CONNECTION = eINSTANCE.getTacokitDatabaseConnection();
 
         /**
          * The meta object literal for the '{@link org.talend.core.model.metadata.builder.connection.impl.SAPConnectionImpl <em>SAP Connection</em>}' class.
@@ -29060,6 +30229,49 @@ public interface ConnectionPackage extends EPackage {
          * @generated
          */
         EAttribute SAPBW_TABLE_FIELD__LOGICAL_NAME = eINSTANCE.getSAPBWTableField_LogicalName();
+
+        /**
+         * The meta object literal for the '{@link org.talend.core.model.metadata.builder.connection.impl.BigQueryConnectionImpl <em>Big Query Connection</em>}' class.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @see org.talend.core.model.metadata.builder.connection.impl.BigQueryConnectionImpl
+         * @see org.talend.core.model.metadata.builder.connection.impl.ConnectionPackageImpl#getBigQueryConnection()
+         * @generated
+         */
+        EClass BIG_QUERY_CONNECTION = eINSTANCE.getBigQueryConnection();
+
+        /**
+         * The meta object literal for the '<em><b>Service Account Credentials File</b></em>' attribute feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EAttribute BIG_QUERY_CONNECTION__SERVICE_ACCOUNT_CREDENTIALS_FILE = eINSTANCE
+                .getBigQueryConnection_ServiceAccountCredentialsFile();
+
+        /**
+         * The meta object literal for the '<em><b>Project Id</b></em>' attribute feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EAttribute BIG_QUERY_CONNECTION__PROJECT_ID = eINSTANCE.getBigQueryConnection_ProjectId();
+
+        /**
+         * The meta object literal for the '<em><b>Use Region Endpoint</b></em>' attribute feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EAttribute BIG_QUERY_CONNECTION__USE_REGION_ENDPOINT = eINSTANCE.getBigQueryConnection_UseRegionEndpoint();
+
+        /**
+         * The meta object literal for the '<em><b>Region Endpoint</b></em>' attribute feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EAttribute BIG_QUERY_CONNECTION__REGION_ENDPOINT = eINSTANCE.getBigQueryConnection_RegionEndpoint();
 
         /**
          * The meta object literal for the '{@link org.talend.core.model.metadata.builder.connection.impl.SAPTableImpl <em>SAP Table</em>}' class.

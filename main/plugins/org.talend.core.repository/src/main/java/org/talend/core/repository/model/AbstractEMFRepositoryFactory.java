@@ -130,7 +130,7 @@ public abstract class AbstractEMFRepositoryFactory extends AbstractRepositoryFac
                 ERepositoryObjectType.METADATA_FILE_RULES, ERepositoryObjectType.METADATA_FILE_HL7,
                 ERepositoryObjectType.METADATA_FILE_FTP, ERepositoryObjectType.METADATA_FILE_BRMS,
                 ERepositoryObjectType.METADATA_MDMCONNECTION, ERepositoryObjectType.METADATA_HEADER_FOOTER,
-                ERepositoryObjectType.JOB_SCRIPT };
+                ERepositoryObjectType.JOB_SCRIPT, ERepositoryObjectType.METADATA_BIGQUERYCONNECTIONS };
 
         List<IRepositoryViewObject> deletedItems = new ArrayList<IRepositoryViewObject>();
         for (ERepositoryObjectType type : types) {

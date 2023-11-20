@@ -133,12 +133,10 @@ public class PropertiesSwitch {
                 return result;
             }
             case PropertiesPackage.BUSINESS_PROCESS_ITEM: {
-                BusinessProcessItem businessProcessItem = (BusinessProcessItem) theEObject;
+                BusinessProcessItem businessProcessItem = (BusinessProcessItem)theEObject;
                 Object result = caseBusinessProcessItem(businessProcessItem);
-                if (result == null)
-                    result = caseItem(businessProcessItem);
-                if (result == null)
-                    result = defaultCase(theEObject);
+                if (result == null) result = caseItem(businessProcessItem);
+                if (result == null) result = defaultCase(theEObject);
                 return result;
             }
             case PropertiesPackage.FILE_ITEM: {
@@ -228,6 +226,15 @@ public class PropertiesSwitch {
                 Object result = caseDatabaseConnectionItem(databaseConnectionItem);
                 if (result == null) result = caseConnectionItem(databaseConnectionItem);
                 if (result == null) result = caseItem(databaseConnectionItem);
+                if (result == null) result = defaultCase(theEObject);
+                return result;
+            }
+            case PropertiesPackage.TACOKIT_DATABASE_CONNECTION_ITEM: {
+                TacokitDatabaseConnectionItem tacokitDatabaseConnectionItem = (TacokitDatabaseConnectionItem)theEObject;
+                Object result = caseTacokitDatabaseConnectionItem(tacokitDatabaseConnectionItem);
+                if (result == null) result = caseDatabaseConnectionItem(tacokitDatabaseConnectionItem);
+                if (result == null) result = caseConnectionItem(tacokitDatabaseConnectionItem);
+                if (result == null) result = caseItem(tacokitDatabaseConnectionItem);
                 if (result == null) result = defaultCase(theEObject);
                 return result;
             }
@@ -622,14 +629,11 @@ public class PropertiesSwitch {
                 return result;
             }
             case PropertiesPackage.SVG_BUSINESS_PROCESS_ITEM: {
-                SVGBusinessProcessItem svgBusinessProcessItem = (SVGBusinessProcessItem) theEObject;
+                SVGBusinessProcessItem svgBusinessProcessItem = (SVGBusinessProcessItem)theEObject;
                 Object result = caseSVGBusinessProcessItem(svgBusinessProcessItem);
-                if (result == null)
-                    result = caseFileItem(svgBusinessProcessItem);
-                if (result == null)
-                    result = caseItem(svgBusinessProcessItem);
-                if (result == null)
-                    result = defaultCase(theEObject);
+                if (result == null) result = caseFileItem(svgBusinessProcessItem);
+                if (result == null) result = caseItem(svgBusinessProcessItem);
+                if (result == null) result = defaultCase(theEObject);
                 return result;
             }
             case PropertiesPackage.LINK_RULES_ITEM: {
@@ -786,6 +790,14 @@ public class PropertiesSwitch {
                 RoutinesJarItem routinesJarItem = (RoutinesJarItem)theEObject;
                 Object result = caseRoutinesJarItem(routinesJarItem);
                 if (result == null) result = caseItem(routinesJarItem);
+                if (result == null) result = defaultCase(theEObject);
+                return result;
+            }
+            case PropertiesPackage.BIG_QUERY_CONNECTION_ITEM: {
+                BigQueryConnectionItem bigQueryConnectionItem = (BigQueryConnectionItem)theEObject;
+                Object result = caseBigQueryConnectionItem(bigQueryConnectionItem);
+                if (result == null) result = caseConnectionItem(bigQueryConnectionItem);
+                if (result == null) result = caseItem(bigQueryConnectionItem);
                 if (result == null) result = defaultCase(theEObject);
                 return result;
             }
@@ -1088,6 +1100,21 @@ public class PropertiesSwitch {
      * @generated
      */
     public Object caseDatabaseConnectionItem(DatabaseConnectionItem object) {
+        return null;
+    }
+
+    /**
+     * Returns the result of interpreting the object as an instance of '<em>Tacokit Database Connection Item</em>'.
+     * <!-- begin-user-doc -->
+     * This implementation returns null;
+     * returning a non-null result will terminate the switch.
+     * <!-- end-user-doc -->
+     * @param object the target of the switch.
+     * @return the result of interpreting the object as an instance of '<em>Tacokit Database Connection Item</em>'.
+     * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+     * @generated
+     */
+    public Object caseTacokitDatabaseConnectionItem(TacokitDatabaseConnectionItem object) {
         return null;
     }
 
@@ -2118,6 +2145,21 @@ public class PropertiesSwitch {
      * @generated
      */
     public Object caseRoutinesJarItem(RoutinesJarItem object) {
+        return null;
+    }
+
+    /**
+     * Returns the result of interpreting the object as an instance of '<em>Big Query Connection Item</em>'.
+     * <!-- begin-user-doc -->
+     * This implementation returns null;
+     * returning a non-null result will terminate the switch.
+     * <!-- end-user-doc -->
+     * @param object the target of the switch.
+     * @return the result of interpreting the object as an instance of '<em>Big Query Connection Item</em>'.
+     * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+     * @generated
+     */
+    public Object caseBigQueryConnectionItem(BigQueryConnectionItem object) {
         return null;
     }
 

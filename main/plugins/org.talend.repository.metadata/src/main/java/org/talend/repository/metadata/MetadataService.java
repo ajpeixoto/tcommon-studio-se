@@ -14,6 +14,7 @@ package org.talend.repository.metadata;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.wizard.IWizard;
@@ -37,6 +38,7 @@ import org.talend.core.model.repository.IRepositoryContentHandler;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.repository.RepositoryContentManager;
 import org.talend.core.repository.seeker.RepositorySeekerManager;
+import org.talend.core.service.ITCKUIService;
 import org.talend.core.ui.IHeaderFooterProviderService;
 import org.talend.core.ui.IMDMProviderService;
 import org.talend.core.ui.metadata.celleditor.EProcessTypeForRule;
@@ -126,11 +128,22 @@ public class MetadataService implements IMetadataService {
             ERepositoryObjectType objectType = null;
             if (creation || node.getComponent().getComponentType() == EComponentType.GENERIC) {
                 objectType = realNode.getContentType();
+                if (ERepositoryObjectType.METADATA_CONNECTIONS == objectType && realNode.getObjectType() != null
+                        && ERepositoryObjectType.METADATA_TACOKIT_JDBC == realNode.getObjectType()) {
+                    objectType = ERepositoryObjectType.METADATA_TACOKIT_JDBC;
+                }
             } else {
                 objectType = realNode.getObjectType();
             }
-            if (objectType.equals(ERepositoryObjectType.METADATA_CONNECTIONS) || (null!=objectType.getLabel() && objectType.getLabel().equals("JDBC"))) {
+            if (objectType.equals(ERepositoryObjectType.METADATA_CONNECTIONS)) {
                 relatedWizard = new DatabaseWizard(PlatformUI.getWorkbench(), creation, realNode, null);
+            } else if (ITCKUIService.get() != null && objectType.equals(ERepositoryObjectType.METADATA_TACOKIT_JDBC)) {
+                if (creation) {
+                    relatedWizard = ITCKUIService.get().createTCKWizard(ITCKUIService.get().getTCKJDBCType().getLabel(),
+                            new Path(""), false);
+                } else {
+                    relatedWizard = ITCKUIService.get().editTCKWizard(realNode);
+                }
             } else if (objectType.equals(ERepositoryObjectType.METADATA_FILE_DELIMITED)) {
                 relatedWizard = new DelimitedFileWizard(PlatformUI.getWorkbench(), creation, realNode, null);
             } else if (objectType.equals(ERepositoryObjectType.METADATA_FILE_LDIF)) {
@@ -174,6 +187,13 @@ public class MetadataService implements IMetadataService {
             } else if (objectType.equals(ERepositoryObjectType.METADATA_SAPCONNECTIONS)) {
                 if (PluginChecker.isSAPWizardPluginLoaded()) {
                     IProviderService service = GlobalServiceRegister.getDefault().findService("ISAPProviderService");
+                    if (service != null) {
+                        relatedWizard = service.newWizard(PlatformUI.getWorkbench(), creation, realNode, null);
+                    }
+                }
+            } else if (objectType.equals(ERepositoryObjectType.METADATA_BIGQUERYCONNECTIONS)) {
+                if (PluginChecker.isBigQueryWizardPluginLoaded()) {
+                    IProviderService service = GlobalServiceRegister.getDefault().findService("IBigQueryProviderService");
                     if (service != null) {
                         relatedWizard = service.newWizard(PlatformUI.getWorkbench(), creation, realNode, null);
                     }

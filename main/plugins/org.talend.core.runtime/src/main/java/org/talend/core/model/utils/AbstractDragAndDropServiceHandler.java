@@ -60,7 +60,7 @@ public abstract class AbstractDragAndDropServiceHandler implements IDragAndDropS
     }
 
     @Override
-    public boolean isGenericRepositoryValue(List<ComponentProperties> componentProperties, String paramName) {
+    public boolean isGenericRepositoryValue(Connection connection, List<ComponentProperties> componentProperties, String paramName) {
         return false;
     }
 
@@ -71,12 +71,12 @@ public abstract class AbstractDragAndDropServiceHandler implements IDragAndDropS
      * java.lang.String)
      */
     @Override
-    public Object getGenericRepositoryValue(List<ComponentProperties> componentProperties, String paramName) {
+    public Object getGenericRepositoryValue(Connection connection, List<ComponentProperties> componentProperties, String paramName) {
         return null;
     }
 
     @Override
-    public boolean isGenericPropertiesValue(String paramName){
+    public boolean isGenericPropertiesValue(Connection connection, String paramName){
         return false;
     }
 }

@@ -25,6 +25,7 @@ import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
 import org.talend.core.model.metadata.builder.connection.MetadataTable;
 import org.talend.core.model.metadata.builder.connection.SubscriberTable;
 import org.talend.core.model.properties.BRMSConnectionItem;
+import org.talend.core.model.properties.BigQueryConnectionItem;
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.properties.DatabaseConnectionItem;
 import org.talend.core.model.properties.EDIFACTConnectionItem;
@@ -150,7 +151,7 @@ public class CreateTableAction extends AbstractCreateTableAction {
             createFilePositionalTableWizard(node, false);
         } else if (ERepositoryObjectType.METADATA_FILE_DELIMITED.equals(nodeType)) {
             createFileDelimitedTableWizard(node, false);
-        } else if (ERepositoryObjectType.METADATA_CONNECTIONS.equals(nodeType)) {
+        } else if (ERepositoryObjectType.METADATA_CONNECTIONS.equals(nodeType) || ERepositoryObjectType.METADATA_TACOKIT_JDBC.equals(nodeType)) {
             createDatabaseTableWizard(node, false);
         } else if (ERepositoryObjectType.METADATA_FILE_REGEXP.equals(nodeType)) {
             createFileRegexpTableWizard(node, false);
@@ -169,6 +170,8 @@ public class CreateTableAction extends AbstractCreateTableAction {
         } else if (ERepositoryObjectType.METADATA_SAPCONNECTIONS != null
                 && ERepositoryObjectType.METADATA_SAPCONNECTIONS.equals(nodeType)) {
             createSAPSchemaWizard(node, false);
+        } else if (ERepositoryObjectType.METADATA_BIGQUERYCONNECTIONS != null && ERepositoryObjectType.METADATA_BIGQUERYCONNECTIONS.equals(nodeType)) {
+            createBigQuerySchemaWizard(node, false);
         } else {
             createExtenseNodeSchemaWizard(nodeType, node, false);
         }
@@ -224,6 +227,11 @@ public class CreateTableAction extends AbstractCreateTableAction {
                                     return;
                                 }
                             }
+                        }
+                        
+                        if (item2 instanceof BigQueryConnectionItem) {
+                            setEnabled(false);
+                            return;
                         }
 
                         if (item2 instanceof SAPConnectionItem) {

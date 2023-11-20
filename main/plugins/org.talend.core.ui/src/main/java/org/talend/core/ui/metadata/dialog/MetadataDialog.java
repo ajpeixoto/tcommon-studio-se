@@ -210,10 +210,12 @@ public class MetadataDialog extends Dialog {
             if (component.isSupportDbType() || component.getOriginalFamilyName().startsWith(DATABASE_LABEL)
                     || eltComponent || isEBCDIC) {
                 dbComponent = !isEBCDIC;
-                for (IElementParameter currentParam : node.getElementParameters()) {
-                    if (currentParam.getFieldType().equals(EParameterFieldType.MAPPING_TYPE)) {
-                        metaView.setCurrentDbms((String) currentParam.getValue());
-                        hasMappingType = true;
+                if (!isNewFram) {
+                    for (IElementParameter currentParam : node.getElementParameters()) {
+                        if (currentParam.getFieldType().equals(EParameterFieldType.MAPPING_TYPE)) {
+                            metaView.setCurrentDbms((String) currentParam.getValue());
+                            hasMappingType = true;
+                        }
                     }
                 }
 
@@ -241,8 +243,9 @@ public class MetadataDialog extends Dialog {
                             }
                             String componentDbType = ""; //$NON-NLS-1$
                             for (IElementParameter param : (List<IElementParameter>) node.getElementParameters()) {
-                                if (param.getRepositoryValue() != null) {
-                                    if (param.getRepositoryValue().equals("TYPE")) { //$NON-NLS-1$
+                                String repositoryValue = param.calcRepositoryValue();
+                                if (repositoryValue != null) {
+                                    if (repositoryValue.equals("TYPE")) { //$NON-NLS-1$
                                         componentDbType = (String) param.getValue();
                                     }
                                 }

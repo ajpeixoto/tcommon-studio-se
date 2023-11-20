@@ -613,7 +613,7 @@ public class TalendTextUtils {
      * @return
      */
     private static boolean isPSQLSimilar(EDatabaseTypeName name) {
-        return !name.equals(EDatabaseTypeName.PSQL) && !name.equals(EDatabaseTypeName.PLUSPSQL)
+        return !name.equals(EDatabaseTypeName.PSQL)
                 && !name.equals(EDatabaseTypeName.GREENPLUM);
     }
 

@@ -47,6 +47,7 @@ import org.talend.core.GlobalServiceRegister;
 import org.talend.core.IRepositoryContextService;
 import org.talend.core.database.EDatabase4DriverClassName;
 import org.talend.core.database.EDatabaseTypeName;
+import org.talend.core.database.conn.ConnParameterKeys;
 import org.talend.core.database.conn.version.EDatabaseVersion4Drivers;
 import org.talend.core.model.context.ContextUtils;
 import org.talend.core.model.metadata.IMetadataConnection;
@@ -57,6 +58,7 @@ import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
 import org.talend.core.model.metadata.builder.connection.MDMConnection;
 import org.talend.core.model.metadata.builder.connection.MetadataColumn;
+import org.talend.core.model.metadata.builder.connection.TacokitDatabaseConnection;
 import org.talend.core.model.metadata.builder.database.DriverShim;
 import org.talend.core.model.metadata.builder.database.ExtractMetaDataUtils;
 import org.talend.core.model.metadata.builder.database.IDriverService;
@@ -530,14 +532,34 @@ public class MetadataConnectionUtils {
         return false;
     }
 
-    public static boolean isOracleCustomSSL(Connection connection) {
+    /**
+     * Judge if Oracle custom version supports SSL
+     * 
+     * @param connection
+     * @return
+     */
+    public static boolean isOracleCustomSupportSSL(Connection connection) {
         if (connection != null && connection instanceof DatabaseConnection) {
             DatabaseConnection dbConn = (DatabaseConnection) connection;
             if (EDatabaseTypeName.ORACLE_CUSTOM.getDisplayName().equals(dbConn.getDatabaseType())) {
-                if (EDatabaseVersion4Drivers.ORACLE_12.name().equals(dbConn.getDbVersionString())) {
+                if (EDatabaseVersion4Drivers.ORACLE_12.name().equals(dbConn.getDbVersionString()) || EDatabaseVersion4Drivers.ORACLE_18.name().equals(dbConn.getDbVersionString())) {
                     return true;
                 }
             }
+        }
+        return false;
+    }
+
+    /**
+     * Judge if it is Oracle custom and selects SSL
+     * 
+     * @param connection
+     * @return
+     */
+    public static boolean isOracleCustomSSLUsed(Connection connection) {
+        if (isOracleCustomSupportSSL(connection)) {
+            DatabaseConnection dbConn = (DatabaseConnection) connection;
+            return Boolean.parseBoolean(dbConn.getParameters().get(ConnParameterKeys.CONN_PARA_KEY_USE_SSL));
         }
         return false;
     }
@@ -1459,7 +1481,8 @@ public class MetadataConnectionUtils {
         if (!Platform.isRunning() || !connection.isContextMode()) {
             return connection;
         }
-        Connection copyConnection = deepCopy(connection);
+        Connection copyConnection = deepCopyAll(connection);
+
         JavaSqlFactory.haveSetPromptContextVars = false;
         ContextItem contextItem = ContextUtils.getContextItemById2(connection.getContextId());
         // only consider the connection currently used context
@@ -1469,12 +1492,18 @@ public class MetadataConnectionUtils {
         // only when have context
         if (jobContext != null) {
             boolean promptConfirmLauch = false;
+            List<IContext> iContextLs = new ArrayList<IContext>();
             if (GlobalServiceRegister.getDefault().isServiceRegistered(IMetadataManagmentUiService.class)) {
                 IMetadataManagmentUiService mmUIService = GlobalServiceRegister.getDefault()
                         .getService(IMetadataManagmentUiService.class);
                 Shell shell = PlatformUI.getWorkbench().getDisplay().getActiveShell();
                 if (isDefaultContext) {
-                    promptConfirmLauch = mmUIService.promptConfirmLauch(shell, jobContext);
+                    List<ContextType> contexts = contextItem.getContext();
+                    for (ContextType contxType : contexts) {
+                        IContext context = ContextUtils.convert2IContext(contxType);
+                        iContextLs.add(context);
+                    }
+                    promptConfirmLauch = mmUIService.promptConfirmLauchIterateContexts(shell, iContextLs, jobContext);
                 } else {
                     promptConfirmLauch = mmUIService.promptConfirmLauch(shell, copyConnection, contextItem);
                 }
@@ -1485,7 +1514,7 @@ public class MetadataConnectionUtils {
                 if (isDefaultContext) {
                     // save the input prompt context values to cache
                     for (IContextParameter param : jobContext.getContextParameterList()) {
-                        JavaSqlFactory.savePromptConVars2Cache(connection, param);
+                        JavaSqlFactory.savePromptConVars2Cache(connection, param, iContextLs);
                     }
                     // set the input values to connection
                     JavaSqlFactory.setPromptContextValues(copyConnection);
@@ -1493,6 +1522,18 @@ public class MetadataConnectionUtils {
             }
         }
         JavaSqlFactory.haveSetPromptContextVars = true;
+        return copyConnection;
+    }
+
+    /**
+     * DOC msjian Comment method "deepCopyAll".
+     * @param connection
+     * @return
+     */
+    public static Connection deepCopyAll(Connection connection) {
+        Connection copyConnection = deepCopy(connection);
+        HashMap cloneProperties = (HashMap) connection.getProperties().clone();
+        copyConnection.setProperties(cloneProperties);
         return copyConnection;
     }
 

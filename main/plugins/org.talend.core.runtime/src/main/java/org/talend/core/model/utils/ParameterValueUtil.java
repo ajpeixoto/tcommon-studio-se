@@ -856,7 +856,8 @@ public final class ParameterValueUtil {
         if (param != null) {
             Object docValue = param.getValue();
             if (docValue != null) {
-                if ((param.getRepositoryValue() != null && param.getRepositoryValue().toUpperCase().contains("PASSWORD") //$NON-NLS-1$
+                String repositoryValue = param.calcRepositoryValue();
+                if ((repositoryValue != null && repositoryValue.toUpperCase().contains("PASSWORD") //$NON-NLS-1$
                         || EParameterFieldType.isPassword(param.getFieldType()))//
                         && !ContextParameterUtils.containContextVariables((String) docValue)) {
 

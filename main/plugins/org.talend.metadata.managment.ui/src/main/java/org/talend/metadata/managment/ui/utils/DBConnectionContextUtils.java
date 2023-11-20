@@ -23,6 +23,7 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.EMap;
+import org.talend.commons.runtime.service.ITaCoKitService;
 import org.talend.commons.ui.utils.PathUtils;
 import org.talend.core.database.EDatabaseTypeName;
 import org.talend.core.database.EImpalaDriver;
@@ -43,6 +44,7 @@ import org.talend.core.model.metadata.builder.ConvertionHelper;
 import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.metadata.builder.connection.ConnectionFactory;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
+import org.talend.core.model.metadata.builder.connection.TacokitDatabaseConnection;
 import org.talend.core.model.metadata.connection.hive.HiveServerVersionInfo;
 import org.talend.core.model.metadata.types.JavaTypesManager;
 import org.talend.core.model.process.IContextParameter;
@@ -1040,7 +1042,6 @@ public final class DBConnectionContextUtils {
         cloneConn.setSID(sidOrDatabase);
         cloneConn.setUsername(username);
         cloneConn.setDriverJarPath(jarPath);
-
         cloneConn.setComment(dbConn.getComment());
         cloneConn.setDatabaseType(dbConn.getDatabaseType());
         cloneConn.setDbmsId(dbmsID);
@@ -1441,6 +1442,8 @@ public final class DBConnectionContextUtils {
             }
             newURL = DatabaseConnStrUtil.getImpalaString(cloneConn, cloneConn.getServerName(), cloneConn.getPort(),
                     cloneConn.getSID(), template);
+        } else if(dbConn instanceof TacokitDatabaseConnection) {
+            newURL = url;
         } else {
             newURL = DatabaseConnStrUtil.getURLString(cloneConn.getDatabaseType(), dbConn.getDbVersionString(), server, username,
                     password, port, sidOrDatabase, filePath.toLowerCase(), datasource, dbRootPath, additionParam);

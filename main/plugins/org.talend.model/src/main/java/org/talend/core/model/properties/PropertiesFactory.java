@@ -170,6 +170,15 @@ public interface PropertiesFactory extends EFactory {
     DatabaseConnectionItem createDatabaseConnectionItem();
 
     /**
+     * Returns a new object of class '<em>Tacokit Database Connection Item</em>'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return a new object of class '<em>Tacokit Database Connection Item</em>'.
+     * @generated
+     */
+    TacokitDatabaseConnectionItem createTacokitDatabaseConnectionItem();
+
+    /**
      * Returns a new object of class '<em>SAP Connection Item</em>'.
      * <!-- begin-user-doc --> <!-- end-user-doc -->
      * @return a new object of class '<em>SAP Connection Item</em>'.
@@ -777,6 +786,15 @@ public interface PropertiesFactory extends EFactory {
      * @generated
      */
     RoutinesJarItem createRoutinesJarItem();
+
+    /**
+     * Returns a new object of class '<em>Big Query Connection Item</em>'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return a new object of class '<em>Big Query Connection Item</em>'.
+     * @generated
+     */
+    BigQueryConnectionItem createBigQueryConnectionItem();
 
     /**
      * Returns a new object of class '<em>Reference File Item</em>'.

@@ -951,7 +951,7 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
         project.getEmfProject().getMigrationTask().addAll(FilteredTasks);
 
         // set default prefs for new created project
-        // setPrefForNewProject(project);
+        setPrefForNewProject(project);
 
         ProjectDataJsonProvider.saveProjectData(project.getEmfProject());
     }
@@ -1923,6 +1923,9 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
                 type = objToMove.getRepositoryObjectType();
             }
             ERepositoryObjectType itemType = ERepositoryObjectType.getItemType(objToMove.getProperty().getItem());
+            if (RepositoryNodeManager.isSnowflake(itemType) && ERepositoryObjectType.METADATA_CONNECTIONS == type) {
+                type = itemType;
+            }
             boolean isTacokit = RepositoryNodeManager.isTacokit(type);
             if (isTacokit && itemType != null && itemType != type) {
                 type = itemType;
@@ -2588,11 +2591,13 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
             case PropertiesPackage.SALESFORCE_SCHEMA_CONNECTION_ITEM:
             case PropertiesPackage.WSDL_SCHEMA_CONNECTION_ITEM:
             case PropertiesPackage.SAP_CONNECTION_ITEM:
+            case PropertiesPackage.BIG_QUERY_CONNECTION_ITEM:
             case PropertiesPackage.MDM_CONNECTION_ITEM:
             case PropertiesPackage.HL7_CONNECTION_ITEM:
             case PropertiesPackage.FTP_CONNECTION_ITEM:
             case PropertiesPackage.BRMS_CONNECTION_ITEM:
             case PropertiesPackage.EBCDIC_CONNECTION_ITEM:
+            case PropertiesPackage.TACOKIT_DATABASE_CONNECTION_ITEM:
                 // not really usefull for ConnectionItem : it's not copied to
                 // another resource for edition
                 itemResource = save(resourceSet, (ConnectionItem) item);
@@ -2947,8 +2952,14 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
             case PropertiesPackage.DATABASE_CONNECTION_ITEM:
                 itemResource = create(project2, (ConnectionItem) item, ERepositoryObjectType.METADATA_CONNECTIONS, path);
                 break;
+            case PropertiesPackage.TACOKIT_DATABASE_CONNECTION_ITEM:
+                itemResource = create(project2, (ConnectionItem) item, ERepositoryObjectType.METADATA_TACOKIT_JDBC, path);
+                break;
             case PropertiesPackage.SAP_CONNECTION_ITEM:
                 itemResource = create(project2, (ConnectionItem) item, ERepositoryObjectType.METADATA_SAPCONNECTIONS, path);
+                break;
+            case PropertiesPackage.BIG_QUERY_CONNECTION_ITEM:
+                itemResource = create(project2, (ConnectionItem) item, ERepositoryObjectType.METADATA_BIGQUERYCONNECTIONS, path);
                 break;
             case PropertiesPackage.MDM_CONNECTION_ITEM:
                 itemResource = create(project2, (ConnectionItem) item, ERepositoryObjectType.METADATA_MDMCONNECTION, path);

@@ -127,6 +127,8 @@ public class ConnectionFactoryImpl extends EFactoryImpl implements ConnectionFac
             return createMDMConnection();
         case ConnectionPackage.DATABASE_CONNECTION:
             return createDatabaseConnection();
+        case ConnectionPackage.TACOKIT_DATABASE_CONNECTION:
+            return createTacokitDatabaseConnection();
         case ConnectionPackage.SAP_CONNECTION:
             return createSAPConnection();
         case ConnectionPackage.SAP_FUNCTION_UNIT:
@@ -221,6 +223,8 @@ public class ConnectionFactoryImpl extends EFactoryImpl implements ConnectionFac
             return createSAPBWTable();
         case ConnectionPackage.SAPBW_TABLE_FIELD:
             return createSAPBWTableField();
+        case ConnectionPackage.BIG_QUERY_CONNECTION:
+            return createBigQueryConnection();
         default:
             throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
         }
@@ -378,6 +382,16 @@ public class ConnectionFactoryImpl extends EFactoryImpl implements ConnectionFac
     public DatabaseConnection createDatabaseConnection() {
         DatabaseConnectionImpl databaseConnection = new DatabaseConnectionImpl();
         return databaseConnection;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public TacokitDatabaseConnection createTacokitDatabaseConnection() {
+        TacokitDatabaseConnectionImpl tacokitDatabaseConnection = new TacokitDatabaseConnectionImpl();
+        return tacokitDatabaseConnection;
     }
 
     /**
@@ -788,6 +802,16 @@ public class ConnectionFactoryImpl extends EFactoryImpl implements ConnectionFac
      * <!-- end-user-doc -->
      * @generated
      */
+    public BigQueryConnection createBigQueryConnection() {
+        BigQueryConnectionImpl bigQueryConnection = new BigQueryConnectionImpl();
+        return bigQueryConnection;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
     public SAPTable createSAPTable() {
         SAPTableImpl sapTable = new SAPTableImpl();
         return sapTable;
@@ -1036,7 +1060,7 @@ public class ConnectionFactoryImpl extends EFactoryImpl implements ConnectionFac
         StringBuffer buffer = new StringBuffer(map.size() * 40);
 
         for (String key : map.keySet()) {
-            String value = map.get(key);
+            String value = String.valueOf(map.get(key));
             buffer.append(key).append(MAP_DELIMTER).append(value).append(MAP_DELIMTER);
         }
         return buffer.toString();
