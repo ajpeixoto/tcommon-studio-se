@@ -83,5 +83,9 @@ public interface IProjectSettingPreferenceConstants {
      * Default microservices application properties
      */
     public static final String MS_APPLICATION_PROPERTIES = "ms_application_properties";
+    
+    public static final String MS_STANDALONE_APPLICATION_PROPERTIES = "ms_standalone_application_properties";
+    
+    
 
 }
