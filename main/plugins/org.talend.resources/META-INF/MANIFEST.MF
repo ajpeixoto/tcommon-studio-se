@@ -17,3 +17,4 @@ Bundle-Vendor: .Talend SA.
 Export-Package: org.talend.resources,
  org.talend.resources.util
 Eclipse-BundleShape: dir
+Automatic-Module-Name: org.talend.resources

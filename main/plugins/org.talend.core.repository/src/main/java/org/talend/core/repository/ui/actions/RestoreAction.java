@@ -18,6 +18,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -37,6 +39,7 @@ import org.talend.commons.runtime.model.repository.ERepositoryStatus;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
+import org.talend.commons.utils.workbench.resources.ResourceUtils;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.ITDQRepositoryService;
 import org.talend.core.model.metadata.builder.connection.AbstractMetadataObject;
@@ -49,6 +52,7 @@ import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.repository.ISubRepositoryObject;
 import org.talend.core.repository.i18n.Messages;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.repository.utils.RepositoryNodeManager;
 import org.talend.core.service.ICoreUIService;
 import org.talend.core.ui.ITestContainerProviderService;
 import org.talend.repository.ProjectManager;
@@ -111,9 +115,42 @@ public class RestoreAction extends AContextualAction {
                 Item item = node.getObject().getProperty().getItem();
                 if (item instanceof FolderItem) {
                     item.getState().setDeleted(false);
+                    if (nodeType == ERepositoryObjectType.METADATA_CONNECTIONS && ERepositoryObjectType.SNOWFLAKE != null) {
+                        IPath sfPath = new Path(node.getObject().getPath()).append(node.getObject().getLabel());
+                        String fullPath = ERepositoryObjectType.SNOWFLAKE.getFolder() + IPath.SEPARATOR + sfPath;
+                        IProject rsProject = ResourceUtils.getProject(ProjectManager.getInstance().getCurrentProject());
+                        IFolder sfFolder = ResourceUtils.getFolder(rsProject, fullPath, false);
+                        if (sfFolder.exists()) {
+                            FolderItem sfItem = ProxyRepositoryFactory.getInstance().getFolderItem(ProjectManager.getInstance().getCurrentProject(),
+                                    ERepositoryObjectType.SNOWFLAKE, sfPath);
+                            sfItem.getState().setDeleted(false);
+                            while (sfPath.segmentCount() > 1) {
+                                sfPath = sfPath.removeLastSegments(1);
+                                FolderItem parentItem = ProxyRepositoryFactory.getInstance().getFolderItem(
+                                        ProjectManager.getInstance().getCurrentProject(), ERepositoryObjectType.SNOWFLAKE,
+                                        sfPath);
+                                if (ProxyRepositoryFactory.getInstance().getStatus(parentItem) == ERepositoryStatus.DELETED) {
+                                    parentItem.getState().setDeleted(false);
+                                }
+                            }
+                        }
+                    }
                 } else {
                     RestoreObjectAction restoreObjectAction = RestoreObjectAction.getInstance();
                     restoreObjectAction.execute(node, null, path);
+
+                    if (RepositoryNodeManager.isSnowflake(nodeType)) {
+                        IPath sfPath = new Path(node.getObject().getPath()).append(node.getObject().getLabel());
+                        while (sfPath.segmentCount() > 1) {
+                            sfPath = sfPath.removeLastSegments(1);
+                            FolderItem parentItem = ProxyRepositoryFactory.getInstance().getFolderItem(
+                                    ProjectManager.getInstance().getCurrentProject(), ERepositoryObjectType.SNOWFLAKE, sfPath);
+                            if (ProxyRepositoryFactory.getInstance().getStatus(parentItem) == ERepositoryStatus.DELETED) {
+                                parentItem.getState().setDeleted(false);
+                            }
+                        }
+                    }
+
                     // MOD qiongli 2012-10-16 TDQ-6166 notify sql exploere when restore a connection.
                     if (item instanceof DatabaseConnectionItem) {
                         if (GlobalServiceRegister.getDefault().isServiceRegistered(ITDQRepositoryService.class)) {

@@ -12,24 +12,26 @@
 // ============================================================================
 package org.talend.updates.runtime.ui;
 
+import java.beans.PropertyDescriptor;
 import java.util.Set;
 
 import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.core.databinding.beans.PojoObservables;
-import org.eclipse.core.databinding.beans.PojoProperties;
+import org.eclipse.core.databinding.beans.typed.PojoProperties;
 import org.eclipse.core.databinding.observable.IObservable;
+import org.eclipse.core.databinding.observable.Realm;
 import org.eclipse.core.databinding.observable.masterdetail.IObservableFactory;
+import org.eclipse.core.databinding.observable.masterdetail.MasterDetailObservables;
 import org.eclipse.core.databinding.observable.set.IObservableSet;
 import org.eclipse.core.databinding.observable.set.ISetChangeListener;
 import org.eclipse.core.databinding.observable.set.SetChangeEvent;
 import org.eclipse.core.databinding.observable.set.WritableSet;
-import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.property.Properties;
 import org.eclipse.core.databinding.property.value.IValueProperty;
-import org.eclipse.jface.databinding.swt.SWTObservables;
+import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
+import org.eclipse.jface.databinding.viewers.IViewerObservableValue;
 import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
 import org.eclipse.jface.databinding.viewers.ObservableSetTreeContentProvider;
-import org.eclipse.jface.databinding.viewers.ViewersObservables;
+import org.eclipse.jface.databinding.viewers.typed.ViewerProperties;
 import org.eclipse.jface.databinding.wizard.WizardPageSupport;
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
@@ -255,13 +257,14 @@ public class SelectExtraFeaturesToInstallWizardPage extends WizardPage {
         dbc = new DataBindingContext();
 
         // bind selecting of the check boxes to the selected extra features set in the model
-        dbc.bindSet(ViewersObservables.observeCheckedElements(checkboxTreeViewer, ExtraFeature.class),
+        dbc.bindSet(ViewerProperties.<CheckboxTreeViewer, ExtraFeature>checkedElements(ExtraFeature.class).observe(checkboxTreeViewer),
                 updateWizardModel.selectedExtraFeatures);
 
-        // bind the table selection desctiption to the text field
-        IObservableValue selectedFeature = ViewersObservables.observeSingleSelection(checkboxTreeViewer);
-        dbc.bindValue(SWTObservables.observeText(featureDescriptionText),
-                PojoObservables.observeDetailValue(selectedFeature, "description", String.class)); //$NON-NLS-1$
+        // bind the table selection desctiption to the text field        
+        IViewerObservableValue<Object> selectedFeature = ViewerProperties.singleSelection().observe(checkboxTreeViewer);
+        
+        dbc.bindValue(WidgetProperties.text(SWT.Modify).observe(featureDescriptionText),
+        		PojoProperties.value("description").observeDetail(selectedFeature)); //$NON-NLS-1$
         // add a validator for feature selection because SetObservable does not provide any validator.
         dbc.addValidationStatusProvider(updateWizardModel.new FeatureSelectionValidator());
         WizardPageSupport.create(this, dbc);

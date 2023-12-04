@@ -19,3 +19,4 @@ Export-Package: com.mysql.jdbc,
  org.gjt.mm.mysql
 Bundle-ActivationPolicy: lazy
 Eclipse-BundleShape: dir
+Automatic-Module-Name: org.talend.libraries.jdbc.mysql

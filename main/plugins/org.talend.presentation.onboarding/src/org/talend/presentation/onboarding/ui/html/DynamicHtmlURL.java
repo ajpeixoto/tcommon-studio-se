@@ -12,11 +12,11 @@
 // ============================================================================
 package org.talend.presentation.onboarding.ui.html;
 
+import java.net.URLDecoder;
 import java.util.Properties;
 
 import org.eclipse.ui.internal.intro.impl.model.loader.ModelLoaderUtil;
 import org.eclipse.ui.internal.intro.impl.model.url.IntroURL;
-import org.eclipse.ui.internal.intro.impl.util.StringUtil;
 import org.eclipse.ui.intro.config.IIntroAction;
 import org.eclipse.ui.intro.config.IIntroURL;
 import org.talend.presentation.onboarding.exceptions.OnBoardingExceptionHandler;
@@ -64,7 +64,7 @@ public class DynamicHtmlURL implements IIntroURL {
                     // we are told to decode the parameters of the url through
                     // the decode parameter. Assume that parameters are
                     // UTF-8 encoded.
-                    return StringUtil.decode(value, "UTF-8"); //$NON-NLS-1$
+                    return URLDecoder.decode(value, "UTF-8"); //$NON-NLS-1$
                 }
                 return value;
             } catch (Exception e) {

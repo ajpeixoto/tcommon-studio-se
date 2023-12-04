@@ -43,3 +43,4 @@ Require-Bundle: org.eclipse.core.runtime,
  org.talend.cwm.mip,
  org.eclipse.emf.edit
 Bundle-ActivationPolicy: lazy
+Automatic-Module-Name: org.talend.cwm.mip.edit

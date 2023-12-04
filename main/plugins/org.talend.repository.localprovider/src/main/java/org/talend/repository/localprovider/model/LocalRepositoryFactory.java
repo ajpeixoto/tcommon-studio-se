@@ -1923,6 +1923,9 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
                 type = objToMove.getRepositoryObjectType();
             }
             ERepositoryObjectType itemType = ERepositoryObjectType.getItemType(objToMove.getProperty().getItem());
+            if (RepositoryNodeManager.isSnowflake(itemType) && ERepositoryObjectType.METADATA_CONNECTIONS == type) {
+                type = itemType;
+            }
             boolean isTacokit = RepositoryNodeManager.isTacokit(type);
             if (isTacokit && itemType != null && itemType != type) {
                 type = itemType;

@@ -26,9 +26,8 @@
     <import feature="org.talend.utils.feature" version="0.0.0" match="greaterOrEqual"/>
     <import plugin="javax.activation" version="0.0.0" match="greaterOrEqual"/>
     <import plugin="javax.mail" version="0.0.0" match="greaterOrEqual"/>
-    <import plugin="javax.xml.bind" version="0.0.0" match="greaterOrEqual"/>
-    <import plugin="javax.xml.soap" version="0.0.0" match="greaterOrEqual"/>
-    <import plugin="javax.xml.ws" version="0.0.0" match="greaterOrEqual"/>
+    <import plugin="jakarta.xml.bind" version="0.0.0" match="greaterOrEqual"/>
+    <import plugin="jakarta.xml.soap-api" version="0.0.0" match="greaterOrEqual"/>
     <import plugin="net.jeeeyul.eclipse.themes" version="0.0.0" match="greaterOrEqual"/>
     <import plugin="net.jeeeyul.swtend" version="0.0.0" match="greaterOrEqual"/>
     <import plugin="org.apache.commons.collections" version="0.0.0" match="greaterOrEqual"/>

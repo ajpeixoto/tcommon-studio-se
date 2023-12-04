@@ -105,8 +105,8 @@ public class MavenUIService implements IMavenUIService {
 
             @Override
             public void mavenConfigurationChange(MavenConfigurationChangeEvent event) throws CoreException {
-                if (event.getKey() != null && event.getKey().equals(MavenPreferenceConstants.P_GLOBAL_SETTINGS_FILE)
-                        || event.getKey().equals(MavenPreferenceConstants.P_USER_SETTINGS_FILE)) {
+                if (event.key() != null && event.key().equals(MavenPreferenceConstants.P_GLOBAL_SETTINGS_FILE)
+                        || event.key().equals(MavenPreferenceConstants.P_USER_SETTINGS_FILE)) {
                     updateMavenResolver(true);
 
                 }

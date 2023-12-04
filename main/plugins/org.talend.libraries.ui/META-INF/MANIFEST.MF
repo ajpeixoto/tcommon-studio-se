@@ -16,3 +16,4 @@ Import-Package: org.eclipse.swt,
  org.eclipse.swt.layout,
  org.eclipse.swt.widgets,
  org.eclipse.ui.plugin
+Automatic-Module-Name: org.talend.libraries.ui

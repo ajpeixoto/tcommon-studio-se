@@ -49,7 +49,13 @@ import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.m2e.core.MavenPlugin;
+import org.eclipse.m2e.core.internal.MavenPluginActivator;
+import org.eclipse.m2e.core.internal.markers.IEditorMarkerService;
+import org.eclipse.osgi.internal.serviceregistry.ServiceReferenceImpl;
+import org.eclipse.osgi.internal.serviceregistry.ServiceRegistrationImpl;
 import org.eclipse.swt.widgets.Display;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.commons.exception.ExceptionHandler;
@@ -88,6 +94,7 @@ import org.talend.core.runtime.process.TalendProcessOptionConstants;
 import org.talend.core.runtime.services.IFilterService;
 import org.talend.core.ui.ITestContainerProviderService;
 import org.talend.core.utils.CodesJarResourceCache;
+import org.talend.core.utils.WorkspaceUtils;
 import org.talend.designer.maven.launch.MavenPomCommandLauncher;
 import org.talend.designer.maven.model.MavenSystemFolders;
 import org.talend.designer.maven.model.TalendJavaProjectConstants;
@@ -110,6 +117,21 @@ public class AggregatorPomsHelper {
     private static final Logger LOGGER = LoggerFactory.getLogger(AggregatorPomsHelper.class);
 
     private String projectTechName;
+    
+    static {
+    	//try to unregister service to avoid m2e.core.ui start before workbench created
+    	try {
+    		BundleContext context = MavenPluginActivator.getDefault().getBundleContext();
+    		ServiceReference<IEditorMarkerService> ref = context.getServiceReference(IEditorMarkerService.class);
+    		if(ref instanceof ServiceReferenceImpl<?>) {
+    			ServiceReferenceImpl<?> s = (ServiceReferenceImpl<?>) ref;
+    			ServiceRegistrationImpl<?> registration = s.getRegistration();
+    			registration.unregister();
+    		}
+    	}catch(Exception e) {
+    		LOGGER.error("Unable to unregister service of " + IEditorMarkerService.class, e);
+    	}
+    }
 
     public AggregatorPomsHelper() {
         projectTechName = ProjectManager.getInstance().getCurrentProject().getTechnicalLabel();
@@ -162,7 +184,8 @@ public class AggregatorPomsHelper {
 
     public boolean needInstallRootPom(IFile pomFile) {
         try {
-            Model model = MavenPlugin.getMaven().readModel(pomFile.getLocation().toFile());
+            Model model = MavenPlugin.getMavenModelManager().readMavenModel(pomFile);
+
             String mvnUrl = MavenUrlHelper.generateMvnUrl(model.getGroupId(), model.getArtifactId(), model.getVersion(),
                     MavenConstants.PACKAGING_POM, null);
             MavenArtifact artifact = MavenUrlHelper.parseMvnUrl(mvnUrl);
@@ -171,7 +194,10 @@ public class AggregatorPomsHelper {
                 if (artifactPath == null) {
                     return true;
                 }
-                Model installedModel = MavenPlugin.getMaven().readModel(new File(artifactPath));
+                Model installedModel = null;
+                try(InputStream is = new FileInputStream(new File(artifactPath))){
+                	installedModel = MavenPlugin.getMavenModelManager().readMavenModel(is);
+                }
                 // check ci-builder
                 String currentCIBuilderVersion = model.getBuild().getPlugins().stream()
                         .filter(p -> p.getArtifactId().equals(MojoType.CI_BUILDER.getArtifactId())).findFirst().get()

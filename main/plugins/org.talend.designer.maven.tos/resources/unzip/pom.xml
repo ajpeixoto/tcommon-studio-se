@@ -248,7 +248,7 @@
                                 <artifactItem>
                                     <groupId>org.talend.studio</groupId>
                                     <artifactId>studio-maven-repository</artifactId>
-                                    <version>8.0.1.v20220325</version>
+                                    <version>8.0.2.v20230721</version>
                                     <type>zip</type>
                                     <overWrite>true</overWrite>
                                     <outputDirectory>${project.basedir}/../repository</outputDirectory>
@@ -266,7 +266,8 @@
 						<configuration>
 							<addParentPoms>true</addParentPoms>
 							<copyPom>true</copyPom>
-							<includeScope>compile</includeScope>
+							<includeScope>runtime</includeScope>
+							<excludeGroupIds>p2.eclipse-plugin,org.talend.studio</excludeGroupIds>
 							<outputDirectory>${basedir}/../tmp/repository</outputDirectory>
 							<useRepositoryLayout>true</useRepositoryLayout>
 						</configuration>
@@ -284,11 +285,6 @@
                             <tasks>
                                 <echo message="Unzip old repository..." />
                                 <unzip src="${basedir}/../repository/maven_repository.zip" dest="${basedir}/../tmp/">
-                                <patternset>
-                                        <exclude name="repository/org/apache/maven/maven-artifact-manager/2.0.9/"/>
-                                        <exclude name="repository/org/apache/maven/maven-artifact-manager/2.0.6/"/>
-                                        <exclude name="repository/ch/qos/reload4j/reload4j/1.2.19/"/>
-                                    </patternset>
                                 </unzip>
                             </tasks>
                         </configuration>
@@ -319,6 +315,7 @@
 								<extraArtifact>org.junit:junit-bom:5.7.1:pom</extraArtifact>
 								<extraArtifact>org.junit:junit-bom:5.8.2:pom</extraArtifact>
 								<extraArtifact>org.junit:junit-bom:5.9.1:pom</extraArtifact>
+								<extraArtifact>com.fasterxml.jackson:jackson-bom:2.13.4.20221013:pom</extraArtifact>
 								<extraArtifact>com.fasterxml.jackson:jackson-bom:2.14.3:pom</extraArtifact>
 							</extraArtifacts>
 							<pomIncludes>

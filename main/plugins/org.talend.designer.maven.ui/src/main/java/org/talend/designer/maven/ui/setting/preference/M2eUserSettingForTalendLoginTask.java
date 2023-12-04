@@ -337,12 +337,14 @@ public class M2eUserSettingForTalendLoginTask extends AbstractLoginTask {
             // modify the setting file for "localRepository"
             settings.setLocalRepository(localRepoPath.toString());
             maven.reloadSettings();
+            //https://github.com/eclipse-m2e/m2e-core/commit/079ad83a41ca1be54cfef6a108440a0d070c30ff
+            //m2e removed all things about index. so here maybe we don't need to updateIndex anymore ?
             // should same as MavenSettingsPreferencePage.updateSettings update index?
-            try {
-                MavenPlugin.getIndexManager().getWorkspaceIndex().updateIndex(false, monitor);
-            } catch (Exception e) {
-                ExceptionHandler.process(e);
-            }
+//            try {
+//                MavenPlugin.getIndexManager().getWorkspaceIndex().updateIndex(false, monitor);
+//            } catch (Exception e) {
+//                ExceptionHandler.process(e);
+//            }
 
             return true;
         }

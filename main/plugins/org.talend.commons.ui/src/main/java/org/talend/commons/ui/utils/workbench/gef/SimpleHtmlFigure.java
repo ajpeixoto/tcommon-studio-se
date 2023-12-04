@@ -320,14 +320,13 @@ public class SimpleHtmlFigure extends Figure {
     @SuppressWarnings("unchecked")
     private Dimension computePreferedSize() {
         Dimension size = new Dimension();
-
         // Vertical path
-        List<IFigure> children = getChildren();
+        List<IFigure> children = (List<IFigure>) getChildren();
         for (IFigure fv : children) {
 
             // Horizontal path
             Dimension sizeH = new Dimension();
-            List<IFigure> childrenH = fv.getChildren();
+            List<IFigure> childrenH = (List<IFigure>) fv.getChildren();
             for (IFigure fh : childrenH) {
                 sizeH.width += fh.getPreferredSize().width;
                 sizeH.height = Math.max(sizeH.height, fh.getPreferredSize().height);

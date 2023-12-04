@@ -43,4 +43,5 @@ Export-Package: org.talend.designer.maven,
  org.talend.designer.maven.tools.extension,
  org.talend.designer.maven.utils
 Import-Package: org.slf4j
+Automatic-Module-Name: org.talend.designer.maven
 

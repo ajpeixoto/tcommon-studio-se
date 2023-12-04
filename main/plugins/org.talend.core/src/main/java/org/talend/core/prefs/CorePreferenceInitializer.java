@@ -67,6 +67,8 @@ public class CorePreferenceInitializer extends AbstractPreferenceInitializer {
             node.put(ITalendCorePrefConstants.JAVA_INTERPRETER, javaPath + JAVA_WIN32_INTERPRETER);
         } else if (os.equals(Platform.OS_LINUX)) {
             node.put(ITalendCorePrefConstants.JAVA_INTERPRETER, javaPath + JAVA_LINUX_INTERPRETER_PATH);
+        } else if (os.toLowerCase().contains("mac")) {
+            node.put(ITalendCorePrefConstants.JAVA_INTERPRETER, javaPath + JAVA_LINUX_INTERPRETER_PATH);
         }
 
         // Sets default language

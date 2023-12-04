@@ -48,7 +48,6 @@ import org.talend.core.model.context.JobContext;
 import org.talend.core.model.context.JobContextParameter;
 import org.talend.core.model.metadata.IMetadataConnection;
 import org.talend.core.model.metadata.MetadataTalendType;
-import org.talend.core.model.metadata.builder.connection.AdditionalConnectionProperty;
 import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
 import org.talend.core.model.metadata.builder.connection.FTPConnection;
@@ -382,12 +381,7 @@ public final class ConnectionContextHelper {
             } catch (JSONException e) {
                 ExceptionHandler.process(e);
             }
-        } else if (currentConnection instanceof SAPConnection) {
-            SAPConnection sapConn = (SAPConnection) currentConnection;
-            for (AdditionalConnectionProperty sapProperty : sapConn.getAdditionalProperties()) {
-                varList.add(sapProperty.getPropertyName());
-            }
-        } else if (currentConnection instanceof DatabaseConnection && !(currentConnection instanceof TacokitDatabaseConnection)) {
+        }else if (currentConnection instanceof DatabaseConnection && !(currentConnection instanceof TacokitDatabaseConnection)) {
             DatabaseConnection dbConn = (DatabaseConnection) currentConnection;
             List<Map<String, Object>> hadoopPropertiesList = DBConnectionContextUtils.getHiveOrHbaseHadoopProperties(dbConn);
             if (!hadoopPropertiesList.isEmpty()) {
@@ -1121,7 +1115,7 @@ public final class ConnectionContextHelper {
                 continue;
             }
             if (category == null || category == param.getCategory()) {
-                String repositoryValue = param.getRepositoryValue();
+                String repositoryValue = param.calcRepositoryValue();
                 if (repositoryValue != null) {
                     String componentName = null;
                     if (contextData != null) {
@@ -1175,22 +1169,6 @@ public final class ConnectionContextHelper {
         }
 
         return addedVars;
-    }
-
-    private static boolean isListEmpty(final String list) {
-        return list == null || list.isEmpty() || "[]".equals(list) || "[{}]".equals(list);
-    }
-
-    private static final Pattern BRACKETS_PATTERN = Pattern.compile("^\\[|\\]$");
-
-    private static String trimBrackets(final String str) {
-        return BRACKETS_PATTERN.matcher(str).replaceAll("");
-    }
-
-    private static final Pattern CURLY_BRACKETS_PATTERN = Pattern.compile("^\\{|\\}$");
-
-    private static String trimCurlyBrackets(final String str) {
-        return CURLY_BRACKETS_PATTERN.matcher(str).replaceAll("");
     }
 
     /**

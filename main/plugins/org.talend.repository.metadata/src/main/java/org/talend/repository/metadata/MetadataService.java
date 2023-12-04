@@ -128,14 +128,22 @@ public class MetadataService implements IMetadataService {
             ERepositoryObjectType objectType = null;
             if (creation || node.getComponent().getComponentType() == EComponentType.GENERIC) {
                 objectType = realNode.getContentType();
+                if (ERepositoryObjectType.METADATA_CONNECTIONS == objectType && realNode.getObjectType() != null
+                        && ERepositoryObjectType.METADATA_TACOKIT_JDBC == realNode.getObjectType()) {
+                    objectType = ERepositoryObjectType.METADATA_TACOKIT_JDBC;
+                }
             } else {
                 objectType = realNode.getObjectType();
             }
             if (objectType.equals(ERepositoryObjectType.METADATA_CONNECTIONS)) {
                 relatedWizard = new DatabaseWizard(PlatformUI.getWorkbench(), creation, realNode, null);
             } else if (ITCKUIService.get() != null && objectType.equals(ERepositoryObjectType.METADATA_TACOKIT_JDBC)) {
-                relatedWizard = ITCKUIService.get().createTCKWizard(ITCKUIService.get().getTCKJDBCType().getLabel(),
-                        new Path(""), false);
+                if (creation) {
+                    relatedWizard = ITCKUIService.get().createTCKWizard(ITCKUIService.get().getTCKJDBCType().getLabel(),
+                            new Path(""), false);
+                } else {
+                    relatedWizard = ITCKUIService.get().editTCKWizard(realNode);
+                }
             } else if (objectType.equals(ERepositoryObjectType.METADATA_FILE_DELIMITED)) {
                 relatedWizard = new DelimitedFileWizard(PlatformUI.getWorkbench(), creation, realNode, null);
             } else if (objectType.equals(ERepositoryObjectType.METADATA_FILE_LDIF)) {

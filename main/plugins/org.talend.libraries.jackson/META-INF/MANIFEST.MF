@@ -40,3 +40,4 @@ Require-Bundle: org.apache.commons.lang,
  com.fasterxml.jackson.core.jackson-databind
 Bundle-ActivationPolicy: lazy
 Eclipse-BundleShape: dir
+Automatic-Module-Name: org.talend.libraries.jackson

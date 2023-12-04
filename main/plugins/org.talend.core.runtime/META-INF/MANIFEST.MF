@@ -8,6 +8,7 @@ Bundle-Localization: plugin
 Bundle-Vendor: .Talend SA.
 Export-Package: org.json.simple,
  org.talend.analysistask,
+ org.talend.commons.report,
  org.talend.commons.utils.generation,
  org.talend.commons.utils.io,
  org.talend.commons.utils.workbench.resources,
@@ -145,7 +146,7 @@ Require-Bundle: org.eclipse.jdt.core,
  com.fasterxml.jackson.core.jackson-annotations,
  com.fasterxml.jackson.core.jackson-databind,
  com.fasterxml.jackson.core.jackson-core,
- avro;bundle-version="1.11.2"
+ avro
 Bundle-Activator: org.talend.core.runtime.CoreRuntimePlugin
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,

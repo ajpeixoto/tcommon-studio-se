@@ -146,8 +146,8 @@ public class MavenRepoSynchronizer {
     }
 
     public static ExtendedMavenArtifact parseArtifact(File pomFile) {
-        try {
-            Model model = MavenPlugin.getMaven().readModel(pomFile);
+        try (InputStream is = new FileInputStream(pomFile)){
+            Model model = MavenPlugin.getMavenModelManager().readMavenModel(is);
             String packaging = model.getPackaging();
             if (packaging == null) {
                 packaging = TalendMavenConstants.PACKAGING_JAR;

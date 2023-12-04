@@ -84,9 +84,29 @@ public interface IElementParameter {
 
     public Object[] getListItemsValue();
 
-    public String getRepositoryValue();
+    public String calcRepositoryValue();
+
+    /**
+     * use {@link #calcRepositoryValue()} instead
+     */
+    @Deprecated
+    default public String getRepositoryValue() {
+        return calcRepositoryValue();
+    }
+
+    default public String getRawRepositoryValue() {
+        return calcRepositoryValue();
+    }
 
     public void setRepositoryValue(String repositoryValue);
+
+    default public String getRepositoryValueIf() {
+        return null;
+    }
+
+    default public void setRepositoryValueIf(String repositoryValue) {
+
+    }
 
     public String getRepositoryProperty();
 

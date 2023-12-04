@@ -1481,7 +1481,8 @@ public class MetadataConnectionUtils {
         if (!Platform.isRunning() || !connection.isContextMode()) {
             return connection;
         }
-        Connection copyConnection = deepCopy(connection);
+        Connection copyConnection = deepCopyAll(connection);
+
         JavaSqlFactory.haveSetPromptContextVars = false;
         ContextItem contextItem = ContextUtils.getContextItemById2(connection.getContextId());
         // only consider the connection currently used context
@@ -1521,6 +1522,18 @@ public class MetadataConnectionUtils {
             }
         }
         JavaSqlFactory.haveSetPromptContextVars = true;
+        return copyConnection;
+    }
+
+    /**
+     * DOC msjian Comment method "deepCopyAll".
+     * @param connection
+     * @return
+     */
+    public static Connection deepCopyAll(Connection connection) {
+        Connection copyConnection = deepCopy(connection);
+        HashMap cloneProperties = (HashMap) connection.getProperties().clone();
+        copyConnection.setProperties(cloneProperties);
         return copyConnection;
     }
 

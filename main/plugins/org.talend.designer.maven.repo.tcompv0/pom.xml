@@ -71,7 +71,7 @@
 			<dependency>
 				<groupId>org.json</groupId>
 				<artifactId>json</artifactId>
-				<version>20230227</version>
+				<version>20231013</version>
 			</dependency>
 			<dependency>
 				<groupId>com.fasterxml.jackson.dataformat</groupId>
@@ -187,6 +187,7 @@
 							<outputDirectory>${project.basedir}/tmp</outputDirectory>
 							<includeScope>runtime</includeScope>
 							<useRepositoryLayout>true</useRepositoryLayout>
+							<excludeGroupIds>p2.eclipse-plugin,org.talend.studio</excludeGroupIds>
 						</configuration>
 					</execution>
 				</executions>

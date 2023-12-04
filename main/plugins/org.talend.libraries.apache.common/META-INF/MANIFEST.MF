@@ -65,3 +65,4 @@ Require-Bundle: org.apache.commons.commons-beanutils,
  org.apache.commons.lang3
 Bundle-ActivationPolicy: lazy
 Eclipse-BundleShape: dir
+Automatic-Module-Name: org.talend.libraries.apache.common

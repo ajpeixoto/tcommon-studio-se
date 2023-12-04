@@ -19,6 +19,7 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.graphics.Image;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.IService;
+import org.talend.core.model.components.IComponent;
 import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
@@ -40,6 +41,10 @@ public interface ITCKUIService extends IService {
     Wizard createTCKWizard(String type, IPath path);
 
     Wizard createTCKWizard(String type, IPath path, boolean isNew);
+
+    Wizard editTCKWizard(RepositoryNode node);
+       
+    String getComponentFamilyName(IComponent component);
 
     public static ITCKUIService get() {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ITCKUIService.class)) {

@@ -205,6 +205,7 @@ public class InternalNodeComponentHandler extends AbstractComponentHandler {
                 if (eleObj != null) {
                     value = eleObj.toString();
                 }
+                String repositoryValue = null;
                 if (elemparameter.getFieldType() == EParameterFieldType.PROPERTY_TYPE) {
                     param = getElementParameter(elemparameter, EParameterFieldType.PROPERTY_TYPE);
                     if (param != null) {
@@ -241,8 +242,8 @@ public class InternalNodeComponentHandler extends AbstractComponentHandler {
                 // int index = type.getIndexOfItemFromList(type.getDisplayName());
                 // value = checkString(type.getListItemsDisplayName()[index]);
                 // }
-                else if (elemparameter.getRepositoryValue() != null
-                        && elemparameter.getRepositoryValue().toUpperCase().contains("PASSWORD") //$NON-NLS-1$
+                else if ((repositoryValue = elemparameter.calcRepositoryValue()) != null
+                        && repositoryValue.toUpperCase().contains("PASSWORD") //$NON-NLS-1$
                         || EParameterFieldType.isPassword(elemparameter.getFieldType())) {
                     name = elemparameter.getDisplayName();
                     value = ParameterValueUtil.getValue4Doc(elemparameter).toString();

@@ -49,10 +49,6 @@ public enum EDatabaseConnTemplate {
             "jdbc:postgresql://<host>:<port>/<sid>?<property>", //$NON-NLS-1$
             "5432")), //$NON-NLS-1$
 
-    PLUSPSQL(new DbConnStr(EDatabaseTypeName.PLUSPSQL, //
-            "jdbc:postgresql://<host>:<port>/<sid>?<property>", //$NON-NLS-1$
-            "5432")), //$NON-NLS-1$
-
     GREENPLUM(new DbConnStr(EDatabaseTypeName.GREENPLUM, //
             "jdbc:pivotal:greenplum://<host>:<port>;;DatabaseName=<sid>;<property>", //$NON-NLS-1$
             "5432")), //$NON-NLS-1$
@@ -382,7 +378,6 @@ public enum EDatabaseConnTemplate {
             case ORACLE_OCI:
             case ORACLE_CUSTOM:
             case PSQL:
-            case PLUSPSQL:
             case GREENPLUM:
             case REDSHIFT:
             case REDSHIFT_SSO:
@@ -426,7 +421,6 @@ public enum EDatabaseConnTemplate {
             case REDSHIFT_SSO:
             case SAPHana:
             case PSQL:
-            case PLUSPSQL:
             case GREENPLUM:
             case INGRES:
             case VECTORWISE:
@@ -470,7 +464,6 @@ public enum EDatabaseConnTemplate {
             case HSQLDB_IN_PROGRESS:
             case MAXDB:
             case PSQL:
-            case PLUSPSQL:
                 return true;
             default:
             }

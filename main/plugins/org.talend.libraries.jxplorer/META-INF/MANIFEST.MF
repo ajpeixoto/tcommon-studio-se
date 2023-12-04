@@ -29,3 +29,4 @@ Export-Package: com.ca.commons.cbutil,
  org.apache.axis.utils,
  org.talend.libraries.jxplorer
 Eclipse-BundleShape: dir
+Automatic-Module-Name: org.talend.libraries.jxplorer

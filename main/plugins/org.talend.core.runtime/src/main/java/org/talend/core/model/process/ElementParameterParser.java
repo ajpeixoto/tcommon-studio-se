@@ -629,7 +629,7 @@ public final class ElementParameterParser {
                 return processItem.getProperty().getLabel();
             }
             // hywang add for 6484
-            else if ("SELECTED_FILE".equals(param.getRepositoryValue())) { //$NON-NLS-1$
+            else if ("SELECTED_FILE".equals(param.calcRepositoryValue())) { //$NON-NLS-1$
                 IElementParameter propertyParam = param.getElement().getElementParameter("PROPERTY:REPOSITORY_PROPERTY_TYPE"); //$NON-NLS-1$
                 if (propertyParam != null && propertyParam.getValue() != null && !propertyParam.getValue().equals("")) { //$NON-NLS-1$
                     try {
