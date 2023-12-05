@@ -46,3 +46,10 @@ Installation On Studio:
 4. remove the folder "{studio}/configuration/org.eclipse.osgi".
 5. Start the Talend studio.
 6. Rebuild your jobs.
+ 
+Installation On CI:
+
+1. put the patch in a location that can be reached in CI environment.
+2. copy the patch to <product.path>/patches folder between executions of org.talend.ci:builder-maven-plugin:8.0.x:install and org.talend.ci:builder-maven-plugin:8.0.x:generateAllPoms command.
+3. if it's an automation task for CI/CD, use scripts to do the copy action.
+4. Run the CI/CD task.
