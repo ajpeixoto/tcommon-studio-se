@@ -1085,8 +1085,8 @@ public class ExtractMetaDataUtils {
                 } else if (driverJarPathArg.contains("/")) {
                     if (driverJarPathArg.contains(";")) {
                         String jars[] = driverJarPathArg.split(";");
-                        List<String> jarNames = new ArrayList<>();
                         for (String jar : jars) {
+                            jar = TalendQuoteUtils.removeQuotesIfExist(jar);
                             if (jar.startsWith(MavenUrlHelper.MVN_PROTOCOL)) {
                                 setDriverPath(librairesManagerService, jarPathList, jar);
                             } else {
