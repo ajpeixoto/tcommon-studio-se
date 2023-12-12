@@ -11,7 +11,7 @@
     <packaging>pom</packaging>
     <repositories>
         <repository>
-            <id>Talend OpenSource Release</id>
+            <id>talend_open</id>
             <url>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceRelease/</url>
         </repository>
     </repositories>

@@ -134,7 +134,7 @@ public class ExtractMetaDataUtils {
 
     public static final String SNOWFLAKE = "Snowflake"; //$NON-NLS-1$
 
-    public static final String SNOWFLAKE_DRIVER_JAR = "snowflake-jdbc-3.13.29.jar"; //$NON-NLS-1$
+    public static final String SNOWFLAKE_DRIVER_JAR = "snowflake-jdbc-3.14.4.jar"; //$NON-NLS-1$
 
     private ExtractMetaDataUtils() {
     }
@@ -1085,8 +1085,8 @@ public class ExtractMetaDataUtils {
                 } else if (driverJarPathArg.contains("/")) {
                     if (driverJarPathArg.contains(";")) {
                         String jars[] = driverJarPathArg.split(";");
-                        List<String> jarNames = new ArrayList<>();
                         for (String jar : jars) {
+                            jar = TalendQuoteUtils.removeQuotesIfExist(jar);
                             if (jar.startsWith(MavenUrlHelper.MVN_PROTOCOL)) {
                                 setDriverPath(librairesManagerService, jarPathList, jar);
                             } else {
