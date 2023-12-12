@@ -24,9 +24,10 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.general.ModuleToInstall;
+import org.talend.core.runtime.maven.MavenConstants;
 
 /**
- * created by wchen on 2016年2月18日 Detailled comment
+ * created by wchen on 2016骞�2鏈�18鏃� Detailled comment
  *
  */
 public class RemoteModulesHelperTest {
@@ -92,5 +93,36 @@ public class RemoteModulesHelperTest {
         Assert.assertEquals("protobuf-java.jar", toInstall1.get(0).getName());
         Assert.assertEquals("mvn:org.talend.libraries/protobuf-java/6.0.0/jar", toInstall1.get(0).getMavenUri());
 
+    }
+    
+    
+    @Test
+    public void testGetManualInstallModulesRunnableListForModuleNameURL() throws InvocationTargetException, InterruptedException {
+        List<ModuleNeeded> neededModules = new ArrayList<ModuleNeeded>();
+        ModuleNeeded m1 = new ModuleNeeded("test", "tdgssconfig-16.20.00.02.jar", "", true, null, null,
+                "mvn:com.teradata/tdgssconfig/16.20.00.02/jar");
+        neededModules.add(m1);
+        List<ModuleToInstall> toInstall1 = new ArrayList<ModuleToInstall>();
+        IRunnableWithProgress notInstalledModulesRunnable = RemoteModulesHelper.getInstance()
+                .getNotInstalledModulesRunnable(neededModules, toInstall1, false, false, false);
+        notInstalledModulesRunnable.run(new NullProgressMonitor());
+        assertEquals(1, toInstall1.size());
+        Assert.assertEquals(MavenConstants.DOWNLOAD_MANUAL, toInstall1.get(0).getDistribution());
+        
+        
+        neededModules = new ArrayList<ModuleNeeded>();
+        m1 = new ModuleNeeded("test", "tdgssconfig-16.20.00.02.jar", "", true, null, null,
+                "mvn:com.teradata/tdgssconfig/16.20.00.02/jar");
+        neededModules.add(m1);
+        m1 = new ModuleNeeded("test", "terajdbc4-16.20.00.02.jar", "", true, null, null,
+                "mvn:com.teradata/terajdbc4/16.20.00.02/jar");
+        neededModules.add(m1); 
+        List<ModuleToInstall> toInstall2 = new ArrayList<ModuleToInstall>();
+        notInstalledModulesRunnable = RemoteModulesHelper.getInstance()
+                .getNotInstalledModulesRunnable(neededModules, toInstall2, false, false, false);
+        notInstalledModulesRunnable.run(new NullProgressMonitor());        
+        assertEquals(2, toInstall2.size());
+        Assert.assertEquals(MavenConstants.DOWNLOAD_MANUAL, toInstall2.get(0).getDistribution());
+        Assert.assertEquals(MavenConstants.DOWNLOAD_MANUAL, toInstall2.get(1).getDistribution());
     }
 }
