@@ -42,6 +42,7 @@
 		<module>main/features/org.talend.update.p2.feature</module>
 		<module>main/features/org.talend.updates.feature</module>
 		<module>main/features/org.talend.utils.feature</module>
+		<module>main/features/org.talend.jdt.feature</module>
 		<module>main/plugins/org.talend.common.ui.runtime</module>
 		<module>main/plugins/org.talend.commons.runtime</module>
 		<module>main/plugins/org.talend.commons.ui</module>
@@ -114,8 +115,11 @@
 		<module>main/plugins/org.talend.designer.maven.tos</module>
 		<module>main/plugins/org.talend.signon.util</module>
 
+		<module>main/plugins/org.talend.designer.maven.repo.tck/prepare-repo</module>
 		<module>main/plugins/org.talend.designer.maven.repo.tck</module>
+        <module>main/plugins/org.talend.designer.maven.repo.tcksdk/prepare-repo</module>
         <module>main/plugins/org.talend.designer.maven.repo.tcksdk</module>
+		<module>main/plugins/org.talend.designer.maven.repo.tcompv0/prepare-repo</module>
 		<module>main/plugins/org.talend.designer.maven.repo.tcompv0</module>
 
 		<module>main/plugins/org.talend.libraries.persist.lookup</module>

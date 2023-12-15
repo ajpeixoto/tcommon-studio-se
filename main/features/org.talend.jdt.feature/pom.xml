@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.talend.studio</groupId>
+    <artifactId>tcommon-studio-se</artifactId>
+    <version>8.8.8-SNAPSHOT</version>
+    <relativePath>../../../</relativePath>
+  </parent>
+  <artifactId>org.talend.jdt.feature</artifactId>
+  <packaging>eclipse-feature</packaging>
+
+<repositories>
+    <repository>
+        <id>eclipse</id>
+        <url>https://download.eclipse.org/releases/2023-06/</url>
+        <layout>p2</layout>
+    </repository>
+</repositories>
+
+<build>
+  <plugins>
+      <plugin>
+          <groupId>org.eclipse.tycho</groupId>
+          <artifactId>target-platform-configuration</artifactId>
+          <version>${tycho.version}</version>
+          <configuration combine.self="override">
+              <executionEnvironmentDefault>JavaSE-17</executionEnvironmentDefault>
+              <environments>
+                  <environment>
+                      <os>${osgi.os}</os>
+                      <ws>${osgi.ws}</ws>
+                      <arch>${osgi.arch}</arch>
+                  </environment>
+              </environments>
+          </configuration>
+      </plugin>
+  </plugins>
+</build>
+</project>
