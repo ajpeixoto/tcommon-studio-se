@@ -9,4 +9,24 @@
   </parent>
   <artifactId>org.talend.metadata.managment</artifactId>
   <packaging>eclipse-plugin</packaging>
+  <build>
+	<plugins>
+      <plugin>
+          <groupId>org.eclipse.tycho</groupId>
+          <artifactId>tycho-compiler-plugin</artifactId>
+          <version>${tycho.version}</version>
+          <configuration>
+              <pomOnlyDependencies>ignore</pomOnlyDependencies>
+       <compilerArgs>
+              <arg>-err:+discouraged,forbidden</arg>
+              <arg>-warn:+discouraged,forbidden</arg>
+		</compilerArgs>
+          <compilerVersion>1.8</compilerVersion>
+          <source>1.8</source>
+          <target>1.8</target>
+          <useProjectSettings>false</useProjectSettings>
+          </configuration>
+      </plugin>
+	</plugins>
+  </build>
 </project>
