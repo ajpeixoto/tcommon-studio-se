@@ -231,10 +231,13 @@ public interface IStudioLiteP2Service extends IService {
         @Deprecated
         void setRelease(IProgressMonitor monitor, URI uri) throws Exception;
 
+        @Deprecated
         URI getLocalRelease(IProgressMonitor monitor) throws Exception;
 
+        @Deprecated
         void setLocalRelease(IProgressMonitor monitor, URI uri) throws Exception;
 
+        @Deprecated
         String getTmcRelease(IProgressMonitor monitor) throws Exception;
 
         boolean isUpdateEditable();
