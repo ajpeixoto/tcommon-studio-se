@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
@@ -1052,6 +1053,60 @@ public class LocalRepositoryFactoryTest extends BaseRepositoryTest {
         }
 
         assertTrue(fileProperty.exists());
+    }
+    
+    /**
+     * Test method for
+     * {@link org.talend.repository.localprovider.model.LocalRepositoryFactory#moveObjectMulti(org.talend.core.model.repository.IRepositoryViewObject[], org.eclipse.core.runtime.IPath)}
+     * .
+     *
+     * @throws CoreException
+     * @throws PersistenceException
+     * @throws LoginException
+     */
+    @Test
+    public void testmoveObjectMulti() throws LoginException, PersistenceException {
+        repositoryFactory.logOnProject(sampleProject);
+
+        String version[] = {"0.1", "0.2", "0.3"};
+        String jobLabel = "job";
+        int nums = 3; // number of jobs, for test move as a group
+        
+        List<IRepositoryViewObject> objects = new ArrayList<IRepositoryViewObject>();
+        for (int i = 0; i < nums; i++) {
+            ProcessItem processItem = null;
+            for (int j = 0; j < version.length; j++) {
+                processItem = createTempProcessItem(repositoryFactory, "", jobLabel + i, version[j]);
+            }
+            String processId = processItem.getProperty().getId();
+            IRepositoryViewObject lastVersion = repositoryFactory.getLastVersion(sampleProject, processId, "",
+                    ERepositoryObjectType.PROCESS);
+            assertNotNull(lastVersion);
+            objects.add(lastVersion);
+        }
+        
+
+        final Folder createFolder = repositoryFactory.createFolder(sampleProject, ERepositoryObjectType.PROCESS, new Path(""),
+                "moveMultiToThisFolder");
+        assertNotNull(createFolder);
+
+        IPath ipath = new Path(createFolder.getLabel());
+
+        repositoryFactory.moveObjectMulti(objects.toArray(new IRepositoryViewObject[0]), ipath);
+        
+        IProject project = ResourceUtils.getProject(sampleProject);
+        for (int i = 0; i < 3; i++) {
+            ProcessItem processItem = null;
+            for (int j = 0; j < version.length; j++) {
+                checkMoveObjectFileExists(project, ERepositoryObjectType.PROCESS, createFolder.getLabel(), jobLabel + i,
+                        version[j]);
+            }
+        }
+        FolderItem folderItem = repositoryFactory.getFolderItem(sampleProject, ERepositoryObjectType.PROCESS, ipath);
+        assertTrue(folderItem.getChildren().size() == 2);
+
+        //
+        repositoryFactory.batchDeleteObjectPhysical(sampleProject, objects, true, false);
     }
 
     /**
