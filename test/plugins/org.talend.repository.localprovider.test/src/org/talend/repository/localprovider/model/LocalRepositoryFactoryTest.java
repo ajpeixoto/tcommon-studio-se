@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.repository.localprovider.model;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.*;
 
 import java.io.File;
@@ -19,6 +20,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -59,6 +63,10 @@ import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 import org.talend.designer.core.model.utils.emf.talendfile.TalendFileFactory;
 import org.talend.repository.ProjectManager;
+import org.talend.utils.xml.XmlUtils;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * DOC nrousseau class global comment. Detailled comment
@@ -1059,54 +1067,85 @@ public class LocalRepositoryFactoryTest extends BaseRepositoryTest {
      * Test method for
      * {@link org.talend.repository.localprovider.model.LocalRepositoryFactory#moveObjectMulti(org.talend.core.model.repository.IRepositoryViewObject[], org.eclipse.core.runtime.IPath)}
      * .
-     *
+     * take process for example, test move multi jobs, each job has multi versions
+     * 
      * @throws CoreException
      * @throws PersistenceException
      * @throws LoginException
+     * @throws IOException 
+     * @throws ParserConfigurationException 
      */
     @Test
-    public void testmoveObjectMulti() throws LoginException, PersistenceException {
+    public void testmoveObjectMulti() throws LoginException, PersistenceException, IOException, CoreException, ParserConfigurationException {
         repositoryFactory.logOnProject(sampleProject);
 
         String version[] = {"0.1", "0.2", "0.3"};
+//        String version[] = {"0.1"};
         String jobLabel = "job";
         int nums = 3; // number of jobs, for test move as a group
         
         List<IRepositoryViewObject> objects = new ArrayList<IRepositoryViewObject>();
+        ERepositoryObjectType type = ERepositoryObjectType.PROCESS;
         for (int i = 0; i < nums; i++) {
-            ProcessItem processItem = null;
-            for (int j = 0; j < version.length; j++) {
-                processItem = createTempProcessItem(repositoryFactory, "", jobLabel + i, version[j]);
+            String propId = repositoryFactory.getNextId();
+            ProcessItem processItem = createTempProcessItem(repositoryFactory, "", jobLabel + i, version[0], propId);
+            for (int j = 1; j < version.length; j++) {
+                String originalVersion = processItem.getProperty().getVersion();
+                processItem.getProperty().setVersion(version[j]);
+                ProxyRepositoryFactory.getInstance().save(processItem.getProperty(), processItem.getProperty().getLabel(), originalVersion);
             }
             String processId = processItem.getProperty().getId();
-            IRepositoryViewObject lastVersion = repositoryFactory.getLastVersion(sampleProject, processId, "",
-                    ERepositoryObjectType.PROCESS);
+            IRepositoryViewObject lastVersion = repositoryFactory.getLastVersion(sampleProject, processId, "", type);
             assertNotNull(lastVersion);
             objects.add(lastVersion);
         }
         
 
-        final Folder createFolder = repositoryFactory.createFolder(sampleProject, ERepositoryObjectType.PROCESS, new Path(""),
-                "moveMultiToThisFolder");
+        String targetFolder = "moveMultiToThisFolder";
+        final Folder createFolder = repositoryFactory.createFolder(sampleProject, type, new Path(""), targetFolder);
         assertNotNull(createFolder);
 
         IPath ipath = new Path(createFolder.getLabel());
 
         repositoryFactory.moveObjectMulti(objects.toArray(new IRepositoryViewObject[0]), ipath);
         
+        //verify in memory
+        FolderItem folderItem = repositoryFactory.getFolderItem(sampleProject, type, ipath);
+        assertEquals("after move multi jobs, the target folder has own children now in memory", nums * version.length, folderItem.getChildren().size());
+        
+        //verify local files
         IProject project = ResourceUtils.getProject(sampleProject);
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < nums; i++) {
             ProcessItem processItem = null;
             for (int j = 0; j < version.length; j++) {
-                checkMoveObjectFileExists(project, ERepositoryObjectType.PROCESS, createFolder.getLabel(), jobLabel + i,
-                        version[j]);
+                checkMoveObjectFileExists(project, type, createFolder.getLabel(), jobLabel + i, version[j]);
+
+                checkAuthorPathInProperties(version[j], jobLabel + i, type, targetFolder, project);
             }
         }
-        FolderItem folderItem = repositoryFactory.getFolderItem(sampleProject, ERepositoryObjectType.PROCESS, ipath);
-        assertTrue(folderItem.getChildren().size() == 2);
-
+        
         //
         repositoryFactory.batchDeleteObjectPhysical(sampleProject, objects, true, false);
+    }
+
+    private void checkAuthorPathInProperties(String version, String jobLabel, ERepositoryObjectType type, String targetFolder,
+            IProject project) {
+        // verify author path change in properties file: for example, <author
+        // href="../../talend.project#_UrUe4JXNEe6e9KueIEhr5Q"/>
+        try {
+            IFile fileProperty = project.getFile(new Path(ERepositoryObjectType.getFolderName(type) + "/" + targetFolder
+                    + "/" + jobLabel + "_" + version + ".properties"));
+            DocumentBuilder docBuilder = XmlUtils.getSecureDocumentBuilderFactory().newInstance().newDocumentBuilder();
+            Document doc = docBuilder.parse(fileProperty.getContents());
+            NodeList authorTag = doc.getElementsByTagName("author");
+            if (authorTag == null || authorTag.getLength() != 1) {
+                assertThat("author element not found");
+            }
+            Node hrefAttrItem = authorTag.item(0).getAttributes().getNamedItem("href");
+            String nodeValue = hrefAttrItem.getNodeValue();
+            assertTrue("relative href path for author: " + nodeValue, nodeValue.startsWith("../../"));
+        } catch (Exception e) {
+        }
     }
 
     /**
