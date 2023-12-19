@@ -184,19 +184,19 @@ public class BaseRepositoryTest {
     }
 
     protected ProcessItem createTempProcessItem(LocalRepositoryFactory factory, String path) throws PersistenceException {
-        ProcessItem processItem = createTempProcessItem(factory, path, "myJob", "0.1");
+        ProcessItem processItem = createTempProcessItem(factory, path, "myJob", "0.1", factory.getNextId());
 
         return processItem;
     }
     
-    protected ProcessItem createTempProcessItem(LocalRepositoryFactory factory, String path, String jobLabel, String jobVersion) throws PersistenceException {
+    protected ProcessItem createTempProcessItem(LocalRepositoryFactory factory, String path, String jobLabel, String jobVersion, String id) throws PersistenceException {
         ProcessItem processItem = PropertiesFactory.eINSTANCE.createProcessItem();
         Property myProperty = PropertiesFactory.eINSTANCE.createProperty();
         ItemState itemState = PropertiesFactory.eINSTANCE.createItemState();
         itemState.setPath(path);
         processItem.setProperty(myProperty);
         processItem.setState(itemState);
-        myProperty.setId(factory.getNextId());
+        myProperty.setId(id);
         myProperty.setLabel(jobLabel);
         myProperty.setVersion(jobVersion);
         
