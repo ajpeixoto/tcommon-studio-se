@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.eclipse.gef.commands.Command;
 import org.talend.commons.ui.runtime.i18n.Messages;
+import org.talend.commons.ui.runtime.swt.tableviewer.TableViewerCreatorNotModifiable;
 import org.talend.commons.ui.swt.extended.table.ExtendedTableModel;
 import org.talend.commons.ui.utils.SimpleClipboard;
 import org.talend.commons.utils.data.list.UniqueStringGenerator;
@@ -65,6 +66,11 @@ public abstract class ExtendedTablePasteCommand extends Command implements IExte
             List list = new ArrayList((List) data);
             list = createPastableBeansList(extendedTable, list);
             extendedTable.addAll(indexStart, list);
+            // when not lazy load need to do refresh to refresh the row number
+            if (!TableViewerCreatorNotModifiable.getRecommandLazyLoad()
+                    && !TableViewerCreatorNotModifiable.isLazyLoadingEnabled()) {
+                extendedTable.getTableViewer().refresh();
+            }
         }
 
     }
