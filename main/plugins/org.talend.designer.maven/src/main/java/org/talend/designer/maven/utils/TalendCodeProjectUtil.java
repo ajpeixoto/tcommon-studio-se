@@ -12,6 +12,7 @@
 package org.talend.designer.maven.utils;
 
 import org.apache.maven.model.Model;
+import org.apache.maven.model.Parent;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
@@ -21,9 +22,10 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.m2e.core.internal.IMavenConstants;
-import org.talend.core.model.general.TalendJobNature;
+import org.talend.designer.maven.model.TalendJavaProjectConstants;
 import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.maven.tools.creator.CreateMavenCodeProject;
+import org.talend.repository.ProjectManager;
 
 /**
  * created by ggu on 23 Jan 2015 Detailled comment
@@ -57,6 +59,14 @@ public final class TalendCodeProjectUtil {
                     templateModel.setArtifactId(TalendMavenConstants.PROJECT_NAME);
                     templateModel.setVersion(PomIdsHelper.getProjectVersion());
                     templateModel.setPackaging(TalendMavenConstants.PACKAGING_JAR);
+                    //add parent for .java project to make it re-use the pom_project_template.xml defined maven plugin versions
+                    Parent parent = new Parent();
+                    parent.setArtifactId(PomIdsHelper.getProjectArtifactId());
+                    String projectTechName = ProjectManager.getInstance().getCurrentProject().getTechnicalLabel();
+                    parent.setGroupId(PomIdsHelper.getProjectGroupId(projectTechName));
+                    parent.setVersion(PomIdsHelper.getProjectVersion(projectTechName));
+                    parent.setRelativePath("../"+ projectTechName+"/"+TalendJavaProjectConstants.DIR_POMS);
+                    templateModel.setParent(parent);
 
                     return templateModel;
                 }
