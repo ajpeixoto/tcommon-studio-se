@@ -11,8 +11,10 @@
 // ============================================================================
 package org.talend.designer.maven.utils;
 
+import org.apache.log4j.Logger;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Parent;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
@@ -21,6 +23,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.m2e.core.MavenPlugin;
 import org.eclipse.m2e.core.internal.IMavenConstants;
 import org.talend.designer.maven.model.TalendJavaProjectConstants;
 import org.talend.designer.maven.model.TalendMavenConstants;
@@ -32,6 +35,8 @@ import org.talend.repository.ProjectManager;
  *
  */
 public final class TalendCodeProjectUtil {
+	
+	private static Logger log = Logger.getLogger(TalendCodeProjectUtil.class);
 
     /**
      * a temp maven java project, actually only used for compilation by jdt, any settings in pom.xml won't take affect.
@@ -78,6 +83,21 @@ public final class TalendCodeProjectUtil {
                         p.open(monitor);
                     }
                     addTalendNature(p, monitor);
+                }
+                
+                @Override
+                protected void createPomIfNotExist(IFile pomFile) throws CoreException{
+                	//for .Java project delete the pom.xml file the first time when run preview to make sure the pom will be updated
+                	if(pomFile != null && pomFile.exists()) {
+                		try {
+                			pomFile.delete(true, monitor);
+                		}catch(Exception e) {
+                			//continue if got any exception
+                			log.error("delete pom.xml failed : "+ e.getMessage());
+                		}
+                	}
+                	//in case delete failed
+                	super.createPomIfNotExist(pomFile);
                 }
 
             };

@@ -212,11 +212,7 @@ public class CreateMavenCodeProject extends AbstractMavenGeneralTemplatePom {
 
 		monitor.subTask(Messages.ProjectConfigurationManager_task_creating_pom);
 		IFile pomFile = p.getFile(TalendMavenConstants.POM_FILE_NAME);
-		if (!pomFile.exists()) {
-			// always use temp model to avoid classpath problem?
-			Model model = createModel();
-			MavenPlugin.getMavenModelManager().createMavenModel(pomFile, model);
-		}
+		createPomIfNotExist(pomFile);
 		monitor.worked(1);
 
 		monitor.subTask(Messages.ProjectConfigurationManager_task_creating_folders);
@@ -234,6 +230,13 @@ public class CreateMavenCodeProject extends AbstractMavenGeneralTemplatePom {
 
 		if (this.pomFile == null) {
 			this.pomFile = pomFile;
+		}
+	}
+	
+	protected void createPomIfNotExist(IFile pomFile) throws CoreException {
+		if (pomFile != null && !pomFile.exists()) {
+			Model model = createModel();
+			MavenPlugin.getMavenModelManager().createMavenModel(pomFile, model);
 		}
 	}
 
