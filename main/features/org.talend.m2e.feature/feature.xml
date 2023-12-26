@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.eclipse.m2e.feature"
+      id="org.talend.m2e.feature"
       label="%featureName"
-      version="2.3.0.20230523-2033"
-      provider-name="%providerName"
-      plugin="org.eclipse.m2e.core">
+      version="8.8.8.qualifier"
+      provider-name="%providerName">
    <install-handler/>
 
    <description>
