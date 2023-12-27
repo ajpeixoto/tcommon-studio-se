@@ -85,6 +85,7 @@ import org.talend.core.context.Context;
 import org.talend.core.context.RepositoryContext;
 import org.talend.core.exception.TalendInternalPersistenceException;
 import org.talend.core.hadoop.BigDataBasicUtil;
+import org.talend.core.hadoop.IHadoopDistributionService;
 import org.talend.core.model.general.ILibrariesService;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.general.Project;
@@ -133,14 +134,15 @@ import org.talend.core.repository.utils.ProjectDataJsonProvider;
 import org.talend.core.repository.utils.RepositoryPathProvider;
 import org.talend.core.repository.utils.XmiResourceManager;
 import org.talend.core.runtime.CoreRuntimePlugin;
+import org.talend.core.runtime.hd.IDynamicDistributionManager;
 import org.talend.core.runtime.repository.item.ItemProductKeys;
 import org.talend.core.runtime.services.IGenericWizardService;
 import org.talend.core.runtime.services.IMavenUIService;
 import org.talend.core.runtime.util.ItemDateParser;
 import org.talend.core.runtime.util.SharedStudioUtils;
 import org.talend.core.service.ICoreUIService;
-import org.talend.core.service.IUpdateService;
 import org.talend.core.service.IDetectCVEService;
+import org.talend.core.service.IUpdateService;
 import org.talend.core.utils.CodesJarResourceCache;
 import org.talend.cwm.helper.SubItemHelper;
 import org.talend.cwm.helper.TableHelper;
@@ -2447,6 +2449,15 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
         IRunProcessService runProcessService = getRunProcessService();
         if (runProcessService != null) {
             runProcessService.clearProjectRelatedSettings();
+        }
+
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(IHadoopDistributionService.class)) {
+            IHadoopDistributionService hdService = GlobalServiceRegister.getDefault()
+                    .getService(IHadoopDistributionService.class);
+            if (hdService != null) {
+                IDynamicDistributionManager dynamicDistrManager = hdService.getDynamicDistributionManager();
+                dynamicDistrManager.reset(null);
+            }
         }
 
         // clear detect CVE cache

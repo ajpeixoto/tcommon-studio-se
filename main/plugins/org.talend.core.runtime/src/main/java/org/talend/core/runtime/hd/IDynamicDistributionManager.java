@@ -31,6 +31,8 @@ public interface IDynamicDistributionManager {
 
     public void reloadAllDynamicDistributions(IProgressMonitor monitor) throws Exception;
 
+    public void reset(IProgressMonitor monitor);
+
     public boolean isLoaded();
 
     public void load(IProgressMonitor monitor, boolean resetModulesCache) throws Exception;
