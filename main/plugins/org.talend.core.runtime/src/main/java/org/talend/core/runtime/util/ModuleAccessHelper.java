@@ -246,6 +246,11 @@ public class ModuleAccessHelper {
         if ("ID".equals(property.getId()) && "Mock_job_for_Guess_schema".equals(property.getLabel())) {
             return true;
         }
+        // TDQ-21668: only for fix generate ThresholdViolationAlert job failed
+        if (property.getLabel().startsWith("ThresholdViolationAlert")) { //$NON-NLS-1$
+            return true;
+        }
+        // TDQ-21668~
         Class<?> clazz = process.getClass();
         // preview process
         if (CLASS_PREVIEW_PROCESS.equals(clazz.getName()) || CLASS_PREVIEW_PROCESS.equals(clazz.getSuperclass().getName())) {
