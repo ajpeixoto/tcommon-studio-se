@@ -18,11 +18,6 @@
       %license
    </license>
 
-   <includes
-         id="org.eclipse.m2e.lemminx.feature"
-         version="2.0.4.20230520-0934"
-         optional="true"/>
-
    <plugin
          id="org.eclipse.m2e.archetype.common"
          download-size="633"
