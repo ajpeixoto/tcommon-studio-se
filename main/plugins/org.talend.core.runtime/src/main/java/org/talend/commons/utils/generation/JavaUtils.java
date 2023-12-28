@@ -73,6 +73,8 @@ public final class JavaUtils {
 
     public static final String ALLOW_JAVA_INTERNAL_ACCESS_BACKUP = "allow.java.internal.access.backup";
     
+    public static final String JOB_COMPLIANCE_SET = "job.compliance.set";
+    
     public static final String CUSTOM_ACCESS_SETTINGS = "custom.access.settings"; //$NON-NLS-1$
 
     public static final String PROCESSOR_TYPE = "javaProcessor"; //$NON-NLS-1$
@@ -421,6 +423,11 @@ public final class JavaUtils {
                     .log("Not compatible, complianceLevel set by system property: " + complianceLevel
                             + ", jvm's complierComplianceLevel: " + complierComplianceLevel);
             return false;
+        }
+        
+        if (!isAllowInternalAccess()) {
+            // set
+            getJavaVersionProjectSettingPrefStore().setValue(ALLOW_JAVA_INTERNAL_ACCESS, true);
         }
         ExceptionHandler
                 .log("complianceLevel set by system property: " + complianceLevel + ", complierComplianceLevel: "
