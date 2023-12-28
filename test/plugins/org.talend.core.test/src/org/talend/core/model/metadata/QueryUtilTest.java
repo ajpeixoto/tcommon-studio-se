@@ -12,11 +12,14 @@
 // ============================================================================
 package org.talend.core.model.metadata;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 import org.talend.core.database.EDatabaseTypeName;
 import org.talend.core.utils.TalendQuoteUtils;
-
-import static org.junit.Assert.*;
 
 /**
  * DOC Administrator class global comment. Detailled comment
@@ -39,8 +42,6 @@ public class QueryUtilTest {
         assertFalse(QueryUtil.needFormatSQL(EDatabaseTypeName.ORACLESN.getDisplayName()));
 
         assertFalse(QueryUtil.needFormatSQL(EDatabaseTypeName.PSQL.getDisplayName()));
-
-        assertFalse(QueryUtil.needFormatSQL(EDatabaseTypeName.PLUSPSQL.getDisplayName()));
 
         assertFalse(QueryUtil.needFormatSQL(EDatabaseTypeName.AS400.getDisplayName()));
 

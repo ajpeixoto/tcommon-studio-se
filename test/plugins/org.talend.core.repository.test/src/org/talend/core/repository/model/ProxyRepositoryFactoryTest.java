@@ -43,7 +43,7 @@ public class ProxyRepositoryFactoryTest {
     public void testGetFolderItem4LowerCase() {
         // make uniquely for folder. Else, if the folder existed, will be some problem for test.
         final long timeStamp = System.currentTimeMillis();
-        final String prePath = String.valueOf(timeStamp) + '/';
+        final String prePath = String.valueOf(timeStamp) + "L/";
 
         // case 1
         IPath path1 = new Path(prePath + "DATA_SOURCES/Gini/Extract/v2_IPER/v1_temp_solution");
@@ -94,7 +94,7 @@ public class ProxyRepositoryFactoryTest {
 
         // make uniquely for folder. Else, if the folder existed, will be some problem for test.
         final long timeStamp = System.currentTimeMillis();
-        final String prePath = String.valueOf(timeStamp) + '/';
+        final String prePath = String.valueOf(timeStamp) + "U/";
 
         // case 1
         IPath path1 = new Path(prePath + "DATA_SOURCES/GINI/Extract/v2_IPER/v1_temp_solution");

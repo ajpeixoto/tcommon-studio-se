@@ -11,25 +11,26 @@ package org.talend.core.model.metadata.builder.connection.validation;
  * This can be disabled with -vmargs -Dorg.eclipse.emf.examples.generator.validator=false.
  */
 public interface BigQueryConnectionValidator {
-	boolean validate();
 
-	boolean validateAccessToken(String value);
+    boolean validate();
 
-	boolean validateServiceAccountCredentialsFile(String value);
+    boolean validateAccessToken(String value);
 
-	boolean validateClientId(String value);
+    boolean validateServiceAccountCredentialsFile(String value);
 
-	boolean validateClientSecret(String value);
+    boolean validateClientId(String value);
 
-	boolean validateAuthorizationCode(String value);
+    boolean validateClientSecret(String value);
 
-	boolean validateProjectId(String value);
+    boolean validateAuthorizationCode(String value);
 
-	boolean validateUseRegionEndpoint(boolean value);
+    boolean validateProjectId(String value);
 
-	boolean validateRegionEndpoint(String value);
+    boolean validateUseRegionEndpoint(boolean value);
 
-	boolean validateTokenFilePath(String value);
+    boolean validateRegionEndpoint(String value);
 
-	boolean validateAuthMode(String value);
+    boolean validateTokenFilePath(String value);
+
+    boolean validateAuthMode(String value);
 }

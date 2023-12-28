@@ -44,7 +44,25 @@ public interface IMetadataManagmentUiService extends IService {
 
     public IContext promptConfirmLauch(Shell shell, List<IContext> contexts, IContext defaultContext);
 
+    /**
+     * 
+     * @param shell
+     * @param context
+     * @return
+     * @deprecated use instead promptConfirmLauchIterateContexts
+     */
+    @Deprecated
     public boolean promptConfirmLauch(Shell shell, IContext context);
+
+    /**
+     * Iterate all variables from each context to check prompt needed
+     * 
+     * @param shell
+     * @param contexts
+     * @param context
+     * @return
+     */
+    public boolean promptConfirmLauchIterateContexts(Shell shell, List<IContext> contexts, IContext context);
 
     public boolean isPromptNeeded(List<IContext> contexts);
 

@@ -118,6 +118,7 @@ public enum EDatabaseTypeName {
     // General JDBC not support schema defalut
     GENERAL_JDBC(
             "General JDBC", "General JDBC", Boolean.FALSE, "JDBC", EDatabaseSchemaOrCatalogMapping.Sid, EDatabaseSchemaOrCatalogMapping.None), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    
     EXASOL(
             "Exasol", "Exasol", Boolean.TRUE, "Exasol", EDatabaseSchemaOrCatalogMapping.Sid, EDatabaseSchemaOrCatalogMapping.None), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 

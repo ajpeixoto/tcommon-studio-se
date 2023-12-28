@@ -161,7 +161,7 @@ public class MigrationToolService implements IMigrationToolService {
             try {
                 // in case the resource has been modified (see MergeTosMetadataMigrationTask for example)
                 if ((item.getProperty().eResource() == null || item.eResource() == null)) {
-                    Property updatedProperty = factory.reload(item.getProperty());
+                    Property updatedProperty = factory.getSpecificVersion(project, item.getProperty().getId(), item.getProperty().getVersion(), true).getProperty();              
                     item = updatedProperty.getItem();
                 }
                 if (item != null) {

@@ -14,6 +14,7 @@ package org.talend.core.model.metadata.builder.database;
 
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -27,12 +28,15 @@ import org.talend.core.IRepositoryContextService;
 import org.talend.core.database.conn.ConnParameterKeys;
 import org.talend.core.database.conn.DatabaseConnStrUtil;
 import org.talend.core.database.conn.HiveConfKeysForTalend;
+import org.talend.core.model.context.ContextUtils;
 import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
 import org.talend.core.model.metadata.builder.connection.DelimitedFileConnection;
 import org.talend.core.model.metadata.builder.connection.MDMConnection;
+import org.talend.core.model.metadata.builder.connection.TacokitDatabaseConnection;
 import org.talend.core.model.metadata.builder.database.dburl.SupportDBUrlStore;
 import org.talend.core.model.metadata.builder.database.dburl.SupportDBUrlType;
+import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IContextParameter;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.CoreRuntimePlugin;
@@ -81,8 +85,8 @@ public final class JavaSqlFactory {
         return contextGroupName + "-" + uniqueId + "-" + variableName; //$NON-NLS-1$ //$NON-NLS-2$
     }
 
-    public static void savePromptConVars2Cache(Connection conn, IContextParameter param) {
-        if (param != null && param.isPromptNeeded()) {
+    public static void savePromptConVars2Cache(Connection conn, IContextParameter param, List<IContext> iContexts) {
+        if (param != null && (param.isPromptNeeded() || ContextUtils.isPromptNeeded(iContexts, param.getName()))) {
             String promptConVarsMapKey = getPromptConVarsMapKey(conn, "context." + param.getName()); //$NON-NLS-1$
             String paramValue = param.getValue();
             if (PasswordEncryptUtil.isPasswordType(param.getType())) {
@@ -102,8 +106,9 @@ public final class JavaSqlFactory {
         }
     }
 
-    public static void saveReportPromptConVars2Cache(String groupName, IContextParameter param) {
-        if (param != null && param.isPromptNeeded()) {
+    public static void saveReportPromptConVars2Cache(String groupName, IContextParameter param,
+            List<IContext> iContexts) {
+        if (param != null && (param.isPromptNeeded() || ContextUtils.isPromptNeeded(iContexts, param.getName()))) {
             String promptConVarsMapKey =
                     getPromptConVarsMapKey(groupName, param.getSource(), "context." + param.getName()); //$NON-NLS-1$
             String paramValue = param.getValue();
@@ -218,10 +223,6 @@ public final class JavaSqlFactory {
             } // else we are ok
             return driverClassName;
         }
-        MDMConnection mdmConn = SwitchHelpers.MDMCONNECTION_SWITCH.doSwitch(conn);
-        if (mdmConn != null) {
-            return ""; //$NON-NLS-1$
-        }
         DelimitedFileConnection dfConn = SwitchHelpers.DELIMITEDFILECONNECTION_SWITCH.doSwitch(conn);
         if (dfConn != null) {
             return ""; //$NON-NLS-1$
@@ -241,10 +242,6 @@ public final class JavaSqlFactory {
         if (dbConn != null) {
             dbConn.setURL(url);
         }
-        MDMConnection mdmConn = SwitchHelpers.MDMCONNECTION_SWITCH.doSwitch(conn);
-        if (mdmConn != null) {
-            mdmConn.setPathname(url);
-        }
         // MOD qiongli 2011-1-9 feature 16796
         DelimitedFileConnection dfConnection = SwitchHelpers.DELIMITEDFILECONNECTION_SWITCH.doSwitch(conn);
         if (dfConnection != null) {
@@ -263,11 +260,6 @@ public final class JavaSqlFactory {
         DatabaseConnection dbConn = SwitchHelpers.DATABASECONNECTION_SWITCH.doSwitch(conn);
         if (dbConn != null) {
             userName = getOriginalValueConnection(dbConn).getUsername();// root
-        } else {
-            MDMConnection mdmConn = SwitchHelpers.MDMCONNECTION_SWITCH.doSwitch(conn);
-            if (mdmConn != null) {
-                userName = mdmConn.getUsername();
-            }
         }
         if (userName == null) {
             userName = "";//$NON-NLS-1$
@@ -290,11 +282,6 @@ public final class JavaSqlFactory {
                 psw = promptContextVars.get(promptConVarsMapKey);
             } else {
                 psw = getOriginalValueConnection(dbConn).getRawPassword();// ""
-            }
-        } else {
-            MDMConnection mdmConn = SwitchHelpers.MDMCONNECTION_SWITCH.doSwitch(conn);
-            if (mdmConn != null) {
-                psw = ConnectionHelper.getPassword(mdmConn);
             }
         }
         if (psw == null) {
@@ -332,6 +319,13 @@ public final class JavaSqlFactory {
         if (Platform.isRunning()) {
             DatabaseConnection dbConn = SwitchHelpers.DATABASECONNECTION_SWITCH.doSwitch(conn);
             if (dbConn != null) {
+                // for TCK JDBC
+                // username,password, jdbcUrl,jdbcDriver,jdbcClass
+                if (dbConn instanceof TacokitDatabaseConnection) {
+                    setPromptContextUrl(dbConn);
+                    setPromptContextDriverClass(dbConn);
+                    setPromptContextDriverJarPath(dbConn);
+                }
                 setPromptContextPassword(dbConn);
                 setPromptContextUsername(dbConn);
                 setPromptContextServerName(dbConn);
@@ -439,7 +433,10 @@ public final class JavaSqlFactory {
     }
 
     private static void setPromptContextPassword(DatabaseConnection dbConn) {
-        String promptConVarsMapKey = getPromptConVarsMapKey(dbConn, dbConn.getPassword());
+        // format like: Default-_NtX8IG5LEe6Fac08UAbwqg-context.context_jdbcmysql21_password
+        String variableName =
+                dbConn instanceof TacokitDatabaseConnection ? dbConn.getRawPassword() : dbConn.getPassword();
+        String promptConVarsMapKey = getPromptConVarsMapKey(dbConn, variableName);
         if (promptContextVars.containsKey(promptConVarsMapKey)) {
             dbConn.setRawPassword(promptContextVars.get(promptConVarsMapKey));
         }
@@ -449,6 +446,27 @@ public final class JavaSqlFactory {
         String promptConVarsMapKey = getPromptConVarsMapKey(dbConn, dbConn.getUsername());
         if (promptContextVars.containsKey(promptConVarsMapKey)) {
             dbConn.setUsername(promptContextVars.get(promptConVarsMapKey));
+        }
+    }
+
+    private static void setPromptContextUrl(DatabaseConnection dbConn) {
+        String promptConVarsMapKey = getPromptConVarsMapKey(dbConn, dbConn.getURL());
+        if (promptContextVars.containsKey(promptConVarsMapKey)) {
+            dbConn.setURL(promptContextVars.get(promptConVarsMapKey));
+        }
+    }
+
+    private static void setPromptContextDriverClass(DatabaseConnection dbConn) {
+        String promptConVarsMapKey = getPromptConVarsMapKey(dbConn, dbConn.getDriverClass());
+        if (promptContextVars.containsKey(promptConVarsMapKey)) {
+            dbConn.setDriverClass(promptContextVars.get(promptConVarsMapKey));
+        }
+    }
+
+    private static void setPromptContextDriverJarPath(DatabaseConnection dbConn) {
+        String promptConVarsMapKey = getPromptConVarsMapKey(dbConn, dbConn.getDriverJarPath());
+        if (promptContextVars.containsKey(promptConVarsMapKey)) {
+            dbConn.setDriverJarPath(promptContextVars.get(promptConVarsMapKey));
         }
     }
 
@@ -516,10 +534,6 @@ public final class JavaSqlFactory {
                 }
             }
             return url;
-        }
-        MDMConnection mdmConn = SwitchHelpers.MDMCONNECTION_SWITCH.doSwitch(conn);
-        if (mdmConn != null) {
-            return mdmConn.getPathname();
         }
         // MOD qiongli 2011-1-11 feature 16796.
         DelimitedFileConnection dfConnection = SwitchHelpers.DELIMITEDFILECONNECTION_SWITCH.doSwitch(conn);
@@ -684,10 +698,6 @@ public final class JavaSqlFactory {
         if (dbConn != null) {
             return getOriginalValueConnection(dbConn).getServerName();
         }
-        MDMConnection mdmConn = SwitchHelpers.MDMCONNECTION_SWITCH.doSwitch(conn);
-        if (mdmConn != null) {
-            return mdmConn.getServer();
-        }
         return null;
     }
 
@@ -715,10 +725,6 @@ public final class JavaSqlFactory {
         if (dbConn != null) {
             dbConn.setServerName(serverName);
         }
-        MDMConnection mdmConn = SwitchHelpers.MDMCONNECTION_SWITCH.doSwitch(conn);
-        if (mdmConn != null) {
-            mdmConn.setServer(serverName);
-        }
     }
 
     /**
@@ -731,10 +737,6 @@ public final class JavaSqlFactory {
         DatabaseConnection dbConn = SwitchHelpers.DATABASECONNECTION_SWITCH.doSwitch(conn);
         if (dbConn != null) {
             return getOriginalValueConnection(dbConn).getPort();
-        }
-        MDMConnection mdmConn = SwitchHelpers.MDMCONNECTION_SWITCH.doSwitch(conn);
-        if (mdmConn != null) {
-            return mdmConn.getPort();
         }
         return null;
     }
@@ -750,10 +752,6 @@ public final class JavaSqlFactory {
         if (dbConn != null) {
             dbConn.setPort(port);
         }
-        MDMConnection mdmConn = SwitchHelpers.MDMCONNECTION_SWITCH.doSwitch(conn);
-        if (mdmConn != null) {
-            mdmConn.setPort(port);
-        }
     }
 
     /**
@@ -766,10 +764,6 @@ public final class JavaSqlFactory {
         DatabaseConnection dbConn = SwitchHelpers.DATABASECONNECTION_SWITCH.doSwitch(conn);
         if (dbConn != null) {
             return getOriginalValueConnection(dbConn).getSID();
-        }
-        MDMConnection mdmConn = SwitchHelpers.MDMCONNECTION_SWITCH.doSwitch(conn);
-        if (mdmConn != null) {
-            return mdmConn.getContext();
         }
         return null;
     }
@@ -784,10 +778,6 @@ public final class JavaSqlFactory {
         DatabaseConnection dbConn = SwitchHelpers.DATABASECONNECTION_SWITCH.doSwitch(conn);
         if (dbConn != null) {
             dbConn.setSID(sid);
-        }
-        MDMConnection mdmConn = SwitchHelpers.MDMCONNECTION_SWITCH.doSwitch(conn);
-        if (mdmConn != null) {
-            mdmConn.setContext(sid);
         }
     }
 

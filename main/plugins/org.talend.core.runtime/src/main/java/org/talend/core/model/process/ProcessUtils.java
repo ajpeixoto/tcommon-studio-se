@@ -729,7 +729,7 @@ public final class ProcessUtils {
         return null;
     }
     
-    private static boolean isRoute(Property property) {
+    public static boolean isRoute(Property property) {
     	return  property!= null && (ERepositoryObjectType.getType(property).equals(ERepositoryObjectType.PROCESS_ROUTE) || 
 		ERepositoryObjectType.getType(property).equals(ERepositoryObjectType.PROCESS_ROUTE_MICROSERVICE));
     }
@@ -767,6 +767,39 @@ public final class ProcessUtils {
         }
         return false;
 
+    }
+    
+    public static boolean isRouteWithRoutelets(Item item) {
+        if (item!= null && item instanceof ProcessItem) {
+            for (Object obj : ((ProcessItem) item).getProcess().getNode()) {
+                if (obj instanceof NodeType) {
+                    if (isRouteletNode((NodeType) obj)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+    
+    public static boolean isRouteletNode(NodeType node) {
+        String jobIds = getParameterValue(node.getElementParameter(), "PROCESS_TYPE:PROCESS_TYPE_PROCESS");
+        String jobVersion = getParameterValue(node.getElementParameter(), "PROCESS_TYPE:PROCESS_TYPE_VERSION"); //$NON-NLS-1$
+        ProcessItem processItem = ItemCacheManager.getProcessItem(jobIds, jobVersion);
+        if (processItem != null) {
+            return ERepositoryObjectType.getType(processItem.getProperty()).equals(
+                    ERepositoryObjectType.PROCESS_ROUTELET);
+        }
+        return false;
+    }
+    
+    public static String getParameterValue(EList<ElementParameterType> listParamType, String paramName) {
+        for (ElementParameterType pType : listParamType) {
+            if (pType != null && paramName.equals(pType.getName())) {
+                return pType.getValue();
+            }
+        }
+        return null;
     }
 
     public static int getAssertAmount(IProcess process) {
@@ -1055,6 +1088,28 @@ public final class ProcessUtils {
                     return true;
                 }
             }
+        }
+        return false;
+    }
+    
+    public static boolean isChildRouteProcess(Item item) {
+    	
+        if (item!= null && item instanceof ProcessItem) {
+            for (Object obj : ((ProcessItem) item).getProcess().getNode()) {
+                if (obj instanceof NodeType) {
+                    if (((NodeType) obj).getComponentName().equals("tRouteInput")) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+
+    }
+    
+    public static boolean isRoutelet(Property p) {
+        if (p != null) {
+            return ERepositoryObjectType.getType(p).equals(ERepositoryObjectType.PROCESS_ROUTELET);
         }
         return false;
     }

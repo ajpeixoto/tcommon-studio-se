@@ -453,7 +453,6 @@ public final class TalendQuoteUtils {
             return QUOTATION_MARK;
         case PSQL:
         case GREENPLUM:
-        case PLUSPSQL:
             return QUOTATION_MARK;
         case SYBASEASE:
             return QUOTATION_MARK;

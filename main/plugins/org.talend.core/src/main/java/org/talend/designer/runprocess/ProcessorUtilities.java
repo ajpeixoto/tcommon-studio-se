@@ -1085,7 +1085,7 @@ public class ProcessorUtilities {
                 if (childBuildType == null) {
                     Property parentProperty = parentJobInfo.getProcessor().getProperty();
                     String parentBuildType = (String)parentProperty.getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE);
-                    if ("ROUTE".equalsIgnoreCase(parentBuildType)) {
+                    if (parentBuildType!= null && parentBuildType.contains("ROUTE")) {
                     	childProperty.getAdditionalProperties().put(TalendProcessArgumentConstant.ARG_BUILD_TYPE, "OSGI");
                     }
                 }
@@ -1631,6 +1631,10 @@ public class ProcessorUtilities {
                                         node.getElementParameter("PROCESS_TYPE_CONTEXT").setValue(defaultContext); //$NON-NLS-1$
                                         subJobInfo.setContextName(defaultContext);
                                     }
+                                }
+                                
+                                if (CommonsPlugin.isHeadless() && ("cTalendJob".equals(componentName) || "Routelets".equals(node.getComponent().getOriginalFamilyName()))  && interpreter != null) {
+                                	processItem.getProperty().setParentItem(ItemCacheManager.getProcessItem(currentProcess.getId(), currentProcess.getVersion()));
                                 }
 
                                 int subJobOption = GENERATE_ALL_CHILDS;
@@ -2553,7 +2557,7 @@ public class ProcessorUtilities {
         return jobInfos;
     }
 
-    private static boolean isRouteletNode(NodeType node) {
+    public static boolean isRouteletNode(NodeType node) {
         String jobIds = getParameterValue(node.getElementParameter(), "PROCESS_TYPE:PROCESS_TYPE_PROCESS");
         String jobVersion = getParameterValue(node.getElementParameter(), "PROCESS_TYPE:PROCESS_TYPE_VERSION"); //$NON-NLS-1$
         ProcessItem processItem = ItemCacheManager.getProcessItem(jobIds, jobVersion);

@@ -140,31 +140,6 @@ public class LinksToolbarItem extends ContributionItem {
             }
         });
 
-        // 3. Link to Talend Exchange
-        if (PluginChecker.isExchangeSystemLoaded() && !TalendPropertiesUtil.isHideExchange()) {
-            Label exchangeLabel = new Label(composite, SWT.NONE);
-
-            if (registry.get("exchange") == null) { //$NON-NLS-1$
-                registry.put("exchange", Activator.getImageDescriptor("icons/exchange_view.png").createImage()); //$NON-NLS-1$ //$NON-NLS-2$
-            }
-            exchangeLabel.setImage(registry.get("exchange")); //$NON-NLS-1$
-
-            Link exchange = new Link(composite, SWT.NONE);
-            exchange.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
-            exchange.setText(EXCHANGE_URL);
-            exchange.setToolTipText(Messages.getString("LinksToolbarItem_exchange")); //$NON-NLS-1$
-
-            exchange.addListener(SWT.Selection, new Listener() {
-
-                @Override
-                public void handleEvent(Event event) {
-                    IExchangeService service = (IExchangeService) GlobalServiceRegister.getDefault().getService(
-                            IExchangeService.class);
-                    service.openExchangeEditor();
-                }
-            });
-        }
-
         // 4.videos
         Label videosLabel = new Label(composite, SWT.NONE);
 

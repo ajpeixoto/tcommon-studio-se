@@ -262,6 +262,9 @@ public class RepositoryNodeUtilities {
         }
         RepositoryNode node = null;
         IRepositoryNode nodeFromType = view.getRoot().getRootRepositoryNode(curNode.getRepositoryObjectType());
+        if (curNode.getRepositoryObjectType() == ERepositoryObjectType.METADATA_TACOKIT_JDBC) {
+            nodeFromType = view.getRoot().getRootRepositoryNode(ERepositoryObjectType.METADATA_CONNECTIONS);
+        }
         if (nodeFromType != null) {
             node = getRepositoryNode(nodeFromType, curNode, view, expanded);
         }
@@ -496,6 +499,7 @@ public class RepositoryNodeUtilities {
                     || curType == ERepositoryObjectType.METADATA_CON_SYNONYM
                     || curType == ERepositoryObjectType.METADATA_CON_QUERY
                     || curType == ERepositoryObjectType.METADATA_CONNECTIONS
+                    || curType == ERepositoryObjectType.METADATA_TACOKIT_JDBC
                     || curType == ERepositoryObjectType.METADATA_FILE_DELIMITED
                     || curType == ERepositoryObjectType.METADATA_FILE_POSITIONAL
                     || curType == ERepositoryObjectType.METADATA_FILE_REGEXP
@@ -522,12 +526,13 @@ public class RepositoryNodeUtilities {
                 tmpType = ERepositoryObjectType.DOCUMENTATION;
             }
 
-            if (tmpType != null && tmpType == rootContextType) {
+            if (tmpType != null && (tmpType == rootContextType || rootContextType.isChildTypeOf(tmpType))) {
                 expandParentNode(view, rootNode);
             }
             // expand the parent node
 
-            if (curType == rootContextType && isRepositoryFolder(rootNode)) {
+            if ((curType == rootContextType || curType.isChildTypeOf(rootContextType))
+                    && isRepositoryFolder(rootNode)) {
                 if (rootContextType == ERepositoryObjectType.SQLPATTERNS
                         && !(rootNode.getParent() instanceof IProjectRepositoryNode)) {
                     // sql pattern
@@ -715,7 +720,7 @@ public class RepositoryNodeUtilities {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericWizardService.class)) {
             wizardService = GlobalServiceRegister.getDefault().getService(IGenericWizardService.class);
         }
-        if (wizardService != null && wizardService.isGenericType(type)) {
+        if (wizardService != null && wizardService.isGenericType(type) || ERepositoryObjectType.METADATA_TACOKIT_JDBC == type) {
             return getGenericSchemaNode(connection, tableName);
         }
         if (repType == ERepositoryObjectType.METADATA_CON_QUERY) {

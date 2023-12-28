@@ -32,6 +32,10 @@ public interface IContext {
 
     public void setConfirmationNeeded(boolean confirmationNeeded);
 
+    public boolean isHide();
+
+    public void setHide(boolean hide);
+
     public List<IContextParameter> getContextParameterList();
 
     public void setContextParameterList(List<IContextParameter> contextParameterList);

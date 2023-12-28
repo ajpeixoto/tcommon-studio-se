@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.talend.core.runtime.maven.MavenArtifact;
 import org.talend.core.runtime.maven.MavenUrlHelper;
@@ -76,8 +77,9 @@ public class VersionUtil {
         return ret;
     }
 
+    private static final String PATTERN_LibNAME_With_TIMESTAMP = ".*-[0-9]{8}\\.[0-9]{6}-[0-9]";
     public static boolean isSnapshot(String v) {
-        if (v != null && (v.contains("-") || v.toUpperCase().endsWith(MavenUrlHelper.VERSION_SNAPSHOT))) {
+        if (v != null && ((v.contains("-") && Pattern.matches(PATTERN_LibNAME_With_TIMESTAMP, v)) || v.toUpperCase().endsWith(MavenUrlHelper.VERSION_SNAPSHOT))) {
             return true;
         }
         return false;

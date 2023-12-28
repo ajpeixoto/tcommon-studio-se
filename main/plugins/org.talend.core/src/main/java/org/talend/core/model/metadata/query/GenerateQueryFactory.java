@@ -53,7 +53,6 @@ public final class GenerateQueryFactory {
             return new ImpalaQueryGenerator(dbType);
         case NETEZZA:
             return new NetezzaQueryGenerator();
-        case PLUSPSQL:
         case PSQL:
             return new PostgreQueryGenerator(dbType);
         case AS400:

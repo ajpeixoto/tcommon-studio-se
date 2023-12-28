@@ -35,6 +35,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.runtime.model.repository.ERepositoryStatus;
+import org.talend.commons.runtime.service.ITaCoKitService;
 import org.talend.commons.ui.runtime.exception.RuntimeExceptionHandler;
 import org.talend.commons.ui.runtime.image.ECoreImage;
 import org.talend.commons.ui.runtime.repository.IExtendRepositoryNode;
@@ -92,9 +93,11 @@ import org.talend.core.repository.model.repositoryObject.SAPIDocRepositoryObject
 import org.talend.core.repository.model.repositoryObject.SalesforceModuleRepositoryObject;
 import org.talend.core.repository.recyclebin.RecycleBinManager;
 import org.talend.core.repository.ui.utils.ProjectRepositoryNodeCache;
+import org.talend.core.repository.utils.RepositoryNodeManager;
 import org.talend.core.runtime.services.IGenericDBService;
 import org.talend.core.runtime.services.IGenericService;
 import org.talend.core.runtime.services.IGenericWizardService;
+import org.talend.core.service.ITCKUIService;
 import org.talend.core.ui.ICDCProviderService;
 import org.talend.core.ui.ITestContainerProviderService;
 import org.talend.core.ui.branding.IBrandingService;
@@ -646,7 +649,9 @@ public class ProjectRepositoryNode extends RepositoryNode implements IProjectRep
                     }
                 }
             }
-
+            if (RepositoryNodeManager.isSnowflake(currentType)) {
+                continue;
+            }
             if (currentType != null) {
                 buildFolders(rootNode, currentType, folderPath, rootNode);
             }
@@ -819,7 +824,8 @@ public class ProjectRepositoryNode extends RepositoryNode implements IProjectRep
      * @return
      */
     private RepositoryNode getFolder(ERepositoryObjectType currentType, String path, List<IRepositoryNode> rootNodes) {
-        if (RepositoryNodeUtilities.isGenericDBExtraType(currentType)) {
+        if (RepositoryNodeUtilities.isGenericDBExtraType(currentType) || RepositoryNodeManager.isSnowflake(currentType)
+                || (ITaCoKitService.getInstance() != null && ITaCoKitService.getInstance().isTaCoKitType(currentType))) {
             currentType = ERepositoryObjectType.METADATA_CONNECTIONS;
         }
         if (path == null || path.isEmpty()) {
@@ -1330,7 +1336,7 @@ public class ProjectRepositoryNode extends RepositoryNode implements IProjectRep
 
     }
 
-    private void addNode(RepositoryNode parent, ERepositoryObjectType type, IRepositoryViewObject repositoryObject,
+    public void addNode(RepositoryNode parent, ERepositoryObjectType type, IRepositoryViewObject repositoryObject,
             List<IRepositoryViewObject> validationRules) {
 
         boolean isAvaliableInTOS = true; // this flag filter the databaseconnections which didn't supported by TOS but
@@ -1340,11 +1346,15 @@ public class ProjectRepositoryNode extends RepositoryNode implements IProjectRep
             Connection conn = ((ConnectionItem) repositoryObject.getProperty().getItem()).getConnection();
             if(conn instanceof DatabaseConnection){
                 dbMetadataConnection = (DatabaseConnection) conn;
-                isAvaliableInTOS = EDatabaseTypeName.getTypeFromDbType(dbMetadataConnection.getDatabaseType(), false) == null ? false
-                        : true;
+                if (ERepositoryObjectType.JDBC == repositoryObject.getRepositoryObjectType()
+                        && ERepositoryObjectType.JDBC.getType().equals(dbMetadataConnection.getProductId())) {
+                    // hide tcompv0 jdbc node
+                    // remove the 2nd condition if later we need to migrate Delta Lake and SingleStore
+                    return;
+                }
+                isAvaliableInTOS = EDatabaseTypeName.getTypeFromDbType(dbMetadataConnection.getDatabaseType(), false) != null;
             }
         }
-
         Connection connection = null;
         if (type == ERepositoryObjectType.METADATA_CONNECTIONS && isAvaliableInTOS) {
             connection = dbMetadataConnection;
@@ -1410,22 +1420,32 @@ public class ProjectRepositoryNode extends RepositoryNode implements IProjectRep
                     }
                 }
             }
-            if (isAvaliableInTOS) {
+            if (isAvaliableInTOS && node != null) {
                 parent.getChildren().add(node);
             }
         }
 
-        if (null != connection) {
+        if (null != connection && node != null) {
             createTables(node, repositoryObject, connection, validationRules);
         }
 
-        for (IRepositoryContentHandler handler : RepositoryContentManager.getHandlers()) {
-            handler.addNode(type, recBinNode, repositoryObject, node);
+        if (node != null) {
+            for (IRepositoryContentHandler handler : RepositoryContentManager.getHandlers()) {
+                handler.addNode(type, recBinNode, repositoryObject, node);
+            }
         }
     }
 
     private RepositoryNode createRepositoryNode(RepositoryNode parent, ERepositoryObjectType repObjType,
             IRepositoryViewObject repositoryObject, Connection connection) {
+        if (ERepositoryObjectType.METADATA_TACOKIT_JDBC.equals(repositoryObject.getRepositoryObjectType()) && ITCKUIService.get() != null) {
+            try {
+                return ITCKUIService.get().createTaCoKitRepositoryNode(parent, repObjType, repositoryObject, connection);
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
+                return null;
+            }
+        }
         RepositoryNode node = new RepositoryNode(repositoryObject, parent, ENodeType.REPOSITORY_ELEMENT);
 
         node.setProperties(EProperties.CONTENT_TYPE, repObjType);
@@ -1592,7 +1612,7 @@ public class ProjectRepositoryNode extends RepositoryNode implements IProjectRep
         return objs;
     }
 
-    private void createTables(RepositoryNode node, final IRepositoryViewObject repObj, Connection metadataConnection,
+    public void createTables(RepositoryNode node, final IRepositoryViewObject repObj, Connection metadataConnection,
             List<IRepositoryViewObject> validationRules) {
 
         // // 5.GENERIC SCHEMAS
@@ -1703,11 +1723,11 @@ public class ProjectRepositoryNode extends RepositoryNode implements IProjectRep
                 DatabaseConnectionItem connectionItem = (DatabaseConnectionItem) item;
                 DatabaseConnection connection = (DatabaseConnection) connectionItem.getConnection();
                 if (PluginChecker.isCDCPluginLoaded()) {
-                    ICDCProviderService service = GlobalServiceRegister.getDefault().getService(ICDCProviderService.class);
-
+                    ICDCProviderService service = GlobalServiceRegister.getDefault()
+                            .getService(ICDCProviderService.class);
                     if (service != null && service.canCreateCDCConnection(connection)) {
                         RepositoryNode cdcNode = new StableRepositoryNode(node,
-                                Messages.getString("ProjectRepositoryNode.cdcFoundation.deprecated"), //$NON-NLS-1$
+                                Messages.getString("ProjectRepositoryNode.cdcFoundation"), //$NON-NLS-1$
                                 ECoreImage.FOLDER_CLOSE_ICON);
                         node.getChildren().add(cdcNode);
                         service.createCDCTypes(recBinNode, cdcNode, connection.getCdcConns());

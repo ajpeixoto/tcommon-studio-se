@@ -214,7 +214,7 @@ public class ContextModeWizard extends CheckLastVersionRepositoryWizard implemen
      */
     @Override
     public void addPages() {
-        setWindowTitle(Messages.getString("ContextModeWizard.Title")); //$NON-NLS-1$
+        setWindowTitle(Messages.getString("ContextModeWizard.CreateReuseTitle")); //$NON-NLS-1$
         contextModePage = new ContextModeSelectPage(contextManager, contextItem, connectionVariables, creation,
                 isRepositoryObjectEditable(), pathToSave);
         addPage(contextModePage);
@@ -357,7 +357,7 @@ public class ContextModeWizard extends CheckLastVersionRepositoryWizard implemen
             ITDQRepositoryService tdqRepService = null;
             if (GlobalServiceRegister.getDefault().isServiceRegistered(ITDQRepositoryService.class)) {
                 tdqRepService =
-                        (ITDQRepositoryService) GlobalServiceRegister.getDefault().getService(
+                        GlobalServiceRegister.getDefault().getService(
                                 ITDQRepositoryService.class);
             }
             if (tdqRepService != null && CoreRuntimePlugin.getInstance().isDataProfilePerspectiveSelected()) {

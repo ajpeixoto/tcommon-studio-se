@@ -22,13 +22,13 @@ import org.eclipse.nebula.widgets.nattable.edit.editor.AbstractCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ComboBoxCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsDataProvider;
-import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.talend.core.model.process.IContextManager;
 import org.talend.core.model.process.IContextParameter;
 import org.talend.core.ui.context.ContextTreeTable.ContextTreeNode;
+import org.talend.core.ui.context.IContextModelManager;
 
 /**
  *
@@ -40,22 +40,15 @@ public class ProxyDynamicCellEditor extends AbstractCellEditor {
 
     private IDataProvider dataProvider;
 
-    private ColumnGroupModel columnGroupModel;
-
     private IContextManager manager;
 
-    /**
-     * DOC ldong ProxyDynamicCellEditor constructor comment.
-     *
-     * @param dataProvider
-     * @param columnGroupModel
-     * @param manager
-     */
-    public ProxyDynamicCellEditor(IDataProvider dataProvider, ColumnGroupModel columnGroupModel, IContextManager manager) {
+    private IContextModelManager modelManager;
+
+    public ProxyDynamicCellEditor(IDataProvider dataProvider, IContextManager manager, IContextModelManager modelManager) {
         super();
         this.dataProvider = dataProvider;
-        this.columnGroupModel = columnGroupModel;
         this.manager = manager;
+        this.modelManager = modelManager;
     }
 
     /*
@@ -117,32 +110,25 @@ public class ProxyDynamicCellEditor extends AbstractCellEditor {
                 this.layerCell.getRowPosition());
         int cellColumnIndex = this.layerCell.getColumnIndex();
         int cellRowIndex = this.layerCell.getRowIndex();
-        if (columnGroupModel != null && columnGroupModel.isPartOfAGroup(cellColumnIndex)) {
-            String columnGroupName = columnGroupModel.getColumnGroupByIndex(cellColumnIndex).getName();
-
-            ContextTreeNode rowNode = ((GlazedListsDataProvider<ContextTreeNode>) dataProvider).getRowObject(cellRowIndex);
-
-            IContextParameter realPara = ContextNatTableUtils.getRealParameter(manager, columnGroupName, rowNode.getTreeData());
-
-            if (NatTableCellEditorFactory.isBoolean(realPara.getType())) {
-                final List<String> list = Arrays.asList(NatTableCellEditorFactory.BOOLEANS);
-                ComboBoxCellEditor comboBoxCellEditor = new ComboBoxCellEditor(list);
-                comboBoxCellEditor.setFreeEdit(false);
-                dynamicEditor = comboBoxCellEditor;
-                Object displayDefaultValue = false;
-                // the combox need a default value at least
-                if (!originalCanonicalValue.equals("")) {
-                    displayDefaultValue = originalCanonicalValue;
-                }
-                return dynamicEditor.activateCell(parent, displayDefaultValue, editMode, editHandler, layerCell, configRegistry);
-            } else {
-                dynamicEditor = new CustomTextCellEditor(realPara, this.cellStyle, true, true);
-                ((CustomTextCellEditor) dynamicEditor).setFreeEdit(true);
-                return dynamicEditor.activateCell(parent, originalCanonicalValue, editMode, editHandler, layerCell,
-                        configRegistry);
+        String currentColumnName = ContextRowDataListFixture.getPropertyNamesAsList(modelManager).get(cellColumnIndex);
+        ContextTreeNode rowNode = ((GlazedListsDataProvider<ContextTreeNode>) dataProvider).getRowObject(cellRowIndex);
+        IContextParameter realPara = ContextNatTableUtils.getRealParameter(manager, currentColumnName, rowNode.getTreeData());
+        if (NatTableCellEditorFactory.isBoolean(realPara.getType())) {
+            final List<String> list = Arrays.asList(NatTableCellEditorFactory.BOOLEANS);
+            ComboBoxCellEditor comboBoxCellEditor = new ComboBoxCellEditor(list);
+            comboBoxCellEditor.setFreeEdit(false);
+            dynamicEditor = comboBoxCellEditor;
+            Object displayDefaultValue = false;
+            // the combox need a default value at least
+            if (!originalCanonicalValue.equals("")) {
+                displayDefaultValue = originalCanonicalValue;
             }
+            return dynamicEditor.activateCell(parent, displayDefaultValue, editMode, editHandler, layerCell, configRegistry);
+        } else {
+            dynamicEditor = new CustomTextCellEditor(realPara, this.cellStyle, true, true);
+            ((CustomTextCellEditor) dynamicEditor).setFreeEdit(true);
+            return dynamicEditor.activateCell(parent, originalCanonicalValue, editMode, editHandler, layerCell, configRegistry);
         }
-        return null;
     }
 
     /*

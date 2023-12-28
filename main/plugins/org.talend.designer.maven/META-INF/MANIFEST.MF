@@ -1,4 +1,4 @@
-Manifest-Version: 1.0
+Manifest-Version: 1.0 
 Bundle-ManifestVersion: 2
 Bundle-Name: Designer Maven
 Bundle-SymbolicName: org.talend.designer.maven;singleton:=true

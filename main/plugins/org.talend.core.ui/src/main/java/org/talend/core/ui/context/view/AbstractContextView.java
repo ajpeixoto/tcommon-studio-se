@@ -319,10 +319,10 @@ public abstract class AbstractContextView extends ViewPart {
 
     @Override
     public void setPartName(String title) {
-        String viewName = "Contexts"; //$NON-NLS-1$
+        String viewName = "Context"; //$NON-NLS-1$
 
         if (!title.equals("")) { //$NON-NLS-1$
-            viewName = viewName + "(" + title + ")"; //$NON-NLS-1$ //$NON-NLS-2$
+            viewName = viewName + " (" + title + ")"; //$NON-NLS-1$ //$NON-NLS-2$
             super.setTitleToolTip(title);
         }
         super.setPartName(viewName);

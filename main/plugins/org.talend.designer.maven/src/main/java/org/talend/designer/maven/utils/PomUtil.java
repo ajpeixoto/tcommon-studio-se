@@ -297,7 +297,7 @@ public class PomUtil {
         }
         String path = "../"; //$NON-NLS-1$
         // TODO should not allow user-defined folder named poms.
-        if (file != null && !file.getParentFile().getName().equals(baseFolder)) {
+        if (file != null && file.getParentFile() != null && !file.getParentFile().getName().equals(baseFolder)) {
             path += getPomRelativePath(file.getParentFile(), baseFolder);
         } else {
             path = ""; //$NON-NLS-1$

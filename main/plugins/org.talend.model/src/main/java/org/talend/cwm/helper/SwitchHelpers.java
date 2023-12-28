@@ -18,6 +18,7 @@ import org.talend.core.model.metadata.builder.connection.DelimitedFileConnection
 import org.talend.core.model.metadata.builder.connection.MDMConnection;
 import org.talend.core.model.metadata.builder.connection.MetadataColumn;
 import org.talend.core.model.metadata.builder.connection.MetadataTable;
+import org.talend.core.model.metadata.builder.connection.TacokitDatabaseConnection;
 import org.talend.core.model.metadata.builder.connection.util.ConnectionSwitch;
 import org.talend.cwm.relational.TdColumn;
 import org.talend.cwm.relational.TdTable;
@@ -229,21 +230,15 @@ public final class SwitchHelpers {
     };
 
     public static final ConnectionSwitch<DatabaseConnection> DATABASECONNECTION_SWITCH = new ConnectionSwitch<DatabaseConnection>() {
+        @Override
+        public TacokitDatabaseConnection caseTacokitDatabaseConnection(TacokitDatabaseConnection object) {
+            return object;
+        }
 
         @Override
         public DatabaseConnection caseDatabaseConnection(DatabaseConnection object) {
             return object;
         }
-
-    };
-
-    public static final ConnectionSwitch<MDMConnection> MDMCONNECTION_SWITCH = new ConnectionSwitch<MDMConnection>() {
-
-        @Override
-        public MDMConnection caseMDMConnection(MDMConnection object) {
-            return object;
-        }
-
     };
 
     public static final ConnectionSwitch<MetadataColumn> METADATA_COLUMN_SWITCH = new ConnectionSwitch<MetadataColumn>() {

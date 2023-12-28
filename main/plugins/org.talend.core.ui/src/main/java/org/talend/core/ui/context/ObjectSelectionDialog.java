@@ -166,7 +166,8 @@ public abstract class ObjectSelectionDialog<B> extends SelectionDialog {
         // fNewButton = createButton(buttonComposite, nextButtonId++,
         // WorkingSetMessages.WorkingSetConfigurationDialog_new_label,
         // false);
-        fNewButton = createButton(buttonComposite, nextButtonId++, Messages.getString("WorkingSetConfigurationDialog_new_label"), //$NON-NLS-1$
+        fNewButton = createButton(buttonComposite, nextButtonId++,
+                Messages.getString("WorkingSetConfigurationDialog_create_label"), //$NON-NLS-1$
                 false);
         fNewButton.setFont(composite.getFont());
         fNewButton.addSelectionListener(new SelectionAdapter() {
@@ -181,7 +182,7 @@ public abstract class ObjectSelectionDialog<B> extends SelectionDialog {
         // WorkingSetMessages.WorkingSetConfigurationDialog_edit_label,
         // false);
         fEditButton = createButton(buttonComposite, nextButtonId++,
-                Messages.getString("WorkingSetConfigurationDialog_edit_label"), false); //$NON-NLS-1$
+                Messages.getString("WorkingSetConfigurationDialog_rename_label"), false); //$NON-NLS-1$
         fEditButton.setFont(composite.getFont());
         fEditButton.addSelectionListener(new SelectionAdapter() {
 

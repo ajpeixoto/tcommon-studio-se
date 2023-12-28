@@ -560,7 +560,7 @@ public abstract class AbstractForm extends Composite {
         return contextParamSet; // for db and file connection
     }
 
-    protected void addContextParams(IConnParamName param, boolean added) {
+    public void addContextParams(IConnParamName param, boolean added) {
         if (added) {
             contextParamSet.add(param);
         } else {

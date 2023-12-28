@@ -21,7 +21,9 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.collections.map.MultiKeyMap;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -79,6 +81,7 @@ import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.ProjectReference;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.core.model.repository.Folder;
 import org.talend.core.model.repository.IRepositoryContentHandler;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.repository.ISubRepositoryObject;
@@ -97,6 +100,7 @@ import org.talend.core.repository.ui.dialog.ContextReferenceDialog;
 import org.talend.core.repository.ui.dialog.ItemReferenceDialog;
 import org.talend.core.repository.utils.AbstractResourceChangesService;
 import org.talend.core.repository.utils.RepositoryNodeDeleteManager;
+import org.talend.core.repository.utils.RepositoryNodeManager;
 import org.talend.core.repository.utils.RepositoryReferenceBeanUtils;
 import org.talend.core.repository.utils.TDQServiceRegister;
 import org.talend.core.runtime.CoreRuntimePlugin;
@@ -338,6 +342,25 @@ public class DeleteAction extends AContextualAction {
                             deletedFolder.add(node);
                             List<IRepositoryViewObject> deleteObjectList = new ArrayList<IRepositoryViewObject>();
                             deleteFolder(node, factory, deleteActionCache, deleteObjectList);
+                            if (ERepositoryObjectType.SNOWFLAKE != null) {
+                                IPath sfPath = RepositoryNodeUtilities.getPath(node);
+                                String fullPath = ERepositoryObjectType.SNOWFLAKE.getFolder() + IPath.SEPARATOR
+                                        + sfPath.toString();
+                                IProject rsProject = ResourceUtils.getProject(ProjectManager.getInstance().getCurrentProject());
+                                IFolder sfFolder = ResourceUtils.getFolder(rsProject, fullPath, false);
+                                if (sfFolder.exists()) {
+                                    RepositoryNode sfRootNode = ProjectRepositoryNode.getInstance()
+                                            .getRootRepositoryNode(ERepositoryObjectType.SNOWFLAKE);
+                                    FolderItem item = factory.getFolderItem(ProjectManager.getInstance().getCurrentProject(),
+                                            ERepositoryObjectType.SNOWFLAKE, sfPath);
+                                    Folder folder = new Folder(item.getProperty(), ERepositoryObjectType.SNOWFLAKE);
+                                    RepositoryNode sfFolderNode = new RepositoryNode(folder, sfRootNode,
+                                            ENodeType.REPOSITORY_ELEMENT);
+                                    sfFolderNode.setProperties(EProperties.LABEL, folder.getLabel());
+                                    sfFolderNode.setProperties(EProperties.CONTENT_TYPE, ERepositoryObjectType.SNOWFLAKE);
+                                    deleteFolder(sfFolderNode, factory, deleteActionCache, deleteObjectList);
+                                }
+                            }
                         }
                     } catch (PersistenceException e) {
                         MessageBoxExceptionHandler.process(e);
@@ -477,6 +500,13 @@ public class DeleteAction extends AContextualAction {
         }
         IPath path = RepositoryNodeUtilities.getPath(node);
         ERepositoryObjectType objectType = (ERepositoryObjectType) node.getProperties(EProperties.CONTENT_TYPE);
+        if (RepositoryNodeManager.isSnowflake(objectType)) {
+            String pathStr = node.getObject().getLabel();
+            if (StringUtils.isNotBlank(node.getObject().getPath())) {
+                pathStr = node.getObject().getPath() + IPath.SEPARATOR + pathStr;
+            }
+            path = new Path(pathStr);
+        }
         List<IRepositoryNode> repositoryList = node.getChildren();
         boolean success = true;
         Exception bex = null;

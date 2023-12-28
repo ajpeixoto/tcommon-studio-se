@@ -60,8 +60,6 @@ public interface ITDQRepositoryService extends IService {
      */
     public void notifySQLExplorer(Item... items);
 
-    public void fillMetadata(ConnectionItem connItem);
-
     public void refresh();
 
     // Added 20120503 yyin

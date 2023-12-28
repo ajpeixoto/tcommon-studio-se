@@ -12,8 +12,12 @@
 // ============================================================================
 package org.talend.rcp.exportLogs;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -26,6 +30,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
@@ -222,11 +227,13 @@ public class ExportLogsWizardPage extends WizardPage {
             return false;
         }
         try {
-            exportSysconfig(new File(lastPath));
-            exportLogs(new File(lastPath));
-            exportPerformanceLogs(new File(lastPath));
-            exportStudioInfo(new File(lastPath));
-            exportRequiredJson(new File(lastPath));
+            File file = new File(lastPath);
+            exportIni(file);
+            exportSysconfig(file);
+            exportLogs(file);
+            exportPerformanceLogs(file);
+            exportStudioInfo(file);
+            exportRequiredJson(file);
         } catch (Exception e) {
             ExceptionHandler.process(e);
         }
@@ -247,6 +254,82 @@ public class ExportLogsWizardPage extends WizardPage {
             return confirm;
         }
         return true;
+    }
+
+    private void exportIni(File dest) throws Exception {
+        String zipFile = dest.getAbsolutePath();
+
+        String tmpFolder = ExportJobUtil.getTmpFolder();
+        File configFolder = new File(Platform.getConfigurationLocation().getURL().toURI());
+        File configIniFile = new File(configFolder, "config.ini");
+        if (configIniFile.exists()) {
+            zipLogFileWithSensitiveDataHidden(zipFile, tmpFolder, configIniFile.getCanonicalPath());
+        }
+
+        File installFolder = new File(Platform.getInstallLocation().getURL().toURI());
+        File launcherIniFile = null;
+        String launcherName = System.getProperty("eclipse.launcher.name");
+        if (StringUtils.isNotBlank(launcherName)) {
+            launcherIniFile = new File(installFolder, launcherName + ".ini");
+        }
+        if (launcherIniFile == null || !launcherIniFile.exists()) {
+            String os = Platform.getOS();
+            String osArch = Platform.getOSArch();
+            String ws = Platform.getWS();
+            String launcherIniFileSuffix = null;
+            if (Platform.OS_MACOSX.equals(os)) {
+                launcherIniFileSuffix = "-macosx-cocoa.ini";
+            } else if (Platform.OS_WIN32.equals(os)) {
+                launcherIniFileSuffix = "-win-" + osArch + ".ini";
+            } else {
+                launcherIniFileSuffix = "-" + os + "-" + ws + "-" + osArch + ".ini";
+            }
+            String suffix = launcherIniFileSuffix;
+            File[] matchedFiles = installFolder.listFiles(new FilenameFilter() {
+
+                @Override
+                public boolean accept(File dir, String name) {
+                    if (name.endsWith(suffix)) {
+                        return true;
+                    }
+                    return false;
+                }
+            });
+            for (File file : matchedFiles) {
+                zipLogFileWithSensitiveDataHidden(zipFile, tmpFolder, file.getCanonicalPath());
+            }
+        } else {
+            zipLogFileWithSensitiveDataHidden(zipFile, tmpFolder, launcherIniFile.getCanonicalPath());
+        }
+    }
+
+    private void zipLogFileWithSensitiveDataHidden(String zipFile, String tmpFolder, String logFile) {
+        String destFile = new File(tmpFolder + File.separator + new File(logFile).getName()).getAbsolutePath();
+        try (BufferedReader reader = new BufferedReader(new FileReader(logFile));
+                BufferedWriter writer = new BufferedWriter(new FileWriter(destFile))) {
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String processedLine = line;
+                int equalsIndex = line.indexOf('=');
+                if (equalsIndex != -1) {
+                    String key = line.substring(0, equalsIndex).trim();
+                    if (key.toLowerCase().contains("password")) {
+                        processedLine = key + "=" + "***";
+                    }
+                }
+                writer.write(processedLine);
+                writer.newLine();
+            }
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        }
+
+        try {
+            ZipToFile.zipFile(tmpFolder, zipFile);
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        }
     }
 
     private void exportLogs(File dest) throws Exception {
@@ -471,7 +554,41 @@ public class ExportLogsWizardPage extends WizardPage {
         for (Entry<Object, Object> en : p.entrySet()) {
             sb.append(en.getKey() + "=" + en.getValue() + "\n"); //$NON-NLS-1$ //$NON-NLS-2$
         }
-        writeToFile(dest, ".sysConfig", sb); //$NON-NLS-1$
+        StringBuffer processedData = processSensitiveDataHidden(sb.toString());
+        writeToFile(dest, ".sysConfig", processedData); //$NON-NLS-1$
+    }
+
+    private StringBuffer processSensitiveDataHidden(String data) {
+        StringBuffer processedData = new StringBuffer();
+        while (true) {
+            String line;
+            int index = data.indexOf("\n");
+            if (index == -1) {
+                line = data.toString();
+                String processedLine = line;
+                int equalsIndex = line.indexOf('=');
+                if (equalsIndex != -1) {
+                    String key = line.substring(0, equalsIndex).trim();
+                    if (key.toLowerCase().contains("password")) {
+                        processedLine = key + "=" + "***";
+                    }
+                }
+                processedData.append(processedLine);
+                break;
+            }
+            line = data.substring(0, index);
+            String processedLine = line;
+            int equalsIndex = line.indexOf('=');
+            if (equalsIndex != -1) {
+                String key = line.substring(0, equalsIndex).trim();
+                if (key.toLowerCase().contains("password")) {
+                    processedLine = key + "=" + "***";
+                }
+            }
+            processedData.append(processedLine).append("\n");
+            data = data.substring(index + 1);
+        }
+        return processedData;
     }
 
     private void writeToFile(File dest, String fileName, StringBuffer sb) {

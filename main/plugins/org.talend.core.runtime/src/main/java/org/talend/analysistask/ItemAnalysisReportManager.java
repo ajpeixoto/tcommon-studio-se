@@ -26,26 +26,12 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.widgets.WidgetFactory;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Link;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.report.ItemsReportUtil;
-import org.talend.commons.utils.io.FilesUtils;
+import org.talend.commons.report.ReportAccessDialog;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.properties.Item;
@@ -175,8 +161,10 @@ public class ItemAnalysisReportManager {
                     boolean generateSuccess = ItemsReportUtil.generateReportFile(reportFile, ANALYSIS_REPORT_HEAD, recordLines);
                     if (generateSuccess) {
                         Display.getDefault().asyncExec(() -> {
-                            AnalysisReportAccessDialog accessDialog = new AnalysisReportAccessDialog(
+                            ReportAccessDialog accessDialog = new ReportAccessDialog(
                                     PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
+                                    Messages.getString("AnalysisReportAccessDialog.shellTitle"),
+                                    Messages.getString("AnalysisReportAccessDialog.generateSuccess"),
                                     reportFile.getAbsolutePath());
                             accessDialog.open();
                         });
@@ -237,79 +225,6 @@ public class ItemAnalysisReportManager {
             findOutCompleteTypePath(parentType, typeLabels);
         }
         typeLabels.add(type.getLabel());
-    }
-
-}
-
-class AnalysisReportAccessDialog extends Dialog {
-
-    private String reportGeneratedFile;
-
-    protected AnalysisReportAccessDialog(Shell parentShell, String reportGeneratedFile) {
-        super(parentShell);
-        this.reportGeneratedFile = reportGeneratedFile;
-    }
-
-    @Override
-    protected void configureShell(Shell newShell) {
-        super.configureShell(newShell);
-        newShell.setText(Messages.getString("AnalysisReportAccessDialog.shellTitle"));
-    }
-
-    @Override
-    protected void initializeBounds() {
-        getShell().setSize(700, 190);
-        Point location = getInitialLocation(getShell().getSize());
-        getShell().setLocation(location.x, location.y);
-    }
-
-    @Override
-    protected Control createDialogArea(Composite parent) {
-        GridLayout layout = new GridLayout();
-        layout.marginWidth = 0;
-        layout.marginHeight = 0;
-        Composite container = WidgetFactory.composite(SWT.NONE).layout(layout).layoutData(new GridData(GridData.FILL_BOTH))
-                .create(parent);
-        applyDialogFont(container);
-
-        Composite composite = new Composite(container, SWT.NONE);
-        GridLayout compositeLayout = new GridLayout();
-        compositeLayout.numColumns = 1;
-        compositeLayout.marginWidth = 0;
-        compositeLayout.marginTop = 8;
-        compositeLayout.marginLeft = 10;
-        composite.setLayout(compositeLayout);
-        Label successMsgLabel = new Label(composite, SWT.NONE);
-        successMsgLabel.setText(Messages.getString("AnalysisReportAccessDialog.generateSuccess"));
-        GridData gridData = new GridData(GridData.GRAB_HORIZONTAL | GridData.FILL_VERTICAL);
-        successMsgLabel.setLayoutData(gridData);
-
-        Link accessLink = new Link(composite, SWT.NONE);
-        accessLink.setText(Messages.getString("AnalysisReportAccessDialog.completeReportAvailable") + " <a>"
-                + Messages.getString("AnalysisReportAccessDialog.accessReport") + "</a> ");
-        accessLink.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL | GridData.FILL_VERTICAL));
-        accessLink.addSelectionListener(new SelectionAdapter() {
-
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                File reportFile = new File(reportGeneratedFile);
-                if (reportFile != null && reportFile.exists()) {
-                    try {
-                        FilesUtils.selectFileInSystemExplorer(reportFile);
-                    } catch (Exception excep) {
-                        ExceptionHandler.process(excep);
-                    }
-                }
-            }
-
-        });
-
-        return container;
-    }
-
-    @Override
-    protected void createButtonsForButtonBar(Composite parent) {
-        createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
     }
 
 }

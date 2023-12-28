@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -108,6 +109,8 @@ public abstract class AbstractMetadataTableEditorView<B> extends AbstractDataTab
     public static final String ID_COLUMN_ADDITIONAL_FIELD = "ID_COLUMN_ADDITIONAL_FIELD";
 
     public static final String ID_COLUMN_USEFUL = "ID_COLUMN_USEFUL";
+
+    public static final String ID_COLUMN_ROW_NUM = "ID_COLUMN_ROW_NUM";
 
     protected boolean showDbColumnName, showOriginalLength;
 
@@ -231,12 +234,7 @@ public abstract class AbstractMetadataTableEditorView<B> extends AbstractDataTab
     @Override
     protected void createColumns(TableViewerCreator<B> tableViewerCreator, Table table) {
         // //////////////////////////////////////////////////////////////////////////////////////
-        tableViewerCreator.setReadOnly(false);
-        TableViewerCreatorColumn column = new TableViewerCreatorColumn(tableViewerCreator);
-        column.setTitle(""); //$NON-NLS-1$
-        column.setDefaultInternalValue(""); //$NON-NLS-1$
-        column.setWidth(15);
-
+        configureRowNumColumn(tableViewerCreator);
         if (isRepository) {
             configureUsefulColumn(tableViewerCreator);
         }
@@ -331,6 +329,25 @@ public abstract class AbstractMetadataTableEditorView<B> extends AbstractDataTab
             configureRelationshipType(tableViewerCreator);
             configureRelatedEntity(tableViewerCreator);
         }
+    }
+
+    protected abstract IBeanPropertyAccessors<B, Integer> getRowNumAccessor();
+
+    protected void configureRowNumColumn(TableViewerCreator<B> tableViewerCreator) {
+        TableViewerCreatorColumn column;
+        column = new TableViewerCreatorColumn(tableViewerCreator);
+        column.setTitle("");
+        column.setToolTipHeader("");
+        column.setId(ID_COLUMN_ROW_NUM);
+        column.setBeanPropertyAccessors(getRowNumAccessor());
+        column.setWeight(5);
+        column.setModifiable(false);
+        if (Platform.OS_MACOSX.equals(Platform.getOS())) {
+            column.setMinimumWidth(10);
+        } else {
+            column.setMinimumWidth(30);
+        }
+        column.setSortable(true);
     }
 
     protected void configureUsefulColumn(TableViewerCreator<B> tableViewerCreator) {

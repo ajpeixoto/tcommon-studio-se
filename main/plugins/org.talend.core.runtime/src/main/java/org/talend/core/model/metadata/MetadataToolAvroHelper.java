@@ -210,6 +210,8 @@ public final class MetadataToolAvroHelper {
             		// FIXME - this one should go away
             		type = AvroUtils._date();
             	}
+            	
+            	defaultValue = null;
             }
             // String-ish types.
             else if (JavaTypesManager.STRING.getId().equals(tt) || JavaTypesManager.FILE.getId().equals(tt)
@@ -466,7 +468,7 @@ public final class MetadataToolAvroHelper {
             TaggedValue tv = TaggedValueHelper.createTaggedValue(DiSchemaConstants.TALEND6_IS_READ_ONLY, prop);
             table.getTaggedValue().add(tv);
         }
-        for (String key : in.getJsonProps().keySet()) {
+        for (String key : in.getObjectProps().keySet()) {
             if (key.startsWith(DiSchemaConstants.TALEND6_ADDITIONAL_PROPERTIES)) {
                 String originalKey = key.substring(DiSchemaConstants.TALEND6_ADDITIONAL_PROPERTIES.length());
                 TaggedValue tv = TaggedValueHelper.createTaggedValue(originalKey, in.getProp(key));
@@ -512,7 +514,7 @@ public final class MetadataToolAvroHelper {
             TaggedValue tv = TaggedValueHelper.createTaggedValue(DiSchemaConstants.TALEND6_IS_READ_ONLY, prop);
             col.getTaggedValue().add(tv);
         }
-        for (String key : schema.getJsonProps().keySet()) {
+        for (String key : schema.getObjectProps().keySet()) {
             if (key.startsWith(DiSchemaConstants.TALEND6_ADDITIONAL_PROPERTIES)) {
                 String originalKey = key.substring(DiSchemaConstants.TALEND6_ADDITIONAL_PROPERTIES.length());
                 TaggedValue tv = TaggedValueHelper.createTaggedValue(originalKey, schema.getProp(key));
@@ -688,7 +690,7 @@ public final class MetadataToolAvroHelper {
             TaggedValue tv = TaggedValueHelper.createTaggedValue(DiSchemaConstants.TALEND6_IS_READ_ONLY, prop);
             col.getTaggedValue().add(tv);
         }
-        for (String key : field.getJsonProps().keySet()) {
+        for (String key : field.getObjectProps().keySet()) {
             if (key.startsWith(DiSchemaConstants.TALEND6_ADDITIONAL_PROPERTIES)) {
                 String originalKey = key.substring(DiSchemaConstants.TALEND6_ADDITIONAL_PROPERTIES.length());
                 TaggedValue tv = TaggedValueHelper.createTaggedValue(originalKey, field.getProp(key));

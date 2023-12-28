@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -388,6 +389,9 @@ public class ImportBasicHandler extends AbstractImportExecutableHandler {
                     repObjectcache.initialize(curProcessType);
                 }
             } else {
+                if (ERepositoryObjectType.JDBC != null && ERepositoryObjectType.JDBC.equals(itemType)) {
+                    itemType = ERepositoryObjectType.METADATA_TACOKIT_JDBC;
+                }
                 repObjectcache.initialize(itemType);
             }
 
@@ -558,6 +562,11 @@ public class ImportBasicHandler extends AbstractImportExecutableHandler {
         if (type1 == type2) {
             return true;
         }
+        List<ERepositoryObjectType> jdbcTacokitList = Arrays.asList(ERepositoryObjectType.METADATA_TACOKIT_JDBC,
+                ERepositoryObjectType.JDBC);
+        if (jdbcTacokitList.contains(type1) && jdbcTacokitList.contains(type2)) {
+            return true;
+        }
         IGenericWizardService wizardService = null;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericWizardService.class)) {
             wizardService = (IGenericWizardService) GlobalServiceRegister.getDefault().getService(IGenericWizardService.class);
@@ -706,12 +715,18 @@ public class ImportBasicHandler extends AbstractImportExecutableHandler {
                 .getMigrationTasksToApplyPerProject();
 
         String importedProjectLabel = importedProject.getTechnicalLabel();
-        if (migrationTasksStatusPerProject.containsKey(importedProjectLabel)) {
-            if (migrationTasksStatusPerProject.get(importedProjectLabel)) {
-                importItem.setMigrationTasksToApply(migrationTasksToApplyPerProject.get(importedProjectLabel));
+        String importedProjectVersion = importedProject.getProductVersion();
+        String key = null;
+        if (importedProjectVersion != null) {
+            key = importedProjectLabel + "@" + importedProjectVersion;
+        }
+
+        if (key != null && migrationTasksStatusPerProject.containsKey(key)) {
+            if (migrationTasksStatusPerProject.get(key)) {
+                importItem.setMigrationTasksToApply(migrationTasksToApplyPerProject.get(key));
                 return true;
             } else {
-                String message = Messages.getString("AbstractImportHandler_cannotImportMessage", importedProjectLabel); //$NON-NLS-1$
+                String message = Messages.getString("AbstractImportHandler_cannotImportMessage", key); //$NON-NLS-1$
                 importItem.addError(message);
                 return false;
             }
@@ -733,14 +748,15 @@ public class ImportBasicHandler extends AbstractImportExecutableHandler {
                 importItem.setMigrationTasksToApply(currentProjectMigrationTasks);
                 migrationTasks = currentProjectMigrationTasks;
                 canApplyMigration = true;
-                migrationTasksStatusPerProject.put(importedProjectLabel, true);
             } else {
                 String message = Messages.getString("AbstractImportHandler_cannotImportMessage", importedProjectLabel); //$NON-NLS-1$
                 importItem.addError(message);
                 log.info("'" + importItem.getItemName() + "' " + message); //$NON-NLS-1$ //$NON-NLS-2$
-                migrationTasksStatusPerProject.put(importedProjectLabel, false);
             }
-            migrationTasksToApplyPerProject.put(importedProjectLabel, migrationTasks);
+            if (key != null) {
+                migrationTasksStatusPerProject.put(key, canApplyMigration);
+                migrationTasksToApplyPerProject.put(key, migrationTasks);
+            }
         }
         return canApplyMigration;
     }

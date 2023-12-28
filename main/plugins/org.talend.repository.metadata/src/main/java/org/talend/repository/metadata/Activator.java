@@ -5,6 +5,8 @@ import org.osgi.framework.BundleContext;
 
 public class Activator implements BundleActivator {
 
+    public static String BUNDLE_ID = "org.talend.repository.metadata"; //$NON-NLS-1$
+
 	private static BundleContext context;
 
 	static BundleContext getContext() {

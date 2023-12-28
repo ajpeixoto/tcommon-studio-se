@@ -33,7 +33,6 @@ import org.talend.core.model.properties.ContextItem;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.cwm.helper.ResourceHelper;
-import org.talend.cwm.helper.StudioEncryptionHelper;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
 import org.talend.designer.core.model.utils.emf.talendfile.TalendFileFactory;
@@ -56,6 +55,11 @@ public class JobContextManager implements IContextManager {
      * record the renamed var.
      */
     private Map<String, String> nameMap = new HashMap<String, String>();
+
+    /*
+     * record rename context for node
+     */
+    private Map<String, String> nameMapNode = new HashMap<String, String>();
 
     private Map<ContextItem, Map<String, String>> repositoryRenamedMap = new HashMap<ContextItem, Map<String, String>>();
 
@@ -309,6 +313,7 @@ public class JobContextManager implements IContextManager {
             }
             context = new JobContext(name);
             context.setConfirmationNeeded(contextType.isConfirmationNeeded());
+            context.setHide(contextType.isHide());
             contextParamList = new ArrayList<IContextParameter>();
             contextTypeParamList = contextType.getContextParameter();
             Set<String> paramNamesInCurrentContext = new HashSet<String>();
@@ -403,6 +408,18 @@ public class JobContextManager implements IContextManager {
 
         // check if the newly added parameters is renamed
         updateNewParameters(newName, oldName);
+    }
+
+    public void addNameMapForNode(String newName, String oldName) {
+        nameMapNode.put(newName, oldName);
+    }
+
+    public void clearNameMapForNode() {
+        nameMapNode.clear();
+    }
+
+    public Map<String, String> getNameMapNode() {
+        return nameMapNode;
     }
 
     public Map<String, String> getNameMap() {
@@ -543,6 +560,7 @@ public class JobContextManager implements IContextManager {
             }
             contextType.setName(context.getName());
             contextType.setConfirmationNeeded(context.isConfirmationNeeded());
+            contextType.setHide(context.isHide());
             newcontextTypeList.add(contextType);
 
             EList contextTypeParamList = contextType.getContextParameter();

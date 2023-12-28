@@ -39,6 +39,8 @@ public interface IComponent {
     String SPARK_JOBLET_STREAMING_PID = "org.talend.designer.sparkstreamingjoblet"; //$NON-NLS-1$
 
     String PROP_NAME = "NAME"; //$NON-NLS-1$
+    
+    String PROP_DESCRIPTION = "DESCRIPTION"; //$NON-NLS-1$
 
     String PROP_LONG_NAME = "LONG_NAME"; //$NON-NLS-1$
 

@@ -32,7 +32,6 @@ public class ResourceToolbarProvider extends AbstractSourceProvider {
     public Map getCurrentState() {
         Map<String, Boolean> stateMap = new HashMap<String, Boolean>();
         stateMap.put(SHOW_RESOURSE, testIfShouldBeShown());
-        stateMap.put(SHOW_EXCHANGE, testIfShouldShowExchange());
         stateMap.put(SHOW_CLOUD, testIfShouldShowCloud());
         return stateMap;
     }
@@ -41,9 +40,6 @@ public class ResourceToolbarProvider extends AbstractSourceProvider {
         return !PluginChecker.isTIS();
     }
 
-    private Boolean testIfShouldShowExchange() {
-        return PluginChecker.isExchangeSystemLoaded() && !TalendPropertiesUtil.isHideExchange();
-    }
 
     private boolean testIfShouldBeShown() {
         boolean isTis = PluginChecker.isTIS();
