@@ -263,7 +263,7 @@ public final class JavaUtils {
         setProjectJavaVserion(javaVersion);
         applyCompilerCompliance(javaVersion);
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
-            IRunProcessService service = (IRunProcessService) GlobalServiceRegister.getDefault().getService(IRunProcessService.class);
+            IRunProcessService service = GlobalServiceRegister.getDefault().getService(IRunProcessService.class);
             service.updateProjectPomWithTemplate();
         }
     }
@@ -470,6 +470,19 @@ public final class JavaUtils {
             }
             ExceptionHandler.process(e1);
         }
+    }
+
+    public static boolean isJava17() {
+        boolean isJava17 = false;
+        String javaVersion = System.getProperty("java.version");
+        String[] arr = javaVersion.split("[^\\d]+");
+        try {
+            isJava17 = Integer.parseInt(arr[0]) >= 17;
+        } catch (NumberFormatException e) {
+            ExceptionHandler.process(e);
+            isJava17 = false;
+        }
+        return isJava17;
     }
 
 }
