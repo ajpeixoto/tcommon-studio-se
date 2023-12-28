@@ -62,14 +62,7 @@
          download-size="7829"
          install-size="8731"
          version="3.9.100.20230519-1558"/>
-
-   <plugin
-         id="org.eclipse.m2e.refactoring"
-         download-size="76"
-         install-size="160"
-         version="2.0.300.20221210-1303"
-         unpack="false"/>
-
+=
    <plugin
          id="org.eclipse.m2e.profiles.core"
          download-size="23"
