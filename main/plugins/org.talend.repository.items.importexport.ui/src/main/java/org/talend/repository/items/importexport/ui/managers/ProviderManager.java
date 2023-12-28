@@ -112,6 +112,10 @@ public class ProviderManager extends AbstractImportResourcesManager {
         if (provider instanceof TarLeveledStructureProvider) {
             return ((TarLeveledStructureProvider) provider).getRoot();
         }
+        
+        if (provider instanceof TalendZipLeveledStructureProvider) {
+            return ((TalendZipLeveledStructureProvider) provider).getRoot();
+        }
         return null;
     }
 }

@@ -499,6 +499,7 @@ public class RepositoryNodeUtilities {
                     || curType == ERepositoryObjectType.METADATA_CON_SYNONYM
                     || curType == ERepositoryObjectType.METADATA_CON_QUERY
                     || curType == ERepositoryObjectType.METADATA_CONNECTIONS
+                    || curType == ERepositoryObjectType.METADATA_TACOKIT_JDBC
                     || curType == ERepositoryObjectType.METADATA_FILE_DELIMITED
                     || curType == ERepositoryObjectType.METADATA_FILE_POSITIONAL
                     || curType == ERepositoryObjectType.METADATA_FILE_REGEXP
@@ -525,12 +526,13 @@ public class RepositoryNodeUtilities {
                 tmpType = ERepositoryObjectType.DOCUMENTATION;
             }
 
-            if (tmpType != null && tmpType == rootContextType) {
+            if (tmpType != null && (tmpType == rootContextType || rootContextType.isChildTypeOf(tmpType))) {
                 expandParentNode(view, rootNode);
             }
             // expand the parent node
 
-            if (curType == rootContextType && isRepositoryFolder(rootNode)) {
+            if ((curType == rootContextType || curType.isChildTypeOf(rootContextType))
+                    && isRepositoryFolder(rootNode)) {
                 if (rootContextType == ERepositoryObjectType.SQLPATTERNS
                         && !(rootNode.getParent() instanceof IProjectRepositoryNode)) {
                     // sql pattern
