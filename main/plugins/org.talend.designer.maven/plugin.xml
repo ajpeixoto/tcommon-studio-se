@@ -26,4 +26,31 @@
             serviceId="IDesignerMavenService">
       </Service>
    </extension>
+   
+      <!-- m2 LaunchGroup -->
+   <extension point="org.eclipse.debug.core.launchConfigurationTypes">
+   <!-- careful when changing id, it's used to locate launch configuration from the java code! -->
+      <!--      category="org.eclipse.ui.externaltools" -->
+      <launchConfigurationType
+            id="org.eclipse.m2e.Maven2LaunchConfigurationType"
+            delegate="org.eclipse.m2e.internal.launch.MavenLaunchDelegate"
+            sourceLocatorId="org.eclipse.m2e.launching.MavenSourceLocator"
+            sourcePathComputerId="org.eclipse.m2e.launching.MavenSourceComputer"
+            name="%m2.launch.type.name"
+            modes="run,debug" public="true"/>
+   </extension>
+   
+   <extension point="org.eclipse.debug.core.sourceLocators">
+      <sourceLocator
+            id="org.eclipse.m2e.launching.MavenSourceLocator"
+            class="org.eclipse.m2e.internal.launch.MavenSourceLocator"
+            name="%sourceLocator.name"/>
+   </extension>
+   
+   <extension point="org.eclipse.debug.core.sourcePathComputers">
+      <sourcePathComputer
+            id="org.eclipse.m2e.launching.MavenSourceComputer"
+            class="org.eclipse.m2e.internal.launch.MavenSourcePathComputer"/>
+   </extension>
+   
 </plugin>
