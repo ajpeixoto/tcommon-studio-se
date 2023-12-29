@@ -33,7 +33,6 @@ public class NewDatabaseWizard extends CheckLastVersionRepositoryWizard implemen
     @Override
     public void addPages() {
         setWindowTitle(Messages.getString("DatabaseWizard.windowTitle")); //$NON-NLS-1$
-        // setDefaultPageImageDescriptor(ImageProvider.getImageDesc(ECoreImage.METADATA_CONNECTION_WIZ));
         databaseSelectWizardPage = new DatabaseSelectWizardPage();
         databaseSelectWizardPage.setTitle(Messages.getString("NewDatabaseWizardPage.titleCreate")); //$NON-NLS-1$
         // databaseSelectWizardPage.setDescription("Select a DB Type");

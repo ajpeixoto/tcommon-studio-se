@@ -19,8 +19,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWizard;
-import org.talend.commons.ui.runtime.image.ECoreImage;
-import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.commons.ui.swt.dialogs.ErrorDialogWidthDetailArea;
 import org.talend.commons.utils.VersionUtils;
 import org.talend.core.context.Context;
@@ -99,7 +97,6 @@ public class RegexpFileWizard extends CheckLastVersionRepositoryWizard implement
         this.selection = selection;
         this.existingNames = existingNames;
         setNeedsProgressMonitor(true);
-        setDefaultPageImageDescriptor(ImageProvider.getImageDesc(ECoreImage.METADATA_FILE_REGEXP_WIZ));
 
         Object obj = ((IStructuredSelection) selection).getFirstElement();
         RepositoryNode node = (RepositoryNode) obj;
@@ -166,7 +163,6 @@ public class RegexpFileWizard extends CheckLastVersionRepositoryWizard implement
         this.selection = selection;
         this.existingNames = existingNames;
         setNeedsProgressMonitor(true);
-        setDefaultPageImageDescriptor(ImageProvider.getImageDesc(ECoreImage.METADATA_FILE_REGEXP_WIZ));
         switch (node.getType()) {
         case SIMPLE_FOLDER:
         case REPOSITORY_ELEMENT:

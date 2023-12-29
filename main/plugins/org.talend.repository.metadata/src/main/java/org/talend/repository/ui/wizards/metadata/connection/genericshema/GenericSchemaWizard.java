@@ -23,8 +23,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWizard;
-import org.talend.commons.ui.runtime.image.ECoreImage;
-import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.commons.ui.swt.dialogs.ErrorDialogWidthDetailArea;
 import org.talend.commons.utils.VersionUtils;
 import org.talend.core.context.Context;
@@ -109,7 +107,6 @@ public class GenericSchemaWizard extends CheckLastVersionRepositoryWizard implem
         this.existingNames = existingNames;
         this.isSinglePageOnly = isSinglePageOnly;
         setNeedsProgressMonitor(true);
-        setDefaultPageImageDescriptor(ImageProvider.getImageDesc(ECoreImage.DEFAULT_WIZ));
 
         if (selection == null || existingNames == null) {
             connection = ConnectionFactory.eINSTANCE.createGenericSchemaConnection();
@@ -206,7 +203,6 @@ public class GenericSchemaWizard extends CheckLastVersionRepositoryWizard implem
         this.existingNames = existingNames;
         this.isSinglePageOnly = isSinglePageOnly;
         setNeedsProgressMonitor(true);
-        setDefaultPageImageDescriptor(ImageProvider.getImageDesc(ECoreImage.DEFAULT_WIZ));
         switch (node.getType()) {
         case SIMPLE_FOLDER:
         case REPOSITORY_ELEMENT:

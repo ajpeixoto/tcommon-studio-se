@@ -46,8 +46,6 @@ import org.talend.commons.exception.LoginException;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.runtime.xml.XmlUtil;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
-import org.talend.commons.ui.runtime.image.ECoreImage;
-import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.commons.utils.VersionUtils;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.context.Context;
@@ -171,7 +169,6 @@ public class XmlFileWizard extends CheckLastVersionRepositoryWizard implements I
         this.selection = selection;
         this.existingNames = existingNames;
         setNeedsProgressMonitor(true);
-        // setDefaultPageImageDescriptor(ImageProvider.getImageDesc(EImage.METADATA_FILE_XML_WIZ));
 
         Object obj = ((IStructuredSelection) selection).getFirstElement();
         RepositoryNode node = (RepositoryNode) obj;
@@ -239,7 +236,6 @@ public class XmlFileWizard extends CheckLastVersionRepositoryWizard implements I
         this.selection = selection;
         this.existingNames = existingNames;
         setNeedsProgressMonitor(true);
-        // setDefaultPageImageDescriptor(ImageProvider.getImageDesc(EImage.METADATA_FILE_XML_WIZ));
         switch (node.getType()) {
         case SIMPLE_FOLDER:
         case REPOSITORY_ELEMENT:
@@ -316,7 +312,6 @@ public class XmlFileWizard extends CheckLastVersionRepositoryWizard implements I
 
         xmlFileSelectPage = new XmlFileSelectWizardPage(creation, connectionItem, isRepositoryObjectEditable(), existingNames);
 
-        setDefaultPageImageDescriptor(ImageProvider.getImageDesc(ECoreImage.METADATA_FILE_XML_WIZ));
         if (connection != null) {
             List schemas = connection.getSchema();
             if (!schemas.isEmpty()) {

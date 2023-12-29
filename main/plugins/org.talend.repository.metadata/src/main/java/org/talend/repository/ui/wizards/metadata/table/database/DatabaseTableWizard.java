@@ -33,8 +33,6 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWizard;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
-import org.talend.commons.ui.runtime.image.ECoreImage;
-import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.commons.ui.swt.dialogs.ErrorDialogWidthDetailArea;
 import org.talend.commons.utils.platform.PluginChecker;
 import org.talend.core.GlobalServiceRegister;
@@ -147,7 +145,6 @@ public class DatabaseTableWizard extends CheckLastVersionRepositoryWizard implem
     @Override
     public void addPages() {
         setWindowTitle(Messages.getString("TableWizard.windowTitle")); //$NON-NLS-1$
-        setDefaultPageImageDescriptor(ImageProvider.getImageDesc(ECoreImage.METADATA_TABLE_WIZ));
         TableInfoParameters tableInfoParameters = new TableInfoParameters();
         DatabaseConnection curDbConnection = (DatabaseConnection) connectionItem.getConnection();
 

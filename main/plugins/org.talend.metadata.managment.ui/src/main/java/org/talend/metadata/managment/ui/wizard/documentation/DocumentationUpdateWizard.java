@@ -29,8 +29,6 @@ import org.eclipse.ui.IWorkbench;
 import org.osgi.framework.FrameworkUtil;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
-import org.talend.commons.ui.runtime.image.ECoreImage;
-import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.core.model.properties.DocumentationItem;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.LinkDocumentationItem;
@@ -68,7 +66,6 @@ public class DocumentationUpdateWizard extends CheckLastVersionRepositoryWizard 
         this.repositoryObject = object;
 
         setWindowTitle(Messages.getString("DocumentationUpdateWizard.windowTitle")); //$NON-NLS-1$
-        setDefaultPageImageDescriptor(ImageProvider.getImageDesc(ECoreImage.DOCUMENTATION_WIZ));
         setNeedsProgressMonitor(false);
         initLockStrategy();
     }
