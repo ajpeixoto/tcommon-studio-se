@@ -153,8 +153,14 @@ public class LibraryDataService {
     }
 
     public void buildLibraryLicenseData(Set<String> mvnUrlList) {
+        buildLibraryLicenseData(mvnUrlList, null);
+    }
+
+    public void buildLibraryLicenseData(Set<String> mvnUrlList, Map<String, List<String[]>> licenseMap) {
         for (String mvnUrl : mvnUrlList) {
-            Library libraryObj = resolve(mvnUrl);
+            Library libraryObj = getLicenseDataFromMap(mvnUrl, licenseMap);
+            if (libraryObj == null)
+                libraryObj = resolve(mvnUrl);
             if (!libraryObj.isLicenseMissing() || !libraryObj.isPomMissing()) {
                 mvnToLibraryMap.put(getShortMvnUrl(mvnUrl), libraryObj);
             }
@@ -171,10 +177,10 @@ public class LibraryDataService {
                     isRemoved = true;
                 }
             }
-            if(lib.isPomMissing()) {
+            if (lib.isPomMissing()) {
                 lib.getLicenses().clear();
                 lib.getLicenses().add(unknownLicense);
-            }else {
+            } else {
                 if ((isRemoved && licenses.size() == 0)) {
                     licenses.add(unknownLicense);
                     lib.setLicenseMissing(true);
@@ -182,6 +188,38 @@ public class LibraryDataService {
             }
         }
         dataProvider.saveLicenseData(mvnToLibraryMap);
+    }
+    
+    private Library getLicenseDataFromMap(String mvnUrl, Map<String, List<String[]>> licenseMap) {
+        if (licenseMap == null)
+            return null;
+        MavenArtifact artifact = MavenUrlHelper.parseMvnUrl(mvnUrl);
+        String shourtMvnUrl = getShortMvnUrl(mvnUrl);
+        String gav = String.format("%s:%s:%s", artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion());
+        List<String[]> licenses = licenseMap.get(gav);
+        Library libraryObj = null;
+        if (licenses != null && licenses.size() > 0) {
+            libraryObj = new Library();
+            libraryObj.setGroupId(artifact.getGroupId());
+            libraryObj.setArtifactId(artifact.getArtifactId());
+            libraryObj.setVersion(artifact.getVersion());
+            libraryObj.setMvnUrl(shourtMvnUrl);
+            libraryObj.setType(artifact.getType());
+            libraryObj.setClassifier(artifact.getClassifier());
+            libraryObj.setPomMissing(false);
+            for (String[] licenseContent : licenses) {
+                LibraryLicense license = new LibraryLicense();
+                if (licenseContent != null && licenseContent.length == 2) {
+                    license.setName(licenseContent[0]);
+                    license.setUrl(licenseContent[1]);
+                }
+                libraryObj.getLicenses().add(license);
+            }
+        } else {
+            return null;
+        }
+
+        return libraryObj;
     }
 
     private Library resolve(String mvnUrl) {
@@ -205,12 +243,7 @@ public class LibraryDataService {
                     }
                     Map<String, Object> properties = resolveDescProperties(artifact, false);
                     if (properties != null && properties.size() > 0) {
-                        //if the type is provided in mvnUrl, will not be replaced with the descriptor one.
-                        boolean usePomPackingType = true;
-                        if (!StringUtils.isBlank(MavenUrlHelper.parseMvnUrl(mvnUrl, false).getType())) {
-                            usePomPackingType = false;
-                        }
-                        parseDescriptorResult(libraryObj, properties, false, usePomPackingType);
+                        parseDescriptorResult(libraryObj, properties, false);
                         if (libraryObj.getLicenses().size() == 0) {
                             libraryObj.setLicenseMissing(true);
                             libraryObj.getLicenses().add(unknownLicense);
@@ -320,15 +353,10 @@ public class LibraryDataService {
     }
 
     private void parseDescriptorResult(Library libraryObj, Map<String, Object> properties, boolean is4Parent) throws Exception {
-        parseDescriptorResult(libraryObj, properties, is4Parent, true);
-    }
-
-    private void parseDescriptorResult(Library libraryObj, Map<String, Object> properties, boolean is4Parent, boolean usePomPackagingType) throws Exception {
         if (properties.size() == 0) {
             libraryObj.setPomMissing(true);
         }
-        //If packaging type is provided in mvnUrl,  not use the <packaging> setting in pom.xml.
-        if (!is4Parent && usePomPackagingType) {
+        if (!is4Parent) {
             String type = String.valueOf(properties.get("type"));
             libraryObj.setType(MavenConstants.PACKAGING_BUNDLE.equalsIgnoreCase(type) ? MavenConstants.PACKAGING_JAR : type); //$NON-NLS-1$
         }

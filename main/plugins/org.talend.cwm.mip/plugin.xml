@@ -254,5 +254,4 @@
        class = "orgomg.mof.model.ModelPackage"
        genModel = "model/cwm_mip.genmodel" /> 
   </extension>
-
 </plugin>

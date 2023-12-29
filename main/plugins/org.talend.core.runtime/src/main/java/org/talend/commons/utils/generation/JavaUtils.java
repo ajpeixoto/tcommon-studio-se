@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.runtime.CoreException;
@@ -32,13 +33,21 @@ import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.IVMInstall2;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jdt.launching.environments.IExecutionEnvironment;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.osgi.service.prefs.BackingStoreException;
+import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.utils.VersionUtils;
 import org.talend.commons.utils.resource.FileExtensions;
 import org.talend.core.GlobalServiceRegister;
+import org.talend.core.PluginChecker;
 import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.runtime.projectsetting.ProjectPreferenceManager;
 import org.talend.designer.runprocess.IRunProcessService;
+import org.talend.repository.ProjectManager;
+import org.talend.utils.JavaVersion;
+import org.talend.utils.StudioKeysFileCheck;
+import org.talend.utils.VersionException;
 
 /**
  * Utilities around perl stuff. <br/>
@@ -47,6 +56,8 @@ import org.talend.designer.runprocess.IRunProcessService;
  *
  */
 public final class JavaUtils {
+    
+    private static final String SYS_PROP_JAVA_COMPLIANCE_LEVEL = "job.compliance";
 
     public static final String JAVAMODULE_PLUGIN_ID = "org.talend.designer.codegen.javamodule"; //$NON-NLS-1$
 
@@ -54,12 +65,16 @@ public final class JavaUtils {
 
     public static final String PROJECT_JAVA_VERSION_KEY = "talend.project.java.version"; //$NON-NLS-1$
 
-    public static final String DEFAULT_VERSION = JavaCore.VERSION_1_8;
+    public static final String DEFAULT_VERSION = getComplianceLevel();
 
-    public static final List<String> AVAILABLE_VERSIONS = Arrays.asList(JavaCore.VERSION_1_8 );
+    public static final List<String> AVAILABLE_VERSIONS = Arrays.asList(DEFAULT_VERSION);
 
     public static final String ALLOW_JAVA_INTERNAL_ACCESS = "allow.java.internal.access"; //$NON-NLS-1$
 
+    public static final String ALLOW_JAVA_INTERNAL_ACCESS_BACKUP = "allow.java.internal.access.backup";
+    
+    public static final String JOB_COMPLIANCE_SET = "job.compliance.set";
+    
     public static final String CUSTOM_ACCESS_SETTINGS = "custom.access.settings"; //$NON-NLS-1$
 
     public static final String PROCESSOR_TYPE = "javaProcessor"; //$NON-NLS-1$
@@ -248,7 +263,7 @@ public final class JavaUtils {
         setProjectJavaVserion(javaVersion);
         applyCompilerCompliance(javaVersion);
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
-            IRunProcessService service = (IRunProcessService) GlobalServiceRegister.getDefault().getService(IRunProcessService.class);
+            IRunProcessService service = GlobalServiceRegister.getDefault().getService(IRunProcessService.class);
             service.updateProjectPomWithTemplate();
         }
     }
@@ -283,6 +298,11 @@ public final class JavaUtils {
     private static String getJavaVersion(String defaultCompliance, String version) {
         if (version == null) {
             return defaultCompliance;
+        }
+
+        JavaVersion ver = new JavaVersion(version);
+        if (ver.getMajor() > 8) {
+            return String.valueOf(ver.getMajor());
         }
         if (version.startsWith(JavaCore.VERSION_1_8)) {
             return JavaCore.VERSION_1_8;
@@ -363,6 +383,106 @@ public final class JavaUtils {
         if (monitor != null) {
             monitor.worked(1);
         }
+    }
+    
+    private static String getComplianceLevel() {
+        if (isComplianceLevelSet()) {
+            return System.getProperty(SYS_PROP_JAVA_COMPLIANCE_LEVEL, JavaCore.VERSION_1_8);
+        }
+        return JavaCore.VERSION_1_8;
+    }
+    
+    
+    /**
+     * When allow java internal access, need to set compliance to java 11, if current complier's version>=11, otherwise
+     * set to Java 8.
+     * 
+     * @return
+     */
+    public static String getCompatibleComplianceLevel() {
+        String ver = getDefaultComplianceLevel();
+        if (VersionUtils.compareTo(ver, JavaCore.VERSION_11) < 0) {
+            ver = JavaCore.VERSION_1_8;
+        }
+        return JavaCore.VERSION_11;
+    }
+    
+    private static String getDefaultComplianceLevel() {
+        return getCompilerCompliance((IVMInstall2) JavaRuntime.getDefaultVMInstall(), JavaCore.VERSION_1_8);
+    }
+
+    public static boolean isComplianceLevelSet() {
+        boolean isSystemPropSet = System.getProperty(SYS_PROP_JAVA_COMPLIANCE_LEVEL) == null ? false : true;
+        if (!isSystemPropSet) {
+            return isSystemPropSet;
+        }
+        String complianceLevel = System.getProperty(SYS_PROP_JAVA_COMPLIANCE_LEVEL);
+        String complierComplianceLevel = getDefaultComplianceLevel();
+        if (!StringUtils.equals(complianceLevel, complierComplianceLevel)) {
+            ExceptionHandler
+                    .log("Not compatible, complianceLevel set by system property: " + complianceLevel
+                            + ", jvm's complierComplianceLevel: " + complierComplianceLevel);
+            return false;
+        }
+        
+        if (!isAllowInternalAccess()) {
+            // set
+            getJavaVersionProjectSettingPrefStore().setValue(ALLOW_JAVA_INTERNAL_ACCESS, true);
+        }
+        ExceptionHandler
+                .log("complianceLevel set by system property: " + complianceLevel + ", complierComplianceLevel: "
+                        + complierComplianceLevel);
+        return isSystemPropSet;
+    }
+
+    public static boolean isAllowInternalAccess() {
+        return getJavaVersionProjectSettingPrefStore().getBoolean(ALLOW_JAVA_INTERNAL_ACCESS);
+    }
+
+    private static IPreferenceStore getJavaVersionProjectSettingPrefStore() {
+        ProjectPreferenceManager projectPreferenceManager = new ProjectPreferenceManager(
+                ProjectManager.getInstance().getCurrentProject(), CoreRuntimePlugin.PLUGIN_ID, false);
+        // set the project preference
+        return projectPreferenceManager.getPreferenceStore();
+    }
+    
+    public static void validateJavaVersion() {
+        try {
+            // validate jvm which is used to start studio
+            StudioKeysFileCheck.validateJavaVersion();
+
+            // added for master to avoid junit failure
+            if (CommonsPlugin.isHeadless() || CommonsPlugin.isJUnitTest() || PluginChecker.isSWTBotLoaded()
+                    || CommonsPlugin.isTUJTest() || CommonsPlugin.isJunitWorking()) {
+                return;
+            }
+            // validate default complier's compliance level
+            IVMInstall install = JavaRuntime.getDefaultVMInstall();
+            String ver = getCompilerCompliance((IVMInstall2) install, JavaCore.VERSION_1_8);
+            if (new JavaVersion(ver).compareTo(new JavaVersion(StudioKeysFileCheck.JAVA_VERSION_MAXIMUM_STRING)) > 0) {
+                VersionException e = new VersionException(VersionException.ERR_JAVA_VERSION_NOT_SUPPORTED,
+                        "The maximum Java version supported by Studio is " + StudioKeysFileCheck.JAVA_VERSION_MAXIMUM_STRING + ". Your compiler's compliance level is " + ver);
+                throw e;
+            }
+        } catch (Exception e1) {
+            if (e1 instanceof VersionException) {
+                throw e1;
+            }
+            ExceptionHandler.process(e1);
+        }
+    }
+
+    public static boolean isJava17() {
+        boolean isJava17 = false;
+        String javaVersion = System.getProperty("java.version");
+        String[] arr = javaVersion.split("[^\\d]+");
+        try {
+            isJava17 = Integer.parseInt(arr[0]) >= 17;
+        } catch (NumberFormatException e) {
+            ExceptionHandler.process(e);
+            isJava17 = false;
+        }
+        return isJava17;
     }
 
 }

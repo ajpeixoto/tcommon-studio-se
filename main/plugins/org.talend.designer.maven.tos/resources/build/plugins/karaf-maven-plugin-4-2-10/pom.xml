@@ -146,8 +146,8 @@
 		</dependency>
 		<dependency>
 		    <groupId>org.bouncycastle</groupId>
-		    <artifactId>bcprov-jdk15on</artifactId>
-		    <version>1.70</version>
+		    <artifactId>bcprov-jdk18on</artifactId>
+		    <version>1.74</version>
 		</dependency>
 		<dependency>
 		    <groupId>com.fasterxml.jackson.core</groupId>
@@ -226,6 +226,7 @@
 							<excludeGroupIds>p2.eclipse-plugin,org.talend.studio</excludeGroupIds>
 							<outputDirectory>${basedir}/../../../tmp/repository</outputDirectory>
 							<useRepositoryLayout>true</useRepositoryLayout>
+							<includeGroupIds>org.slf4j,org.apache.karaf.tooling,org.apache.velocity,org.slf4j,org.apache.maven.shared,org.springframework,org.codehaus.plexus,com.sun.istack,biz.aQute.bnd,com.sun.activation,org.apache.maven.wagon,org.tukaani,org.apache.ant,org.apache.maven.shared,org.bouncycastle,com.fasterxml.jackson.core,org.apache.httpcomponents,commons-codec,commons-io,org.apache.commons,javax.activation,org.apache.maven,org.apache.commons,org.jsoup</includeGroupIds>
 						</configuration>
 					</execution>
 				</executions>

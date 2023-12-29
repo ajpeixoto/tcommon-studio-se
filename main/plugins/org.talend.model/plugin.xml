@@ -144,4 +144,5 @@
             type="componentcache"
             class="org.talend.core.model.component_cache.util.ComponentCacheResourceFactoryImpl"/>
    </extension>
+
 </plugin>

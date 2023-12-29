@@ -13,5 +13,4 @@
             provider="org.talend.commons.runtime.model.UsingCdataOptionProvider">
       </saveOption>
    </extension>
-
 </plugin>

@@ -138,7 +138,6 @@
               <goal>copy-dependencies</goal>
             </goals>
             <configuration>
-			  <excludeGroupIds>org.talend.studio</excludeGroupIds>
               <includeScope>runtime</includeScope>
               <outputDirectory>${project.basedir}/lib</outputDirectory>
               <stripVersion>true</stripVersion>

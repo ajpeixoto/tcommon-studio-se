@@ -37,8 +37,8 @@
 		</dependency>
 		<dependency>
 		    <groupId>org.bouncycastle</groupId>
-		    <artifactId>bcprov-jdk15on</artifactId>
-		    <version>1.70</version>
+		    <artifactId>bcprov-jdk18on</artifactId>
+		    <version>1.74</version>
 		</dependency>
 	</dependencies>
 	<build>
@@ -61,6 +61,7 @@
 							<excludeGroupIds>p2.eclipse-plugin,org.talend.studio</excludeGroupIds>
 							<outputDirectory>${basedir}/../../../tmp/repository</outputDirectory>
 							<useRepositoryLayout>true</useRepositoryLayout>
+							<includeGroupIds>org.apache.maven.plugins,commons-codec,org.apache.ant,org.bouncycastle</includeGroupIds>
 						</configuration>
 					</execution>
 				</executions>

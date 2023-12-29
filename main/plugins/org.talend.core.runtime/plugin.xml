@@ -79,4 +79,5 @@
              class="org.talend.core.model.context.link.ConnectionItemContextLinkService">
        </creator>
     </extension>
+
 </plugin>

@@ -420,5 +420,6 @@ public class VersionUtils {
             PresentableBox box = new PresentableBox("TALEND", mess, 0); //$NON-NLS-1$
             return box.getFullBox();
     }
+    // do something here
 
 }
