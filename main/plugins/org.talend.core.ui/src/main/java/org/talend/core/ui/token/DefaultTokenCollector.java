@@ -17,6 +17,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.talend.commons.utils.VersionUtils;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.prefs.ITalendCorePrefConstants;
+import org.talend.core.runtime.util.SharedStudioUtils;
 import org.talend.core.ui.CoreUIPlugin;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.daikon.token.TokenGenerator;
@@ -40,6 +41,8 @@ public class DefaultTokenCollector extends AbstractTokenCollector {
     private static final TokenKey SYNC_NB = new TokenKey("sync.nb"); //$NON-NLS-1$
 
     private static final TokenKey OS = new TokenKey("os"); //$NON-NLS-1$
+
+    private static final TokenKey SHARE_MODE = new TokenKey("share.mode"); //$NON-NLS-1$
 
     public static final String COLLECTOR_SYNC_NB = "COLLECTOR_SYNC_NB"; //$NON-NLS-1$
 
@@ -70,7 +73,7 @@ public class DefaultTokenCollector extends AbstractTokenCollector {
 
         // typeStudio
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IBrandingService.class)) {
-            IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault().getService(
+            IBrandingService brandingService = GlobalServiceRegister.getDefault().getService(
                     IBrandingService.class);
             tokenStudioObject.put(TYPE_STUDIO.getKey(), brandingService.getAcronym());
             // tokenStudioObject.put(TYPE_STUDIO.getKey(), brandingService.getShortProductName());
@@ -92,6 +95,8 @@ public class DefaultTokenCollector extends AbstractTokenCollector {
             tokenStudioObject.put(STOP_COLLECTOR.getKey(), "0"); //$NON-NLS-1$
         }
         
+        // Share mode
+        tokenStudioObject.put(SHARE_MODE.getKey(), SharedStudioUtils.isSharedStudioMode());
         return tokenStudioObject;
     }
 }
