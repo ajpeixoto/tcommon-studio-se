@@ -64,7 +64,7 @@ public class TMCRepositoryUtil {
 
     public static final int ALLOWED_PAT_MAX_DAYS = 60;
 
-    public static final long ALLOWED_PAT_MAX_MILLI_SECONDS = ALLOWED_PAT_MAX_DAYS * 24 * 60 * 1000;
+    public static final long ALLOWED_PAT_MAX_MILLI_SECONDS = 1000L * ALLOWED_PAT_MAX_DAYS * 24 * 60 * 60;
 
     public static final Pattern DATA_CENTER_PATTERN = Pattern.compile("^http[s?]://tmc\\.(.*)(\\.cloud\\.talend\\.com.*)", Pattern.CASE_INSENSITIVE);
 
