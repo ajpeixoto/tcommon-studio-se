@@ -41,21 +41,16 @@ public enum ECoreImage implements IImage {
 
     DEFAULT_WIZ("/icons1/defaultWizard.png"), //$NON-NLS-1$
 
-    PROJECT_WIZ("/icons1/project_wiz.png"), //$NON-NLS-1$
 
     RECYCLE_BIN_EMPTY_ICON("/icons1/recyclebinempty.png"), //$NON-NLS-1$
     RECYCLE_BIN_FULL_ICON("/icons1/recyclebinfull.png"), //$NON-NLS-1$
     FOLDER_OPEN_ICON("/icons1/folder_open.png"), //$NON-NLS-1$
     FOLDER_CLOSE_ICON("/icons1/folder_close.png"), //$NON-NLS-1$
-    FOLDER_WIZ("/icons1/folder_wiz.gif"), //$NON-NLS-1$
 
     BUSINESS_PROCESS_ICON("/icons1/businessProcess.png"), //$NON-NLS-1$
-    BUSINESS_PROCESS_WIZ("/icons1/business_wiz.png"), //$NON-NLS-1$
     PROCESS_ICON("/icons1/process_icon.png"), //$NON-NLS-1$
     PROCESS_ICON_EDITOR("/icons1/process_icon_editor.png"), //$NON-NLS-1$
-    PROCESS_WIZ("/icons1/process_wiz.png"), //$NON-NLS-1$
     PROCESS_TEMPLATE_ICON("/icons1/process_icon.png"), //$NON-NLS-1$
-    PROCESS_TEMPLATE_WIZ("/icons1/process_template_wiz.png"), //$NON-NLS-1$
     PROCESS_STANDARD_GENERIC_CATEGORY_CLOSE_ICON("/icons1/process_standard_generic_category_close.png"), //$NON-NLS-1$
     PROCESS_STANDARD_GENERIC_CATEGORY_OPEN_ICON("/icons1/process_standard_generic_category_open.png"), //$NON-NLS-1$
     PROCESS_STREAMING_GENERIC_CATEGORY_CLOSE_ICON("/icons1/process_streaming_generic_category_close.png"), //$NON-NLS-1$
@@ -71,7 +66,6 @@ public enum ECoreImage implements IImage {
     JOBLET_STANDARD_ICON("/icons1/joblet_standard.png"), //$NON-NLS-1$
     CONTEXT_ICON("/icons1/context_icon.png"), //$NON-NLS-1$
     CONTEXT_CONF_ICON("/icons1/context_conf_icon.gif"), //$NON-NLS-1$
-    CONTEXT_WIZ("/icons1/context_wiz.png"), //$NON-NLS-1$
     CODE_ICON("/icons1/code.png"), //$NON-NLS-1$
     ROUTES_ICON("/icons1/routes_icon.png"), //$NON-NLS-1$
     ROUTELET_ICON("/icons1/routelet.png"), //$NON-NLS-1$
@@ -81,7 +75,6 @@ public enum ECoreImage implements IImage {
     JOB_SCRIPTS_ICON("/icons1/job_scripts.png"), //$NON-NLS-1$
     JOB_SCRIPTS_TOOLBAR_ICON("/icons1/job_script_toolbar.png"), //$NON-NLS-1$
     FTP_ICON("/icons1/ftp.png"), //$NON-NLS-1$
-    ROUTINE_WIZ("/icons1/routine_wiz.png"), //$NON-NLS-1$
     SNIPPETS_ICON("/icons1/snippet.png"), //$NON-NLS-1$
     // Note Component icon
     NOTE_SMALL_ICON("/icons1/Note_icon16.png"), //$NON-NLS-1$
@@ -91,30 +84,23 @@ public enum ECoreImage implements IImage {
     // SUBROUTINE_ICON("/icons1/subroutine.gif"),
     DOCUMENTATION_ICON("/icons1/documentation.png"), //$NON-NLS-1$
     DOCUMENTATION_SINGLE_ICON("/icons1/Documentation_feuillet.png"), //$NON-NLS-1$
-    DOCUMENTATION_WIZ("/icons1/documentation_wiz.png"), //$NON-NLS-1$
 
     METADATA_ICON("/icons1/metadata.png"), //$NON-NLS-1$
     METADATA_CONNECTION_ICON("/icons1/connection.gif"), //$NON-NLS-1$
-    METADATA_CONNECTION_WIZ("/icons1/connection_wiz.png"), //$NON-NLS-1$
     METADATA_CDC_CONN_ICON("/icons1/cdc_conn.png"), //$NON-NLS-1$
 
     METADATA_HL7_CONNECTION_ICON("/icons1/hl7.png"), //$NON-NLS-1$
-    METADATA_HL7_CONNECTION_WIZ("/icons1/hl7.png"), //$NON-NLS-1$
 
     METADATA_BRMS_CONNECTION_ICON("/icons1/rules_wiz.gif"), //$NON-NLS-1$
-    METADATA_BRMS_CONNECTION_WIZ("/icons1/rules_wiz.gif"), //$NON-NLS-1$
 
     METADATA_EBCDIC_CONNECTION_ICON("/icons1/copybook.png"), //$NON-NLS-1$
-    METADATA_EBCDIC_CONNECTION_WIZ("/icons1/copybook_wiz.png"), //$NON-NLS-1$
 
     METADATA_MDM_CONNECTION_ICON("/icons1/MDM_16px.png"), //$NON-NLS-1$
     METADATA_MDM_CONNECTION_WIZ("/icons1/talendMDM_wiz.png"), //$NON-NLS-1$
 
     METADATA_RULES_ICON("/icons1/rules_wiz.gif"), //$NON-NLS-1$
-    METADATA_RULES_WIZ("/icons1/rules_wiz.gif"), //$NON-NLS-1$
 
     METADATA_SAPCONNECTION_ICON("/icons1/sapconnection.png"), //$NON-NLS-1$
-    METADATA_SAPCONNECTION_WIZ("/icons1/connection_wiz.gif"), //$NON-NLS-1$
     
     METADATA_BIGQUERYCONNECTION_ICON("/icons1/bigqueryconnection.png"), //$NON-NLS-1$
 
@@ -122,32 +108,23 @@ public enum ECoreImage implements IImage {
 
     METADATA_SQLPATTERN_ICON("/icons1/SQLPattern.png"), //$NON-NLS-1$
     METADATA_SQLPATTERN_ICON_EDITOR("/icons1/SQLPattern_editor.png"), //$NON-NLS-1$
-    METADATA_SQLPATTERN_WIZ("/icons1/defaultWizard.png"), //$NON-NLS-1$
 
     METADATA_TABLE_ICON("/icons1/table.gif"), //$NON-NLS-1$
     METADATA_COLUMN_ICON("/icons1/columns.gif"), //$NON-NLS-1$
-    METADATA_TABLE_WIZ("/icons1/table_wiz.png"), //$NON-NLS-1$
     METADATA_VIEW_ICON("/icons1/view.gif"), //$NON-NLS-1$
     METADATA_SYNONYM_ICON("/icons1/synonym.gif"), //$NON-NLS-1$
     METADATA_QUERY_ICON("/icons1/query.gif"), //$NON-NLS-1$
     METADATA_FILE_DELIMITED_ICON("/icons1/filedelimited.gif"), //$NON-NLS-1$
-    METADATA_FILE_DELIMITED_WIZ("/icons1/delimited_wiz.png"), //$NON-NLS-1$
     METADATA_FILE_POSITIONAL_ICON("/icons1/filepositional.gif"), //$NON-NLS-1$
-    METADATA_FILE_POSITIONAL_WIZ("/icons1/positional_wiz.png"), //$NON-NLS-1$
     METADATA_FILE_REGEXP_ICON("/icons1/fileregexp.gif"), //$NON-NLS-1$
-    METADATA_FILE_REGEXP_WIZ("/icons1/regexp_wiz.png"), //$NON-NLS-1$
     METADATA_FILE_XML_ICON("/icons1/filexml.gif"), //$NON-NLS-1$
-    METADATA_FILE_XML_WIZ("/icons1/xml_wiz.png"), //$NON-NLS-1$
     METADATA_FILE_EXCEL_ICON("/icons1/fileexcel.gif"), //$NON-NLS-1$
-    METADATA_FILE_EXCEL_WIZ("/icons1/excel_wiz.png"), //$NON-NLS-1$
     METADATA_FILE_LDIF_ICON("/icons1/fileldif.gif"), //$NON-NLS-1$
-    METADATA_FILE_LDIF_WIZ("/icons1/ldif_wiz.png"), //$NON-NLS-1$
     METADATA_GENERIC_ICON("/icons1/genericSchema_icon.png"), //$NON-NLS-1$
     METADATA_LDAP_SCHEMA_ICON("/icons1/ldap_icon.png"), //$NON-NLS-1$
     METADATA_WSDL_SCHEMA_ICON("/icons1/wsdl_icon.png"), //$NON-NLS-1$
     METADATA_SALESFORCE_SCHEMA_ICON("/icons1/salesforce_icon.png"), //$NON-NLS-1$
     METADATA_VALIDATION_RULES_ICON("/icons1/metadata.png"), //$NON-NLS-1$
-    METADATA_VALIDATION_RULES_WIZ("/icons1/delimited_wiz.png"), //$NON-NLS-1$
     METADATA_EDIFACT_ICON("/icons1/EDIField.png"), //$NON-NLS-1$
     MODULE_INSTALLED_ICON("/icons1/checked.gif"), //$NON-NLS-1$
     MODULE_ERROR_ICON("/icons1/error.gif"), //$NON-NLS-1$

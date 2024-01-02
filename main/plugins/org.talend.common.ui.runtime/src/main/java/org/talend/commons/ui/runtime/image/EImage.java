@@ -49,8 +49,6 @@ public enum EImage implements IImage {
 
     IMPORT_ICON("/icons/import.gif"), //$NON-NLS-1$
     EXPORT_ICON("/icons/export.gif"), //$NON-NLS-1$
-    EXPORT_WIZ_ICON("/icons/export_wiz.png"), //$NON-NLS-1$
-    EXPORT_ZIP_ICON("/icons/exportzip_wiz.png"), //$NON-NLS-1$
     EXPORT_JOB_ICON("/icons/export_job.png"), //$NON-NLS-1$
     EXPORT_HTML_ICON("/icons/export_html.png"), //$NON-NLS-1$
 
@@ -143,7 +141,6 @@ public enum EImage implements IImage {
     COLLECTOR_ICON("/icons/collector.png"), //$NON-NLS-1$
     REPARTITION_ICON("/icons/repartition.png"), //$NON-NLS-1$
 
-    HADOOP_WIZ_ICON("/icons/hadoop-logo-wiz.png"), //$NON-NLS-1$
 
     SEPARATOR_ICON("/icons/separator.gif"), //$NON-NLS-1$
 
