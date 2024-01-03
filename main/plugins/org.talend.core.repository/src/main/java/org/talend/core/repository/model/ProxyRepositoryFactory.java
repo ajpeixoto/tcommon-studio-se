@@ -2480,13 +2480,8 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
             }
         } else {
             String specifiedVersion = null;
-            String currentVersion = JavaUtils.getProjectJavaVersion();
-            if (JavaUtils.isAllowInternalAccess()) {
-                currentVersion = JavaUtils.getCompatibleComplianceLevel();
-            } else {
-                // restore back to java 8
-                currentVersion = JavaUtils.DEFAULT_VERSION;
-            }
+            String projectJavaVersion = JavaUtils.getProjectJavaVersion();
+            String currentVersion = JavaUtils.getComplianceLevel();
             try {
                 JavaHomeUtil.initializeJavaHome();
             } catch (CoreException ex) {
@@ -2500,7 +2495,9 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
             } else {
                 newVersion = specifiedVersion;
             }
-            JavaUtils.updateProjectJavaVersion(newVersion);
+            if (!StringUtils.equals(newVersion, projectJavaVersion)) {
+                JavaUtils.updateProjectJavaVersion(newVersion);
+            }
         }
     }
 

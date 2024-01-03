@@ -37,7 +37,6 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.osgi.service.prefs.BackingStoreException;
 import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.ExceptionHandler;
-import org.talend.commons.utils.VersionUtils;
 import org.talend.commons.utils.resource.FileExtensions;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.PluginChecker;
@@ -385,53 +384,31 @@ public final class JavaUtils {
         }
     }
     
-    private static String getComplianceLevel() {
+    public static String getComplianceLevel() {
         if (isComplianceLevelSet()) {
             return System.getProperty(SYS_PROP_JAVA_COMPLIANCE_LEVEL, JavaCore.VERSION_1_8);
         }
         return JavaCore.VERSION_1_8;
     }
     
-    
-    /**
-     * When allow java internal access, need to set compliance to java 11, if current complier's version>=11, otherwise
-     * set to Java 8.
-     * 
-     * @return
-     */
-    public static String getCompatibleComplianceLevel() {
-        String ver = getDefaultComplianceLevel();
-        if (VersionUtils.compareTo(ver, JavaCore.VERSION_11) < 0) {
-            ver = JavaCore.VERSION_1_8;
-        }
-        return JavaCore.VERSION_11;
-    }
-    
-    private static String getDefaultComplianceLevel() {
-        return getCompilerCompliance((IVMInstall2) JavaRuntime.getDefaultVMInstall(), JavaCore.VERSION_1_8);
-    }
-
     public static boolean isComplianceLevelSet() {
         boolean isSystemPropSet = System.getProperty(SYS_PROP_JAVA_COMPLIANCE_LEVEL) == null ? false : true;
         if (!isSystemPropSet) {
             return isSystemPropSet;
         }
         String complianceLevel = System.getProperty(SYS_PROP_JAVA_COMPLIANCE_LEVEL);
-        String complierComplianceLevel = getDefaultComplianceLevel();
-        if (!StringUtils.equals(complianceLevel, complierComplianceLevel)) {
+        if (!StringUtils.equals(complianceLevel, JavaCore.VERSION_17)) {
             ExceptionHandler
                     .log("Not compatible, complianceLevel set by system property: " + complianceLevel
-                            + ", jvm's complierComplianceLevel: " + complierComplianceLevel);
+                            + ", supported complierComplianceLevel: " + JavaCore.VERSION_17);
             return false;
         }
-        
+
         if (!isAllowInternalAccess()) {
             // set
             getJavaVersionProjectSettingPrefStore().setValue(ALLOW_JAVA_INTERNAL_ACCESS, true);
         }
-        ExceptionHandler
-                .log("complianceLevel set by system property: " + complianceLevel + ", complierComplianceLevel: "
-                        + complierComplianceLevel);
+        ExceptionHandler.log("complianceLevel set by system property: " + complianceLevel);
         return isSystemPropSet;
     }
 
