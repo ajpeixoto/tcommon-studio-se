@@ -27,7 +27,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.apache.commons.lang,
  org.apache.commons.lang3,
  org.talend.studio.studio-utils,
- org.apache.commons.codec,
+ org.apache.commons.commons-codec,
  org.talend.utils,
  org.talend.libraries.apache
 Bundle-ActivationPolicy: lazy

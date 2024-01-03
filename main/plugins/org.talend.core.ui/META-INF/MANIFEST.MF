@@ -51,7 +51,7 @@ Require-Bundle: org.apache.commons.lang,
  org.talend.daikon,
  org.apache.commons.logging,
  org.apache.commons.lang3,
- org.apache.commons.codec,
+ org.apache.commons.commons-codec,
  org.eclipse.jface.notifications,
  org.eclipse.swt,
  javax.inject
