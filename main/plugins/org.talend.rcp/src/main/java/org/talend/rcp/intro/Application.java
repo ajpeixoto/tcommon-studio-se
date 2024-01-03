@@ -51,7 +51,6 @@ import org.talend.commons.runtime.service.ComponentsInstallComponent;
 import org.talend.commons.runtime.service.PatchComponent;
 import org.talend.commons.ui.runtime.update.PreferenceKeys;
 import org.talend.commons.ui.swt.dialogs.ErrorDialogWidthDetailArea;
-import org.talend.commons.utils.generation.JavaUtils;
 import org.talend.commons.utils.network.NetworkUtil;
 import org.talend.commons.utils.network.TalendProxySelector;
 import org.talend.commons.utils.system.EclipseCommandLine;
@@ -116,7 +115,7 @@ public class Application implements IApplication {
         Display display = PlatformUI.createDisplay();
 
         try {
-            JavaUtils.validateJavaVersion();
+            StudioKeysFileCheck.validateJavaVersion();
         } catch (Exception e) {
             Shell shell = new Shell(display, SWT.NONE);
             if (e instanceof VersionException) {
