@@ -856,13 +856,13 @@ public class XmiResourceManager {
             URI orgPropertyResourceURI = EcoreUtil.getURI(originalItem.getProperty());
             URI orgRelativePlateformDestUri = orgPropertyResourceURI.trimFileExtension().appendFileExtension(
                     FileConstants.SCREENSHOT_EXTENSION);
-            URL orgFileURL = FileLocator.toFileURL(new java.net.URL(
+            URL orgFileURL = FileLocator.resolve(new java.net.URL(
                     "platform:/resource" + orgRelativePlateformDestUri.toPlatformString(true))); //$NON-NLS-1$
 
             URI newPropertyResourceURI = EcoreUtil.getURI(newItem.getProperty());
             URI newRelativePlateformDestUri = newPropertyResourceURI.trimFileExtension().appendFileExtension(
                     FileConstants.SCREENSHOT_EXTENSION);
-            URL newFileURL = FileLocator.toFileURL(new java.net.URL(
+            URL newFileURL = FileLocator.resolve(new java.net.URL(
                     "platform:/resource" + newRelativePlateformDestUri.toPlatformString(true))); //$NON-NLS-1$
 
             os = new FileOutputStream(newFileURL.getFile());

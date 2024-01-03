@@ -90,7 +90,7 @@ public class MetadataConnectionImportHandler extends ImportRepTypeHandler {
                 URI propertyResourceURI = EcoreUtil.getURI(((ConnectionItem) tmpItem).getProperty());
                 URI relativePlateformDestUri = propertyResourceURI.trimFileExtension().appendFileExtension(
                         FileConstants.ITEM_EXTENSION);
-                URL fileURL = FileLocator.toFileURL(new java.net.URL(
+                URL fileURL = FileLocator.resolve(new java.net.URL(
                         "platform:/resource" + relativePlateformDestUri.toPlatformString(true))); //$NON-NLS-1$
                 OutputStream os = new FileOutputStream(fileURL.getFile());
                 try {
