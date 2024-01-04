@@ -14,13 +14,9 @@ package org.talend.registration.register;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.management.ManagementFactory;
-import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.rmi.RemoteException;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
@@ -31,20 +27,14 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.browser.IWebBrowser;
-import org.talend.commons.exception.BusinessException;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
-import org.talend.commons.utils.VersionUtils;
 import org.talend.commons.utils.network.NetworkUtil;
 import org.talend.commons.utils.platform.PluginChecker;
 import org.talend.core.GlobalServiceRegister;
-import org.talend.core.model.general.ConnectionBean;
 import org.talend.core.prefs.ITalendCorePrefConstants;
-import org.talend.core.prefs.PreferenceManipulator;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.core.ui.token.DefaultTokenCollector;
 import org.talend.registration.i18n.Messages;
-import org.talend.registration.register.proxy.HttpProxyUtil;
-import org.talend.registration.register.proxy.RegisterUserPortTypeProxy;
 import org.talend.repository.ui.login.connections.ConnectionUserPerReader;
 
 /**
@@ -81,284 +71,6 @@ public class RegisterManagement {
             instance = new RegisterManagement();
         }
         return instance;
-    }
-
-    @Deprecated
-    public boolean register(String email, String country, boolean isProxyEnabled, String proxyHost, String proxyPort,
-            String designerVersion, String projectLanguage, String osName, String osVersion, String javaVersion,
-            long totalMemory, Long memRAM, int nbProc) throws BusinessException {
-        registNumber = null;
-        BigInteger result = BigInteger.valueOf(-1);
-
-        // if proxy is enabled
-        if (isProxyEnabled) {
-            // get parameter and put them in System.properties.
-            System.setProperty("http.proxyHost", proxyHost); //$NON-NLS-1$
-            System.setProperty("http.proxyPort", proxyPort); //$NON-NLS-1$
-
-            // override automatic update parameters
-            if (proxyPort != null && proxyPort.trim().equals("")) { //$NON-NLS-1$
-                proxyPort = null;
-            }
-            HttpProxyUtil.setHttpProxyInfo(true, proxyHost, proxyPort);
-        }
-
-        RegisterUserPortTypeProxy proxy = new RegisterUserPortTypeProxy();
-        proxy.setEndpoint("https://www.talend.com/TalendRegisterWS/registerws.php"); //$NON-NLS-1$
-        try {
-            IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault().getService(
-                    IBrandingService.class);
-            result = proxy.registerUserWithAllUserInformationsAndReturnId(email, country, designerVersion,
-                    brandingService.getShortProductName(), projectLanguage, osName, osVersion, javaVersion,
-                    totalMemory + "", memRAM //$NON-NLS-1$
-                            + "", nbProc + ""); //$NON-NLS-1$ //$NON-NLS-2$
-            if (result.signum() > 0) {
-                PlatformUI.getPreferenceStore().setValue("REGISTRATION_DONE", 1); //$NON-NLS-1$
-                registNumber = result.longValue();
-                // validateRegistration(brandingService.getAcronym(), result.longValue());
-                PreferenceManipulator prefManipulator = new PreferenceManipulator();
-                // prefManipulator.addUser(email);
-                // prefManipulator.setLastUser(email);
-
-                // Create a default connection:
-                if (prefManipulator.readConnections().isEmpty()) {
-                    ConnectionBean recup = ConnectionBean.getDefaultConnectionBean();
-                    recup.setUser(email);
-                    recup.setComplete(true);
-                    prefManipulator.addConnection(recup);
-                }
-
-            }
-        } catch (RemoteException e) {
-            decrementTry();
-            throw new BusinessException(e);
-        }
-        return result.signum() > 0;
-    }
-
-    public boolean updateUser(String email, String pseudo, String oldPassword, String password, String firstname,
-            String lastname, String country, boolean isProxyEnabled, String proxyHost, String proxyPort) throws BusinessException {
-        BigInteger result = BigInteger.valueOf(-1);
-        registNumber = null;
-        // if proxy is enabled
-        if (isProxyEnabled) {
-            // get parameter and put them in System.properties.
-            System.setProperty("http.proxyHost", proxyHost); //$NON-NLS-1$
-            System.setProperty("http.proxyPort", proxyPort); //$NON-NLS-1$
-
-            // override automatic update parameters
-            if (proxyPort != null && proxyPort.trim().equals("")) { //$NON-NLS-1$
-                proxyPort = null;
-            }
-            HttpProxyUtil.setHttpProxyInfo(true, proxyHost, proxyPort);
-        }
-
-        // OS
-        String osName = System.getProperty("os.name"); //$NON-NLS-1$
-        String osVersion = System.getProperty("os.version"); //$NON-NLS-1$
-
-        // Java version
-        String javaVersion = System.getProperty("java.version"); //$NON-NLS-1$
-
-        // Java Memory
-        long totalMemory = Runtime.getRuntime().totalMemory();
-
-        // RAM
-        com.sun.management.OperatingSystemMXBean composantSystem = (com.sun.management.OperatingSystemMXBean) ManagementFactory
-                .getOperatingSystemMXBean();
-        Long memRAM = new Long(composantSystem.getTotalPhysicalMemorySize() / 1024);
-
-        // CPU
-        int nbProc = Runtime.getRuntime().availableProcessors();
-
-        // VERSION
-
-        String version = VersionUtils.getVersion();
-
-        RegisterUserPortTypeProxy proxy = new RegisterUserPortTypeProxy();
-        proxy.setEndpoint("https://www.talend.com/TalendRegisterWS/registerws.php"); //$NON-NLS-1$
-        try {
-            IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault().getService(
-                    IBrandingService.class);
-            result = proxy.updateUser(email, pseudo, oldPassword, password, firstname, lastname, country, version,
-                    brandingService.getAcronym(), osName, osVersion, javaVersion, totalMemory + "", memRAM //$NON-NLS-1$
-                            + "", nbProc + ""); //$NON-NLS-1$ //$NON-NLS-2$
-            if (result != null && result.signum() > 0) {
-                PlatformUI.getPreferenceStore().setValue("REGISTRATION_DONE", 1); //$NON-NLS-1$
-                saveRegistoryBean();
-                registNumber = result.longValue();
-                // validateRegistration(brandingService.getAcronym(), result.longValue());
-                PreferenceManipulator prefManipulator = new PreferenceManipulator();
-                // prefManipulator.addUser(email);
-                // prefManipulator.setLastUser(email);
-
-                // Create a default connection:
-                if (prefManipulator.readConnections().isEmpty()) {
-                    ConnectionBean recup = ConnectionBean.getDefaultConnectionBean();
-                    recup.setUser(email);
-                    recup.setComplete(true);
-                    prefManipulator.addConnection(recup);
-                }
-            } else {
-                checkErrors(result.intValue());
-            }
-        } catch (RemoteException e) {
-            decrementTry();
-            increaseFailRegisterTimes();
-            MessageDialog.openError(null, Messages.getString("RegisterManagement.errors"), e.getMessage()); //$NON-NLS-1$
-            throw new BusinessException(e);
-        }
-        if (result != null) {
-            return result.signum() > 0;
-        } else {
-            return false;
-        }
-    }
-
-    public boolean createUser(String email, String pseudo, String password, String firstname, String lastname, String country,
-            boolean isProxyEnabled, String proxyHost, String proxyPort, String proxyUser, String proxyPassword)
-            throws BusinessException {
-        BigInteger result = BigInteger.valueOf(-1);
-        registNumber = null;
-        // if proxy is enabled
-        if (isProxyEnabled) {
-            Properties properties = System.getProperties();
-            properties.put("http.proxySet", "true"); //$NON-NLS-1$
-            properties.put("http.proxyHost", proxyHost);
-            properties.put("http.proxyPort", proxyPort);
-            properties.put("http.proxyUser", proxyUser); //$NON-NLS-1$
-            properties.put("http.proxyPassword", proxyPassword); //$NON-NLS-1$
-        }
-
-        // OS
-        String osName = System.getProperty("os.name"); //$NON-NLS-1$
-        String osVersion = System.getProperty("os.version"); //$NON-NLS-1$
-
-        // Java version
-        String javaVersion = System.getProperty("java.version"); //$NON-NLS-1$
-
-        // Java Memory
-        long totalMemory = Runtime.getRuntime().totalMemory();
-
-        // RAM
-        com.sun.management.OperatingSystemMXBean composantSystem = (com.sun.management.OperatingSystemMXBean) ManagementFactory
-                .getOperatingSystemMXBean();
-        Long memRAM = new Long(composantSystem.getTotalPhysicalMemorySize() / 1024);
-
-        // CPU
-        int nbProc = Runtime.getRuntime().availableProcessors();
-
-        // VERSION
-        String version = VersionUtils.getVersion();
-
-        // UNIQUE_ID
-        String uniqueId = DefaultTokenCollector.hashUniqueId();
-
-        RegisterUserPortTypeProxy proxy = new RegisterUserPortTypeProxy();
-        proxy.setEndpoint("https://www.talend.com/TalendRegisterWS/registerws.php"); //$NON-NLS-1$
-        try {
-            IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault().getService(
-                    IBrandingService.class);
-            if (country == null) {
-                country = Locale.getDefault().getCountry();
-                if (country == null) {
-                    country = "unknown";
-                }
-            }
-
-            result = proxy.createUser53(email, pseudo, password, firstname, lastname, country, version,
-                    brandingService.getAcronym(), osName, osVersion, javaVersion, totalMemory + "", memRAM //$NON-NLS-1$
-                            + "", nbProc + "", uniqueId); //$NON-NLS-1$ //$NON-NLS-2$
-            if (result.signum() > 0) {
-                PlatformUI.getPreferenceStore().setValue("REGISTRATION_DONE", 1); //$NON-NLS-1$
-                saveRegistoryBean();
-                registNumber = result.longValue();
-                // validateRegistration(brandingService.getAcronym(), result.longValue());
-                PreferenceManipulator prefManipulator = new PreferenceManipulator();
-                // prefManipulator.addUser(email);
-                // prefManipulator.setLastUser(email);
-
-                // Create a default connection:
-                if (prefManipulator.readConnections().isEmpty()) {
-                    ConnectionBean recup = ConnectionBean.getDefaultConnectionBean();
-                    recup.setUser(email);
-                    recup.setComplete(true);
-                    prefManipulator.addConnection(recup);
-                }
-            } else {
-                checkErrors(result.intValue());
-            }
-        } catch (RemoteException e) {
-            decrementTry();
-            increaseFailRegisterTimes();
-            MessageDialog.openError(null, Messages.getString("RegisterManagement.errors"), e.getMessage()); //$NON-NLS-1$
-            throw new BusinessException(e);
-        }
-        return result.signum() > 0;
-    }
-
-    public boolean createUser(String pseudo, String password, String firstname, String lastname, String country,
-            boolean isProxyEnabled, String proxyHost, String proxyPort, String proxyUser, String proxyPassword)
-            throws BusinessException {
-        BigInteger result = BigInteger.valueOf(-1);
-        registNumber = null;
-        // if proxy is enabled
-        if (isProxyEnabled) {
-            Properties properties = System.getProperties();
-            properties.put("http.proxySet", "true"); //$NON-NLS-1$
-            properties.put("http.proxyHost", proxyHost);
-            properties.put("http.proxyPort", proxyPort);
-            properties.put("http.proxyUser", proxyUser); //$NON-NLS-1$
-            properties.put("http.proxyPassword", proxyPassword); //$NON-NLS-1$
-        }
-
-        // OS
-        String osName = System.getProperty("os.name"); //$NON-NLS-1$
-        String osVersion = System.getProperty("os.version"); //$NON-NLS-1$
-
-        // Java version
-        String javaVersion = System.getProperty("java.version"); //$NON-NLS-1$
-
-        // Java Memory
-        long totalMemory = Runtime.getRuntime().totalMemory();
-
-        // RAM
-        com.sun.management.OperatingSystemMXBean composantSystem = (com.sun.management.OperatingSystemMXBean) ManagementFactory
-                .getOperatingSystemMXBean();
-        Long memRAM = new Long(composantSystem.getTotalPhysicalMemorySize() / 1024);
-
-        // CPU
-        int nbProc = Runtime.getRuntime().availableProcessors();
-
-        // VERSION
-        String version = VersionUtils.getVersion();
-
-        // UNIQUE_ID
-        String uniqueId = DefaultTokenCollector.calcUniqueId();
-
-        RegisterUserPortTypeProxy proxy = new RegisterUserPortTypeProxy();
-        proxy.setEndpoint("https://www.talend.com/TalendRegisterWS/registerws.php"); //$NON-NLS-1$
-        try {
-            IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault().getService(
-                    IBrandingService.class);
-            if (country == null) {
-                country = Locale.getDefault().getCountry();
-                if (country == null) {
-                    country = "unknown";
-                }
-            }
-
-            result = proxy.updateUser53(pseudo, password, firstname, lastname, country, version, brandingService.getAcronym(),
-                    osName, osVersion, javaVersion, totalMemory + "", memRAM //$NON-NLS-1$
-                            + "", nbProc + "", uniqueId); //$NON-NLS-1$ //$NON-NLS-2$
-            if (result.intValue() != -110 && result.signum() < 0) {
-                checkErrors(result.intValue());
-            }
-        } catch (RemoteException e) {
-            MessageDialog.openError(null, Messages.getString("RegisterManagement.errors"), e.getMessage()); //$NON-NLS-1$
-            throw new BusinessException(e);
-        }
-        return result.intValue() == -110;
     }
 
     private void checkErrors(int signum) {
@@ -419,33 +131,6 @@ public class RegisterManagement {
             signum = -1;
         }
         MessageDialog.openError(null, Messages.getString("RegisterManagement.errors"), message); //$NON-NLS-1$
-    }
-
-    public String checkUser(String email, boolean isProxyEnabled, String proxyHost, String proxyPort, String proxyUser,
-            String proxyPassword) throws BusinessException {
-
-        // if proxy is enabled
-        if (isProxyEnabled) {
-            // get parameter and put them in System.properties.
-            System.setProperty("http.proxyHost", proxyHost); //$NON-NLS-1$
-            System.setProperty("http.proxyPort", proxyPort); //$NON-NLS-1$
-            System.setProperty("http.proxyUser", proxyUser); //$NON-NLS-1$
-            System.setProperty("http.proxyPassword", proxyPassword); //$NON-NLS-1$
-
-            // override automatic update parameters
-            if (proxyPort != null && proxyPort.trim().equals("")) { //$NON-NLS-1$
-                proxyPort = null;
-            }
-            HttpProxyUtil.setHttpProxyInfo(true, proxyHost, proxyPort);
-        }
-
-        RegisterUserPortTypeProxy proxy = new RegisterUserPortTypeProxy();
-        proxy.setEndpoint("https://www.talend.com/TalendRegisterWS/registerws.php"); //$NON-NLS-1$
-        try {
-            return proxy.checkUser(email);
-        } catch (RemoteException e) {
-            throw new BusinessException(e);
-        }
     }
 
     public void validateRegistration() {

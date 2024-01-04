@@ -45,6 +45,14 @@ public class JavaUtilsTest {
                 CoreRuntimePlugin.getInstance().getProjectPreferenceManager().getValue("talend.project.java.version"));
         assertEquals(JavaCore.VERSION_1_6, JavaUtils.getProjectJavaVersion());
     }
+    
+    @Test
+    public void testGetCompatibleComplianceLevel() {
+        // always compiled to java 1.8
+        if (!JavaUtils.isComplianceLevelSet()) {
+            assertEquals(JavaCore.VERSION_1_8, JavaUtils.getComplianceLevel());
+        }
+    }
 
     @After
     public void tearDown() throws Exception {
