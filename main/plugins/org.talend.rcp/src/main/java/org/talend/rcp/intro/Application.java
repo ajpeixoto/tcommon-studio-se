@@ -37,6 +37,9 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.wizard.WizardDialog;
+import org.eclipse.m2e.core.MavenPlugin;
+import org.eclipse.m2e.core.embedder.IMavenConfiguration;
+import org.eclipse.m2e.core.internal.preferences.MavenConfigurationImpl;
 import org.eclipse.osgi.service.datalocation.Location;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
@@ -109,6 +112,10 @@ public class Application implements IApplication {
     @SuppressWarnings("restriction")
     @Override
     public Object start(IApplicationContext context) throws Exception {
+    	IMavenConfiguration mavenConfiguration = MavenPlugin.getMavenConfiguration();
+    	if(mavenConfiguration instanceof MavenConfigurationImpl ) {
+    		(( MavenConfigurationImpl ) mavenConfiguration).setAutomaticallyUpdateConfiguration(false);
+    	}
         if (System.getProperty(OPS4J_USEFALLBACKREPOSITORIES_ARG) == null) {
             System.setProperty(OPS4J_USEFALLBACKREPOSITORIES_ARG, Boolean.FALSE.toString());
         }
