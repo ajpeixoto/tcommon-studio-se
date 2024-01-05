@@ -12,7 +12,13 @@
 // ============================================================================
 package org.talend.designer.maven.tools;
 
-import static org.talend.designer.maven.model.TalendJavaProjectConstants.*;
+import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_BEANS;
+import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_BEANSJAR;
+import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_CODES;
+import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_JOBS;
+import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_POMS;
+import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_ROUTINES;
+import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_ROUTINESJAR;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -46,17 +52,10 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
-import org.eclipse.core.variables.VariablesPlugin;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.m2e.core.MavenPlugin;
-import org.eclipse.m2e.core.internal.MavenPluginActivator;
-import org.eclipse.m2e.core.internal.markers.IEditorMarkerService;
-import org.eclipse.osgi.internal.serviceregistry.ServiceReferenceImpl;
-import org.eclipse.osgi.internal.serviceregistry.ServiceRegistrationImpl;
 import org.eclipse.swt.widgets.Display;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.commons.exception.ExceptionHandler;
@@ -95,7 +94,6 @@ import org.talend.core.runtime.process.TalendProcessOptionConstants;
 import org.talend.core.runtime.services.IFilterService;
 import org.talend.core.ui.ITestContainerProviderService;
 import org.talend.core.utils.CodesJarResourceCache;
-import org.talend.core.utils.WorkspaceUtils;
 import org.talend.designer.maven.launch.MavenPomCommandLauncher;
 import org.talend.designer.maven.model.MavenSystemFolders;
 import org.talend.designer.maven.model.TalendJavaProjectConstants;
@@ -118,26 +116,7 @@ public class AggregatorPomsHelper {
     private static final Logger LOGGER = LoggerFactory.getLogger(AggregatorPomsHelper.class);
 
     private String projectTechName;
-    
-//    static {
-//    	//try to unregister service to avoid m2e.core.ui start before workbench created
-//    	try {
-//    		BundleContext context = MavenPluginActivator.getDefault().getBundleContext();
-//    		ServiceReference<IEditorMarkerService> ref = context.getServiceReference(IEditorMarkerService.class);
-//    		if(ref instanceof ServiceReferenceImpl<?>) {
-//    			ServiceReferenceImpl<?> s = (ServiceReferenceImpl<?>) ref;
-//    			ServiceRegistrationImpl<?> registration = s.getRegistration();
-//    			registration.unregister();
-//    		}
-//    	}catch(Exception e) {
-//    		LOGGER.error("Unable to unregister service of " + IEditorMarkerService.class, e);
-//    	}
-//    }
-    static {
-    	//to initialise the maven Variables plugin
-    	new VariablesPlugin();
-    }
-
+   
     public AggregatorPomsHelper() {
         projectTechName = ProjectManager.getInstance().getCurrentProject().getTechnicalLabel();
     }
