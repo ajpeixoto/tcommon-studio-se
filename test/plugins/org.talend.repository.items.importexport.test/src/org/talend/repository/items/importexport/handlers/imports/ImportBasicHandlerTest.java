@@ -514,6 +514,13 @@ public class ImportBasicHandlerTest {
         // Property
         Property property = mock(Property.class);
         ImportItem.setProperty(property);
+
+        // Process Item
+        ProcessItem processItem = createTempProcessItem();
+        when(property.getItem()).thenReturn(processItem);
+        when(property.getLabel()).thenReturn("test1");
+        when(property.getVersion()).thenReturn("0.1");
+
         // Resources
         ResourcesManager resManager = mock(ResourcesManager.class);
         Set<IPath> pathes = new HashSet<IPath>();
