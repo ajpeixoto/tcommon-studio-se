@@ -509,17 +509,21 @@ public class ImportBasicHandlerTest {
     public void testComputeImportItem() throws Exception {
         ImportBasicHandler basicHandler = new ImportBasicHandler();
 
-        ImportItem ImportItem = new ImportItem(processPropPath1);
-        ImportItem.setItemName(processPropPath1.lastSegment());
-        // Property
-        Property property = mock(Property.class);
-        ImportItem.setProperty(property);
+        ImportItem importItem = new ImportItem(processPropPath1);
+        importItem.setItemName(processPropPath1.lastSegment());
 
-        // Process Item
-        ProcessItem processItem = createTempProcessItem();
-        when(property.getItem()).thenReturn(processItem);
-        when(property.getLabel()).thenReturn("test1");
-        when(property.getVersion()).thenReturn("0.1");
+        ProcessItem processItem = PropertiesFactory.eINSTANCE.createProcessItem();
+        Property myProperty = PropertiesFactory.eINSTANCE.createProperty();
+        ItemState itemState = PropertiesFactory.eINSTANCE.createItemState();
+        itemState.setDeleted(false);
+        itemState.setPath("TEST/process/test1_0.1.item");
+        processItem.setState(itemState);
+        processItem.setProperty(myProperty);
+        myProperty.setLabel("test1");
+        myProperty.setVersion("0.1");
+        myProperty.setItem(processItem);
+
+        importItem.setProperty(myProperty);
 
         // Resources
         ResourcesManager resManager = mock(ResourcesManager.class);
@@ -532,7 +536,7 @@ public class ImportBasicHandlerTest {
         // call
         basicHandler.computeImportItem(resManager, processPropPath1);
         // Load Resource failed
-        Assert.assertNull(basicHandler.loadResource(resManager, ImportItem));
+        Assert.assertNull(basicHandler.loadResource(resManager, importItem));
         Assert.assertTrue(ImportCacheHelper.getInstance().getImportErrors().size() == 1);
         // ...
     }
