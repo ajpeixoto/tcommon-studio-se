@@ -506,7 +506,7 @@ public class ImportBasicHandlerTest {
     }
 
     @Test
-    public void testComputeImportItem() throws Exception {
+    public void testComputeProperty() throws Exception {
         ImportBasicHandler basicHandler = new ImportBasicHandler();
 
         ImportItem importItem = new ImportItem(processPropPath1);
@@ -534,7 +534,7 @@ public class ImportBasicHandlerTest {
         pathes.add(processItemPath1);
         when(resManager.getPaths()).thenReturn(pathes);
         // call
-        basicHandler.computeImportItem(resManager, processPropPath1);
+        basicHandler.computeProperty(resManager, importItem);
         // Load Resource failed
         Assert.assertNull(basicHandler.loadResource(resManager, importItem));
         Assert.assertTrue(ImportCacheHelper.getInstance().getImportErrors().size() == 1);
