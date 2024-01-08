@@ -2862,7 +2862,7 @@ public class DatabaseForm extends AbstractForm {
                     File file = new File(stringToFile);
                     if (file != null) {
                         try {
-                            MyURLClassLoader cl = new MyURLClassLoader(new URL[] {file.toURL()},this.getClass().getClassLoader());
+                            MyURLClassLoader cl = new MyURLClassLoader(new URL[] {file.toURI().toURL()},this.getClass().getClassLoader());
                             Class[] classes = cl.getAssignableClasses(Driver.class);
                             for (Class classe : classes) {
                                 driverClassTxt.add(classe.getName());
@@ -6371,7 +6371,7 @@ public class DatabaseForm extends AbstractForm {
                     File file = new File(stringToFile);
                     if (file != null) {
                         try {
-                            MyURLClassLoader cl = new MyURLClassLoader(new URL[] {file.toURL()},this.getClass().getClassLoader());
+                            MyURLClassLoader cl = new MyURLClassLoader(new URL[] {file.toURI().toURL()},this.getClass().getClassLoader());
                             Class[] classes = cl.getAssignableClasses(Driver.class);
                             for (Class classe : classes) {
                                 generalJdbcClassNameText.add(classe.getName());
