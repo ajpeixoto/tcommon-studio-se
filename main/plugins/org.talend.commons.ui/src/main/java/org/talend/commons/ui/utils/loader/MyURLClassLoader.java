@@ -46,7 +46,7 @@ public class MyURLClassLoader extends URLClassLoader {
     private Map pclasses = new HashMap();
 
     public MyURLClassLoader(String fileName) throws IOException {
-        this(new File(fileName).toURL());
+        this(new File(fileName).toURI().toURL());
     }
 
     public MyURLClassLoader(URL url) {
