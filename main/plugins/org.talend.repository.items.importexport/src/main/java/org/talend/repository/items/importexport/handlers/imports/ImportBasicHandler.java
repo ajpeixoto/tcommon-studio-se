@@ -121,6 +121,7 @@ import org.talend.repository.items.importexport.handlers.model.ImportItem.State;
 import org.talend.repository.items.importexport.i18n.Messages;
 import org.talend.repository.items.importexport.manager.ResourcesManager;
 import org.talend.repository.model.RepositoryConstants;
+import org.talend.utils.io.FilesUtils;
 
 /**
  * DOC ggu class global comment. Detailled comment
@@ -283,7 +284,12 @@ public class ImportBasicHandler extends AbstractImportExecutableHandler {
                     .getImportErrors()
                     .add(Messages.getString("ImportBasicHandler_LoadEMFResourceError", importItem.getPath().lastSegment(),
                             HandlerUtil.getValidItemRelativePath(manager, importItem.getPath())));
-            log.error(Messages.getString("ImportBasicHandler_ErrorCreateEmfResource") + " - " + HandlerUtil.getValidItemRelativePath(manager, importItem.getPath())); //$NON-NLS-1$
+
+            // TDQ-21713: ignore ".gitkeep" file under the git remote project's folders
+            if (!FilesUtils.GITKEEP.equalsIgnoreCase(importItem.getItemName())) {
+                log.error(Messages.getString("ImportBasicHandler_ErrorCreateEmfResource") + " - " //$NON-NLS-1$
+                        + HandlerUtil.getValidItemRelativePath(manager, importItem.getPath()));
+            }
         }
     }
 
