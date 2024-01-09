@@ -6099,7 +6099,6 @@ public class DatabaseForm extends AbstractForm {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-
                 generalJdbcClassNameText.removeAll();
                 for (String jarName : generalJdbcDriverjarText.getText().trim().split(";")) { //$NON-NLS-1$
                     String stringToFile = getselecteModulePath(jarName);
