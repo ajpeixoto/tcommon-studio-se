@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -120,6 +121,7 @@ import org.talend.repository.items.importexport.handlers.model.ImportItem.State;
 import org.talend.repository.items.importexport.i18n.Messages;
 import org.talend.repository.items.importexport.manager.ResourcesManager;
 import org.talend.repository.model.RepositoryConstants;
+import org.talend.utils.io.FilesUtils;
 
 /**
  * DOC ggu class global comment. Detailled comment
@@ -282,7 +284,12 @@ public class ImportBasicHandler extends AbstractImportExecutableHandler {
                     .getImportErrors()
                     .add(Messages.getString("ImportBasicHandler_LoadEMFResourceError", importItem.getPath().lastSegment(),
                             HandlerUtil.getValidItemRelativePath(manager, importItem.getPath())));
-            log.error(Messages.getString("ImportBasicHandler_ErrorCreateEmfResource") + " - " + HandlerUtil.getValidItemRelativePath(manager, importItem.getPath())); //$NON-NLS-1$
+
+            // TDQ-21713: ignore ".gitkeep" file under the git remote project's folders
+            if (!FilesUtils.GITKEEP.equalsIgnoreCase(importItem.getItemName())) {
+                log.error(Messages.getString("ImportBasicHandler_ErrorCreateEmfResource") + " - " //$NON-NLS-1$
+                        + HandlerUtil.getValidItemRelativePath(manager, importItem.getPath()));
+            }
         }
     }
 
@@ -388,6 +395,9 @@ public class ImportBasicHandler extends AbstractImportExecutableHandler {
                     repObjectcache.initialize(curProcessType);
                 }
             } else {
+                if (ERepositoryObjectType.JDBC != null && ERepositoryObjectType.JDBC.equals(itemType)) {
+                    itemType = ERepositoryObjectType.METADATA_TACOKIT_JDBC;
+                }
                 repObjectcache.initialize(itemType);
             }
 
@@ -556,6 +566,11 @@ public class ImportBasicHandler extends AbstractImportExecutableHandler {
             return false;
         }
         if (type1 == type2) {
+            return true;
+        }
+        List<ERepositoryObjectType> jdbcTacokitList = Arrays.asList(ERepositoryObjectType.METADATA_TACOKIT_JDBC,
+                ERepositoryObjectType.JDBC);
+        if (jdbcTacokitList.contains(type1) && jdbcTacokitList.contains(type2)) {
             return true;
         }
         IGenericWizardService wizardService = null;

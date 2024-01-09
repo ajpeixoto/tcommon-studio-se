@@ -30,6 +30,7 @@ import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.LoginException;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.ui.nofitication.ArrangedNotificationPopup;
+import org.talend.commons.utils.generation.JavaUtils;
 import org.talend.core.CorePlugin;
 import org.talend.core.prefs.ITalendCorePrefConstants;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
@@ -79,7 +80,7 @@ public class Java17NotificationPopup extends ArrangedNotificationPopup {
     }
 
     public static boolean show() {
-        return !showOnce() && isJava17() && (!ModuleAccessHelper.allowJavaInternalAcess(null) || !checkInterpreter());
+        return !showOnce() && JavaUtils.isJava17() && (!ModuleAccessHelper.allowJavaInternalAcess(null) || !checkInterpreter());
     }
 
     private static boolean showOnce() {
@@ -130,19 +131,6 @@ public class Java17NotificationPopup extends ArrangedNotificationPopup {
             ExceptionHandler.process(e);
         }
         return false;
-    }
-
-    private static boolean isJava17() {
-        boolean isJava17 = false;
-        String javaVersion = System.getProperty("java.version");
-        String[] arr = javaVersion.split("[^\\d]+");
-        try {
-            isJava17 = Integer.parseInt(arr[0]) >= 17;
-        } catch (NumberFormatException e) {
-            ExceptionHandler.process(e);
-            isJava17 = false;
-        }
-        return isJava17;
     }
 
 }
