@@ -30,6 +30,8 @@ public interface IGitUIProviderService extends IService {
     public String[] changeCredentials(Shell parent, Serializable uriIsh, String initUser, boolean canStoreCredentials);
 
     boolean checkPendingChanges();
+    
+    boolean checkUncommittedFiles();
 
     public void openPushFailedDialog(Object pushResult);
 
