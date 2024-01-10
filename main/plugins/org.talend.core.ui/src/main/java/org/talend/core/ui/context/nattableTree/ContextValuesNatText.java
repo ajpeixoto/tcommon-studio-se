@@ -15,6 +15,7 @@ package org.talend.core.ui.context.nattableTree;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
@@ -109,8 +110,11 @@ public class ContextValuesNatText extends Composite {
         if (NatTableCellEditorFactory.isPassword(realPara.getType())) {
             widgetStyle = SWT.PASSWORD | HorizontalAlignmentEnum.getSWTStyle(cellStyle);
         }
-        if (NatTableCellEditorFactory.isResource(realPara.getType())) {
+        if (NatTableCellEditorFactory.isResource(realPara.getType()) || NatTableCellEditorFactory.isList(realPara.getType())) {
             widgetStyle = SWT.READ_ONLY | HorizontalAlignmentEnum.getSWTStyle(cellStyle);
+        }
+        if (NatTableCellEditorFactory.isString(realPara.getType())) {
+            widgetStyle = widgetStyle | SWT.WRAP | SWT.MULTI | SWT.V_SCROLL;
         }
         text = new Text(this, widgetStyle);
         text.setBackground(cellStyle.getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR));
@@ -235,6 +239,7 @@ public class ContextValuesNatText extends Composite {
      */
     protected String getTransformedSelection(boolean focusOnText) {
         Object result = null;
+        validateValue();
         result = cellFactory.openCustomCellEditor(realPara, getShell());
         String finalResult = "";
         if (result == null || result.equals("")) {
@@ -249,6 +254,14 @@ public class ContextValuesNatText extends Composite {
             }
         }
         return finalResult;
+    }
+
+    private void validateValue() {
+        // possible value modified manually
+        // notify focuslost to commit value might execute after dialog open in some os
+        if (NatTableCellEditorFactory.isString(realPara.getType()) && !StringUtils.equals(realPara.getValue(), text.getText())) {
+            realPara.setValue(text.getText());
+        }
     }
 
     protected String getTransformedTextForDialog(boolean focusOnText) {

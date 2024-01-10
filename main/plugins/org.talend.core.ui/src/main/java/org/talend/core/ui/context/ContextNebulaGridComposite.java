@@ -108,6 +108,8 @@ public class ContextNebulaGridComposite extends AbstractContextTabEditComposite 
 
     private Button manageEnvironmentsButton;
 
+    private Button wrapButton;
+
     private ContextManagerHelper helper;
 
     private List<Button> buttonList;
@@ -229,8 +231,11 @@ public class ContextNebulaGridComposite extends AbstractContextTabEditComposite 
     }
 
     private void createButtonsGroup(Composite parentComposite) {
+        boolean isRepositoryContext = (modelManager instanceof ContextComposite)
+                && ((ContextComposite) modelManager).isRepositoryContext();
+        int columnNum = isRepositoryContext ? 5 : 7;
         buttonsComp = new Composite(parentComposite, SWT.NULL);
-        buttonsComp.setLayout(GridLayoutFactory.swtDefaults().spacing(5, 0).margins(5, 0).numColumns(7).create());
+        buttonsComp.setLayout(GridLayoutFactory.swtDefaults().spacing(10, 0).margins(5, 0).numColumns(columnNum).create());
         GridDataFactory.swtDefaults().align(SWT.FILL, SWT.DOWN).grab(true, false).applyTo(buttonsComp);
         buttonList.clear();
         addButton = createAddPushButton(buttonsComp);
@@ -238,8 +243,6 @@ public class ContextNebulaGridComposite extends AbstractContextTabEditComposite 
         removeButton = createRemovePushButton(buttonsComp);
         buttonList.add(removeButton);
 
-        boolean isRepositoryContext = (modelManager instanceof ContextComposite)
-                && ((ContextComposite) modelManager).isRepositoryContext();
         if (!isRepositoryContext) {// for bug 7393
             moveUpButton = createMoveUpPushButton(buttonsComp);
             buttonList.add(moveUpButton);
@@ -253,14 +256,16 @@ public class ContextNebulaGridComposite extends AbstractContextTabEditComposite 
         }
 
         createEnvironmentsGroup(buttonsComp);
+        wrapButton = createWrapButton(buttonsComp);
     }
 
     private void createEnvironmentsGroup(Composite parentComposite) {
         Composite environmentsComp = new Composite(parentComposite, SWT.NULL);
-        environmentsComp.setLayout(new GridLayout(2, false));
+        GridLayout gridLayout = new GridLayout(2, false);
+        gridLayout.horizontalSpacing = 10;
+        environmentsComp.setLayout(gridLayout);
         GridData contextComboData = new GridData();
         contextComboData.grabExcessHorizontalSpace = true;
-        contextComboData.horizontalAlignment = GridData.END;
         environmentsComp.setLayoutData(contextComboData);
 
         viewEnvironmentsCombo = new CCombo(environmentsComp, SWT.BORDER);
@@ -547,6 +552,35 @@ public class ContextNebulaGridComposite extends AbstractContextTabEditComposite 
         return selectContextVariablesPushButton;
     }
 
+    private Button createWrapButton(final Composite parent) {
+        Button wrapToggleButton = new Button(parent, SWT.TOGGLE);
+        wrapToggleButton.setBackground(parent.getBackground());
+        GridData gridData = new GridData();
+        gridData.grabExcessHorizontalSpace = true;
+        gridData.horizontalAlignment = GridData.END;
+        Image image = ImageProvider.getImage(EImage.WRAP_ICON);
+        IContextManager contextManager = getContextManager();
+        if (contextManager instanceof JobContextManager) {
+            JobContextManager jobContextManager = (JobContextManager) contextManager;
+            wrapToggleButton.setSelection(jobContextManager.isWrapContextText());
+        }
+        wrapToggleButton.setImage(image);
+        wrapToggleButton.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                IContextManager contextManager = getContextManager();
+                if (contextManager instanceof JobContextManager) {
+                    JobContextManager jobContextManager = (JobContextManager) contextManager;
+                    jobContextManager.setWrapContextText(wrapToggleButton.getSelection());
+                }
+                refresh();
+            }
+
+        });
+        return wrapToggleButton;
+    }
+
     private void setButtonEnableState() {
         boolean enableState = !modelManager.isReadOnly();
         if (this.addButton != null) {
@@ -569,6 +603,13 @@ public class ContextNebulaGridComposite extends AbstractContextTabEditComposite 
         }
         if (contextsCombo != null) {
             this.contextsCombo.setEnabled(enableState);
+        }
+        if (wrapButton != null) {
+            IContextManager contextManager = getContextManager();
+            if (contextManager instanceof JobContextManager) {
+                JobContextManager jobContextManager = (JobContextManager) contextManager;
+                wrapButton.setSelection(jobContextManager.isWrapContextText());
+            }
         }
     }
 
