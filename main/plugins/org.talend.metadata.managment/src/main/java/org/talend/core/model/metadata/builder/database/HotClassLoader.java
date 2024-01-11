@@ -52,7 +52,7 @@ public class HotClassLoader extends URLClassLoader {
             if (pathToAdd2 != null && pathToAdd2.length() > 0) {
                 try {
                     File pathToAdd = new File(pathToAdd2).getCanonicalFile();
-                    addURL(pathToAdd.toURL());
+                    addURL(pathToAdd.toURI().toURL());
                 } catch (IOException e) {
                     ExceptionHandler.process(e);
                 }
