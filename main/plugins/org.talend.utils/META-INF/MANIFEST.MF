@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Utils Plug-in
 Bundle-SymbolicName: org.talend.utils
 Automatic-Module-Name: org.talend.utils
-Bundle-Version: 8.8.8.qualifier
+Bundle-Version: 8.0.2.qualifier
 Bundle-Vendor: .Talend SA.
 Export-Package: 
  org.talend.utils,

@@ -2,7 +2,7 @@
 <feature
       id="org.talend.platform.feature"
       label="Platform featrue"
-      version="8.8.8.qualifier"
+      version="8.0.2.qualifier"
       provider-name=".Talend SA.">
 
    <description url="http://www.talend.com/online/featuresdescription.html#platform-feature">

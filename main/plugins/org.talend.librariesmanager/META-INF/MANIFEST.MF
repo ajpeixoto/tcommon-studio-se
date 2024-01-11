@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Automatic-Module-Name: org.talend.librariesmanager
 Bundle-Name: Libraries Manager Plug-in
 Bundle-SymbolicName: org.talend.librariesmanager;singleton:=true
-Bundle-Version: 8.8.8.qualifier
+Bundle-Version: 8.0.2.qualifier
 Bundle-Vendor: .Talend SA.
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,

@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.talend.studio</groupId>
 		<artifactId>studio-deps-bom</artifactId>
-		<version>8.8.8-SNAPSHOT</version>
+		<version>8.0.2-SNAPSHOT</version>
 	</parent>
 	<artifactId>org.talend.designer.maven.repo.tck.prepare-repo</artifactId>
 	<packaging>pom</packaging>

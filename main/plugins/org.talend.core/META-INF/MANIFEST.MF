@@ -3,7 +3,7 @@ Automatic-Module-Name: org.talend.core
 Bundle-ManifestVersion: 2
 Bundle-Name: Core Plug-in
 Bundle-SymbolicName: org.talend.core;singleton:=true
-Bundle-Version: 8.8.8.qualifier
+Bundle-Version: 8.0.2.qualifier
 Bundle-Activator: org.talend.core.CorePlugin
 Bundle-Localization: plugin
 Bundle-ActivationPolicy: lazy
