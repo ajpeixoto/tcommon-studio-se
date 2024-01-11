@@ -251,6 +251,12 @@ public class ReferenceProjectProvider implements IReferenceProjectProvider {
     public static void removeTacReferenceList(String projectLabel) {
         tacReferenceMap.remove(projectLabel);
     }
+
+    @Override
+    public void resetReferenceProjectList() {
+        referenceProjectList = null;
+    }
+
 }
 
 class ReferenceProjectConfiguration {
