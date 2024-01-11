@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.CoreException;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
@@ -41,6 +42,7 @@ import org.talend.repository.model.IRepositoryNode;
  *
  */
 public class ExportFileResource {
+    private static Logger LOGGER = Logger.getLogger(ExportFileResource.class);
 
     private Item item;
 
@@ -101,7 +103,7 @@ public class ExportFileResource {
             String decodeStr = URLDecoder.decode(url.toString(), "UTF-8"); //$NON-NLS-1$
             url = new URL(decodeStr);
         } catch (Exception e) {
-            e.printStackTrace(); // only for debug.
+            LOGGER.warn(e);
         }
 
         return url;
