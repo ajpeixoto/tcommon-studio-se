@@ -61,7 +61,7 @@ public interface ICloudSignOnService extends IService {
      * @param dataCenter data center of TMC
      * @return Introspected PAT
      */
-    PAT introspectPAT(String pat, String dataCenter);
+    PAT introspectPAT(String pat, String dataCenter) throws Exception;
     
     /**
      * Introspect pat and check whether pat is allowed
@@ -70,5 +70,5 @@ public interface ICloudSignOnService extends IService {
      * @param tmcUrl tmc url
      * @return valid or not
      */
-    boolean validatePAT(String pat, String tmcUrl);
+    boolean validatePAT(String pat, String tmcUrl) throws Exception;
 }
