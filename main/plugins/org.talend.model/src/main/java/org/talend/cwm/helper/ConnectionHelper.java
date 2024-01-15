@@ -606,27 +606,9 @@ public class ConnectionHelper {
      * @return
      */
     public static String getUniverse(Connection element) {
-        MDMConnection mdmConnection = SwitchHelpers.MDMCONNECTION_SWITCH.doSwitch(element);
-        if (mdmConnection != null) {
-            return getUniverse(mdmConnection);
-        }
         return "";
     }
 
-    /**
-     * DOC xqliu Comment method "setUniverse".
-     *
-     * @param universe
-     * @param element
-     */
-    public static void setUniverse(String universe, Connection element) {
-        MDMConnection mdmConnection = SwitchHelpers.MDMCONNECTION_SWITCH.doSwitch(element);
-        if (mdmConnection != null) {
-            setUniverse(universe, mdmConnection);
-        }
-    }
-
-    // MOD klliu 2010-10-09 feature 15821
     /**
      *
      * DOC klliu Comment method "getOtherParameter".
@@ -1310,10 +1292,6 @@ public class ConnectionHelper {
         if (dbConn != null) {
             dbConn.setServerName(serverName);
         }
-        MDMConnection mdmConn = SwitchHelpers.MDMCONNECTION_SWITCH.doSwitch(conn);
-        if (mdmConn != null) {
-            mdmConn.setServer(serverName);
-        }
     }
 
     /**
@@ -1326,10 +1304,6 @@ public class ConnectionHelper {
         DatabaseConnection dbConn = SwitchHelpers.DATABASECONNECTION_SWITCH.doSwitch(conn);
         if (dbConn != null) {
             dbConn.setPort(port);
-        }
-        MDMConnection mdmConn = SwitchHelpers.MDMCONNECTION_SWITCH.doSwitch(conn);
-        if (mdmConn != null) {
-            mdmConn.setPort(port);
         }
     }
 
@@ -1344,10 +1318,6 @@ public class ConnectionHelper {
         if (dbConn != null) {
             dbConn.setSID(sid);
         }
-        MDMConnection mdmConn = SwitchHelpers.MDMCONNECTION_SWITCH.doSwitch(conn);
-        if (mdmConn != null) {
-            mdmConn.setContext(sid);
-        }
     }
 
     /**
@@ -1360,10 +1330,6 @@ public class ConnectionHelper {
         DatabaseConnection dbConn = SwitchHelpers.DATABASECONNECTION_SWITCH.doSwitch(conn);
         if (dbConn != null) {
             dbConn.setURL(url);
-        }
-        MDMConnection mdmConn = SwitchHelpers.MDMCONNECTION_SWITCH.doSwitch(conn);
-        if (mdmConn != null) {
-            mdmConn.setPathname(url);
         }
     }
 
@@ -1378,10 +1344,6 @@ public class ConnectionHelper {
         if (dbConn != null) {
             dbConn.setUsername(username);
         }
-        MDMConnection mdmConn = SwitchHelpers.MDMCONNECTION_SWITCH.doSwitch(conn);
-        if (mdmConn != null) {
-            mdmConn.setUsername(username);
-        }
     }
 
     /**
@@ -1395,10 +1357,6 @@ public class ConnectionHelper {
         if (dbConn != null) {
             dbConn.setRawPassword(password);
         }
-        MDMConnection mdmConn = SwitchHelpers.MDMCONNECTION_SWITCH.doSwitch(conn);
-        if (mdmConn != null) {
-            mdmConn.setPassword(mdmConn.getValue(password, true));
-        }
     }
 
     /**
@@ -1411,10 +1369,6 @@ public class ConnectionHelper {
         DatabaseConnection dbConn = SwitchHelpers.DATABASECONNECTION_SWITCH.doSwitch(conn);
         if (dbConn != null) {
             return dbConn.getRawPassword();
-        }
-        MDMConnection mdmConn = SwitchHelpers.MDMCONNECTION_SWITCH.doSwitch(conn);
-        if (mdmConn != null) {
-            return mdmConn.getValue(mdmConn.getPassword(), false);
         }
         return null;
     }

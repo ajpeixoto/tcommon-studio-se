@@ -223,10 +223,6 @@ public final class JavaSqlFactory {
             } // else we are ok
             return driverClassName;
         }
-        MDMConnection mdmConn = SwitchHelpers.MDMCONNECTION_SWITCH.doSwitch(conn);
-        if (mdmConn != null) {
-            return ""; //$NON-NLS-1$
-        }
         DelimitedFileConnection dfConn = SwitchHelpers.DELIMITEDFILECONNECTION_SWITCH.doSwitch(conn);
         if (dfConn != null) {
             return ""; //$NON-NLS-1$
@@ -246,10 +242,6 @@ public final class JavaSqlFactory {
         if (dbConn != null) {
             dbConn.setURL(url);
         }
-        MDMConnection mdmConn = SwitchHelpers.MDMCONNECTION_SWITCH.doSwitch(conn);
-        if (mdmConn != null) {
-            mdmConn.setPathname(url);
-        }
         // MOD qiongli 2011-1-9 feature 16796
         DelimitedFileConnection dfConnection = SwitchHelpers.DELIMITEDFILECONNECTION_SWITCH.doSwitch(conn);
         if (dfConnection != null) {
@@ -268,11 +260,6 @@ public final class JavaSqlFactory {
         DatabaseConnection dbConn = SwitchHelpers.DATABASECONNECTION_SWITCH.doSwitch(conn);
         if (dbConn != null) {
             userName = getOriginalValueConnection(dbConn).getUsername();// root
-        } else {
-            MDMConnection mdmConn = SwitchHelpers.MDMCONNECTION_SWITCH.doSwitch(conn);
-            if (mdmConn != null) {
-                userName = mdmConn.getUsername();
-            }
         }
         if (userName == null) {
             userName = "";//$NON-NLS-1$
@@ -295,11 +282,6 @@ public final class JavaSqlFactory {
                 psw = promptContextVars.get(promptConVarsMapKey);
             } else {
                 psw = getOriginalValueConnection(dbConn).getRawPassword();// ""
-            }
-        } else {
-            MDMConnection mdmConn = SwitchHelpers.MDMCONNECTION_SWITCH.doSwitch(conn);
-            if (mdmConn != null) {
-                psw = ConnectionHelper.getPassword(mdmConn);
             }
         }
         if (psw == null) {
@@ -553,10 +535,6 @@ public final class JavaSqlFactory {
             }
             return url;
         }
-        MDMConnection mdmConn = SwitchHelpers.MDMCONNECTION_SWITCH.doSwitch(conn);
-        if (mdmConn != null) {
-            return mdmConn.getPathname();
-        }
         // MOD qiongli 2011-1-11 feature 16796.
         DelimitedFileConnection dfConnection = SwitchHelpers.DELIMITEDFILECONNECTION_SWITCH.doSwitch(conn);
         if (dfConnection != null) {
@@ -720,10 +698,6 @@ public final class JavaSqlFactory {
         if (dbConn != null) {
             return getOriginalValueConnection(dbConn).getServerName();
         }
-        MDMConnection mdmConn = SwitchHelpers.MDMCONNECTION_SWITCH.doSwitch(conn);
-        if (mdmConn != null) {
-            return mdmConn.getServer();
-        }
         return null;
     }
 
@@ -751,10 +725,6 @@ public final class JavaSqlFactory {
         if (dbConn != null) {
             dbConn.setServerName(serverName);
         }
-        MDMConnection mdmConn = SwitchHelpers.MDMCONNECTION_SWITCH.doSwitch(conn);
-        if (mdmConn != null) {
-            mdmConn.setServer(serverName);
-        }
     }
 
     /**
@@ -767,10 +737,6 @@ public final class JavaSqlFactory {
         DatabaseConnection dbConn = SwitchHelpers.DATABASECONNECTION_SWITCH.doSwitch(conn);
         if (dbConn != null) {
             return getOriginalValueConnection(dbConn).getPort();
-        }
-        MDMConnection mdmConn = SwitchHelpers.MDMCONNECTION_SWITCH.doSwitch(conn);
-        if (mdmConn != null) {
-            return mdmConn.getPort();
         }
         return null;
     }
@@ -786,10 +752,6 @@ public final class JavaSqlFactory {
         if (dbConn != null) {
             dbConn.setPort(port);
         }
-        MDMConnection mdmConn = SwitchHelpers.MDMCONNECTION_SWITCH.doSwitch(conn);
-        if (mdmConn != null) {
-            mdmConn.setPort(port);
-        }
     }
 
     /**
@@ -802,10 +764,6 @@ public final class JavaSqlFactory {
         DatabaseConnection dbConn = SwitchHelpers.DATABASECONNECTION_SWITCH.doSwitch(conn);
         if (dbConn != null) {
             return getOriginalValueConnection(dbConn).getSID();
-        }
-        MDMConnection mdmConn = SwitchHelpers.MDMCONNECTION_SWITCH.doSwitch(conn);
-        if (mdmConn != null) {
-            return mdmConn.getContext();
         }
         return null;
     }
@@ -820,10 +778,6 @@ public final class JavaSqlFactory {
         DatabaseConnection dbConn = SwitchHelpers.DATABASECONNECTION_SWITCH.doSwitch(conn);
         if (dbConn != null) {
             dbConn.setSID(sid);
-        }
-        MDMConnection mdmConn = SwitchHelpers.MDMCONNECTION_SWITCH.doSwitch(conn);
-        if (mdmConn != null) {
-            mdmConn.setContext(sid);
         }
     }
 

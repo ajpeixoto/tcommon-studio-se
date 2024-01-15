@@ -20,6 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
@@ -34,6 +35,7 @@ import org.eclipse.nebula.widgets.nattable.config.DefaultComparator;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
+import org.eclipse.nebula.widgets.nattable.edit.event.DataUpdateEvent;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.DetailGlazedListsEventLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsDataProvider;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsSortModel;
@@ -56,10 +58,18 @@ import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel.ColumnGroup;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupReorderLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.RowHideShowLayer;
+import org.eclipse.nebula.widgets.nattable.layer.AbstractIndexLayerTransform;
+import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
+import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.config.DefaultColumnHeaderStyleConfiguration;
+import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.RowDeleteEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.RowInsertEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralChangeEvent;
 import org.eclipse.nebula.widgets.nattable.painter.cell.TextPainter;
 import org.eclipse.nebula.widgets.nattable.painter.layer.NatGridLayerPainter;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
@@ -92,7 +102,9 @@ import org.eclipse.swt.widgets.Event;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.ui.runtime.ColorConstants;
 import org.talend.core.GlobalServiceRegister;
+import org.talend.core.model.context.JobContextManager;
 import org.talend.core.model.process.IContext;
+import org.talend.core.model.process.IContextManager;
 import org.talend.core.model.process.IContextParameter;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
@@ -148,6 +160,10 @@ public class ContextTreeTable {
     private final static int fixedCheckBoxWidth = 100;
 
     private final static int fixedTypeWidth = 100;
+
+    private final static int minDefultHeight = 20;
+
+    private final static int maxDefaultWidth = 400;
 
     public ContextTreeTable(IContextModelManager manager) {
         this.manager = manager;
@@ -421,6 +437,101 @@ public class ContextTreeTable {
                 currentNatTabSel = (IStructuredSelection) event.getSelection();
             }
         });
+
+        this.natTable.addLayerListener(new ILayerListener() {
+
+            @Override
+            public void handleLayerEvent(ILayerEvent event) {
+                // DataUpdateEvent->Data change, RowInsertEvent->node expand, RowDeleteEvent->node collapse
+                if (event instanceof DataUpdateEvent) {
+                    // data changed then execute here no need compare value
+                    DataUpdateEvent dataEvent = (DataUpdateEvent) event;
+                    ILayer layer = dataEvent.getLayer();
+                    DataLayer dataLayer = getDataLayer(layer);
+                    if (dataLayer == null) {
+                        return;
+                    }
+                    int rowPosition = dataEvent.getRowPosition();
+                    int columnPosition = dataEvent.getColumnPosition();
+                    if (layer instanceof GridLayer) {
+                        GridLayer gridLayer = (GridLayer) layer;
+                        rowPosition = rowPosition - gridLayer.getColumnHeaderLayer().getRowCount();
+                        columnPosition = columnPosition - gridLayer.getRowHeaderLayer().getColumnCount();
+                    }
+                    String text = dataEvent.getNewValue() == null ? "" : dataEvent.getNewValue().toString();
+                    GC gc = new GCFactory(natTable).createGC();
+                    Point point = gc.textExtent(text, SWT.DRAW_MNEMONIC);
+                    int textLength = point.x;
+                    int currentColumnWidth = layer.getColumnWidthByPosition(columnPosition);
+                    if (textLength > layer.getColumnWidthByPosition(columnPosition)) {
+                        if (textLength > maxDefaultWidth) {
+                            int columnWidth = Math.max(currentColumnWidth, maxDefaultWidth);
+                            dataLayer.setColumnWidthByPosition(columnPosition, columnWidth);
+                        } else {
+                            int columnWidth = getColumWidth(gc, dataLayer, columnPosition);
+                            dataLayer.setColumnWidthByPosition(columnPosition, columnWidth);
+                        }
+                    }
+                    int promptColPos = dataLayer.getColumnPositionByIndex(3);
+                    IContextManager contextManager = manager.getContextManager();
+                    if (contextManager instanceof JobContextManager) {
+                        JobContextManager jobContextManager = (JobContextManager) contextManager;
+                        if (jobContextManager.isWrapContextText()) {
+                            int rowHeight = getRowHeight(gc, dataLayer, rowPosition, promptColPos);
+                            dataLayer.setRowHeightByPosition(rowPosition, rowHeight);
+                        }
+                    }
+                    gc.dispose();
+                } else if (event instanceof RowInsertEvent || event instanceof RowDeleteEvent) {
+                    RowStructuralChangeEvent changeEvent = (RowStructuralChangeEvent) event;
+                    ILayer layer = changeEvent.getLayer();
+                    DataLayer dataLayer = getDataLayer(layer);
+                    List<Integer> checkPos = new ArrayList<Integer>();
+                    checkPos.add(3);
+                    adjustCellWidthHeight(dataLayer, checkPos);
+                }
+
+            }
+        });
+    }
+
+    private DataLayer getDataLayer(ILayer layer) {
+        DataLayer dataLayer = null;
+        if (layer instanceof GridLayer) {
+            GridLayer gridLayer = (GridLayer) layer;
+            ILayer bodyLayer = gridLayer.getBodyLayer();
+            if (bodyLayer instanceof AbstractLayerTransform) {
+                AbstractLayerTransform childLayer = (AbstractLayerTransform) bodyLayer;
+                dataLayer = findDataLayerByUnderlyingLayer(childLayer);
+            }
+        } else if (layer instanceof DataLayer) {
+            dataLayer = (DataLayer) layer;
+        } else if (layer instanceof AbstractLayerTransform || layer instanceof AbstractIndexLayerTransform) {
+            dataLayer = findDataLayerByUnderlyingLayer(layer);
+        }
+        return dataLayer;
+    }
+
+    private DataLayer findDataLayerByUnderlyingLayer(ILayer layer) {
+        // only 1 underlyingLayer set on AbstractLayerTransform / AbstractIndexLayerTransform
+        ILayer underlyingLayer = null;
+        if (layer instanceof AbstractLayerTransform) {
+            AbstractLayerTransform layerTransform = (AbstractLayerTransform) layer;
+            underlyingLayer = layerTransform.getUnderlyingLayerByPosition(0, 0);
+        } else if (layer instanceof AbstractIndexLayerTransform) {
+            AbstractIndexLayerTransform layerTransform = (AbstractIndexLayerTransform) layer;
+            underlyingLayer = layerTransform.getUnderlyingLayerByPosition(0, 0);
+        }
+        if (underlyingLayer instanceof DataLayer) {
+            return (DataLayer) underlyingLayer;
+        } else if (underlyingLayer instanceof AbstractLayerTransform) {
+            AbstractLayerTransform childLayer = (AbstractLayerTransform) underlyingLayer;
+            return findDataLayerByUnderlyingLayer(childLayer);
+        } else if (underlyingLayer instanceof AbstractIndexLayerTransform) {
+            AbstractIndexLayerTransform childLayer = (AbstractIndexLayerTransform) underlyingLayer;
+            return findDataLayerByUnderlyingLayer(childLayer);
+        }
+        return null;
     }
 
     private List<Integer> getAllCheckPosBehaviour(IContextModelManager manager, ColumnGroupModel contextGroupModel) {
@@ -448,56 +559,106 @@ public class ContextTreeTable {
                 dataLayer.setColumnWidthByPosition(i, averageWidth);
             }
         } else {
-            int typeColumnPos = dataLayer.getColumnPositionByIndex(1);
-
-            int leftWidth = maxWidth - fixedTypeWidth - fixedCheckBoxWidth * checkColumnsPos.size() - cornerWidth * 2;
-
-            int currentColumnsCount = dataColumnsCount - checkColumnsPos.size() - 1;
-            int averageWidth = leftWidth / currentColumnsCount;
-            for (int i = 0; i < dataLayer.getColumnCount(); i++) {
-                boolean findHide = false;
-                boolean findCheck = false;
-                boolean findType = false;
-                if (typeColumnPos == i) {
-                    findType = true;
-                    dataLayer.setColumnWidthByPosition(i, fixedTypeWidth);
-                }
-                for (int checkPos : checkColumnsPos) {
-                    if (checkPos == i) {
-                        findCheck = true;
-                        dataLayer.setColumnWidthByPosition(i, fixedCheckBoxWidth);
-                    }
-                }
-                if (!findHide && !findCheck && !findType) {
-                    int colW = getColumWidth(dataLayer, i, averageWidth);
-                    dataLayer.setColumnWidthByPosition(i, colW);
-                }
-            }
+            adjustCellWidthHeight(dataLayer, checkColumnsPos);
         }
     }
 
-    private int getColumWidth(DataLayer dataLayer, int colPos, int avgWidth) {
-        int colWidth = fixedTypeWidth;
+    private void adjustCellWidthHeight(DataLayer dataLayer, List<Integer> checkColumnsPos) {
+        int typeColumnPos = dataLayer.getColumnPositionByIndex(1);
         GC gc = new GCFactory(natTable).createGC();
+        for (int i = 0; i < dataLayer.getColumnCount(); i++) {
+            boolean findCheck = false;
+            boolean findType = false;
+            if (typeColumnPos == i) {
+                findType = true;
+                dataLayer.setColumnWidthByPosition(i, fixedTypeWidth);
+            }
+            for (int checkPos : checkColumnsPos) {
+                if (checkPos == i) {
+                    findCheck = true;
+                    dataLayer.setColumnWidthByPosition(i, fixedCheckBoxWidth);
+                }
+            }
+            if (!findCheck && !findType) {
+                int colW = getColumWidth(gc, dataLayer, i);
+                dataLayer.setColumnWidthByPosition(i, colW);
+            }
+        }
+        // setColumnWidthByPosition final scaled by DPI, set height according final width
+        int promptColPos = dataLayer.getColumnPositionByIndex(3);
+        IContextManager contextManager = manager.getContextManager();
+        if (contextManager instanceof JobContextManager) {
+            JobContextManager jobContextManager = (JobContextManager) contextManager;
+            if (jobContextManager.isWrapContextText()) {
+                for (int i = 0; i < dataLayer.getPreferredRowCount(); i++) {
+                    int rowHeight = getRowHeight(gc, dataLayer, i, promptColPos);
+                    dataLayer.setRowHeightByPosition(i, rowHeight);
+                }
+            }
+        }
+        gc.dispose();
+    }
+
+    private int getColumWidth(GC gc, DataLayer dataLayer, int colPos) {
+        int colWidth = fixedTypeWidth;
         int max = 0;
         String text = "";
         for (int i = 0; i < dataLayer.getPreferredRowCount(); i++) {
             Object dataValueByPosition = dataLayer.getDataValueByPosition(colPos, i);
-            if (dataValueByPosition == null) {
+            if (dataValueByPosition == null || StringUtils.isBlank(dataValueByPosition.toString())) {
                 continue;
             }
             text = dataValueByPosition.toString();
             Point size = gc.textExtent(text, SWT.DRAW_MNEMONIC);
-            int temp = size.x;
-            if (temp > max) {
-                max = temp;
+            int textWidth = size.x;
+            if (textWidth > max) {
+                max = textWidth;
             }
         }
-        gc.dispose();
         if (max > colWidth) {
             max = (int) (max - text.getBytes().length * 1.5);
+            if (max > maxDefaultWidth) {
+                max = maxDefaultWidth;
+            }
         }
         return colWidth > max ? colWidth : max;
+    }
+
+    private int getRowHeight(GC gc, DataLayer dataLayer, int rowPos, int promptColPos) {
+        int maxHeight = minDefultHeight;
+        for (int j = 0; j < dataLayer.getColumnCount(); j++) {
+            // only check value column height
+            if (j <= promptColPos) {
+                continue;
+            }
+            Object dataValueByPosition = dataLayer.getDataValueByPosition(j, rowPos);
+            if (dataValueByPosition == null || StringUtils.isBlank(dataValueByPosition.toString())) {
+                continue;
+            }
+            String text = dataValueByPosition.toString();
+            Point size = gc.textExtent(text, SWT.DRAW_MNEMONIC);
+            int textWidth = size.x;
+            int textHeight = size.y;
+            String[] lines = text.split(TextPainter.NEW_LINE_REGEX);
+            int columnWidth = dataLayer.getColumnWidthByPosition(j);
+            if (textWidth >= columnWidth || lines.length > 1) {
+                int heightCount = 0;
+                for (String line : lines) {
+                    int lineWidth = gc.textExtent(line).x;
+                    if (lineWidth < columnWidth) {
+                        heightCount++;
+                    } else {
+                        heightCount += lineWidth / columnWidth;
+                        heightCount += lineWidth % columnWidth == 0 ? 0 : 1;
+                    }
+                }
+                int cellheight = textHeight * heightCount;
+                maxHeight = Math.max(maxHeight, dataLayer.downScaleRowHeight(cellheight));
+            } else {
+                maxHeight = Math.max(maxHeight, textHeight);
+            }
+        }
+        return maxHeight;
     }
 
     private void addCustomSelectionBehaviour(SelectionLayer layer) {

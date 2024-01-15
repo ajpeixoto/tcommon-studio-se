@@ -25,6 +25,8 @@ import org.eclipse.nebula.widgets.nattable.style.Style;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.widget.EditModeEnum;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.widgets.Composite;
@@ -78,6 +80,33 @@ public class CustomTextCellEditor extends AbstractCellEditor {
         this.cellStyle = cellStyle;
         this.commitOnUpDown = commitOnUpDown;
         this.moveSelectionOnEnter = moveSelectionOnEnter;
+        this.focusListener = new FocusAdapter() {
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                // overwrite org.eclipse.nebula.widgets.nattable.edit.editor.AbstractCellEditor.InlineFocusListener
+                // set closeAfterCommit to false
+                if (!commit(MoveDirectionEnum.NONE, false)) {
+                    if (!e.widget.isDisposed() && e.widget instanceof Control) {
+                        ((Control) e.widget).forceFocus();
+                    }
+                } else {
+                    if (!CustomTextCellEditor.this.parent.isDisposed()) {
+                        CustomTextCellEditor.this.parent.forceFocus();
+                    }
+                }
+            }
+
+        };
+    }
+
+    @Override
+    public void addEditorControlListeners() {
+        Control editorControl = getEditorControl();
+        if (editorControl != null && !editorControl.isDisposed() && this.editMode == EditModeEnum.INLINE) {
+            editorControl.addFocusListener(this.focusListener);
+            editorControl.addTraverseListener(this.traverseListener);
+        }
     }
 
     /*

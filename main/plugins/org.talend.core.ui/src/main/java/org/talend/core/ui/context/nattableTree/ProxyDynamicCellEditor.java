@@ -146,4 +146,13 @@ public class ProxyDynamicCellEditor extends AbstractCellEditor {
         return super.commit(direction, closeAfterCommit, skipValidation);
     }
 
+    @Override
+    public void addEditorControlListeners() {
+        if (dynamicEditor != null) {
+            dynamicEditor.addEditorControlListeners();
+        } else {
+            super.addEditorControlListeners();
+        }
+    }
+
 }

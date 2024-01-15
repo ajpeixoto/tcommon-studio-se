@@ -52,4 +52,5 @@ public class EnvironmentUtils {
     public static boolean isAarch64() {
         return StringUtils.equals(Platform.ARCH_AARCH64, Platform.getOSArch());
     }
+
 }

@@ -83,6 +83,7 @@ import org.talend.repository.ProjectManager;
 import org.talend.repository.model.IRepositoryService;
 import org.talend.repository.ui.login.LoginHelper;
 import org.talend.utils.StudioKeysFileCheck;
+import org.talend.utils.VersionException;
 
 /**
  * This class controls all aspects of the application's execution.
@@ -146,10 +147,14 @@ public class Application implements IApplication {
             StudioKeysFileCheck.validateJavaVersion();
         } catch (Exception e) {
             Shell shell = new Shell(display, SWT.NONE);
-            MessageDialog.openError(shell, null, // $NON-NLS-1$
-                    Messages.getString("JavaVersion.CheckError", StudioKeysFileCheck.JAVA_VERSION_MINIMAL_STRING,
-                            StudioKeysFileCheck.getJavaVersion()));
-            return IApplication.EXIT_RELAUNCH;
+            if (e instanceof VersionException) {
+                String msg = Messages.getString("JavaVersion.CheckError", StudioKeysFileCheck.JAVA_VERSION_MINIMAL_STRING, StudioKeysFileCheck.getJavaVersion());
+                if (!((VersionException) e).requireUpgrade()) {
+                    msg = Messages.getString("JavaVersion.CheckError.notSupported", StudioKeysFileCheck.JAVA_VERSION_MAXIMUM_STRING, StudioKeysFileCheck.getJavaVersion());
+                }
+                MessageDialog.openError(shell, null, msg);
+            }
+            return IApplication.EXIT_OK;
         }
 
         try {
@@ -171,6 +176,12 @@ public class Application implements IApplication {
                 EclipseCommandLine.updateOrCreateExitDataPropertyWithCommand(EclipseCommandLine.CLEAN, null, false);
                 return IApplication.EXIT_RELAUNCH;
             }
+            try {
+                NetworkUtil.applyProxyFromSystemProperties();
+            } catch (Throwable e) {
+                LOGGER.error("Failed to init proxy.", e);
+            }
+
             StudioSSLContextProvider.setSSLSystemProperty();
             HttpProxyUtil.initializeHttpProxy();
             TalendProxySelector.getInstance();

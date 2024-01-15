@@ -211,6 +211,9 @@ public class ModuleAccessHelper {
     }
 
     private static boolean hasExtraSettings(EList<ElementParameterType> parameters) {
+        if (parameters == null) {
+            return false;
+        }
         Map<String, String> paramMap = parameters.stream().filter(p -> p.getName() != null && p.getValue() != null)
                 .collect(Collectors.toMap(ElementParameterType::getName, ElementParameterType::getValue, (a1, a2) -> a1));
         // Implicit context
@@ -243,6 +246,11 @@ public class ModuleAccessHelper {
         if ("ID".equals(property.getId()) && "Mock_job_for_Guess_schema".equals(property.getLabel())) {
             return true;
         }
+        // TDQ-21668: only for fix generate ThresholdViolationAlert job failed
+        if (property.getLabel().startsWith("ThresholdViolationAlert")) { //$NON-NLS-1$
+            return true;
+        }
+        // TDQ-21668~
         Class<?> clazz = process.getClass();
         // preview process
         if (CLASS_PREVIEW_PROCESS.equals(clazz.getName()) || CLASS_PREVIEW_PROCESS.equals(clazz.getSuperclass().getName())) {

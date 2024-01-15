@@ -50,7 +50,6 @@ public class DisableLanguageActions implements IStartup {
         }
 
         ECodeLanguage lan = LanguageManager.getCurrentLanguage();
-
         switch (lan) {
         case JAVA:
             ids = Arrays.asList(new String[] { "org.talend.help.perl.OpenPerlHelpAction" }); //$NON-NLS-1$

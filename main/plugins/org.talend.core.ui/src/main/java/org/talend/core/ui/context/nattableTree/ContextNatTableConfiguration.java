@@ -37,7 +37,9 @@ import org.eclipse.nebula.widgets.nattable.painter.cell.ImagePainter;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleUtil;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
+import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.Style;
+import org.eclipse.nebula.widgets.nattable.style.VerticalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.ui.util.CellEdgeEnum;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.graphics.Color;
@@ -128,7 +130,11 @@ public class ContextNatTableConfiguration extends AbstractRegistryConfiguration 
         configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, cellStyleDefault, DisplayMode.NORMAL,
                 ContextTableConstants.COLUMN_CHECK_PROPERTY);
 
-        configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, cellStyleDefault, DisplayMode.NORMAL,
+        Style valueCellStyleDefault = new Style();
+        valueCellStyleDefault.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, ColorConstants.getTableBackgroundColor());
+        valueCellStyleDefault.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT, HorizontalAlignmentEnum.LEFT);
+        valueCellStyleDefault.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT, VerticalAlignmentEnum.TOP);
+        configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, valueCellStyleDefault, DisplayMode.NORMAL,
                 ContextTableConstants.COLUMN_CONTEXT_VALUE);
 
         Style cellStyleSelect = new Style();
@@ -146,6 +152,10 @@ public class ContextNatTableConfiguration extends AbstractRegistryConfiguration 
         configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, cellStyleSelect, DisplayMode.SELECT,
                 ContextTableConstants.COLUMN_CHECK_PROPERTY);
 
+        Style valueCellStyleSelect = new Style();
+        valueCellStyleSelect.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, GUIHelper.COLOR_TITLE_INACTIVE_BACKGROUND);
+        valueCellStyleSelect.setAttributeValue(CellStyleAttributes.FONT, GUIHelper.DEFAULT_FONT);
+        valueCellStyleSelect.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT, HorizontalAlignmentEnum.LEFT);
         configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, cellStyleSelect, DisplayMode.SELECT,
                 ContextTableConstants.COLUMN_CONTEXT_VALUE);
     }
@@ -316,6 +326,13 @@ public class ContextNatTableConfiguration extends AbstractRegistryConfiguration 
     private void registerColumnFourTextEditor(IConfigRegistry configRegistry) {
         ProxyDynamicCellEditor cutomCellEditor = new ProxyDynamicCellEditor(dataProvider, manager, modelManager);
         configRegistry.registerConfigAttribute(EditConfigAttributes.CELL_EDITOR, cutomCellEditor, DisplayMode.EDIT,
+                ContextTableConstants.COLUMN_CONTEXT_VALUE);
+        ContextAutoResizeTextPainter customPainter = new ContextAutoResizeTextPainter(true, false, false);
+        customPainter.setWordWrapping(true);
+        ContextNatTableBackGroudPainter backGroudPainter = new ContextNatTableBackGroudPainter(customPainter, dataProvider);
+        configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_PAINTER, backGroudPainter, DisplayMode.NORMAL,
+                ContextTableConstants.COLUMN_CONTEXT_VALUE);
+        configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_PAINTER, backGroudPainter, DisplayMode.SELECT,
                 ContextTableConstants.COLUMN_CONTEXT_VALUE);
     }
 
