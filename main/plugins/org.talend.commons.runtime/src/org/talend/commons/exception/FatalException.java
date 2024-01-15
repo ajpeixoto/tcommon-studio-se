@@ -23,17 +23,8 @@ public class FatalException extends RuntimeException {
     @SuppressWarnings("unused")//$NON-NLS-1$
     private static final long serialVersionUID = 1L;
 
-    public static final int CODE_INCOMPATIBLE_UPDATE = 10;
-
-    private int code;
-
     public FatalException(String message, Throwable cause) {
         super(message, cause);
-    }
-
-    public FatalException(int code, String message) {
-        super(message);
-        this.code = code;
     }
 
     public FatalException(String message) {
@@ -43,9 +34,4 @@ public class FatalException extends RuntimeException {
     public FatalException(Throwable cause) {
         super(cause);
     }
-
-    public int getCode() {
-        return code;
-    }
-
 }
