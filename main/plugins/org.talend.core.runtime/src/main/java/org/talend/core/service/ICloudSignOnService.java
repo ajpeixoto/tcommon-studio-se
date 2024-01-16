@@ -28,7 +28,7 @@ public interface ICloudSignOnService extends IService {
 
     boolean hasValidToken() throws Exception;
 
-    String getTokenUser(String url, TokenMode token) throws Exception;
+    String getTokenUser(String url, String token) throws Exception;
 
     void signonCloud(LoginEventListener listener) throws Exception;
     

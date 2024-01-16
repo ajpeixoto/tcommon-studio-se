@@ -23,8 +23,6 @@ import org.talend.core.pendo.properties.IPendoDataProperties;
  */
 public interface ICoreTisRuntimeService extends IService {
 
-    String getTmcUser(String url, String token);
-
     AbstractPendoTrackManager getPendoProjectLoginManager();
 
     AbstractPendoTrackManager getPendoGenericManager(TrackEvent event, IPendoDataProperties peoperties);
