@@ -210,4 +210,5 @@ public interface IDesignerCoreService extends IService {
 
     public List<AnalysisReportRecorder> analysis(Project project) throws PersistenceException;
 
+    public boolean isDarkModeTheme();
 }
