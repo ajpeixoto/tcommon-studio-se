@@ -12,7 +12,6 @@ Require-Bundle: org.apache.log4j,
  org.eclipse.emf.ecore.xmi,
  org.talend.libraries.apache,
  com.ibm.icu,
- org.apache.commons.io,
  org.talend.utils,
  org.eclipse.core.net,
  org.eclipse.m2e.core,
@@ -20,7 +19,6 @@ Require-Bundle: org.apache.log4j,
  org.eclipse.core.resources,
  org.talend.studio.studio-utils,
  org.talend.daikon,
- org.apache.commons.codec,
  org.apache.commons.lang3
 Export-Package: org.talend.commons,
  org.talend.commons.exception,
@@ -67,4 +65,7 @@ Bundle-ClassPath: .,
  fakejdbc_driver.jar
 Bundle-Vendor: .Talend SA.
 Bundle-ActivationPolicy: lazy
-Import-Package: org.apache.xerces.jaxp
+Import-Package: org.apache.commons.codec,
+ org.apache.commons.codec.binary,
+ org.apache.commons.io,
+ org.apache.xerces.jaxp

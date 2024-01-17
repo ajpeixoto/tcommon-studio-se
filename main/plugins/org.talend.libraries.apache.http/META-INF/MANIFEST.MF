@@ -46,5 +46,5 @@ Export-Package: org.apache.http,
  org.apache.http.pool,
  org.apache.http.protocol,
  org.apache.http.util
-Require-Bundle: org.apache.commons.logging,
- org.apache.commons.codec
+Import-Package: org.apache.commons.codec
+Require-Bundle: org.apache.commons.logging

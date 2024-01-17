@@ -32,7 +32,7 @@
     <import plugin="net.jeeeyul.swtend" version="0.0.0" match="greaterOrEqual"/>
     <import plugin="org.apache.commons.collections" version="0.0.0" match="greaterOrEqual"/>
     <import plugin="org.apache.commons.discovery" version="0.0.0" match="greaterOrEqual"/>
-    <import plugin="org.apache.commons.io" version="0.0.0" match="greaterOrEqual"/>
+    <import plugin="org.apache.commons.commons-io" version="0.0.0" match="greaterOrEqual"/>
     <import plugin="org.apache.httpcomponents.httpclient" version="0.0.0" match="greaterOrEqual"/>
     <import plugin="org.apache.httpcomponents.httpcore" version="0.0.0" match="greaterOrEqual"/>
     <import plugin="org.eclipse.compare" version="0.0.0" match="greaterOrEqual"/>

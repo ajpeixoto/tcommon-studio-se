@@ -32,7 +32,6 @@ Require-Bundle: org.eclipse.core.runtime,
  com.fasterxml.jackson.core.jackson-core,
  com.fasterxml.jackson.core.jackson-databind,
  org.apache.commons.lang3,
- org.apache.commons.codec,
  jackson-mapper-asl
 Bundle-ActivationPolicy: lazy
 Export-Package: org.jboss.marshalling,
@@ -45,7 +44,10 @@ Export-Package: org.jboss.marshalling,
  org.talend.librariesmanager.prefs,
  routines,
  routines.system
-Import-Package: org.eclipse.emf.ecore.xmi.impl,
+Import-Package: org.apache.commons.codec,
+ org.apache.commons.codec.binary,
+ org.apache.commons.codec.digest,
+ org.eclipse.emf.ecore.xmi.impl,
  org.talend.osgi.hook.notification
 Eclipse-BundleShape: dir
 Bundle-ClassPath: lib/jboss-marshalling-2.0.12.Final.jar,

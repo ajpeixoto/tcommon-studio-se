@@ -18,7 +18,6 @@ Require-Bundle: org.eclipse.ui,
  org.apache.log4j,
  org.eclipse.xsd,
  org.talend.cwm.mip,
- org.apache.commons.codec,
  org.apache.commons.lang3,
  org.eclipse.core.resources,
  org.talend.commons.runtime,
@@ -49,5 +48,7 @@ Export-Package: metadata.managment.i18n,
  org.talend.metadata.managment.repository,
  org.talend.metadata.managment.ui.convert,
  org.talend.metadata.managment.utils
+Import-Package: org.apache.commons.codec,
+ org.apache.commons.codec.binary
 Bundle-ClassPath: .
 Bundle-Vendor: .Talend SA.

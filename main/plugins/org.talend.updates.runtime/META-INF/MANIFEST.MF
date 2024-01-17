@@ -38,7 +38,6 @@ Require-Bundle: org.eclipse.core.runtime,
  org.talend.commons.runtime,
  org.apache.commons.lang,
  org.apache.commons.lang3,
- org.apache.commons.codec,
  org.talend.core.runtime,
  com.fasterxml.jackson.core.jackson-annotations,
  com.fasterxml.jackson.core.jackson-core,
@@ -59,4 +58,6 @@ Export-Package: org.talend.updates.runtime,
  org.talend.updates.runtime.ui,
  org.talend.updates.runtime.utils
 Bundle-Activator: org.talend.updates.runtime.UpdatesRuntimePlugin
-Import-Package: org.slf4j
+Import-Package: org.apache.commons.codec,
+ org.apache.commons.codec.digest,
+ org.slf4j
