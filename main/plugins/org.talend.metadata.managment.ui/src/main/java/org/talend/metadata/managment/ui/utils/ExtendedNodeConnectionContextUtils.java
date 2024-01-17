@@ -88,7 +88,6 @@ public class ExtendedNodeConnectionContextUtils {
         WebPort,
         WebUser,
         WebJobResFolder,
-        HDIAuthType,
         HDIUser,
         HDIPassword,
         KeyAzureHost,
