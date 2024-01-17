@@ -84,6 +84,21 @@
       </loginTask>
    </extension>
    <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="org.talend.designer.maven.ui.setting.preference.TalendMavenPreferenceInitializer">
+      </initializer>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+         <page
+            category="org.talend.designer.core.ui.preferences.SpecificSettingPreferencePage"
+            class="org.talend.designer.maven.ui.setting.preference.TalendMavenPreferencePage"
+            id="org.talend.designer.maven.ui.setting.preference.TalendMavenPreferencePage"
+            name="%TalendMavenPreferencePage">
+      </page>
+   </extension>
+   <extension
          point="org.talend.core.migrationTask">
       <projecttask
             beforeLogon="true"
