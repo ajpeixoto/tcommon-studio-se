@@ -111,6 +111,8 @@ public enum EHadoopProperties {
     HD_DIRECTORY_ID,
     
     HD_CLIENT_KEY,
+    
+    HD_CLIENT_CERTIFICATE,
 
     HD_AZURE_DEPLOYBOLB,
 
