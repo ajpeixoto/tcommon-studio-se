@@ -101,8 +101,16 @@ public enum EHadoopProperties {
     HD_AZURE_HOSTNAME,
 
     HD_AZURE_CONTAINER,
+    
+    HD_ADLSGEN2AUTH,
 
     HD_AZURE_USERNAME,
+    
+    HD_APPLICATION_ID,
+    
+    HD_DIRECTORY_ID,
+    
+    HD_CLIENT_KEY,
 
     HD_AZURE_DEPLOYBOLB,
 
