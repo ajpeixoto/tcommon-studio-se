@@ -88,6 +88,7 @@ public class ExtendedNodeConnectionContextUtils {
         WebPort,
         WebUser,
         WebJobResFolder,
+        HDIAuthType,
         HDIUser,
         HDIPassword,
         KeyAzureHost,
@@ -98,6 +99,8 @@ public class ExtendedNodeConnectionContextUtils {
         HDIClientId,
         HDIDirectoryId,
         HDISecretKey,
+        UseHDICertificate,
+        HDIClientCertificate,
         KeyAzureDeployBlob,
         
         // Azure Synapse param
