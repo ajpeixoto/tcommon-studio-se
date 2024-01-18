@@ -64,6 +64,7 @@ import org.talend.core.model.repository.RepositoryObject;
 import org.talend.core.model.routines.CodesJarInfo;
 import org.talend.core.model.routines.RoutinesUtil;
 import org.talend.core.model.utils.MigrationUtil;
+import org.talend.core.prefs.HistoryStoreHelper;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.utils.ProjectDataJsonProvider;
 import org.talend.core.repository.utils.RoutineUtils;
@@ -230,6 +231,7 @@ public class MigrationToolService implements IMigrationToolService {
         log.trace(taskDesc);
 
         MigrationReportHelper.getInstance().clearRecorders();
+        HistoryStoreHelper.getInstance().clearCache();
         IRepositoryService service = (IRepositoryService) GlobalServiceRegister.getDefault().getService(IRepositoryService.class);
         final IProxyRepositoryFactory repFactory = service.getProxyRepositoryFactory();
         final IWorkspace workspace = ResourcesPlugin.getWorkspace();

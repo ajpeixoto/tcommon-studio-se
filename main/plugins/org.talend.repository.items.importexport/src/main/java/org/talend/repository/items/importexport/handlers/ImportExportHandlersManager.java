@@ -65,6 +65,7 @@ import org.talend.core.model.repository.DynaEnum;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.routines.CodesJarInfo;
+import org.talend.core.prefs.HistoryStoreHelper;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.ui.IJobletProviderService;
@@ -655,6 +656,8 @@ public class ImportExportHandlersManager {
                             }
 
                             try {
+                                // clean resource history save disk storage
+                                HistoryStoreHelper.getInstance().clearCache();
                                 forceDeleteWithRelationsBeforeOverwriteImport(monitor, resManager, allImportItemRecords,
                                         checkedItemRecords, overwriteDeletedItems, idDeletedBeforeImport);
 
@@ -798,6 +801,7 @@ public class ImportExportHandlersManager {
                                         if (monitor.isCanceled()) {
                                             return;
                                         }
+                                        HistoryStoreHelper.getInstance().checkAndClean();
                                         pendoImportManager.countItem(itemRecord);
                                         // will import
                                         importHandler.doImport(monitor, manager, itemRecord, overwriting, destinationPath);
