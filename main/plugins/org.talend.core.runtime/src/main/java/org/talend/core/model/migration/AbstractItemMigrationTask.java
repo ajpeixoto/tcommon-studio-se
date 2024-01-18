@@ -27,6 +27,7 @@ import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.repository.RepositoryObject;
+import org.talend.core.prefs.HistoryStoreHelper;
 import org.talend.core.runtime.i18n.Messages;
 import org.talend.migration.AbstractMigrationTask;
 import org.talend.migration.IProjectMigrationTask;
@@ -110,6 +111,7 @@ public abstract class AbstractItemMigrationTask extends AbstractMigrationTask im
         ExecutionResult result = execute(item);
         if (ExecutionResult.SUCCESS_WITH_ALERT.equals(result) || ExecutionResult.SUCCESS_NO_ALERT.equals(result)) {
             handleDefaultMigrationReportRecord(this, item);
+            HistoryStoreHelper.getInstance().checkAndClean();
         }
         return result;
     }
