@@ -1117,7 +1117,7 @@ public class ImportBasicHandler extends AbstractImportExecutableHandler {
             haveRef = true;
             URI relativePlateformDestUri = getReferenceFileURI(propertyResourceURI, refItem);
             try {
-                URL fileURL = FileLocator.toFileURL(new java.net.URL(
+                URL fileURL = FileLocator.resolve(new java.net.URL(
                         "platform:/resource" + relativePlateformDestUri.toPlatformString(true))); //$NON-NLS-1$
                 os = new FileOutputStream(fileURL.getFile());
                 is = manager.getStream(getReferenceItemPath(selectedImportItem.getPath(), refItem), selectedImportItem);

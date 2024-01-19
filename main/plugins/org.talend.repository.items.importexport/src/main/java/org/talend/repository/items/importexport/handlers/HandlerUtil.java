@@ -97,7 +97,7 @@ public final class HandlerUtil {
             URI propertyResourceURI = EcoreUtil.getURI(itemRecord.getItem().getProperty());
             URI relativePlateformDestUri = propertyResourceURI.trimFileExtension().appendFileExtension(
                     FileConstants.SCREENSHOT_EXTENSION);
-            URL fileURL = FileLocator.toFileURL(new java.net.URL(
+            URL fileURL = FileLocator.resolve(new java.net.URL(
                     "platform:/resource" + relativePlateformDestUri.toPlatformString(true))); //$NON-NLS-1$
             // for migration task ,there is not .screeenshot file in preceding version - begin
             boolean hasScreenshotFile = false;
