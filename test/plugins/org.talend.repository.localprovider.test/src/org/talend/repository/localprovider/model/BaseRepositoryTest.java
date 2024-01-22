@@ -184,27 +184,33 @@ public class BaseRepositoryTest {
     }
 
     protected ProcessItem createTempProcessItem(LocalRepositoryFactory factory, String path) throws PersistenceException {
+        ProcessItem processItem = createTempProcessItem(factory, path, "myJob", "0.1", factory.getNextId());
+
+        return processItem;
+    }
+    
+    protected ProcessItem createTempProcessItem(LocalRepositoryFactory factory, String path, String jobLabel, String jobVersion, String id) throws PersistenceException {
         ProcessItem processItem = PropertiesFactory.eINSTANCE.createProcessItem();
         Property myProperty = PropertiesFactory.eINSTANCE.createProperty();
         ItemState itemState = PropertiesFactory.eINSTANCE.createItemState();
         itemState.setPath(path);
         processItem.setProperty(myProperty);
         processItem.setState(itemState);
-        myProperty.setId(factory.getNextId());
-        myProperty.setLabel("myJob");
-        myProperty.setVersion("0.1");
-
+        myProperty.setId(id);
+        myProperty.setLabel(jobLabel);
+        myProperty.setVersion(jobVersion);
+        
         processItem.setProcess(TalendFileFactory.eINSTANCE.createProcessType());
         processItem.getProcess().getNode().add(TalendFileFactory.eINSTANCE.createNodeType());
         ((NodeType) processItem.getProcess().getNode().get(0)).setComponentName("test");
         ((NodeType) processItem.getProcess().getNode().get(0)).setComponentVersion("0.1");
-
+        
         if (!"".equals(path)) {
             factory.createFolder(sampleProject, ERepositoryObjectType.PROCESS, new Path(""), path);
         }
-
+        
         factory.create(sampleProject, processItem, new Path(path), false);
-
+        
         return processItem;
     }
 

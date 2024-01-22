@@ -1913,6 +1913,7 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
         IPath parentPath = null;
         Project project = getRepositoryContext().getProject();
         IProject fsProject = ResourceUtils.getProject(project);
+        List<Resource> crossReferences = new ArrayList<Resource>();
         List<IRepositoryViewObject> allRepositoryViewObject = new ArrayList<IRepositoryViewObject>();
         for (IRepositoryViewObject objToMove : objToMoves) {
             ERepositoryObjectType type = null;
@@ -1977,18 +1978,19 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
                     resourceFolderMap.put(resource, folder);
                 }
             }
+            Map<Resource, IPath> resourceAndPathMap = new HashMap<Resource, IPath>();
+            
+            for (Resource resource : allResource) {
+                IFolder resfolder = resourceFolderMap.get(resource);
+                IPath path = resfolder.getFullPath().append(resource.getURI().lastSegment());
+                resourceAndPathMap.put(resource, path);
+                // Find cross references.
+                crossReferences.addAll(findCrossReference(resource));
+                moveResource(resource, path);
+            }
+            allResource.clear();
         }
 
-        Map<Resource, IPath> resourceAndPathMap = new HashMap<Resource, IPath>();
-        List<Resource> crossReferences = new ArrayList<Resource>();
-        for (Resource resource : allResource) {
-            IFolder folder = resourceFolderMap.get(resource);
-            IPath path = folder.getFullPath().append(resource.getURI().lastSegment());
-            resourceAndPathMap.put(resource, path);
-            // Find cross references.
-            crossReferences.addAll(findCrossReference(resource));
-            moveResource(resource, path);
-        }
         // Save cross references.
         saveCrossReference(crossReferences);
 
