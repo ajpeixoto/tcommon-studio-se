@@ -36,4 +36,7 @@ public interface IReferenceProjectProvider {
     public void initSettings() throws BusinessException, PersistenceException;
 
     public boolean isHasConfigurationFile();
+
+    void resetReferenceProjectList();
+
 }
