@@ -28,8 +28,6 @@ import org.eclipse.ui.IWorkbench;
 import org.osgi.framework.FrameworkUtil;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
-import org.talend.commons.ui.runtime.image.ECoreImage;
-import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.commons.utils.VersionUtils;
 import org.talend.core.context.Context;
 import org.talend.core.context.RepositoryContext;
@@ -78,7 +76,6 @@ public class DocumentationCreateWizard extends CheckLastVersionRepositoryWizard 
         pathToSave = destinationPath;
 
         setWindowTitle(Messages.getString("DocumentationCreateWizard.windowTitle")); //$NON-NLS-1$
-        setDefaultPageImageDescriptor(ImageProvider.getImageDesc(ECoreImage.DOCUMENTATION_WIZ));
         setNeedsProgressMonitor(true);
 
         property = PropertiesFactory.eINSTANCE.createProperty();
@@ -96,7 +93,6 @@ public class DocumentationCreateWizard extends CheckLastVersionRepositoryWizard 
         documentationItem = PropertiesFactory.eINSTANCE.createDocumentationItem();
         documentationItem.setProperty(property);
 
-        setDefaultPageImageDescriptor(ImageProvider.getImageDesc(ECoreImage.PROCESS_WIZ));
     }
 
     /*

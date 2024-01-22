@@ -27,8 +27,6 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWizard;
-import org.talend.commons.ui.runtime.image.ECoreImage;
-import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.commons.ui.swt.dialogs.ErrorDialogWidthDetailArea;
 import org.talend.commons.utils.VersionUtils;
 import org.talend.core.PluginChecker;
@@ -135,8 +133,6 @@ public class WSDLSchemaWizard extends CheckLastVersionRepositoryWizard implement
         this.isSinglePageOnly = isSinglePageOnly;
         setNeedsProgressMonitor(true);
 
-        // TODO: should to changed icon.
-        setDefaultPageImageDescriptor(ImageProvider.getImageDesc(ECoreImage.DEFAULT_WIZ));
 
         if (selection == null || existingNames == null) {
             connection = ConnectionFactory.eINSTANCE.createWSDLSchemaConnection();
@@ -238,8 +234,6 @@ public class WSDLSchemaWizard extends CheckLastVersionRepositoryWizard implement
         this.isSinglePageOnly = isSinglePageOnly;
         setNeedsProgressMonitor(true);
 
-        // TODO: should to changed icon.
-        setDefaultPageImageDescriptor(ImageProvider.getImageDesc(ECoreImage.DEFAULT_WIZ));
         switch (node.getType()) {
         case SIMPLE_FOLDER:
         case REPOSITORY_ELEMENT:

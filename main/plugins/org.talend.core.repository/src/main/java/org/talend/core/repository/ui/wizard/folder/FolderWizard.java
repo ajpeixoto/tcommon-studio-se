@@ -30,8 +30,6 @@ import org.eclipse.jface.wizard.Wizard;
 import org.osgi.framework.FrameworkUtil;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
-import org.talend.commons.ui.runtime.image.ECoreImage;
-import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.repository.i18n.Messages;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
@@ -77,7 +75,6 @@ public class FolderWizard extends Wizard {
         this.path = path;
         this.type = type;
         this.defaultLabel = defaultLabel;
-        setDefaultPageImageDescriptor(ImageProvider.getImageDesc(ECoreImage.FOLDER_WIZ));
     }
 
     /**

@@ -13,10 +13,7 @@
 package org.talend.metadata.managment.ui.wizard.process;
 
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
-import org.talend.commons.ui.runtime.image.ECoreImage;
-import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.core.PluginChecker;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
@@ -47,7 +44,6 @@ public class EditProcessPropertiesWizard extends PropertiesWizard {
         super(repositoryViewObject, path, useLastVersion);
         this.repositoryViewObject = repositoryViewObject;
         setWindowTitle(Messages.getString("EditProcessPropertiesWizard.wizardTitle")); //$NON-NLS-1$
-        setDefaultPageImageDescriptor(ImageProvider.getImageDesc(ECoreImage.PROCESS_WIZ));
     }
 
     @Override

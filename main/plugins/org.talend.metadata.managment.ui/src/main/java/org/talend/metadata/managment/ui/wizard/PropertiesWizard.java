@@ -42,8 +42,6 @@ import org.talend.commons.runtime.model.repository.ERepositoryStatus;
 import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
-import org.talend.commons.ui.runtime.image.EImage;
-import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.commons.utils.workbench.resources.ResourceUtils;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.ICoreService;
@@ -101,7 +99,6 @@ public class PropertiesWizard extends Wizard {
     public PropertiesWizard(IRepositoryViewObject repositoryViewObject, IPath path, boolean useLastVersion) {
         super();
 
-        setDefaultPageImageDescriptor(ImageProvider.getImageDesc(EImage.PROPERTIES_WIZ));
         // properties wizard editable status not working for ref items ,because econtainer is null;
         if (repositoryViewObject != null && repositoryViewObject.getProperty() != null) {
             this.object = new RepositoryObject(repositoryViewObject.getProperty());

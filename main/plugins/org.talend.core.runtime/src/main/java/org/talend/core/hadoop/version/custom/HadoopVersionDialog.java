@@ -27,8 +27,6 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.talend.commons.ui.runtime.image.EImage;
-import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.commons.ui.swt.formtools.LabelledCombo;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.hadoop.HadoopConstants;
@@ -113,7 +111,6 @@ public class HadoopVersionDialog extends TitleAreaDialog {
         super.create();
         setTitle(Messages.getString("HadoopVersionDialog.title")); //$NON-NLS-1$
         setMessage(Messages.getString("HadoopVersionDialog.msg")); //$NON-NLS-1$
-        setTitleImage(ImageProvider.getImage(EImage.HADOOP_WIZ_ICON));
     }
 
     @Override

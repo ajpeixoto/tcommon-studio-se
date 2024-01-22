@@ -167,7 +167,6 @@ public class HadoopCustomVersionDefineDialog extends TitleAreaDialog {
         super.create();
         setTitle(Messages.getString("HadoopCustomVersionDialog.title")); //$NON-NLS-1$
         setMessage(Messages.getString("HadoopCustomVersionDialog.msg")); //$NON-NLS-1$
-        setTitleImage(ImageProvider.getImage(EImage.HADOOP_WIZ_ICON));
         if (getShell() != null) {
             getShell().getDisplay().asyncExec(new Runnable() {
 
