@@ -23,8 +23,6 @@ import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -37,7 +35,6 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
-import org.talend.commons.ui.utils.image.ColorUtils;
 import org.talend.designer.maven.ui.i18n.Messages;
 
 /**
@@ -52,8 +49,6 @@ public class TalendMavenPreferencePage extends FieldEditorPreferencePage impleme
     private StyledText warningMsgLabel;
 
     private Label warningImg;
-
-    public Color warningColor = ColorUtils.getCacheColor(new RGB(255, 230, 217));
 
     private static final String M2E_OFFLINE = MavenPreferenceConstants.P_OFFLINE;
 
@@ -137,7 +132,6 @@ public class TalendMavenPreferencePage extends FieldEditorPreferencePage impleme
         warningMsgLabel.setLayoutData(warningImgData);
         StyleRange sr = new StyleRange();
         sr.fontStyle = SWT.BOLD;
-        sr.foreground = warningColor;
         sr.length = warningMsgLabel.getLine(0).length();
         warningMsgLabel.setStyleRange(sr);
 
