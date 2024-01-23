@@ -12,6 +12,12 @@
 // ============================================================================
 package org.talend.designer.maven.aether.util;
 
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+
 import org.eclipse.aether.repository.Authentication;
 import org.eclipse.aether.repository.Proxy;
 import org.eclipse.aether.repository.ProxySelector;
@@ -35,6 +41,7 @@ public class TalendAetherProxySelector implements ProxySelector {
 
     @Override
     public Proxy getProxy(RemoteRepository repository) {
+
         /**
          * Update each time in case the settings are changed
          */
@@ -48,6 +55,37 @@ public class TalendAetherProxySelector implements ProxySelector {
                                 + (proxy.getAuthentication() != null ? "..." : "<empty>");
                     }
                     ExceptionHandler.log("Aether proxy> host: " + repository.getHost() + ", proxy: " + proxyStr);
+                }
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
+            }
+        }
+        if (proxy == null) {
+            java.net.ProxySelector jreSelector = java.net.ProxySelector.getDefault();
+            try {
+                URI uri = new URI(repository.getUrl());
+                List<java.net.Proxy> proxies = jreSelector.select(uri);
+                if (proxies != null && !proxies.isEmpty() && proxies.get(0).type() == java.net.Proxy.Type.HTTP) {
+                    SocketAddress addr = proxies.get(0).address();
+                    if (addr instanceof InetSocketAddress) {
+                        InetSocketAddress iaddr = (InetSocketAddress) addr;
+                        proxy = new org.eclipse.aether.repository.Proxy(proxies.get(0).type().name().toLowerCase(), iaddr.getHostName(), iaddr.getPort(), null);
+                    }
+                }
+            } catch (URISyntaxException e) {
+                ExceptionHandler.process(e);
+            }
+        }
+        
+        if (isTalendDebug) {
+            try {
+                if (repository != null) {
+                    String proxyStr = "";
+                    if (proxy != null) {
+                        proxyStr = proxy.getType() + " " + proxy.toString() + ", proxy user: "
+                                + (proxy.getAuthentication() != null ? "..." : "<empty>");
+                    }
+                    ExceptionHandler.log("Aether system proxy> host: " + repository.getHost() + ", proxy: " + proxyStr);
                 }
             } catch (Exception e) {
                 ExceptionHandler.process(e);
