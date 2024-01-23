@@ -13,6 +13,7 @@
 package org.talend.signon.util;
 
 
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
@@ -68,6 +69,7 @@ public class TMCRepositoryUtil {
 
     public static final Pattern DATA_CENTER_PATTERN = Pattern.compile("^http[s?]://tmc\\.(.*)(\\.cloud\\.talend\\.com.*)", Pattern.CASE_INSENSITIVE);
 
+    public static final String DEFAULT_DATA_CENTER = "us";
     
     public static String getBaseLoginURL(String dataCenter) {
         if (dataCenter == null) {
@@ -77,7 +79,7 @@ public class TMCRepositoryUtil {
     }
 
     public static String getDefaultDataCenter() {
-        String defaultDataCenter = "us";
+        String defaultDataCenter = DEFAULT_DATA_CENTER;
         if (getRecentDataCenter() != null) {
             defaultDataCenter = getRecentDataCenter();
         }
@@ -162,5 +164,17 @@ public class TMCRepositoryUtil {
 
     public static String getTokenIntrospectURL(String dataCenter) {
         return String.format(TOKEN_INTROSPECT_URL, dataCenter);
+    }
+    
+    public static String getDataCenterFromTmcUrl(String tmcUrl) {
+        String dataCenter = TMCRepositoryUtil.DEFAULT_DATA_CENTER;
+        Matcher m = DATA_CENTER_PATTERN.matcher(tmcUrl);
+        if (!m.matches()) {
+            // custom cloud
+            LOGGER.info("Use default data center, can not find data center area from tmcUrl: " + tmcUrl);
+        } else {
+            dataCenter = m.group(1);
+        }
+        return dataCenter;
     }
 }
