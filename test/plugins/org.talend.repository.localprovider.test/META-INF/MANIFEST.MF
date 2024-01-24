@@ -4,5 +4,6 @@ Bundle-Name: Test
 Bundle-SymbolicName: org.talend.repository.localprovider.test
 Bundle-Version: 8.0.2.qualifier
 Fragment-Host: org.talend.repository.localprovider
+Import-Package: org.talend.utils.xml
 Require-Bundle: org.talend.testutils,
  org.junit
