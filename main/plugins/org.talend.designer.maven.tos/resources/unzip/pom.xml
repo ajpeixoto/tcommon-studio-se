@@ -286,6 +286,16 @@
                             <tasks>
                                 <echo message="Unzip old repository..." />
                                 <unzip src="${basedir}/../repository/maven_repository.zip" dest="${basedir}/../tmp/">
+                                <patternset>
+                                        <exclude name="repository/org/bouncycastle/bcpg-jdk15on/1.70/**" />
+                                        <exclude name="repository/org/bouncycastle/bcpg-jdk18on/1.71*/**" />
+                                        <exclude name="repository/org/bouncycastle/bcpg-jdk18on/1.72*/**" />
+                                        <exclude name="repository/org/bouncycastle/bcpg-jdk18on/1.73*/**" />
+                                        <exclude name="repository/org/bouncycastle/bcprov-jdk15on/1.70/**" />
+                                        <exclude name="repository/org/bouncycastle/bcprov-jdk18on/1.71*/**" />
+                                        <exclude name="repository/org/bouncycastle/bcprov-jdk18on/1.72*/**" />
+                                        <exclude name="repository/org/bouncycastle/bcprov-jdk18on/1.73*/**" />
+                                    </patternset>
                                 </unzip>
                             </tasks>
                         </configuration>
