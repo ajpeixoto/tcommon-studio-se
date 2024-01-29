@@ -25,7 +25,8 @@ addJvmArgs(jvmArgs:\
 --add-opens=java.base/sun.security.pkcs=ALL-UNNAMED|\
 --add-opens=java.base/sun.security.x509=ALL-UNNAMED|\
 --add-opens=java.base/sun.util.calendar=ALL-UNNAMED|\
---add-opens=java.security.jgss/sun.security.krb5=ALL-UNNAMED);
+--add-opens=java.security.jgss/sun.security.krb5=ALL-UNNAMED|\
+--add-opens=jdk.internal.jvmstat/sun.jvmstat.monitor=ALL-UNNAMED);
 instructions.configure.import=\
 org.talend.studiolite.p2.touchpoint.removeJvmArgs,\
 org.talend.studiolite.p2.touchpoint.addJvmArgs
