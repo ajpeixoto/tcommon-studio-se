@@ -100,6 +100,8 @@ public class MigrationToolService implements IMigrationToolService {
     private static final String PROPERTIES_REDO_ENCRYPTION_MIGRATION_TASKS = "talend.property.migration.redoEncryption"; //$NON-NLS-1$
 
     private static final String RELATION_TASK = "org.talend.repository.model.migration.AutoUpdateRelationsMigrationTask"; //$NON-NLS-1$
+    
+    private static final String TACOKIT_METADATA_UPGRADE_TASK = "org.talend.sdk.component.studio.metadata.migration.UpgradeTacokitMetadataMigrationTask";
 
     private List<IProjectMigrationTask> doneThisSession;
 
@@ -246,7 +248,7 @@ public class MigrationToolService implements IMigrationToolService {
         final List<MigrationTask> done = new ArrayList<MigrationTask>(storedMigrations);
         boolean hasTaskToExecute = toExecute.stream()
                 .anyMatch(task -> !task.isDeprecated() && MigrationUtil.findMigrationTask(done, task) == null);
-
+        
         // force to redo the migration task for the relations only if user ask for "clean" or if relations is empty
         // or if there is at least another migration to do.
         if (!beforeLogon && (!RelationshipItemBuilder.INDEX_VERSION.equals(project.getEmfProject().getItemsRelationVersion())
@@ -520,6 +522,7 @@ public class MigrationToolService implements IMigrationToolService {
                                 needSave = true;
                             }
                             if (needSave) {
+                                MigrationUtil.removeMigrationTaskById(done, TACOKIT_METADATA_UPGRADE_TASK);
                                 saveProjectMigrationTasksDone(project, done);
                             }
                             if (!RelationshipItemBuilder.INDEX_VERSION.equals(project.getEmfProject().getItemsRelationVersion())) {
@@ -596,7 +599,7 @@ public class MigrationToolService implements IMigrationToolService {
             }
             sortMigrationTasks(allMigrations);
             for (IProjectMigrationTask task : allMigrations) {
-                if (RELATION_TASK.equals(task.getId())) {
+                if (RELATION_TASK.equals(task.getId()) || TACOKIT_METADATA_UPGRADE_TASK.equals(task.getId())) {
                     continue;
                 }
                 task.setStatus(ExecutionResult.NOTHING_TO_DO);
